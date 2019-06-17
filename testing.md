@@ -1,5 +1,5 @@
 测试数学公式的写法
-
+---
 [LaTeX math in github wikis](https://stackoverflow.com/questions/22236977/latex-math-in-github-wikis)
 
 You can use chart.apis.google.com to render LaTeX formulas as PNG. 
@@ -17,9 +17,14 @@ You can use chart.apis.google.com to render LaTeX formulas as PNG.
 [f3]: http://chart.apis.google.com/chart?cht=tx&chl=E=mc^2
 [f4]: http://chart.apis.google.com/chart?cht=tx&chl=m_0c^2
 
-
-$_E = mc ^2^_$
-
+---
 *E = mc<sup>2</sup>*
 
+---
+Some sites provide users with a service that would fit your need without any javascript involved: on-the-fly generation of images from url encoded latex formulas.
 
+codecogs.com
+iTex2Img.
+given the following markdown syntax
+
+![equation](https://latex.codecogs.com/gif.latex?1%2Bsin%28mc%5E2%29%0D%0A)
