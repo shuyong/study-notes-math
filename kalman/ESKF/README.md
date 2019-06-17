@@ -8,47 +8,59 @@
 
 # 文件列表
 00. [extended kalman filter equation for orientation quaternion](https://math.stackexchange.com/questions/2621677/extended-kalman-filter-equation-for-orientation-quaternion)
-  + 解释了数学上的困境与理论发展现状
-  
+  + 介绍了数学上的困境与理论发展现状
+
+
 01. [Circumventing Dynamic Modeling: Evaluation of the Error-State Kalman Filter applied to Mobile Robot Localization - 1999](https://www.academia.edu/13385785/Circumventing_dynamic_modeling_Evaluation_of_the_error-state_kalman_filter_applied_to_mobile_robot_localization)
   + 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价
-  
+
+
 02. [Attitude Error Representations for Kalman Filtering - 2002](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20020060647.pdf)
   + [Attitude Error Representations for Kalman Filtering - 2003](https://www.researchgate.net/publication/245432681_Attitude_Error_Representations_for_Kalman_Filtering)
   + 卡尔曼滤波的姿态误差表示
-  
+
+
 03. [Attitude estimation or quaternion estimation? - 2003](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20030093641.pdf)
   + 姿态估计或四元数估计
+
 
 04. [Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination - 2004](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf)
   + [Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination](https://www.researchgate.net/publication/260347976_Multiplicative_vs_Additive_Filtering_for_Spacecraft_Attitude_Determination)
   + 航天器姿态确定的乘法与加法滤波器的对比
 
+
 05. [Indirect Kalman filter for 3D attitude estimation - 2007](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf)
   + 三维姿态估计的间接卡尔曼滤波
 
+
 06. [Improving the Accuracy of EKF-Based Visual-Inertial Odometry - 2012](https://intra.ece.ucr.edu/~mourikis/papers/Li2012-ICRA.pdf)
   + 提高基于EKF的视觉惯性里程测量精度
+
 
 07. [High-precision, consistent EKF-based visual-inertial odometry - 2013](https://ee.ucr.edu/~mourikis/papers/Li2013IJRR.pdf)
   + 基于EKF的高精度视觉惯性里程测量
   + [High-Precision, Consistent EKF-based Visual-Inertial Odometry](https://pdfs.semanticscholar.org/0be0/c13803cd08e81b7adaada537e91222eb1491.pdf)
 
+
 08. [Camera-IMU-based Localization: Observability Analysis and Consistency Improvement - 2013](https://journals.sagepub.com/doi/abs/10.1177/0278364913509675)
   + 基于Camera-IMU的定位：可观测性分析和一致性改进
+
 
 09. [Quaternion kinematics for the error-state KF - 2017](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf)
   + 误差状态卡尔曼滤波器的四元数运动学
   + 潦草注释: https://github.com/TurtleZhong/msckf_mono/
   + 同一个人: http://www.xinliang-zhong.vip/msckf_notes/
 
+
 10. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
   + 通过封装流形将通用传感器融合算法与声音状态表示相结合
+
 
 11. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
   + 四元数姿态估计的卡尔曼滤波及流形理论的概念
   + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
-  
+
+
 # 翻译：[方向四元数的扩展卡尔曼滤波方程](https://math.stackexchange.com/questions/2621677/extended-kalman-filter-equation-for-orientation-quaternion)
 
 处理EKF中旋转的最大问题是（据我所知）没有合理的方法来定义向量空间中的旋转。欧拉角、四元数和旋转矩阵不是向量，而是形式组。
