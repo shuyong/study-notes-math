@@ -30,6 +30,8 @@ given the following markdown syntax
 
 ![equation](https://latex.codecogs.com/gif.latex?1%2Bsin%28mc%5E2%29%0D%0A)
 
+[Complex Scalable Inline Rendering with LaTeX and Codecogs](https://stackoverflow.com/a/47798853)
+
 <img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
 
 ---
