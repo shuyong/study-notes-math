@@ -18,7 +18,7 @@ You can use chart.apis.google.com to render LaTeX formulas as PNG.
 [f4]: http://chart.apis.google.com/chart?cht=tx&chl=m_0c^2
 
 
-_E = mc ^2^_
+$_E = mc ^2^_$
 
 *E = mc<sup>2</sup>*
 
