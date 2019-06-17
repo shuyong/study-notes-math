@@ -23,8 +23,15 @@ You can use chart.apis.google.com to render LaTeX formulas as PNG.
 ---
 Some sites provide users with a service that would fit your need without any javascript involved: on-the-fly generation of images from url encoded latex formulas.
 
-codecogs.com
-iTex2Img.
+* [codecogs.com](https://www.codecogs.com/latex/about.php)
+* [iTex2Img.](http://www.sciweavers.org/free-online-latex-equation-editor)
+
 given the following markdown syntax
 
 ![equation](https://latex.codecogs.com/gif.latex?1%2Bsin%28mc%5E2%29%0D%0A)
+
+---
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+(E=mc^2)，$$x_{1,2} = \frac{-b \pm \sqrt{b^2-4ac}}{2b}.$$
+
