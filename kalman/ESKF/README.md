@@ -45,10 +45,18 @@
   + 潦草注释: https://github.com/TurtleZhong/msckf_mono/
   + 同一个人: http://www.xinliang-zhong.vip/msckf_notes/
 
-11. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
+11. [Sensor Fusion Implementation - 2017](http://www.telesens.co/category/sensor-fusion/)
+  + 用Matlab code实现一个21个状态的CAMERA姿态的ESKF。
+  + [code](https://github.com/ankur6ue/SensorFusion_KF)
+
+12. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF/documentation)
+  + PX4项目里24个状态的EKF。
+  + [Using the ECL EKF](https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html)
+
+13. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
   + 通过封装流形将通用传感器融合算法与声音状态表示相结合
 
-12. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
+14. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
   + 四元数姿态估计的卡尔曼滤波及流形理论的概念
   + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
 
@@ -61,7 +69,7 @@ E[(x - \hat x)(x - \hat x)^T]
 
 但是，在四元数的情况下，（q − \hat q）是什么意思？它不再是一个单位四元数。旋转矩阵也是这样。欧拉角更微妙一些，但类似的逻辑也适用（如果你减去两个欧拉角的“向量”，结果真正意味着什么？）
 
-考虑到线性化，欧拉角实际上可以工作。这是一个四旋翼飞行器EKF的例子，它使用欧拉角作为[[四旋翼飞行器动力学和控制](https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub)]的方向状态。显然，Euler角与万向节锁存在问题，而这个源代码并没有解决这个问题，而且由于所有的三角法，Euler角的计算效率极低，但这意味着作为一个入门的卡尔曼滤波器实现。如果你刚开始，从这里开始可能是有意义的。
+考虑到线性化，欧拉角实际上可以工作。这是一个四旋翼飞行器EKF的例子，它使用欧拉角作为[[四旋翼飞行器动力学和控制](https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub)]的方向状态。显然，Euler角与万向节锁存在问题，而这个源代码并没有解决这个问题，而且由于所有的计算都采用三角函数，欧拉角的计算效率非常低，但它可以作为一个入门的卡尔曼滤波器实现。如果你刚开始，从这里开始可能是有意义的。
 
 然而，为了解决这些问题，一些做航天器姿态估计的聪明人对此进行了研究，并提出了“乘法”EKF(Multiplicative EKF)。在MEKF中，可以考虑到协方差是根据关于某个四元数参考状态的“误差向量”定义的。使用标准四元数动力学传播四元数，然后更新四元数，并使用参数化为吉布斯矢量(gibbs vector)或罗德里格斯参数(rodriguez parameters)的3矢量定义协方差。[[航天器姿态确定的乘法与加法滤波器的对比 - Markley](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf)]。吉布斯矢量(gibbs vector)实际上是一个矢量，但它有一个奇点，所以它只适用于小的旋转。因此，需要一个引用四元数，并用一个向量定义该引用的小“误差”。“乘法”一词来源于这样一个事实，即你最终将这个误差向量“乘法”到参考四元数中，而不是像所有其他状态那样用简单的向量加法添加它。
 
@@ -72,4 +80,6 @@ E[(x - \hat x)(x - \hat x)^T]
 1. [Implementation of error-state kalman filter for attitude determination with MARG sensors](https://github.com/gareth-cross/kr_attitude_eskf)
 1. [Cardboard VR Toolkit Library (Decompiled sources)](https://github.com/raasun/cardboard)
 1. [NXP® Sensor Fusion](https://www.nxp.com/support/developer-resources/software-development-tools/sensor-developer-resources/nxp-sensor-fusion:XTRSICSNSTLBOXX)
+1. [Shows implementation of KF based sensor fusion of gyro, accel and camera measurements.](https://github.com/ankur6ue/SensorFusion_KF)
+1. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF)
 1. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - code](http://www.mdpi.com/1424-8220/19/1/149/s1)
