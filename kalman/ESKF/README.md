@@ -66,7 +66,7 @@
 
 这是EKF的一个问题，因为它假定所有的状态变量都是向量。例如，想想如何形成四元数的协方差矩阵。协方差矩阵定义为：
 
-![equ 1](https://latex.codecogs.com/svg.latex?%5Clarge%20E%5B%28x%20-%20%5Chat%20x%29%28x%20-%20%5Chat%20x%29%5ET%5D%29)
+![equ 1](https://latex.codecogs.com/svg.latex?E%5B%28x-%5Chat%20x%29%28x-%5Chat%20x%29%5E%5Cmathrm%20T%5D)
 
 但是，在四元数的情况下，![equ 2](https://latex.codecogs.com/svg.latex?%28q-%5Chat%20q%29)是什么意思？它不再是一个单位四元数。旋转矩阵也是这样。欧拉角更微妙一些，但类似的逻辑也适用（如果你减去两个欧拉角的“向量”，结果真正意味着什么？）
 
