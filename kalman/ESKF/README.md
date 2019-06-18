@@ -66,9 +66,9 @@
 
 这是EKF的一个问题，因为它假定所有的状态变量都是向量。例如，想想如何形成四元数的协方差矩阵。协方差矩阵定义为：
 
-![equ 1](http://chart.apis.google.com/chart?cht=tx&chl=E[(x - \hat x)(x - \hat x)^T])
+![equ 1](https://latex.codecogs.com/svg.latex?%5Clarge%20E%5B%28x%20-%20%5Chat%20x%29%28x%20-%20%5Chat%20x%29%5ET%5D%29)
 
-但是，在四元数的情况下，![equ 2](http://chart.apis.google.com/chart?cht=tx&chl=(q − \hat q))是什么意思？它不再是一个单位四元数。旋转矩阵也是这样。欧拉角更微妙一些，但类似的逻辑也适用（如果你减去两个欧拉角的“向量”，结果真正意味着什么？）
+但是，在四元数的情况下，![equ 2](https://latex.codecogs.com/svg.latex?%28q-%5Chat%20q%29)是什么意思？它不再是一个单位四元数。旋转矩阵也是这样。欧拉角更微妙一些，但类似的逻辑也适用（如果你减去两个欧拉角的“向量”，结果真正意味着什么？）
 
 考虑到线性化，欧拉角实际上可以工作。这是一个四旋翼飞行器EKF的例子，它使用欧拉角作为[[四旋翼飞行器动力学和控制](https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub)]的方向状态。显然，Euler角与万向节锁存在问题，而这个源代码并没有解决这个问题，而且由于所有的计算都采用三角函数，欧拉角的计算效率非常低，但它可以作为一个入门的卡尔曼滤波器实现。如果你刚开始，从这里开始可能是有意义的。
 
