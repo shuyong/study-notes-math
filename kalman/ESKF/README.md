@@ -27,25 +27,28 @@
 05. [Indirect Kalman filter for 3D attitude estimation - 2007](http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf)
   + 三维姿态估计的间接卡尔曼滤波
 
-06. [Improving the Accuracy of EKF-Based Visual-Inertial Odometry - 2012](https://intra.ece.ucr.edu/~mourikis/papers/Li2012-ICRA.pdf)
+06. [Lessons Learned - F. Landis Markley - The Complexity of Constraints - 2009](https://www.researchgate.net/publication/257288674_Lessons_Learned)
+  + 经验总结 - F. Landis Markley - 约束的复杂性
+
+07. [Improving the Accuracy of EKF-Based Visual-Inertial Odometry - 2012](https://intra.ece.ucr.edu/~mourikis/papers/Li2012-ICRA.pdf)
   + 提高基于EKF的视觉惯性里程测量精度
 
-07. [High-precision, consistent EKF-based visual-inertial odometry - 2013](https://ee.ucr.edu/~mourikis/papers/Li2013IJRR.pdf)
+08. [High-precision, consistent EKF-based visual-inertial odometry - 2013](https://ee.ucr.edu/~mourikis/papers/Li2013IJRR.pdf)
   + 基于EKF的高精度视觉惯性里程测量
   + [High-Precision, Consistent EKF-based Visual-Inertial Odometry](https://pdfs.semanticscholar.org/0be0/c13803cd08e81b7adaada537e91222eb1491.pdf)
 
-08. [Camera-IMU-based Localization: Observability Analysis and Consistency Improvement - 2013](https://journals.sagepub.com/doi/abs/10.1177/0278364913509675)
+09. [Camera-IMU-based Localization: Observability Analysis and Consistency Improvement - 2013](https://journals.sagepub.com/doi/abs/10.1177/0278364913509675)
   + 基于Camera-IMU的定位：可观测性分析和一致性改进
 
-09. [Quaternion kinematics for the error-state KF - 2017](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf)
+10. [Quaternion kinematics for the error-state KF - 2017](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf)
   + 误差状态卡尔曼滤波器的四元数运动学
   + 潦草注释: https://github.com/TurtleZhong/msckf_mono/
   + 同一个人: http://www.xinliang-zhong.vip/msckf_notes/
 
-10. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
+11. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
   + 通过封装流形将通用传感器融合算法与声音状态表示相结合
 
-11. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
+12. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
   + 四元数姿态估计的卡尔曼滤波及流形理论的概念
   + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
 
@@ -64,3 +67,9 @@ E[(x - \hat x)(x - \hat x)^T]
 
 这种处理滤波器状态的非矢量分量的做法最近已经有了一些更好的形式化，一些新的符号使其更自然，并清理了语法，[[通过封装流形将通用传感器融合算法与声音状态表示相结合-Hertzberg等人](https://arxiv.org/pdf/1107.1119.pdf)]。这样可以避免使用误差状态变量，并允许你“假装”处理的是向量状态，而不是这些组对象（如四元数）。我链接的文章有一个使用四元数的UKF实现示例，它可以作为你的实现的一个很好的基础。
 
+# 参考代码
+1. [An implementation of an Error State Kalman Filter (ESKF)](https://github.com/je310/ESKF)
+1. [Implementation of error-state kalman filter for attitude determination with MARG sensors](https://github.com/gareth-cross/kr_attitude_eskf)
+1. [Cardboard VR Toolkit Library (Decompiled sources)](https://github.com/raasun/cardboard)
+1. [NXP® Sensor Fusion](https://www.nxp.com/support/developer-resources/software-development-tools/sensor-developer-resources/nxp-sensor-fusion:XTRSICSNSTLBOXX)
+1. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - code](http://www.mdpi.com/1424-8220/19/1/149/s1)
