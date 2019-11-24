@@ -1,0 +1,4862 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "三维姿态估计的间接卡尔曼滤波-四元数代数教程"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Nikolas Trawny and Stergios I.
+ Roumeliotis
+\end_layout
+
+\begin_layout Date
+March 2005
+\end_layout
+
+\begin_layout Section
+四元数代数的元素
+\end_layout
+
+\begin_layout Subsection
+四元数定义
+\end_layout
+
+\begin_layout Standard
+四元数一般定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}=q_{4}+q_{1}\mathbf{i}+q_{2}\mathbf{j}+q_{3}\mathbf{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\begin_inset Formula $\mathbf{i}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{j}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{k}$
+\end_inset
+
+是超虚数，满足
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{i}^{2}=\mathbf{j}^{2}=\mathbf{k}^{2}=-1,-\mathbf{i}\mathbf{j}=\mathbf{j}\mathbf{i}=\mathbf{k},-\mathbf{j}\mathbf{k}=\mathbf{k}\mathbf{j}=\mathbf{i},-\mathbf{k}\mathbf{i}=\mathbf{i}\mathbf{k}=\mathbf{j}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，这不符合汉密尔顿符号。相反，这是一种惯例，导致四元数按“自然顺序”相乘(另见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数与旋转矩阵的关系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节和文档[1，第473页])。这符合JPL提出的标准惯例[2]。
+\end_layout
+
+\begin_layout Standard
+数量
+\begin_inset Formula $q_{4}$
+\end_inset
+
+是四元数的实部或标量部分，
+\begin_inset Formula $q_{1}\mathbf{i}+q_{2}\mathbf{j}+q_{3}\mathbf{k}$
+\end_inset
+
+是虚数部分或矢量部分。因此，四元数也可以写在
+\begin_inset Formula $4$
+\end_inset
+
+维列矩阵中，由下面给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}=\left[\begin{array}{c}
+\mathbf{q}\\
+q_{4}
+\end{array}\right]=\left[\begin{array}{cccc}
+q_{1} & q_{2} & q_{3} & q_{4}\end{array}\right]^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果数量
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+和
+\begin_inset Formula $q_{4}$
+\end_inset
+
+满足
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}=\left[\begin{array}{c}
+k_{x}\sin\left(\theta/2\right)\\
+k_{y}\sin\left(\theta/2\right)\\
+k_{z}\sin\left(\theta/2\right)
+\end{array}\right]=\hat{\mathbf{k}}\sin\left(\theta/2\right),\quad q_{4}=\cos\left(\theta/2\right)\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些元素
+\begin_inset Formula $q_{1},q_{2},q_{3},q_{4}$
+\end_inset
+
+被称为“旋转四元数”或“欧拉对称参数”[1]。在这个符号中，单位向量
+\begin_inset Formula $\hat{\mathbf{k}}$
+\end_inset
+
+描述了旋转轴，
+\begin_inset Formula $\theta$
+\end_inset
+
+描述了旋转角度。旋转四元数是一个单位四元数，满足
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left|\bar{q}\right|=\sqrt{\bar{q}^{\mathrm{T}}\bar{q}}=\sqrt{\left|\mathbf{q}\right|^{2}+q_{4}^{2}}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从今以后，我们将用“四元数”来指旋转四元数。
+\end_layout
+
+\begin_layout Standard
+四元数
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+和四元数
+\begin_inset Formula $-\bar{q}$
+\end_inset
+
+表示旋转到相同的最终坐标系位置，即角度-轴表示不唯一[1，第463页]。唯一的区别是到达目标配置的旋转方向，具有正标量元素
+\begin_inset Formula $q_{4}$
+\end_inset
+
+的四元数描述最短的旋转[2]。
+\end_layout
+
+\begin_layout Subsection
+四元数乘法
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:四元数乘法"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数乘法定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\bar{q}\otimes\bar{p} & =(q_{4}+q_{1}\mathbf{i}+q_{2}\mathbf{j}+q_{3}\mathbf{k})(p_{4}+p_{1}\mathbf{i}+p_{2}\mathbf{j}+p_{3}\mathbf{k})\\
+ & =(q_{4}p_{4}-q_{1}p_{1}-q_{2}p_{2}-q_{3}p_{3})\\
+ & +(q_{4}p_{1}+q_{1}p_{4}-q_{2}p_{3}+q_{3}p_{2})\mathbf{i}\\
+ & +(q_{4}p_{2}+q_{2}p_{4}-q_{3}p_{1}+q_{1}p_{3})\mathbf{j}\\
+ & +(q_{4}p_{3}+q_{3}p_{4}-q_{1}p_{2}+q_{2}p_{1})\mathbf{k}\\
+ & =\left[\begin{array}{c}
+q_{4}p_{1}+q_{3}p_{2}-q_{2}p_{3}+q_{1}p_{4}\\
+-q_{3}p_{1}+q_{4}p_{2}+q_{1}p_{3}+q_{2}p_{4}\\
+q_{2}p_{1}-q_{1}p_{2}+q_{4}p_{3}+q_{3}p_{4}\\
+-q_{1}p_{1}-q_{2}p_{2}-q_{3}p_{3}+q_{4}p_{4}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中我们使用式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的关系式。
+\end_layout
+
+\begin_layout Standard
+四元数乘法也可以写成矩阵形式。为此，我们首先介绍了用斜对称矩阵算符
+\begin_inset Formula $[\mathbf{q}\times]$
+\end_inset
+
+表示交叉积的矩阵表示法，定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor \mathbf{q}\times\right\rfloor =\left[\begin{array}{ccc}
+0 & -q_{3} & q_{2}\\
+q_{3} & 0 & -q_{1}\\
+-q_{2} & q_{1} & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后可以将叉积写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}\times\mathbf{p}=\left[\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k}\\
+q_{1} & q_{2} & q_{3}\\
+p_{1} & p_{2} & p_{3}
+\end{array}\right]=\left[\begin{array}{c}
+q_{2}p_{3}-q_{3}p_{2}\\
+q_{3}p_{1}-q_{1}p_{3}\\
+q_{1}p_{2}-q_{2}p_{1}
+\end{array}\right]=\left[\begin{array}{ccc}
+0 & -q_{3} & q_{2}\\
+q_{3} & 0 & -q_{1}\\
+-q_{2} & q_{1} & 0
+\end{array}\right]\left[\begin{array}{c}
+p_{1}\\
+p_{2}\\
+p_{3}
+\end{array}\right]=\left\lfloor \mathbf{q}\times\right\rfloor \mathbf{p}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数乘法现在可以改写为矩阵形式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\bar{q}\otimes\bar{p} & =\mathcal{L}\left(\bar{q}\right)\bar{p}\nonumber \\
+\bar{q}\otimes\bar{p} & =\left[\begin{array}{cccc}
+q_{4} & q_{3} & -q_{2} & q_{1}\\
+-q_{3} & q_{4} & q_{1} & q_{2}\\
+q_{2} & -q_{1} & q_{4} & q_{3}\\
+-q_{1} & -q_{2} & -q_{3} & q_{4}
+\end{array}\right]\left[\begin{array}{c}
+p_{1}\\
+p_{2}\\
+p_{3}\\
+p_{4}
+\end{array}\right]\\
+\bar{q}\otimes\bar{p} & =\left[\begin{array}{cc}
+q_{4}\mathbf{I}_{3\times3}-[\mathbf{q}\times] & \mathbf{q}\\
+-\mathbf{q}^{\mathrm{T}} & q_{4}
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{p}\\
+p_{4}
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+q_{4}\mathbf{p}+p_{4}\mathbf{q}-\mathbf{q}\times\mathbf{p}\\
+q_{4}p_{4}-\mathbf{q}^{\mathrm{T}}\mathbf{p}
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{c}
+p_{4}\mathbf{q}+\mathbf{p}q_{4}-[\mathbf{p}\times]\mathbf{q}\\
+p_{4}q_{4}-\mathbf{p}^{\mathrm{T}}\mathbf{q}
+\end{array}\right]\nonumber \\
+\bar{q}\otimes\bar{p} & =\left[\begin{array}{cc}
+p_{4}\mathbf{I}_{3\times3}+[\mathbf{p}\times] & \mathbf{p}\\
+-\mathbf{p}^{\mathrm{T}} & p_{4}
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{q}\\
+q_{4}
+\end{array}\right]\nonumber \\
+\bar{q}\otimes\bar{p} & =\left[\begin{array}{cccc}
+p_{4} & -p_{3} & p_{2} & p_{1}\\
+p_{3} & p_{4} & -p_{1} & p_{2}\\
+-p_{2} & p_{1} & p_{4} & p_{3}\\
+-p_{1} & -p_{2} & -p_{3} & p_{4}
+\end{array}\right]\left[\begin{array}{c}
+q_{1}\\
+q_{2}\\
+q_{3}\\
+q_{4}
+\end{array}\right]\\
+\bar{q}\otimes\bar{p} & =\mathcal{R}\left(\bar{p}\right)\bar{q}\nonumber 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数也有一个与乘法无关的中性元素，定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}_{I}=\left[\begin{array}{cccc}
+0 & 0 & 0 & 1\end{array}\right]^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}\otimes\bar{q}_{I}=\bar{q}_{I}\otimes\bar{q}=\bar{q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+逆旋转由逆或复共轭四元数表示，表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}^{-1}=\left[\begin{array}{c}
+-\mathbf{q}\\
+q_{4}
+\end{array}\right]=\left[\begin{array}{c}
+-\hat{\mathbf{k}}\sin\left(\theta/2\right)\\
+\cos\left(\theta/2\right)
+\end{array}\right]=\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(-\theta/2\right)\\
+\cos\left(-\theta/2\right)
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}\otimes\bar{q}^{-1}=\bar{q}^{-1}\otimes\bar{q}=\bar{q}_{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\bar{q}\otimes\bar{p}\right)^{-1}=\bar{p}^{-1}\otimes\bar{q}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+有用的标识
+\end_layout
+
+\begin_layout Subsubsection
+四元数乘法矩阵
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{R}$
+\end_inset
+
+的性质
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:四元数乘法矩阵L和R的性质"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{L}=\left[\begin{array}{cc}
+\boldsymbol{\Psi}\left(\bar{q}\right) & \bar{q}\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{R}=\left[\begin{array}{cc}
+\boldsymbol{\Xi}\left(\bar{p}\right) & \bar{p}\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中矩阵
+\begin_inset Formula $\boldsymbol{\Psi}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Xi}$
+\end_inset
+
+定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Psi}=\left[\begin{array}{c}
+q_{4}\mathbf{I}_{3\times3}-\left\lfloor \mathbf{q}\times\right\rfloor \\
+-\mathbf{q}^{\mathrm{T}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Xi}=\left[\begin{array}{c}
+p_{4}\mathbf{I}_{3\times3}+\left\lfloor \mathbf{p}\times\right\rfloor \\
+-\mathbf{p}^{\mathrm{T}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Psi}^{\mathrm{T}}\boldsymbol{\Psi}=\boldsymbol{\Xi}^{\mathrm{T}}\boldsymbol{\Xi}=\mathbf{I}_{3\times3}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\mathcal{L}\left(\bar{q}^{-1}\right) & =\mathcal{L}^{\mathrm{T}}\left(\bar{q}\right)\\
+\mathcal{R}\left(\bar{p}^{-1}\right) & =\mathcal{R}^{\mathrm{T}}\left(\bar{p}\right)\\
+\mathcal{L}^{\mathrm{T}}\left(\bar{q}\right)\mathcal{L}\left(\bar{q}\right) & =\mathcal{L}\left(\bar{q}\right)\mathcal{L}^{\mathrm{T}}\left(\bar{q}\right)=\mathbf{I}_{4\times4}\\
+\mathcal{R}^{\mathrm{T}}\left(\bar{p}\right)\mathcal{R}\left(\bar{p}\right) & =\mathcal{R}\left(\bar{p}\right)\mathcal{R}^{\mathrm{T}}\left(\bar{p}\right)=\mathbf{I}_{4\times4}\\
+\mathcal{L}\left(\bar{q}\right)\mathcal{R}\left(\bar{r}\right) & =\mathcal{R}\left(\bar{r}\right)\mathcal{L}\left(\bar{q}\right)\\
+\mathcal{L}\left(\bar{q}\right)\mathcal{R}^{\mathrm{T}}\left(\bar{r}\right) & =\mathcal{R}^{\mathrm{T}}\left(\bar{r}\right)\mathcal{L}\left(\bar{q}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+连乘
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+ & \bar{p}\otimes\bar{q}\otimes\bar{r}\nonumber \\
+= & \mathcal{L}\left(\bar{p}\right)\mathcal{L}\left(\bar{q}\right)\bar{r}\\
+= & \mathcal{L}\left(\bar{p}\right)\mathcal{R}\left(\bar{r}\right)\bar{q}\\
+= & \mathcal{R}\left(\bar{r}\right)\mathcal{L}\left(\bar{p}\right)\bar{q}\\
+= & \mathcal{R}\left(\bar{r}\right)\mathcal{R}\left(\bar{q}\right)\bar{p}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+标量积
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+ & \bar{p}^{\mathrm{T}}\bar{r}\nonumber \\
+= & \bar{p}^{\mathrm{T}}\mathcal{L}^{\mathrm{T}}\left(\bar{q}\right)\mathcal{L}\left(\bar{q}\right)\bar{r}=(\bar{q}\otimes\bar{p})^{\mathrm{T}}(\bar{q}\otimes\bar{r})\\
+= & \bar{p}^{\mathrm{T}}\mathcal{R}^{\mathrm{T}}\left(\bar{q}\right)\mathcal{R}\left(\bar{q}\right)\bar{r}=(\bar{p}\otimes\bar{q})^{\mathrm{T}}(\bar{r}\otimes\bar{q})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(\bar{p}\otimes\bar{q})^{\mathrm{T}}\bar{r}=\bar{p}^{\mathrm{T}}\mathcal{R}^{\mathrm{T}}\left(\bar{q}\right)\bar{r}=\bar{p}^{\mathrm{T}}(\bar{r}\otimes\bar{q}^{-1})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+ & \bar{p}^{\mathrm{T}}(\bar{q}\otimes\bar{r}\otimes\bar{q}^{-1})\nonumber \\
+= & \bar{p}^{\mathrm{T}}\mathcal{R}^{\mathrm{T}}\left(\bar{q}\right)\mathcal{L}\left(\bar{q}\right)\bar{r}\\
+= & \bar{q}^{\mathrm{T}}\mathcal{L}^{\mathrm{T}}\left(\bar{p}\right)\mathcal{R}\left(\bar{r}\right)\bar{q}\\
+= & \bar{q}^{-\mathrm{T}}\mathcal{R}^{\mathrm{T}}\left(\bar{p}\right)\mathcal{L}\left(\bar{r}\right)\bar{q}^{-1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果两个旋转，
+\begin_inset Formula $\mathbf{C}_{A}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{C}_{B}$
+\end_inset
+
+是相关的，例如
+\begin_inset Formula $\mathbf{C}_{A}\mathbf{C}_{X}=\mathbf{C}_{X}\mathbf{C}_{B}$
+\end_inset
+
+(手眼标定)，那么相关矩阵
+\begin_inset Formula $\mathcal{L}^{\mathrm{T}}(\bar{q}_{A})-\mathcal{R}(\bar{q}_{B})$
+\end_inset
+
+是斜对称的，并且属于秩
+\begin_inset Formula $2$
+\end_inset
+
+。特别的，有
+\begin_inset Formula $\bar{q}_{A_{4}}=\bar{q}_{B_{4}}$
+\end_inset
+
+和
+\begin_inset Formula $\left\Vert \mathbf{q}_{A}\right\Vert =\left\Vert \mathbf{q}_{B}\right\Vert $
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+交叉积斜对称矩阵的性质
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:交叉积斜对称矩阵的性质"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+反交换性
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor =-\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\left\lfloor \mathbf{a}\times\right\rfloor \mathbf{b} & =-\left\lfloor \mathbf{b}\times\right\rfloor \mathbf{a}\\
+\Leftrightarrow\mathbf{a}^{\mathrm{T}}\left\lfloor \mathbf{b}\times\right\rfloor  & =-\mathbf{b}^{\mathrm{T}}\left\lfloor \mathbf{a}\times\right\rfloor 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+加法的分配律
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor \mathbf{a}\times\right\rfloor +\left\lfloor \mathbf{b}\times\right\rfloor =\left\lfloor \mathbf{a}+\mathbf{b}\times\right\rfloor 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+标量乘法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+c\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor =\left\lfloor c\boldsymbol{\omega}\times\right\rfloor 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+平行向量的叉积
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}\times(c\cdot\boldsymbol{\omega})=c\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \boldsymbol{\omega}=-c\cdot(\boldsymbol{\omega}^{\mathrm{T}}\left\lfloor \boldsymbol{\omega}\times\right\rfloor )^{\mathrm{T}}=\mathbf{0}_{3\times1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+拉格朗日公式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left\lfloor \mathbf{a}\times\right\rfloor \left\lfloor \mathbf{b}\times\right\rfloor  & =\mathbf{b}\mathbf{a}^{\mathrm{T}}-(\mathbf{a}^{\mathrm{T}}\mathbf{b})\mathbf{I}_{3\times3}\\
+\Leftrightarrow\mathbf{a}\times(\mathbf{b}\times\mathbf{c}) & =\mathbf{b}(\mathbf{a}^{\mathrm{T}}\mathbf{c})-\mathbf{c}(\mathbf{a}^{\mathrm{T}}\mathbf{b})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor \mathbf{a}\times\right\rfloor \left\lfloor \mathbf{b}\times\right\rfloor +\mathbf{a}\mathbf{b}^{\mathrm{T}}=\left\lfloor \mathbf{b}\times\right\rfloor \left\lfloor \mathbf{a}\times\right\rfloor +\mathbf{b}\mathbf{a}^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor (\mathbf{a}\times\mathbf{b})\times\right\rfloor =\mathbf{b}\mathbf{a}^{\mathrm{T}}-\mathbf{a}\mathbf{b}^{\mathrm{T}}\left(=\left(\mathbf{a}\times\mathbf{b}\right)\times\mathbf{c}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+雅可比恒等式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\lfloor \mathbf{a}\times\right\rfloor \left\lfloor \mathbf{b}\times\right\rfloor \mathbf{c}+\left\lfloor \mathbf{b}\times\right\rfloor \left\lfloor \mathbf{c}\times\right\rfloor \mathbf{a}+\left\lfloor \mathbf{c}\times\right\rfloor \left\lfloor \mathbf{a}\times\right\rfloor \mathbf{b}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+旋转
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left\lfloor \mathbf{C}\mathbf{a}\times\right\rfloor  & =\mathbf{C}\left\lfloor \mathbf{a}\times\right\rfloor \mathbf{C}^{\mathrm{T}}\\
+\mathbf{C}\left(\mathbf{a}\times\mathbf{b}\right) & =(\mathbf{C}\mathbf{a})\times(\mathbf{C}\mathbf{b})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+四元数表示法中向量的叉积
+\end_layout
+
+\begin_layout Standard
+如果我们定义四元数
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{a}=\left[\begin{array}{c}
+\mathbf{a}\\
+0
+\end{array}\right],\bar{b}=\left[\begin{array}{c}
+\mathbf{b}\\
+0
+\end{array}\right],\bar{c}=\left[\begin{array}{c}
+\mathbf{c}\\
+0
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{a}\times\mathbf{b}\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以证明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\bar{c} & =\dfrac{1}{2}\left(\bar{b}\otimes\bar{a}+\bar{a}\otimes\bar{b}^{-1}\right)\\
+ & =\dfrac{1}{2}\left(\left(\mathcal{L}\left(\bar{b}\right)+\mathcal{R}^{\mathrm{T}}\left(\bar{b}\right)\right)\bar{a}\right)\\
+ & =\dfrac{1}{2}\left(\left[\begin{array}{cc}
+-\left\lfloor \mathbf{b}\times\right\rfloor -\left\lfloor \mathbf{b}\times\right\rfloor  & \mathbf{b}-\mathbf{b}\\
+-\mathbf{b}^{\mathrm{T}}+\mathbf{b}^{\mathrm{T}} & 0
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{a}\\
+0
+\end{array}\right]\right)\\
+ & =\dfrac{1}{2}\left[\begin{array}{cc}
+-2\left\lfloor \mathbf{b}\times\right\rfloor  & \mathbf{0}_{3\times1}\\
+\mathbf{0}_{1\times3} & 0
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{a}\\
+0
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+-\mathbf{b}\times\mathbf{a}\\
+0
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{a}\times\mathbf{b}\\
+0
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula $\left\lfloor \boldsymbol{\omega}\times\right\rfloor $
+\end_inset
+
+的幂
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2} & =\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left|\boldsymbol{\omega}\right|^{2}\cdot\mathbf{I}_{3\times3}\label{eq:57}\\
+\nonumber \\
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{3} & =\left(\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left|\boldsymbol{\omega}\right|^{2}\cdot\mathbf{I}_{3\times3}\right)\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}\left\lfloor \boldsymbol{\omega}\times\right\rfloor -\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =\boldsymbol{\omega}(-\left\lfloor \boldsymbol{\omega}\times\right\rfloor \boldsymbol{\omega})^{\mathrm{T}}-\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =-\boldsymbol{\omega}(\boldsymbol{\omega}\times\boldsymbol{\omega})^{\mathrm{T}}-\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =-\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \\
+\nonumber \\
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{4} & =\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{3}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =-\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2}\\
+\nonumber \\
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{5} & =\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{3}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2}\nonumber \\
+ & =-\left|\boldsymbol{\omega}\right|^{2}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \left(\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-|\boldsymbol{\omega}|^{2}\cdot\mathbf{I}_{3\times3}\right)\nonumber \\
+ & =+\left|\boldsymbol{\omega}\right|^{4}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \\
+\nonumber \\
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{6} & =\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{5}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor \nonumber \\
+ & =+\left|\boldsymbol{\omega}\right|^{4}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2}\\
+\nonumber \\
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{7} & =\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{5}\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2}\nonumber \\
+ & =-\left|\boldsymbol{\omega}\right|\cdot\left\lfloor \boldsymbol{\omega}\times\right\rfloor 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如此等等。
+\end_layout
+
+\begin_layout Subsubsection
+矩阵
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+的性质
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:矩阵\\Omega的性质"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+出现在向量和四元数的乘积中，例如用于四元数导数中。它具有以下特性：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right) & =\left[\begin{array}{cccc}
+0 & \omega_{z} & -\omega_{y} & \omega_{x}\\
+-\omega_{z} & 0 & \omega_{x} & \omega_{y}\\
+\omega_{y} & -\omega_{x} & 0 & \omega_{z}\\
+-\omega_{x} & -\omega_{y} & -\omega_{z} & 0
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+-\left\lfloor \boldsymbol{\omega}\times\right\rfloor  & \boldsymbol{\omega}\\
+-\boldsymbol{\omega}^{\mathrm{T}} & 0
+\end{array}\right]\\
+\nonumber \\
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)^{2} & =\left[\begin{array}{cc}
+\left\lfloor \boldsymbol{\omega}\times\right\rfloor ^{2}-\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}} & -\left\lfloor \boldsymbol{\omega}\times\right\rfloor \boldsymbol{\omega}\\
+\boldsymbol{\omega}^{\mathrm{T}}\left\lfloor \boldsymbol{\omega}\times\right\rfloor  & -\boldsymbol{\omega}^{\mathrm{T}}\boldsymbol{\omega}
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+-\left|\boldsymbol{\omega}\right|^{2}\cdot\mathbf{I}_{3\times3} & \boldsymbol{0}_{3\times1}\\
+\boldsymbol{0}_{1\times3} & -\left|\boldsymbol{\omega}\right|^{2}
+\end{array}\right]\nonumber \\
+ & =-\left|\boldsymbol{\omega}\right|^{2}\cdot\mathbf{I}_{4\times4}\\
+\nonumber \\
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)^{3} & =-\left|\boldsymbol{\omega}\right|^{2}\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\\
+\nonumber \\
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)^{4} & =\left|\boldsymbol{\omega}\right|^{4}\cdot\mathbf{I}_{4\times4}\\
+\nonumber \\
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)^{5} & =\left|\boldsymbol{\omega}\right|^{4}\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\\
+\nonumber \\
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)^{6} & =-\left|\boldsymbol{\omega}\right|^{6}\cdot\mathbf{I}_{4\times4}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如此等等。
+\end_layout
+
+\begin_layout Subsubsection
+矩阵
+\begin_inset Formula $\boldsymbol{\Xi}$
+\end_inset
+
+的性质
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:矩阵\\Xi的性质"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\boldsymbol{\Xi}\left(\bar{q}\right)$
+\end_inset
+
+出现在矢量与四元数的乘法中。
+\begin_inset Formula $\boldsymbol{\Xi}\left(\bar{q}\right)$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Omega}(\mathbf{a})$
+\end_inset
+
+之间的关系相当于乘法矩阵
+\begin_inset Formula $\mathcal{L}\left(\bar{q}\right)$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{R}\left(\bar{p}\right)$
+\end_inset
+
+之间的关系(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数乘法"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)。它被定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\boldsymbol{\Xi}\left(\bar{q}\right) & =\left[\begin{array}{ccc}
+q_{4} & -q_{3} & q_{2}\\
+q_{3} & q_{4} & -q_{1}\\
+-q_{2} & q_{1} & q_{4}\\
+-q_{1} & -q_{2} & -q_{3}
+\end{array}\right]=\left[\begin{array}{c}
+q_{4}\mathbf{I}_{3\times3}+\left\lfloor \mathbf{q}\times\right\rfloor \\
+-\mathbf{q}^{\mathrm{T}}
+\end{array}\right]\\
+\boldsymbol{\Xi}^{\mathrm{T}}\left(\bar{q}\right) & =\left[\begin{array}{cccc}
+q_{4} & q_{3} & -q_{2} & -q_{1}\\
+-q_{3} & q_{4} & q_{1} & -q_{2}\\
+q_{2} & -q_{1} & q_{4} & -q_{3}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以看出
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Xi}^{\mathrm{T}}\left(\bar{q}\right)\boldsymbol{\Xi}\left(\bar{q}\right) & =\mathbf{I}_{3\times3}\\
+\boldsymbol{\Xi}\left(\bar{q}\right)\boldsymbol{\Xi}^{\mathrm{T}}\left(\bar{q}\right) & =\mathbf{I}_{4\times4}-\bar{q}\bar{q}^{\mathrm{T}}\\
+\boldsymbol{\Xi}^{\mathrm{T}}\left(\bar{q}\right)\bar{q} & =\boldsymbol{0}_{3\times1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{\Xi}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+之间的关系由[3，公式(60)给出]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Omega}\left(\mathbf{a}\right)\bar{q}=\boldsymbol{\Xi}\left(\bar{q}\right)\mathbf{a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数与旋转矩阵的关系
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:四元数与旋转矩阵的关系"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定一个向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+，我们将相应的四元数定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{p}=\left[\begin{array}{c}
+\mathbf{p}\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们将使用以下两种不同坐标系中表示的向量之间的关系
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{L}\mathbf{p}={}_{G}^{L}\mathbf{C}\left(\bar{q}\right){}^{G}\mathbf{p}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+等式中
+\begin_inset Formula $\bar{q}={}_{G}^{L}\bar{q}$
+\end_inset
+
+和
+\begin_inset Formula $_{G}^{L}\mathbf{C}\left(\bar{q}\right)$
+\end_inset
+
+是表示(全局)坐标系
+\begin_inset Formula $\{G\}$
+\end_inset
+
+相对于(局部)坐标系
+\begin_inset Formula $\{L\}$
+\end_inset
+
+的(
+\begin_inset Formula $3\times3$
+\end_inset
+
+)旋转矩阵。
+\end_layout
+
+\begin_layout Standard
+矢量也可以通过旋转四元数和逆四元数分别对其四元数进行前乘和后乘，从一个坐标系转换为另一个坐标系。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+^{L}\bar{p} & =_{G}^{L}\bar{q}\otimes{}^{G}\bar{p}\otimes{}_{G}^{L}\bar{q}^{-1}\\
+ & =\left[\begin{array}{cc}
+q_{4}\mathbf{I}_{3\times3}-\left\lfloor \mathbf{q}\times\right\rfloor  & \mathbf{q}\\
+-\mathbf{q}^{\mathrm{T}} & q_{4}
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{p}\\
+0
+\end{array}\right]\otimes{}_{L}^{G}\bar{q}^{-1}\nonumber \\
+ & =\left[\begin{array}{c}
+q_{4}\mathbf{p}-\mathbf{q}\times\mathbf{p}\\
+-\mathbf{q}^{\mathrm{T}}\mathbf{p}
+\end{array}\right]\otimes\left[\begin{array}{c}
+-\mathbf{q}\\
+q_{4}
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{c}
+q_{4}^{2}\mathbf{p}-q_{4}\mathbf{q}\times\mathbf{p}+\mathbf{q}\mathbf{q}^{\mathrm{T}}\mathbf{p}+q_{4}\mathbf{q}\times\mathbf{p}-\left(\mathbf{q}\times\mathbf{p}\right)\times\mathbf{q}\\
++q_{4}\mathbf{q}^{\mathrm{T}}\mathbf{p}-q_{4}\mathbf{q}^{\mathrm{T}}\mathbf{p}-\mathbf{q}^{\mathrm{T}}\left(\mathbf{q}\times\mathbf{p}\right)
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{c}
+q_{4}^{2}\mathbf{p}-2q_{4}\mathbf{q}\times\mathbf{p}+\mathbf{q}\mathbf{q}^{\mathrm{T}}\mathbf{p}-\left(\left(1-q_{4}^{2}\mathbf{I}_{3\times3}\right)-\mathbf{q}\mathbf{q}^{\mathrm{T}}\mathbf{p}\right)\\
+-\mathbf{q}^{\mathrm{T}}(\mathbf{q}\times\mathbf{p})
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{c}
+\left(2q_{4}^{2}-1\right)\mathbf{I}_{3\times3}-2q_{4}\left\lfloor \mathbf{q}\times\right\rfloor +2\mathbf{q}\mathbf{q}^{\mathrm{T}}\\
+0
+\end{array}\right]\left[\begin{array}{c}
+^{G}\mathbf{p}\\
+0
+\end{array}\right]\nonumber 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就给出了四元数与其对应的旋转矩阵之间的关系。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right)=\left(2q_{4}^{2}-1\right)\mathbf{I}_{3\times3}-2q_{4}\left\lfloor \mathbf{q}\times\right\rfloor +2\mathbf{q}\mathbf{q}^{\mathrm{T}}\label{eq:78}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也可以写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right)=\boldsymbol{\Xi}^{\mathrm{T}}\left(\bar{q}\right)\boldsymbol{\Psi}\left(\bar{q}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数乘法矩阵L和R的性质"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中的
+\begin_inset Formula $\boldsymbol{\Xi}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Psi}$
+\end_inset
+
+的定义。
+\end_layout
+
+\begin_layout Standard
+对于四元数的三重积，尽管没有明显的物理解释，也可以得出类似的形式。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+ & \bar{q}\otimes\bar{p}\otimes\bar{q}^{-1}\\
+= & \mathcal{L}\left(\bar{q}\right)\mathcal{R}^{\mathrm{T}}\left(\bar{q}\right)\bar{p}\\
+= & \left[\begin{array}{cc}
+\mathbf{C}\left(\bar{q}\right) & \mathbf{0}\\
+\mathbf{0} & 1
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{p}\\
+p_{4}
+\end{array}\right]\\
+= & \left[\begin{array}{c}
+\mathbf{C}\left(\bar{q}\right)\mathbf{p}\\
+p_{4}
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在只有很小的旋转角度
+\begin_inset Formula $\delta\bar{q}$
+\end_inset
+
+的情况下，我们可以使用小角度近似来简化上述表达式。我们可以把描述小旋转的四元数写成
+\begin_inset Formula 
+\begin{align}
+\delta\bar{q} & =\left[\begin{array}{c}
+\delta\mathbf{q}\\
+\delta q_{4}
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(\delta\theta/2\right)\\
+\cos\left(\delta\theta/2\right)
+\end{array}\right]\\
+ & \approx\left[\begin{array}{c}
+\dfrac{1}{2}\delta\boldsymbol{\theta}\\
+1
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+导致相应旋转矩阵的以下表达式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\delta\bar{q}\right)\approx\mathbf{I}_{3\times3}-\left\lfloor \delta\boldsymbol{\theta}\times\right\rfloor 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的结果也可以通过重写欧拉公式得到，欧拉公式涉及旋转矩阵和角-轴表示[2]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\mathbf{C} & =\cos\left(\theta\right)\cdot\mathbf{I}_{3\times3}-\sin\left(\theta\right)\left\lfloor \hat{\mathbf{k}}\times\right\rfloor +\left(1-\cos\left(\theta\right)\right)\hat{\mathbf{k}}\hat{\mathbf{k}}^{\mathrm{T}}\\
+ & =\left(2\cos^{2}\left(\theta/2\right)-1\right)\cdot\mathbf{I}_{3\times3}-2\cos\left(\theta/2\right)\sin\left(\theta/2\right)\left\lfloor \hat{\mathbf{k}}\times\right\rfloor +2\sin^{2}\left(\theta/2\right)\hat{\mathbf{k}}\hat{\mathbf{k}}^{\mathrm{T}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)替换适当的四元数分量，很容易得到公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。后者也可以用四元数分量表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right) & =\left[\begin{array}{ccc}
+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}+q_{4}^{2} & 2(q_{1}q_{2}+q_{3}q_{4}) & 2(q_{1}q_{3}-q_{2}q_{4})\\
+2(q_{1}q_{2}-q_{3}q_{4}) & -q_{1}^{2}+q_{2}^{2}-q_{3}^{2}+q_{4}^{2} & 2(q_{2}q_{3}+q_{1}q_{4})\\
+2(q_{1}q_{3}+q_{2}q_{4}) & 2(q_{2}q_{3}-q_{1}q_{4}) & -q_{1}^{2}-q_{2}^{2}+q_{3}^{2}+q_{4}^{2}
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+2q_{1}^{2}+2q_{4}^{2}-1 & 2(q_{1}q_{2}+q_{3}q_{4}) & 2(q_{1}q_{3}-q_{2}q_{4})\\
+2(q_{1}q_{2}-q_{3}q_{4}) & 2q_{2}^{2}+2q_{4}^{2}-1 & 2(q_{2}q_{3}+q_{1}q_{4})\\
+2(q_{1}q_{3}+q_{2}q_{4}) & 2(q_{2}q_{3}-q_{1}q_{4}) & 2q_{3}^{2}+2q_{4}^{2}-1
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+1-2q_{2}^{2}-2q_{3}^{2} & 2(q_{1}q_{2}+q_{3}q_{4}) & 2(q_{1}q_{3}-q_{2}q_{4})\\
+2(q_{1}q_{2}-q_{3}q_{4}) & 1-2q_{1}^{2}-2q_{3}^{2} & 2(q_{2}q_{3}+q_{1}q_{4})\\
+2(q_{1}q_{3}+q_{2}q_{4}) & 2(q_{2}q_{3}-q_{1}q_{4}) & 1-2q_{1}^{2}-2q_{2}^{2}
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的另一种替代形式出现在利用
+\begin_inset Formula $\mathbf{q}\mathbf{q}^{\mathrm{T}}$
+\end_inset
+
+与
+\begin_inset Formula $\left\lfloor \mathbf{q}\times\right\rfloor ^{2}$
+\end_inset
+
+之间的关系之后(参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right)=\mathbf{I}_{3\times3}-2q_{4}\left\lfloor \mathbf{q}\times\right\rfloor +2\left\lfloor \mathbf{q}\times\right\rfloor ^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，由于四元数乘法选择的惯例(参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，两个旋转矩阵的乘积将对应于两个四元数按相同顺序的乘积[2, 1]。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{L_{2}}^{L_{1}}\mathbf{C}\left(_{L_{2}}^{L_{1}}\bar{q}\right)\cdot{}_{G}^{L_{2}}\mathbf{C}\left(_{G}^{L_{2}}\bar{q}\right)={}_{G}^{L_{1}}\mathbf{C}\left(_{L_{2}}^{L_{1}}\bar{q}\otimes{}_{G}^{L_{2}}\bar{q}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，我们可以解释
+\begin_inset Formula $_{L_{2}}^{L_{1}}\bar{q}=\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(\theta/2\right)\\
+\cos\left(\theta/2\right)
+\end{array}\right]$
+\end_inset
+
+为描述坐标系帧(frame)
+\begin_inset Formula $\{L_{2}\}$
+\end_inset
+
+以坐标系帧(frame)
+\begin_inset Formula $\{L_{1}\}$
+\end_inset
+
+上的
+\begin_inset Formula $\hat{\mathbf{k}}$
+\end_inset
+
+为轴，围绕
+\begin_inset Formula $\{L_{1}\}$
+\end_inset
+
+旋转(参见图1)的四元数。这也可以表示为矩阵指数
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right)=\exp\left(-\left\lfloor \hat{\mathbf{k}}\times\right\rfloor \theta\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+反问题是确定
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+作为
+\begin_inset Formula $\mathbf{C}=\left(\begin{array}{ccc}
+c_{11} & c_{12} & c_{13}\\
+c_{21} & c_{22} & c_{23}\\
+c_{31} & c_{32} & c_{33}
+\end{array}\right)$
+\end_inset
+
+的函数。 以下解决方案取自[2]：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+T & =\mathrm{trace}(\mathbf{C})=c_{11}+c_{22}+c_{33}\\
+ & =-\left(q_{1}^{2}+q_{2}^{2}+q_{3}^{2}-3q_{4}^{2}\right)=-1+4q_{4}^{2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q & =\left[\begin{array}{c}
+\sqrt{1+2c_{11}-T}/2\\
+(c_{12}+c_{21})/(4q_{1})\\
+(c_{13}+c_{31})/(4q_{1})\\
+(c_{23}-c_{32})/(4q_{1})
+\end{array}\right]=\left[\begin{array}{c}
+(c_{12}+c_{21})/(4q_{2})\\
+\sqrt{1+2c_{22}-T}/2\\
+(c_{23}+c_{32})/(4q_{2})\\
+(c_{31}-c_{13})/(4q_{2})
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+(c_{13}+c_{31})/(4q_{3})\\
+(c_{23}+c_{32})/(4q_{3})\\
+\sqrt{1+2c_{33}-T}/2\\
+(c_{12}-c_{21})/(4q_{3})
+\end{array}\right]=\left[\begin{array}{c}
+(c_{23}-c_{32})/(4q_{4})\\
+(c_{31}-c_{13})/(4q_{4})\\
+(c_{12}-c_{21})/(4q_{4})\\
+\sqrt{1+T}/2
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当关键元素为零时，这四个解中的每一个都有可能是奇异的，但至少有一个不会是奇异的(否则
+\begin_inset Formula $q$
+\end_inset
+
+就不能有单位范数)[1]
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+进一步指出，
+\begin_inset Formula $T＝-1＋4\cos^{2}\left(\theta/2\right)＝1＋2\cos\theta$
+\end_inset
+
+，因此
+\begin_inset Formula $T_{min}＝-1$
+\end_inset
+
+。只有
+\begin_inset Formula $q_{4}=\sqrt{1+T}/2$
+\end_inset
+
+为零的唯一情况下是
+\begin_inset Formula $T=−1$
+\end_inset
+
+。由于
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+的正交性，对角线元素被限定为
+\begin_inset Formula $−1\leq c_{ii}\leq1$
+\end_inset
+
+。对于
+\begin_inset Formula $q_{4}$
+\end_inset
+
+和所有其他关键元素为零，我们需要
+\begin_inset Formula $c_{ii}=-1$
+\end_inset
+
+，但这与
+\begin_inset Formula $T=-1$
+\end_inset
+
+矛盾。因此，至少一个关键元素将是非零的。
+\end_layout
+
+\end_inset
+
+。为了获得最大的数值精度，应使用具有最大轴元素的形式。
+\begin_inset Formula $\left(\left|q_{1}\right|,\left|q_{2}\right|,\left|q_{3}\right|,\left|q_{4}\right|\right)$
+\end_inset
+
+的最大值对应于
+\begin_inset Formula $\left(c_{11},c_{22},c_{33},T\right)$
+\end_inset
+
+的最大值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 三维姿态估计的间接卡尔曼滤波-Figure1.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+四元数和旋转矩阵之间的关系。注意，所选择的四元数约定导致“左手规则”类型的旋转矩阵。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数时间导数
+\end_layout
+
+\begin_layout Standard
+当局部坐标系帧(frame)
+\begin_inset Formula $\{L\}$
+\end_inset
+
+相对于全局参考系帧(frame)
+\begin_inset Formula $\{G\}$
+\end_inset
+
+移动时，我们可以计算变化率或描述其关系为相应四元数的导数。我们通过计算差商的极限来做到这一点。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L(t)}\dot{\bar{q}}\left(t\right)=\lim_{\Delta t\to0}\dfrac{1}{\Delta t}\left(_{G}^{L(t+\Delta t)}\bar{q}-{}_{G}^{L(t)}\bar{q}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数
+\begin_inset Formula $_{G}^{L(t+\Delta t)}\bar{q}$
+\end_inset
+
+可以表示为两个四元数的乘积。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L(t+\Delta t)}\bar{q}={}_{L(t)}^{L(t+\Delta t)}\bar{q}\otimes{}_{G}^{L(t)}\bar{q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{L(t)}^{L(t+\Delta t)}\bar{q}=\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(\theta/2\right)\\
+\cos\left(\theta/2\right)
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，四元数
+\begin_inset Formula $_{L(t)}^{L(t+\Delta t)}\bar{q}$
+\end_inset
+
+表示参考坐标系
+\begin_inset Formula $\{L(t)\}$
+\end_inset
+
+以旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+和旋转轴
+\begin_inset Formula $\hat{\mathbf{k}}$
+\end_inset
+
+旋转至参考坐标系
+\begin_inset Formula $\{L(t+\Delta t)\}$
+\end_inset
+
+(后者以
+\begin_inset Formula $\{L(t+\Delta t)\}$
+\end_inset
+
+表示)。
+\end_layout
+
+\begin_layout Standard
+在极限情况下，当
+\begin_inset Formula $\Delta t\to0$
+\end_inset
+
+时，旋转角会变得非常小，因此我们可以通过一阶泰勒展开来近似
+\begin_inset Formula $\sin$
+\end_inset
+
+和
+\begin_inset Formula $\cos$
+\end_inset
+
+函数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{L(t)}^{L(t+\Delta t)}\bar{q}=\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(\theta/2\right)\\
+\cos\left(\theta/2\right)
+\end{array}\right]\approx\left[\begin{array}{c}
+\hat{\mathbf{k}}\cdot\left(\theta/2\right)\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+\dfrac{1}{2}\cdot\delta\boldsymbol{\theta}\\
+1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矢量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+具有旋转轴的方向和旋转角度的大小。将该矢量除以
+\begin_inset Formula $\Delta t$
+\end_inset
+
+将在极限处产生旋转速度。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}=\lim_{\Delta t\to0}\dfrac{\delta\boldsymbol{\theta}}{\Delta t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在准备将四元数导数
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L(t)}\dot{\bar{q}}(t) & =\lim_{\Delta t\to0}\dfrac{1}{\Delta t}\left(_{G}^{L(t+\Delta t)}\bar{q}-{}_{G}^{L(t)}\bar{q}\right)\nonumber \\
+ & =\lim_{\Delta t\to0}\dfrac{1}{\Delta t}\left(_{L(t)}^{L(t+\Delta t)}\bar{q}\otimes{}_{G}^{L(t)}\bar{q}-\bar{q}_{I}\otimes{}_{G}^{L(t)}\bar{q}\right)\nonumber \\
+ & \approx\lim_{\Delta t\to0}\dfrac{1}{\Delta t}\left(\left[\begin{array}{c}
+\dfrac{1}{2}\cdot\delta\boldsymbol{\theta}\\
+1
+\end{array}\right]-\left[\begin{array}{c}
+\boldsymbol{0}\\
+1
+\end{array}\right]\right)\otimes{}_{G}^{L(t)}\bar{q}\nonumber \\
+ & =\dfrac{1}{2}\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+0
+\end{array}\right]\otimes{}_{G}^{L(t)}\bar{q}\label{eq:105}\\
+ & =\dfrac{1}{2}\left[\begin{array}{cc}
+-\left\lfloor \boldsymbol{\omega}\times\right\rfloor  & \boldsymbol{\omega}\\
+-\boldsymbol{\omega}^{\mathrm{T}} & 0
+\end{array}\right]{}_{G}^{L(t)}\bar{q}\nonumber \\
+ & =\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right){}_{G}^{L(t)}\bar{q}\label{eq:106}\\
+ & =\dfrac{1}{2}\boldsymbol{\Xi}({}_{G}^{L(t)}\bar{q})\boldsymbol{\omega}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)=\left[\begin{array}{cccc}
+0 & \omega_{z} & -\omega_{y} & \omega_{x}\\
+-\omega_{z} & 0 & \omega_{x} & \omega_{y}\\
+\omega_{y} & -\omega_{x} & 0 & \omega_{z}\\
+-\omega_{x} & -\omega_{y} & -\omega_{z} & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+和(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:矩阵\\Omega的性质"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:矩阵\\Xi的性质"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Xi}\left(_{G}^{L(t)}\bar{q}\right)=\left[\begin{array}{ccc}
+q_{4} & -q_{3} & q_{2}\\
+q_{3} & q_{4} & -q_{1}\\
+-q_{2} & q_{1} & q_{4}\\
+-q_{1} & -q_{2} & -q_{3}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，
+\begin_inset Formula $\boldsymbol{\omega}={}^{L(t)}\boldsymbol{\omega}$
+\end_inset
+
+，即旋转速率用局部坐标系表示，而不是用惯性坐标系[1, p.482]。
+\end_layout
+
+\begin_layout Subsection
+四元数积分
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:四元数积分"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+积分四元数等于解一阶微分方程(参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:106"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\dot{\bar{q}}(t)=\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right){}_{G}^{L}\bar{q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，我们将时间索引从前导上标中删除，并通过写
+\begin_inset Formula $\bar{q}=\bar{q}(t)$
+\end_inset
+
+来表示四元数的时间可变性，以提高符号的清晰度。应该清楚的是，前导上标
+\begin_inset Formula $^{L}$
+\end_inset
+
+指的是时间瞬间
+\begin_inset Formula $t$
+\end_inset
+
+的局部坐标系
+\begin_inset Formula $\{L\}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+这个微分方程的解具有一般形式[4, p.40]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\bar{q}(t)=\boldsymbol{\Theta}(t,t_{k}){}_{G}^{L}\bar{q}(t_{k})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Theta(t,t_{k})$
+\end_inset
+
+的控制方程是通过微分和代入得到的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\dot{\bar{q}}(t) & =\dot{\boldsymbol{\Theta}}(t,t_{k}){}_{G}^{L}\bar{q}(t_{k})\\
+\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right){}_{G}^{L}\bar{q}(t) & =\dot{\boldsymbol{\Theta}}(t,t_{k}){}_{G}^{L}\bar{q}(t_{k})\\
+\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\boldsymbol{\Theta}(t,t_{k}){}_{G}^{L}\bar{q}(t_{k}) & =\dot{\boldsymbol{\Theta}}(t,t_{k}){}_{G}^{L}\bar{q}(t_{k})\\
+\Leftrightarrow\dot{\boldsymbol{\Theta}}(t,t_{k}) & =\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t)\right)\boldsymbol{\Theta}(t,t_{k})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并具有初始条件
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}(t_{k},t_{k})=\mathbf{I}_{4\times4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在某些假设下，我们可以得到这个方程的闭式解。最简单的假设是
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+在积分周期
+\begin_inset Formula $\Delta t=t_{k+1}-t_{k}$
+\end_inset
+
+内是常数，从而使微分方程线性时不变。这个假设导致了零阶四元数积分器。下一个更精确的近似是假设
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+在
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\Delta t$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+期间的线性演化。我们将把得到的公式称为一阶四元数积分器。
+\end_layout
+
+\begin_layout Subsubsection
+零阶四元数积分器
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:零阶四元数积分器"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\boldsymbol{\omega}(t)=\boldsymbol{\omega}$
+\end_inset
+
+在积分期间
+\begin_inset Formula $\Delta t=t_{k+1}-t_{k}$
+\end_inset
+
+为常数，则矩阵
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+不依赖于时间，并且
+\begin_inset Formula $\boldsymbol{\Theta}(t_{k+1},t_{k})$
+\end_inset
+
+可以表示为[4, 式(2-58a)]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}(t_{k+1},t_{k})=\boldsymbol{\Theta}(\Delta t)=\exp\left(\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\Delta t\right)\label{eq:117}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以用它的泰勒级数展开重写这个矩阵指数
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}(\Delta t)=\mathbf{I}_{4\times4}+\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\Delta t+\dfrac{1}{2!}\left(\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\Delta t\right)^{2}+\dfrac{1}{3!}\left(\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\Delta t\right)^{3}+...
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:矩阵\\Omega的性质"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节所述矩阵的性质，将其转换为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Theta}(\Delta t) & =\mathbf{I}_{4\times4}+\dfrac{1}{2}\Delta t\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)-\dfrac{1}{2!}\left(\dfrac{1}{2}\Delta t\right)^{2}\left|\boldsymbol{\omega}\right|^{2}\cdot\mathbf{I}_{4\times4}\nonumber \\
+ & -\dfrac{1}{3!}\left(\dfrac{1}{2}\Delta t\right)^{3}\left|\boldsymbol{\omega}\right|^{2}\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)+\dfrac{1}{4!}\left(\dfrac{1}{2}\Delta t\right)^{4}\left|\boldsymbol{\omega}\right|^{4}\cdot\mathbf{I}_{4\times4}\nonumber \\
+ & +\dfrac{1}{5!}\left(\dfrac{1}{2}\Delta t\right)^{5}\left|\boldsymbol{\omega}\right|^{4}\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)-\dfrac{1}{6!}\left(\dfrac{1}{2}\Delta t\right)^{6}\left|\boldsymbol{\omega}\right|^{6}\cdot\mathbf{I}_{4\times4}-...
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以
+\begin_inset Formula $\left|\boldsymbol{\omega}\right|$
+\end_inset
+
+的产出重新排序和扩展
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Theta}(\Delta t) & =\left(1-\dfrac{1}{2!}\left(\dfrac{1}{2}\Delta t\right)^{2}\left|\boldsymbol{\omega}\right|^{2}+\dfrac{1}{4!}\left(\dfrac{1}{2}\Delta t\right)^{4}\left|\boldsymbol{\omega}\right|^{4}-...\right)\mathbf{I}_{4\times4}\nonumber \\
+ & +\dfrac{1}{\left|\boldsymbol{\omega}\right|}\left(\dfrac{1}{2}\left|\boldsymbol{\omega}\right|\Delta t-\dfrac{1}{3!}\left(\dfrac{1}{2}\left|\boldsymbol{\omega}\right|\Delta t\right)^{3}+\dfrac{1}{5!}\left(\dfrac{1}{2}\left|\boldsymbol{\omega}\right|\Delta t\right)^{5}-...\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过仔细检查，我们认识到这是
+\begin_inset Formula $\sin$
+\end_inset
+
+和
+\begin_inset Formula $\cos$
+\end_inset
+
+函数的泰勒级数展开式。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}(\Delta t)=\cos\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\cdot\mathbf{I}_{4\times4}+\dfrac{1}{\left|\boldsymbol{\omega}\right|}\sin\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们最后可以把零阶四元数积分器写成
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\bar{q}(t_{k+1}) & =\boldsymbol{\Theta}(t_{k+1},t_{k}){}_{G}^{L}\bar{q}(t_{k})\nonumber \\
+ & =\left(\cos\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\cdot\mathbf{I}_{4\times4}+\dfrac{1}{\left|\boldsymbol{\omega}\right|}\sin\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\cdot\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\right){}_{G}^{L}\bar{q}(t_{k})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+仔细观察发现
+\begin_inset Formula $\boldsymbol{\Theta}(t_{k+1},t_{k})$
+\end_inset
+
+只不过是与特定四元数相关联的乘法矩阵，因此我们可以将零阶四元数积分改写为四元数积。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\bar{q}(t_{k+1})=\left[\begin{array}{c}
+\dfrac{\boldsymbol{\omega}}{\left|\boldsymbol{\omega}\right|}\sin\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\\
+\cos\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)
+\end{array}\right]\otimes{}_{G}^{L}\bar{q}(t_{k})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个四元数积对应于通过围绕由原始坐标系定义的旋转轴
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，旋转
+\begin_inset Formula $\left|\boldsymbol{\omega}\right|\Delta t$
+\end_inset
+
+角度，这正好对应于常数
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的假设。
+\end_layout
+
+\begin_layout Standard
+由于分母中出现
+\begin_inset Formula $\left|\boldsymbol{\omega}\right|$
+\end_inset
+
+，上述表达式将导致极小
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+时的数值不稳定。因此，当
+\begin_inset Formula $\left|\boldsymbol{\omega}\right|$
+\end_inset
+
+趋于零时，我们将使用L’Hôpital的乘法规则来计算上述方程的极限。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\lim_{\left|\boldsymbol{\omega}\right|\to0}\boldsymbol{\Theta}(\Delta t) & =\lim_{\left|\boldsymbol{\omega}\right|\to0}\left(\cos\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\mathbf{I}_{4\times4}+\dfrac{1}{\left|\boldsymbol{\omega}\right|}\sin\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\right)\nonumber \\
+ & =\mathbf{I}_{4\times4}+\lim_{\left|\boldsymbol{\omega}\right|\to0}\left(\dfrac{1}{\left|\boldsymbol{\omega}\right|}\sin\left(\dfrac{\left|\boldsymbol{\omega}\right|}{2}\Delta t\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)\right)\nonumber \\
+ & =\mathbf{I}_{4\times4}+\dfrac{\Delta t}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+一阶四元数积分器
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:一阶四元数积分器"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一阶四元数积分器假设在积分区间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+期间
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的线性演化。在这种情况下，我们必须从等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:117"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中修改矩阵
+\begin_inset Formula $\boldsymbol{\Theta}(t_{k+1},t_{k})$
+\end_inset
+
+。为此，我们引入平均旋转速率
+\begin_inset Formula $\bar{\boldsymbol{\omega}}$
+\end_inset
+
+，定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{\omega}}=\dfrac{\boldsymbol{\omega}(t_{k+1})+\boldsymbol{\omega}(t_{k})}{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们还可以定义旋转率
+\begin_inset Formula $\dot{\boldsymbol{\omega}}$
+\end_inset
+
+和相关矩阵
+\begin_inset Formula $\boldsymbol{\Omega}(\dot{\boldsymbol{\omega}})$
+\end_inset
+
+的导数，在线性情况下，它是常数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Omega}(\dot{\boldsymbol{\omega}})=\boldsymbol{\Omega}\left(\dfrac{\boldsymbol{\omega}(t_{k+1})-\boldsymbol{\omega}(t_{k})}{\Delta t}\right)\label{eq:126}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意
+\begin_inset Formula $\boldsymbol{\Omega}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+的高阶导数是零。
+\end_layout
+
+\begin_layout Standard
+根据Wertz[5, p.565]的观点，为了计算时间瞬间
+\begin_inset Formula $t_{k+1}$
+\end_inset
+
+的四元数，我们将其泰勒级数展开式写在时间瞬间
+\begin_inset Formula $t_{k}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\bar{q}(t_{k+1})={}_{G}^{L}\bar{q}(t_{k})+{}_{G}^{L}\dot{\bar{q}}(t_{k})\Delta t+{}_{G}^{L}\ddot{\bar{q}}(t_{k})\Delta t^{2}+...
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+反复应用四元数时间导数的定义(等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:106"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\bar{q}(t_{k+1}) & =\left(\mathbf{I}_{4\times4}+\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\Delta t+\dfrac{1}{2!}\left(\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\Delta t\right)^{2}+\dfrac{1}{3!}\left(\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\Delta t\right)^{3}+...\right){}_{G}^{L}\bar{q}(t_{k})\nonumber \\
+ & +\dfrac{1}{4}\Delta t^{2}\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right){}_{G}^{L}\bar{q}(t_{k})+\left(\dfrac{1}{12}\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)+\dfrac{1}{24}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right)\right)\Delta t^{3}{}_{G}^{L}\bar{q}(t_{k})+...\label{eq:128}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们将平均值
+\begin_inset Formula $\boldsymbol{\Omega}\left(\bar{\boldsymbol{\omega}}\right)$
+\end_inset
+
+写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Omega}\left(\bar{\boldsymbol{\omega}}\right)=\dfrac{1}{\Delta t}\int_{t_{k}}^{t_{k+1}}\boldsymbol{\Omega}\left(\boldsymbol{\omega}(\tau)\right)\mathrm{d}\tau=\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)+\dfrac{1}{2}\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right)\Delta t
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以将等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:128"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的各项重新排序为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\bar{q}(t_{k+1}) & =\left(\right.\mathbf{I}_{4\times4}+\dfrac{1}{2}\boldsymbol{\Omega}(\bar{\boldsymbol{\omega}})\Delta t+\dfrac{1}{2!}\left(\dfrac{1}{2}\boldsymbol{\Omega}(\bar{\boldsymbol{\omega}})\Delta t\right)^{2}+\dfrac{1}{3!}\left(\dfrac{1}{2}\boldsymbol{\Omega}(\bar{\boldsymbol{\omega}})\Delta t\right)^{3}+...\nonumber \\
+ & +\dfrac{1}{48}\left(\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)-\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}(t_{k})\right)\right)\Delta t^{3}\left.\right){}_{G}^{L}\bar{q}(t_{k})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将第一项识别为矩阵指数的泰勒级数展开式，用其定义
+\begin_inset Formula $\boldsymbol{\Omega}\left(\dot{\boldsymbol{\omega}}\right)$
+\end_inset
+
+(等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:126"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))代替，得到最终公式。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\bar{q}(t_{k+1})=\left(\exp\left(\dfrac{1}{2}\boldsymbol{\Omega}(\bar{\boldsymbol{\omega}})\Delta t\right)+\dfrac{1}{48}\left(\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k+1})\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)-\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k})\right)\boldsymbol{\Omega}\left(\boldsymbol{\omega}(t_{k+1})\right)\right)\Delta t^{2}\right){}_{G}^{L}\bar{q}(t_{k})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+姿态传播
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器由两个阶段组成，用于确定当前姿态的估计值。在第一阶段，滤波器根据最后的估计值和一些本体感知测量值对姿态进行预测。然后在更新阶段对该估计值进行修正，在
+更新阶段考虑了新的绝对方位测量。
+\end_layout
+
+\begin_layout Standard
+预测系统状态的一种方法是将给系统的控制命令输入到系统模型中，从而预测系统的行为。另一种估计位置和方向的方法是使用来自惯性测量单元(IMU)的数据作为动态模型替换
+。IMU提供作用于系统上的平移加速度和旋转速度的测量。在本文中，我们将采用后一种方法。
+\end_layout
+
+\begin_layout Standard
+在讨论状态方程和误差传播之前，我们将描述陀螺的模型，该模型将提供旋转速度的测量。
+\end_layout
+
+\begin_layout Subsection
+陀螺噪声模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:陀螺噪声模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+作为IMU的一部分，三轴陀螺仪提供旋转速度的测量。陀螺会受到不同的误差项的影响，如速率噪声误差和偏差。根据文献[3, 6]，我们使用一个简单的模型，将测量的转动
+率
+\begin_inset Formula $\boldsymbol{\omega}_{m}$
+\end_inset
+
+与实际角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+联系起来，作为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}_{m}=\boldsymbol{\omega}+\mathbf{b}+\mathbf{n_{r}}\label{eq:132}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这个方程中，
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+表示陀螺偏差和
+\begin_inset Formula $\mathbf{n}_{r}$
+\end_inset
+
+表示速率噪声，假设为具有高斯白噪声的特征。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\mathbf{\left[n_{r}\right]}=\mathbf{0}_{3\times1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\mathbf{n_{r}}(t+\tau)\mathbf{n_{r}}^{\mathrm{T}}(t)\right]=\mathbf{N_{r}}\delta(\tau)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+陀螺偏差是非静态的，模拟为随机游动过程。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{b}}=\mathbf{n_{w}}\label{eq:135}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+特征为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+E\left[\mathbf{n_{w}}\right] & =\mathbf{0}_{3\times1}\\
+E\left[\mathbf{n_{w}}(t+\tau)\mathbf{n_{w}}^{\mathrm{T}}(t)\right] & =\mathbf{N_{w}}\delta(\tau)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，偏差是一个随机量，需要与四元数一起估计。
+\end_layout
+
+\begin_layout Standard
+为了简化，我们假设噪声在所有三个空间方向都相等，即
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{N_{r}} & =\sigma_{r_{c}}^{2}\cdot\mathbf{I}_{3\times3}\\
+\mathbf{N_{w}} & =\sigma_{w_{c}}^{2}\cdot\mathbf{I}_{3\times3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下标
+\begin_inset Formula $c$
+\end_inset
+
+表明，这些是连续时间系统的噪声协方差，与后来使用的离散系统的噪声协方差不同。
+\end_layout
+
+\begin_layout Standard
+为了确定协方差[6]的单位，为了便于说明，我们考虑了标量情况，它直接扩展到矢量情况。因此，为了兼容性，
+\begin_inset Formula $n_{r}$
+\end_inset
+
+其单位与
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+相同，因此
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[n_{r}(t+\tau)n_{r}(t)\right]=\left[\sigma_{r_{c}}^{2}\delta(\tau)\right]=\dfrac{\mathrm{rad}^{2}}{\sec^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+是
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\delta(\tau)$
+\end_inset
+
+的单位定义为[4, p.221]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\delta(\tau)\right]=\dfrac{1}{\sec}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left[\sigma_{r_{c}}^{2}\right] & =\dfrac{\mathrm{rad}^{2}}{\sec^{2}}\cdot\sec\\
+ & =\left(\dfrac{\mathrm{rad}}{\sec}\right)^{2}\cdot\dfrac{1}{\dfrac{1}{\sec}}\\
+ & =\left(\dfrac{\mathrm{rad}}{\sec}\right)^{2}\cdot\dfrac{1}{\mathrm{Hz}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+和
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\sigma_{r_{c}}\right]=\left(\dfrac{\mathrm{rad}}{\sec}\right)\cdot\dfrac{1}{\sqrt{\mathrm{Hz}}}=\dfrac{\mathrm{rad}}{\sqrt{\sec}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，我们得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left[\sigma_{w_{c}}^{2}\right] & =\left(\dfrac{\mathrm{rad}}{\sec}/\sec\right)^{2}\cdot\sec\\
+ & =\dfrac{\mathrm{rad}^{2}}{\sec^{3}}\\
+ & =\left(\dfrac{\mathrm{rad}}{\sec}\right)^{2}\cdot\mathrm{Hz}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+和
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\sigma_{w_{c}}\right]=\left(\dfrac{\mathrm{rad}}{\sec}\right)\cdot\sqrt{\mathrm{Hz}}=\dfrac{\mathrm{rad}}{\sqrt{\sec^{3}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在离散情况下，
+\begin_inset Formula $\mathbf{n_{r}}_{d}$
+\end_inset
+
+以及
+\begin_inset Formula $\mathbf{n_{w}}_{d}$
+\end_inset
+
+必须具有与旋转速率相同的单位(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:状态方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中的状态方程)，即
+\begin_inset Formula $\dfrac{\mathrm{rad}}{\sec}$
+\end_inset
+
+。为了保持噪声强度的等效性，在离散化、出产估计时必须考虑采样频率。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\sigma_{r_{d}} & =\dfrac{\sigma_{r_{c}}}{\sqrt{\Delta t}}\\
+\sigma_{w_{d}} & =\sigma_{w_{c}}\cdot\sqrt{\Delta t}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Delta t$
+\end_inset
+
+是采样频率的倒数，或
+\begin_inset Formula $f_{sample}=\dfrac{1}{\Delta t}$
+\end_inset
+
+。离散方差将被用于模拟有噪声的真实数据。
+\end_layout
+
+\begin_layout Standard
+Simon[7, pp.230-233]对连续和离散噪声方差之间的转换作了进一步的解释。为了类比书中的推导，偏差驱动噪声
+\begin_inset Formula $\mathbf{n_{w}}$
+\end_inset
+
+对应于过程噪声，而速率噪声
+\begin_inset Formula $\mathbf{n_{r}}$
+\end_inset
+
+对应于测量噪声。
+\end_layout
+
+\begin_layout Standard
+关于该陀螺噪声模型及其与制造商提供的各种规范之间的关系的详细说明，见[8]附录。
+\end_layout
+
+\begin_layout Subsection
+状态方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:状态方程"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在前面分析的直接结果中，我们定义了由四元数和陀螺偏差组成的七元状态矢量。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}(t)=\left[\begin{array}{c}
+\bar{q}(t)\\
+\mathbf{b}(t)
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用四元数导数的定义(方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:106"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))和误差模型(方程式, (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:132"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:135"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，我们发现下列控制状态的微分方程组
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\dot{\bar{q}}(t) & =\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}_{m}-\mathbf{b}-\mathbf{n_{r}}\right){}_{G}^{L}\bar{q}(t)\\
+\dot{\mathbf{b}} & =\mathbf{n_{w}}\label{eq:154}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据上述预期，得出EKF-framework内状态的预测方程(参见[3, p.422])。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\dot{\hat{\bar{q}}}(t) & =\dfrac{1}{2}\boldsymbol{\Omega}\left(\hat{\boldsymbol{\omega}}\right){}_{G}^{L}\hat{\bar{q}}(t)\label{eq:155}\\
+\dot{\hat{\mathbf{b}}} & =\mathbf{0}_{3\times1}\label{eq:156}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}=\boldsymbol{\omega}_{m}-\hat{\mathbf{b}}\label{eq:157}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于偏差在积分区间内是常数，我们可以使用零阶(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:零阶四元数积分器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)或一阶(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:零阶四元数积分器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)积分器，使用
+\begin_inset Formula $\hat{\boldsymbol{\omega}}$
+\end_inset
+
+而不是
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+来积分四元数。
+\end_layout
+
+\begin_layout Subsection
+误差和协方差表示
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:误差和协方差表示"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常，误差向量及其协方差用状态向量及其估计值的算术差表示。然而，在手头的问题中，由于系统中存在约束，这种表示是有问题的。四元数被强制为单位长度的事实(参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))使得相应的协方差矩阵奇异[3, p.423]，这在数值上难以保持。因此，出于稳定性的原因，我们将使用不同的
+\begin_inset Formula $6$
+\end_inset
+
+维误差向量表示。
+\end_layout
+
+\begin_layout Standard
+我们不使用四元数和四元数估计之间的算术差来定义误差，而是使用误差四元数
+\begin_inset Formula $\delta\hat{q}$
+\end_inset
+
+；估计值和局部参照系的真实方向之间的小旋转。这个误差不是差值，而是定义为乘法。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\bar{q} & =_{\hat{L}}^{L}\delta\bar{q}\otimes{}_{G}^{\hat{L}}\hat{\bar{q}}\label{eq:158}\\
+_{\hat{L}}^{L}\delta\bar{q} & =_{G}^{L}\bar{q}\otimes{}_{G}^{\hat{L}}\hat{\bar{q}}^{-1}\label{eq:159}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于与误差四元数
+\begin_inset Formula $\delta\bar{q}$
+\end_inset
+
+有关的旋转可以假定非常小，因此我们可以使用小角度近似(如第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数与旋转矩阵的关系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节所示)，并定义如下姿态误差角矢量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\delta\bar{q} & =\left[\begin{array}{c}
+\delta\mathbf{q}\\
+\delta q_{4}
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\hat{\mathbf{k}}\sin\left(\delta\theta/2\right)\\
+\cos\left(\delta\theta/2\right)
+\end{array}\right]\\
+ & \approx\left[\begin{array}{c}
+\dfrac{1}{2}\delta\boldsymbol{\theta}\\
+1
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该误差角矢量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的维度为
+\begin_inset Formula $3\times1$
+\end_inset
+
+，将与误差状态矢量中的偏差误差一起使用。偏差误差定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta\mathbf{b}=\mathbf{b}-\hat{\mathbf{b}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在可以将误差向量定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{x}}=\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\Delta\mathbf{b}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下一节中，我们将发展误差向量的连续时间一阶状态方程。
+\end_layout
+
+\begin_layout Subsection
+连续时间误差状态方程
+\end_layout
+
+\begin_layout Standard
+为了推导误差向量的连续时间线性状态方程，我们将从误差四元数的定义开始(式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:158"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\bar{q} & =\delta\bar{q}\otimes\hat{\bar{q}}\qquad\qquad|\dfrac{\mathrm{d}}{\mathrm{d}t}\\
+\dot{\bar{q}} & =\dot{\delta\bar{q}}\otimes\hat{\bar{q}}+\delta\bar{q}\otimes\dot{\hat{\bar{q}}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将定义替换为
+\begin_inset Formula $\dot{\bar{q}}$
+\end_inset
+
+(式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))和
+\begin_inset Formula $\dot{\hat{\bar{q}}}$
+\end_inset
+
+(式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:155"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))可导致
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dfrac{1}{2}\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+0
+\end{array}\right]\otimes\bar{q} & =\dot{\delta\bar{q}}\otimes\hat{\bar{q}}+\delta\bar{q}\otimes\left(\dfrac{1}{2}\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\otimes\hat{\bar{q}}\right)\qquad|-\dfrac{1}{2}\left(\delta\bar{q}\otimes\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\otimes\hat{\bar{q}}\right)\\
+\dot{\delta\bar{q}}\otimes\hat{\bar{q}} & =\dfrac{1}{2}\left(\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+0
+\end{array}\right]\otimes\bar{q}-\delta\bar{q}\otimes\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\otimes\hat{\bar{q}}\right)\qquad|\otimes\hat{\bar{q}}^{-1},\mathrm{eq}.(\ref{eq:159})\\
+\dot{\delta\bar{q}} & =\dfrac{1}{2}\left(\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+0
+\end{array}\right]\otimes\delta\bar{q}-\delta\bar{q}\otimes\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+结合
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的陀螺模型(参见式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:132"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))和
+\begin_inset Formula $\hat{\boldsymbol{\omega}}$
+\end_inset
+
+的定义(参见式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:157"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}=\hat{\boldsymbol{\omega}}-\Delta\mathbf{b}-\mathbf{n_{r}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果将其替换为上述内容，则会导致
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dot{\delta\bar{q}} & =\dfrac{1}{2}\left(\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\otimes\delta\bar{q}-\delta\bar{q}\otimes\left[\begin{array}{c}
+\hat{\boldsymbol{\omega}}\\
+0
+\end{array}\right]\right)-\dfrac{1}{2}\left[\begin{array}{c}
+\Delta\mathbf{b}+\mathbf{n_{r}}\\
+0
+\end{array}\right]\otimes\delta\bar{q}\\
+ & =\dfrac{1}{2}\left(\left[\begin{array}{cc}
+-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & \hat{\boldsymbol{\omega}}\\
+-\hat{\boldsymbol{\omega}}^{\mathrm{T}} & 0
+\end{array}\right]\cdot\delta\bar{q}-\left[\begin{array}{cc}
++\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & \hat{\boldsymbol{\omega}}\\
+-\hat{\boldsymbol{\omega}}^{\mathrm{T}} & 0
+\end{array}\right]\cdot\delta\bar{q}\right)-\dfrac{1}{2}\left[\begin{array}{c}
+\Delta\mathbf{b}+\mathbf{n_{r}}\\
+0
+\end{array}\right]\otimes\delta\bar{q}\\
+ & =\dfrac{1}{2}\left[\begin{array}{cc}
+-2\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & \mathbf{0}_{3\times1}\\
+\mathbf{0}_{3\times1}^{\mathrm{T}} & 0
+\end{array}\right]\cdot\delta\bar{q}-\dfrac{1}{2}\left[\begin{array}{c}
+\Delta\mathbf{b}+\mathbf{n_{r}}\\
+0
+\end{array}\right]\otimes\delta\bar{q}\\
+ & =\dfrac{1}{2}\left[\begin{array}{cc}
+-2\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & \mathbf{0}_{3\times1}\\
+\mathbf{0}_{3\times1}^{\mathrm{T}} & 0
+\end{array}\right]\cdot\delta\bar{q}-\dfrac{1}{2}\left[\begin{array}{cc}
+-\left\lfloor \left(\Delta\mathbf{b}+\mathbf{n_{r}}\right)\times\right\rfloor  & \left(\Delta\mathbf{b}+\mathbf{n_{r}}\right)\\
+-\left(\Delta\mathbf{b}+\mathbf{n_{r}}\right)^{\mathrm{T}} & 0
+\end{array}\right]\cdot\left[\begin{array}{c}
+\delta\mathbf{q}\\
+1
+\end{array}\right]\\
+ & =\dfrac{1}{2}\left[\begin{array}{cc}
+-2\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & \mathbf{0}_{3\times1}\\
+\mathbf{0}_{3\times1}^{\mathrm{T}} & 0
+\end{array}\right]\cdot\delta\bar{q}-\dfrac{1}{2}\left[\begin{array}{c}
+\left(\Delta\mathbf{b}+\mathbf{n_{r}}\right)\\
+0
+\end{array}\right]-O(\left|\Delta\mathbf{b}\right|\left|\delta\mathbf{q}\right|,\left|\mathbf{n_{r}}\right|\left|\delta\mathbf{q}\right|)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+忽略二阶项，我们可以写
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta\bar{q}}=\left[\begin{array}{c}
+\dot{\delta\mathbf{q}}\\
+\dot{\delta q_{4}}
+\end{array}\right]=\left[\begin{array}{c}
+\dfrac{1}{2}\dot{\delta\boldsymbol{\theta}}\\
+\dot{1}
+\end{array}\right]=\left[\begin{array}{c}
+-\hat{\boldsymbol{\omega}}\times\delta\mathbf{q}-\dfrac{1}{2}\left(\Delta\mathbf{b}+\mathbf{n_{r}}\right)\\
+0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+或者最后
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta\boldsymbol{\theta}}=-\hat{\boldsymbol{\omega}}\times\delta\boldsymbol{\theta}-\Delta\mathbf{b}-\mathbf{n_{r}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+偏差误差的控制方程很容易从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:154"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:156"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中计算出来。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\Delta\mathbf{b}}=\dot{\mathbf{b}}-\dot{\hat{\mathbf{b}}}=\mathbf{n_{w}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+结合这些结果，我们可以将误差状态方程写成
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+\dot{\delta\boldsymbol{\theta}}\\
+\dot{\Delta\mathbf{b}}
+\end{array}\right]=\left[\begin{array}{cc}
+-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & -\mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\cdot\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\Delta\mathbf{b}
+\end{array}\right]+\left[\begin{array}{cc}
+-\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\cdot\left[\begin{array}{c}
+\mathbf{n_{r}}\\
+\mathbf{n_{w}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+或
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\tilde{\mathbf{x}}}=\mathbf{F}_{c}\cdot\tilde{\mathbf{x}}+\mathbf{G}_{c}\cdot\mathbf{n}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{F}_{c}=\left[\begin{array}{cc}
+-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & -\mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right],\mathbf{G}_{c}=\left[\begin{array}{cc}
+-\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+是系统矩阵和噪声矩阵，以及
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{x}}=\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\Delta\mathbf{b}
+\end{array}\right],\mathbf{n}=\left[\begin{array}{c}
+\mathbf{n_{r}}\\
+\mathbf{n_{w}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+分别表示误差状态和噪声矢量。
+\end_layout
+
+\begin_layout Standard
+如第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:陀螺噪声模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节所述，我们假设
+\begin_inset Formula $\mathbf{n_{r}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{n_{w}}$
+\end_inset
+
+为白色且独立，因此连续时间系统噪声协方差矩阵由以下方程给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{c}=E\left[\mathbf{n}(t+\tau)\mathbf{n}^{\mathrm{T}}(t)\right]=\left[\begin{array}{cc}
+\mathbf{N_{r}} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{N_{w}}
+\end{array}\right]=\left[\begin{array}{cc}
+\sigma_{r_{c}}^{2}\cdot\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \sigma_{w_{c}}^{2}\cdot\mathbf{I}_{3\times3}
+\end{array}\right]\label{eq:183}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+离散时间误差状态方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:离散时间误差状态方程"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了实现离散时间卡尔曼滤波方程，需要对上述误差传播模型进行离散化。特别是，我们必须找到状态转移矩阵
+\begin_inset Formula $\mathbf{\Phi}$
+\end_inset
+
+和系统噪声协方差
+\begin_inset Formula $\mathbf{Q}_{d}$
+\end_inset
+
+[4, 4.9章] 。
+\end_layout
+
+\begin_layout Subsubsection
+状态转移矩阵
+\begin_inset Formula $\mathbf{\Phi}$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:状态转移矩阵\\Phi"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于连续时间系统矩阵
+\begin_inset Formula $\mathbf{F}_{c}$
+\end_inset
+
+在积分时间步上是常数，我们可以将状态转换矩阵写为[4, 式(2-58a)]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Phi}(t+\Delta t,t) & =\exp\left(\mathbf{F}_{c}\Delta t\right)\\
+ & =\mathbf{I}_{6\times6}+\mathbf{F}_{c}\Delta t+\dfrac{1}{2!}\mathbf{F}_{c}^{2}\Delta t^{2}+...
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{F}_{c}$
+\end_inset
+
+简单的幂计算产生了
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{lcl}
+\mathbf{F}_{c}=\left[\begin{array}{cc}
+-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor  & -\mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right] & , & \mathbf{F}_{c}^{2}=\left[\begin{array}{cc}
+\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2} & \left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor \\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+\mathbf{F}_{c}^{3}=\left[\begin{array}{cc}
+-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{3} & -\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right] & , & \mathbf{F}_{c}^{4}=\left[\begin{array}{cc}
+\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{4} & \left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与Lefferts等人[3]的符号一致，我们发现过渡矩阵具有以下块结构
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Phi}(t+\Delta t,t)=\left[\begin{array}{cc}
+\boldsymbol{\Theta} & \boldsymbol{\Psi}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\boldsymbol{\Theta}$
+\end_inset
+
+可以写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}=\mathbf{I}_{3\times3}-\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor \Delta t+\dfrac{1}{2!}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\Delta t^{2}-\dfrac{1}{3!}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{3}\Delta t^{3}+...
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用斜对称矩阵
+\begin_inset Formula $[\hat{\boldsymbol{\omega}}\times]$
+\end_inset
+
+的性质(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:交叉积斜对称矩阵的性质"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)并重新排序条目，得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Theta} & =\mathbf{I}_{3\times3}+\left(-\Delta t+\dfrac{1}{3!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{3}-...\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\left(\dfrac{1}{2!}\Delta t^{2}-\dfrac{1}{4!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{4}+...\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =\mathbf{I}_{3\times3}-\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|}\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t-\dfrac{1}{3!}\left|\hat{\boldsymbol{\omega}}\right|^{3}\Delta t^{3}+...\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(1-\left(1-\dfrac{1}{2!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{2}+\dfrac{1}{4!}\left|\hat{\boldsymbol{\omega}}\right|^{4}\Delta t^{4}-...\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =\mathbf{I}_{3\times3}-\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|}\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(1-\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+进一步展开
+\begin_inset Formula $\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor $
+\end_inset
+
+得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Theta}=\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\cdot\mathbf{I}_{3\times3}-\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\cdot\left\lfloor \dfrac{\hat{\boldsymbol{\omega}}}{\left|\hat{\boldsymbol{\omega}}\right|}\right\rfloor \times+\left(1-\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\right)\cdot\dfrac{\hat{\boldsymbol{\omega}}}{\left|\hat{\boldsymbol{\omega}}\right|}\dfrac{\hat{\boldsymbol{\omega}}}{\left|\hat{\boldsymbol{\omega}}\right|}^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数与旋转矩阵的关系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节的比较表明，实际上
+\begin_inset Formula $\boldsymbol{\Theta}$
+\end_inset
+
+是旋转矩阵，其中
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为旋转轴，
+\begin_inset Formula $\left|\hat{\boldsymbol{\omega}}\right|\Delta t$
+\end_inset
+
+为相应角度。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $|\hat{\boldsymbol{\omega}}|$
+\end_inset
+
+的小值，上述任何一个表达式都将导致数值不稳定。通过极限和应用L’Hôpital法则，我们得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\boldsymbol{\Theta}=\mathbf{I}_{3\times3}-\Delta t\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\dfrac{\Delta t^{2}}{2}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以类似的方式处理矩阵
+\begin_inset Formula $\boldsymbol{\Psi}$
+\end_inset
+
+，我们发现
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\Psi} & =-\mathbf{I}_{3\times3}\Delta t+\dfrac{1}{2!}\Delta t^{2}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\dfrac{1}{3!}\Delta t^{3}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}+...\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\left(\dfrac{1}{2!}\Delta t^{2}-\dfrac{1}{4!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{4}+...\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\left(-\dfrac{1}{3!}\Delta t^{3}+\dfrac{1}{5!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{5}-...\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(1-\left(1-\dfrac{1}{2!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{2}-\dfrac{1}{4!}\left|\hat{\boldsymbol{\omega}}\right|^{4}\Delta t^{4}+...\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor \nonumber \\
+ & +\left(-\left|\hat{\boldsymbol{\omega}}\right|\Delta t+\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t-\dfrac{1}{3!}\Delta t^{3}+\dfrac{1}{5!}\left|\hat{\boldsymbol{\omega}}\right|^{2}\Delta t^{5}-...\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(1-\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{3}}\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t-\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\right)\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $|\hat{\boldsymbol{\omega}}|$
+\end_inset
+
+的小值，我们可以再次取其极限，应用L’Hôpital法则，得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\boldsymbol{\Psi} & =-\mathbf{I}_{3\times3}\Delta t+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\dfrac{\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\Delta t}{2\left|\hat{\boldsymbol{\omega}}\right|}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\dfrac{\left(1-\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\right)\right)\Delta t}{3\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\dfrac{\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)\Delta t^{2}}{2}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\dfrac{\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\right)\Delta t^{2}}{6\left|\hat{\boldsymbol{\omega}}\right|}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\dfrac{\Delta t^{2}}{2}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\dfrac{\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\right)\Delta t^{3}}{6}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\\
+ & =-\mathbf{I}_{3\times3}\Delta t+\dfrac{\Delta t^{2}}{2}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor -\dfrac{\Delta t^{3}}{6}\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+关于小
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+近似值的一个注记
+\end_layout
+
+\begin_layout Standard
+如果非近似项除以
+\begin_inset Formula $\left|\hat{\boldsymbol{\omega}}\right|^{n}$
+\end_inset
+
+，则使用小角度近似值产生的误差大致为
+\begin_inset Formula $\Delta t^{n+2}\left|\hat{\boldsymbol{\omega}}\right|^{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，在
+\begin_inset Formula $100Hz$
+\end_inset
+
+的采样率下，上述
+\begin_inset Formula $\boldsymbol{\Theta}$
+\end_inset
+
+的误差将为
+\begin_inset Formula $10^{−6}\cdot\left|\hat{\boldsymbol{\omega}}_{\mathrm{thresh}}\right|^{2}$
+\end_inset
+
+的阶，其中
+\begin_inset Formula $\left|\hat{\boldsymbol{\omega}}_{\mathrm{thresh}}\right|$
+\end_inset
+
+表示小
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+近似的阈值。
+\end_layout
+
+\begin_layout Subsubsection
+噪声协方差矩阵
+\begin_inset Formula $\mathbf{Q}_{d}$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:噪声协方差矩阵Q_d"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+离散时间系统中噪声的协方差可根据[4, p.171]计算。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{Q}_{d} & =\int_{t_{k}}^{t_{k+1}}\boldsymbol{\Phi}(t_{k+1},\tau)\mathbf{G}_{c}(\tau)\mathbf{Q}_{c}\mathbf{G}_{c}^{\mathrm{T}}(\tau)\boldsymbol{\Phi}^{\mathrm{T}}(t_{k+1},\tau)\mathrm{d}\tau\\
+ & =\int_{t_{k}}^{t_{k+1}}\left[\begin{array}{cc}
+\boldsymbol{\Theta} & \boldsymbol{\Psi}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+-\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\mathbf{Q}_{c}\left[\begin{array}{cc}
+-\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\boldsymbol{\Theta}^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+\boldsymbol{\Psi}^{\mathrm{T}} & \mathbf{I}_{3\times3}
+\end{array}\right]\mathrm{d}\tau\\
+ & =\int_{t_{k}}^{t_{k+1}}\left[\begin{array}{cc}
+-\boldsymbol{\Theta} & \boldsymbol{\Psi}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\mathbf{Q}_{c}\left[\begin{array}{cc}
+-\boldsymbol{\Theta}^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+\boldsymbol{\Psi}^{\mathrm{T}} & \mathbf{I}_{3\times3}
+\end{array}\right]\mathrm{d}\tau\\
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设噪声为白色且独立(参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:183"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，我们可以进一步扩展到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{Q}_{d} & =\int_{t_{k}}^{t_{k+1}}\left[\begin{array}{cc}
+-\boldsymbol{\Theta} & \boldsymbol{\Psi}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\sigma_{r_{c}}^{2}\cdot\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \sigma_{w_{c}}^{2}\cdot\mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+-\boldsymbol{\Theta}^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+\boldsymbol{\Psi}^{\mathrm{T}} & \mathbf{I}_{3\times3}
+\end{array}\right]\mathrm{d}\tau\\
+ & =\int_{t_{k}}^{t_{k+1}}\left[\begin{array}{cc}
+\sigma_{r}^{2}\cdot\mathbf{I}_{3\times3}+\sigma_{w}^{2}\cdot\boldsymbol{\Psi}\boldsymbol{\Psi}^{\mathrm{T}} & \sigma_{w}^{2}\cdot\boldsymbol{\Psi}\\
+\sigma_{w}^{2}\cdot\boldsymbol{\Psi}^{\mathrm{T}} & \sigma_{w}^{2}\cdot\mathbf{I}_{3\times3}
+\end{array}\right]\mathrm{d}\tau
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一步从事实出发，
+\begin_inset Formula $\boldsymbol{\Theta}$
+\end_inset
+
+是一个旋转矩阵，因此
+\begin_inset Formula $\boldsymbol{\Theta}\boldsymbol{\Theta}^{\mathrm{T}}$
+\end_inset
+
+给出了单位矩阵。
+\end_layout
+
+\begin_layout Standard
+生成的矩阵
+\begin_inset Formula $\mathbf{Q}_{d}$
+\end_inset
+
+具有以下结构
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{d}=\left[\begin{array}{cc}
+\mathbf{Q}_{11} & \mathbf{Q}_{12}\\
+\mathbf{Q}_{12}^{\mathrm{T}} & \mathbf{Q}_{22}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+各元素在相当多的代数替换之后如下
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{Q}_{11} & =\sigma_{r}^{2}\Delta t\cdot\mathbf{I}_{3\times3}+\sigma_{w}^{2}\cdot\left(\mathbf{I}_{3\times3}\dfrac{\Delta t^{3}}{3}+\dfrac{\dfrac{\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)^{3}}{3}+2\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)-2\left|\hat{\boldsymbol{\omega}}\right|\Delta t}{\left|\hat{\boldsymbol{\omega}}\right|^{5}}\cdot\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\right)\\
+\mathbf{Q}_{12} & =-\sigma_{w}^{2}\cdot\left(\mathbf{I}_{3\times3}\dfrac{\Delta t^{2}}{2}-\dfrac{\left|\hat{\boldsymbol{\omega}}\right|\Delta t-\sin\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)}{\left|\hat{\boldsymbol{\omega}}\right|^{3}}\cdot[\hat{\boldsymbol{\omega}}\times]+\dfrac{\dfrac{\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)^{2}}{2}+\cos\left(\left|\hat{\boldsymbol{\omega}}\right|\Delta t\right)-1}{\left|\hat{\boldsymbol{\omega}}\right|^{4}}\cdot\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\right)\\
+\mathbf{Q}_{22} & =\sigma_{w}^{2}\Delta t\cdot\mathbf{I}_{3\times3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与过渡矩阵相似，我们可以通过取极限并应用L’Hôpital法则，得到小
+\begin_inset Formula $\left|\hat{\boldsymbol{\omega}}\right|$
+\end_inset
+
+的形式。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\mathbf{Q}_{11} & =\sigma_{r}^{2}\Delta t\cdot\mathbf{I}_{3\times3}+\sigma_{w}^{2}\left(\mathbf{I}_{3\times3}\dfrac{\Delta t^{3}}{3}+\dfrac{2\Delta t^{5}}{5!}\cdot\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\right)\\
+\lim_{\left|\hat{\boldsymbol{\omega}}\right|\to0}\mathbf{Q}_{12} & =-\sigma_{w}^{2}\cdot\left(\mathbf{I}_{3\times3}\dfrac{\Delta t^{2}}{2}-\dfrac{\Delta t^{3}}{3!}\cdot\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor +\dfrac{\Delta t^{4}}{4!}\cdot\left\lfloor \hat{\boldsymbol{\omega}}\times\right\rfloor ^{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+传播方程
+\end_layout
+
+\begin_layout Standard
+前面定义了四元数的传播(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数积分"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)，以及离散时间状态转换和噪声协方差矩阵(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:离散时间误差状态方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)，我们现在可以编写卡尔曼滤波器传播方程。
+\end_layout
+
+\begin_layout Standard
+假设我们在时间步
+\begin_inset Formula $k$
+\end_inset
+
+，接收到陀螺测量值
+\begin_inset Formula $\boldsymbol{\omega}_{m_{k}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\omega}_{m_{k+1}}$
+\end_inset
+
+，我们得到四元数的估计值
+\begin_inset Formula $\hat{\bar{q}}_{k|k}$
+\end_inset
+
+和偏差
+\begin_inset Formula $\hat{\mathbf{b}}_{k|k}$
+\end_inset
+
+，以及相应的协方差矩阵
+\begin_inset Formula $\mathbf{P}_{k|k}$
+\end_inset
+
+。由此，利用式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:157"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们还得到了
+\begin_inset Formula $\hat{\boldsymbol{\omega}}_{k|k}$
+\end_inset
+
+的估计值。
+\end_layout
+
+\begin_layout Standard
+我们现在进行如下操作：
+\end_layout
+
+\begin_layout Enumerate
+我们使用等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:156"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的离散形式将偏差传播为
+\begin_inset Formula 
+\begin{equation}
+\hat{\mathbf{b}}_{k+1|k}=\hat{\mathbf{b}}_{k|k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+利用测量
+\begin_inset Formula $\boldsymbol{\omega}_{m_{k+1}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathbf{b}}_{k+1|k}$
+\end_inset
+
+，我们根据等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:157"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得出新的旋转速率估计值，如下所示：
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}_{k+1|k}=\boldsymbol{\omega}_{m_{k+1}}-\hat{\mathbf{b}}_{k+1|k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+我们使用一阶积分器(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:一阶四元数积分器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)和
+\begin_inset Formula $\hat{\boldsymbol{\omega}}_{k|k}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{\omega}}_{k+1|k}$
+\end_inset
+
+传播四元数，以获得
+\begin_inset Formula $\hat{\bar{q}}_{k+1|k}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+根据第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:状态转移矩阵\\Phi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:噪声协方差矩阵Q_d"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中的公式，我们计算了状态转换矩阵
+\begin_inset Formula $\boldsymbol{\Phi}$
+\end_inset
+
+和离散时间噪声协方差矩阵
+\begin_inset Formula $\mathbf{Q}_{d}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+我们根据扩展卡尔曼滤波方程计算状态协方差矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}_{k+1|k}=\boldsymbol{\Phi}\mathbf{P}_{k|k}\boldsymbol{\Phi}^{\mathrm{T}}+\mathbf{Q}_{d}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+更新
+\end_layout
+
+\begin_layout Standard
+在卡尔曼滤波器的更新阶段，我们将使用一个外部传感器来测量方向。常见的例子是恒星和太阳传感器。我们现在考虑一个太阳传感器的简化模型，更详细的版本见[9]。
+\end_layout
+
+\begin_layout Subsection
+测量模型
+\end_layout
+
+\begin_layout Standard
+为了给姿态滤波器提供外部信息，我们可以设想许多传感器。每个传感器都有其特定的传感器模型。
+\end_layout
+
+\begin_layout Standard
+在下面，我们将介绍一系列传感器模型，然后介绍将这些测量值与滤波器估计值融合的一般步骤。
+\end_layout
+
+\begin_layout Subsubsection
+太阳传感器
+\end_layout
+
+\begin_layout Standard
+在这个模型中，我们假设我们能够测量从传感器到太阳的矢量相对于传感器框架的投影，传感器框架
+\begin_inset Formula $^{S}\mathbf{r}_{\bigodot}$
+\end_inset
+
+在全局坐标框架中的表示
+\begin_inset Formula $^{G}\mathbf{r}_{\bigodot}$
+\end_inset
+
+是已知的。
+\end_layout
+
+\begin_layout Standard
+两者之间的关系由旋转给出。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\mathbf{r}_{\bigodot}={}_{G}^{S}\mathbf{C}{}^{G}\mathbf{r}_{\bigodot}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转矩阵
+\begin_inset Formula $_{G}^{S}\mathbf{C}$
+\end_inset
+
+可以分解为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{S}\mathbf{C}={}_{L}^{S}\mathbf{C}{}_{G}^{L}\mathbf{C}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中传感器坐标系
+\begin_inset Formula $\{S\}$
+\end_inset
+
+和航天器坐标系
+\begin_inset Formula $\{L\}$
+\end_inset
+
+之间的转换
+\begin_inset Formula $_{L}^{S}\mathbf{C}$
+\end_inset
+
+是已知的和固定的，并且转换
+\begin_inset Formula $_{G}^{L}\mathbf{C}$
+\end_inset
+
+是姿态四元数的函数。
+\end_layout
+
+\begin_layout Standard
+实际测量
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+将是矢量
+\begin_inset Formula $\mathbf{r}_{\bigodot}$
+\end_inset
+
+的投影，被零均值、白噪声、高斯噪声
+\begin_inset Formula $\mathbf{n_{m}}$
+\end_inset
+
+破坏。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+z=\prod{}_{L}^{S}\mathbf{C}{}_{G}^{L}\mathbf{C}{}^{G}\mathbf{r}_{\bigodot}+\mathbf{n_{m}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\prod$
+\end_inset
+
+是投影矩阵
+\end_layout
+
+\begin_layout Standard
+测量噪声的特征是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\mathbf{n_{m}}\right]=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\mathbf{n_{m}}\mathbf{n_{m}}^{\mathrm{T}}\right]=\mathbf{R}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于卡尔曼滤波器的更新阶段，我们需要将测量误差
+\begin_inset Formula $\tilde{\mathbf{z}}$
+\end_inset
+
+与状态向量联系起来。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{z}}=\mathbf{z}-\hat{\mathbf{z}}=\prod{}_{L}^{S}\mathbf{C}\left(_{G}^{L}\mathbf{C}\left(\bar{q}\right)-{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)\right)\cdot{}^{G}\mathbf{r}_{\bigodot}+\mathbf{n_{m}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据误差模型(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:误差和协方差表示"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)和旋转矩阵的性质(参见第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数与旋转矩阵的关系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节)，我们可以回忆以下表达式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}=\delta\bar{q}\otimes\hat{\bar{q}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right) & =_{G}^{L}\mathbf{C}\left(\delta\bar{q}\otimes\hat{\bar{q}}\right)\nonumber \\
+ & =_{\hat{L}}^{L}\mathbf{C}\left(\delta\bar{q}\right)\cdot{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)\\
+\nonumber \\
+_{\hat{L}}^{L}\mathbf{C}\left(\delta\bar{q}\right) & \approx\mathbf{I}-\left\lfloor \delta\boldsymbol{\theta}\times\right\rfloor 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+请注意，如果我们使用的是加法而不是乘法误差模型，则得到的表达式的差异，其中
+\begin_inset Formula $\bar{q}=\hat{\bar{q}}+\Delta\bar{q}$
+\end_inset
+
+与
+\begin_inset Formula $\Delta\bar{q}=\left[\begin{array}{cc}
+\Delta\mathbf{q}^{\mathrm{T}} & \Delta q_{4}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\hat{\bar{q}}+\Delta\bar{q}\right)-{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)=4\hat{q_{4}}\Delta q_{4}\mathbf{I}_{3\times3}-2\hat{q_{4}}\left\lfloor \Delta\mathbf{q}\times\right\rfloor -2\Delta q_{4}\left\lfloor \hat{\mathbf{q}}\times\right\rfloor +2\Delta\mathbf{q}\hat{\mathbf{q}}^{\mathrm{T}}+2\hat{\mathbf{q}}\Delta\mathbf{q}^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{G}^{L}\mathbf{C}\left(\bar{q}\right)-{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)=\left(_{\hat{L}}^{L}\mathbf{C}\left(\delta\bar{q}\right)-\mathbf{I}_{3\times3}\right)\cdot{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)=-\left\lfloor \delta\boldsymbol{\theta}\times\right\rfloor \cdot{}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在可以写
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{z}} & =\prod{}_{L}^{S}\mathbf{C}\left(_{\hat{L}}^{L}\mathbf{C}\left(\delta\bar{q}\right)-\mathbf{I}\right){}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)\cdot{}^{G}\mathbf{r}_{\bigodot}+\mathbf{n_{m}}\\
+ & \approx\prod{}_{L}^{S}\mathbf{C}\left(-\left\lfloor \delta\boldsymbol{\theta}\times\right\rfloor \right){}_{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right)\cdot{}^{G}\mathbf{r}_{\bigodot}+\mathbf{n_{m}}\\
+ & =\prod{}_{L}^{S}\mathbf{C}\left\lfloor _{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right){}^{G}\mathbf{r}_{\bigodot}\times\right\rfloor \cdot\delta\boldsymbol{\theta}+\mathbf{n_{m}}\\
+ & =\left[\begin{array}{cc}
+\prod{}_{L}^{S}\mathbf{C}\left\lfloor _{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right){}^{G}\mathbf{r}_{\bigodot}\times\right\rfloor  & \mathbf{0}\end{array}\right]\cdot\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\tilde{\mathbf{b}}
+\end{array}\right]+\mathbf{n_{m}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此测量矩阵
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+对应于
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{H}=\left[\begin{array}{cc}
+\prod{}_{L}^{S}\mathbf{C}\left\lfloor _{G}^{\hat{L}}\mathbf{C}\left(\hat{\bar{q}}\right){}^{G}\mathbf{r}_{\bigodot}\times\right\rfloor  & \mathbf{0}\end{array}\right]\label{eq:232}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+卡尔曼滤波器更新
+\end_layout
+
+\begin_layout Standard
+考虑到传播状态估计值
+\begin_inset Formula $\hat{\bar{q}}_{k+1|k}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathbf{b}}_{k+1|k}$
+\end_inset
+
+，以及它们的协方差矩阵
+\begin_inset Formula $\mathbf{P}_{k+1|k}$
+\end_inset
+
+、当前测量值
+\begin_inset Formula $\mathbf{z}(k+1)$
+\end_inset
+
+和测量矩阵
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+，我们可以通过以下方式更新我们的估计：
+\end_layout
+
+\begin_layout Enumerate
+根据公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:232"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算测量矩阵
+\begin_inset Formula $\mathbf{H}(k)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+根据计算残差
+\begin_inset Formula $\mathbf{r}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathbf{r}=\mathbf{z}-\hat{\mathbf{z}}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+将残差的协方差计算为
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathbf{S}=\mathbf{H}\mathbf{P}\mathbf{H}^{\mathrm{T}}+\mathbf{R}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+计算卡尔曼增益
+\begin_inset Formula $\mathbf{K}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathbf{K}=\mathbf{P}\mathbf{H}^{\mathrm{T}}\mathbf{S}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+计算校正
+\begin_inset Formula $\Delta\hat{\mathbf{x}}(+)$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta\hat{\mathbf{x}}(+)=\left[\begin{array}{c}
+\hat{\delta\boldsymbol{\theta}}(+)\\
+\Delta\hat{\mathbf{b}}(+)
+\end{array}\right]=\left[\begin{array}{c}
+2\cdot\delta\hat{\mathbf{q}}(+)\\
+\Delta\hat{\mathbf{b}}(+)
+\end{array}\right]=\mathbf{Kr}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+根据更新四元数
+\begin_inset Formula 
+\begin{equation}
+\delta\bar{q}=\left[\begin{array}{c}
+\delta\hat{\mathbf{q}}(+)\\
+\sqrt{1-\delta\hat{\mathbf{q}}^{\mathrm{T}}(+)\delta\hat{\mathbf{q}}(+)}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+或者，如果
+\begin_inset Formula $\delta\hat{\mathbf{q}}^{\mathrm{T}}(+)\delta\hat{\mathbf{q}}(+)>1$
+\end_inset
+
+，使用
+\begin_inset Formula 
+\begin{equation}
+\delta\bar{q}=\dfrac{1}{\sqrt{1+\delta\hat{\mathbf{q}}^{\mathrm{T}}(+)\delta\hat{\mathbf{q}}(+)}}\cdot\left[\begin{array}{c}
+\delta\hat{\mathbf{q}}(+)\\
+1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\hat{\bar{q}}_{k+1|k+1}=\delta\hat{\bar{q}}\otimes\hat{\bar{q}}_{k+1|k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+更新偏差
+\begin_inset Formula 
+\begin{equation}
+\hat{\mathbf{b}}_{k+1|k+1}=\hat{\mathbf{b}}_{k+1|k}+\Delta\hat{\mathbf{b}}(+)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+使用新的偏差估计值更新估计的旋转速率
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}_{k+1|k+1}=\boldsymbol{\omega}_{m_{k+1}}-\hat{\mathbf{b}}_{k+1|k+1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+计算新的协方差矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}_{k+1|k}=(\mathbf{I}_{6\times6}-\mathbf{K}\mathbf{H})\mathbf{P}_{k+1|k}(\mathbf{I}_{6\times6}-\mathbf{K}\mathbf{H})^{\mathrm{T}}+\mathbf{K}\mathbf{R}\mathbf{K}^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+M.
+ D.
+ Shuster, “A survey of attitude representations,” Journal of the Astronautical
+ Sciences, vol.
+ 41, no.
+ 4, pp.
+ 439–517, October–December 1993.
+\end_layout
+
+\begin_layout Enumerate
+W.
+ G.
+ Breckenridge, “Quaternions - Proposed Standard Conventions,” JPL, Tech.
+ Rep.
+ INTEROFFICE MEMO- RANDUM IOM 343-79-1199, 1999.
+\end_layout
+
+\begin_layout Enumerate
+E.
+ J.
+ Lefferts, F.
+ L.
+ Markley, and M.
+ D.
+ Shuster, “Kalman filtering for spacecraft attitude estimation,” Journal
+ of Guidance, Control, and Dynamics, vol.
+ 5, no.
+ 5, pp.
+ 417–429, Sept.-Oct.
+ 1982.
+\end_layout
+
+\begin_layout Enumerate
+P.
+ S.
+ Maybeck, Stochastic Models, Estimation and Control.
+ New York: Academic Press, 1979, vol.
+ 1.
+\end_layout
+
+\begin_layout Enumerate
+J.
+ R.
+ Wertz, Ed., Spacecraft Attitude Determination and Control.
+ Dordrecht; Boston: Kluwer Academic, 1978.
+\end_layout
+
+\begin_layout Enumerate
+R.
+ O.
+ Allen and D.
+ H.
+ Chang, “Performance Testing of the Systron Donner Quartz Gyro (QRS11-100-420);
+ Sn’s 3332, 3347 and 3544,” JPL, Tech.
+ Rep.
+ ENGINEERING MEMORANDUM EM #343-1297, 1993.
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Simon, Optimal State Estimation, Kalman, H
+\begin_inset Formula $\infty$
+\end_inset
+
+ , and Nonlinear Approaches.
+ Hoboken, NJ: John Wiley & Sons, Inc., 2006.
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Crassidis, “Sigma-point Kalman filtering for integrated GPS and inertial
+ navigation,” in Proc.
+ of AIAA Guidance, Navigation, and Control Conference, Paper #2005-6052,
+ San Francisco, CA, Aug.
+ 2005.
+ [Online].
+ Available: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.acsu.buffalo.edu/~ johnc/gpsins gnc05.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+N.
+ Trawny, “Sun sensor model,” University of Minnesota, Dept.
+ of Comp.
+ Sci.
+ & Eng., Tech.
+ Rep.
+ 2005-001, Jan.
+ 2005.
+\end_layout
+
+\end_body
+\end_document
