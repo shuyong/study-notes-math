@@ -5,7 +5,7 @@
 * Multiplicative Kalman Filter
 * Indirect Kalman Filter
 
-大多指的是同一个东西。有时候 Additive Kalman Filter 也可以算是 ESKF 中的一种，但是在数学上有问题。
+大多指的是同一个东西。有时候 Additive Kalman Filter 也可以算是 ESKF 中的一种，在文档[2][3][4]中有描述，在数学概念上有问题。
 
 # 文件列表
 00. [extended kalman filter equation for orientation quaternion](https://math.stackexchange.com/questions/2621677/extended-kalman-filter-equation-for-orientation-quaternion)
@@ -86,4 +86,5 @@
    + [Trajectory & Sensor Simulation Toolkit](https://github.com/memsindustrygroup/TSim)
 1. [Shows implementation of KF based sensor fusion of gyro, accel and camera measurements.](https://github.com/ankur6ue/SensorFusion_KF)
 1. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF)
+1. [RT-SLAM stands for Real Time SLAM (Simultaneous Localization And Mapping).](https://www.openrobots.org/wiki/rtslam/)
 1. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - code](http://www.mdpi.com/1424-8220/19/1/149/s1)
