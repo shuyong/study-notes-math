@@ -1,0 +1,1819 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价"
+target "https://www-users.cs.umn.edu/~stergios/papers/icra99-2d.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Stergios I.
+ Roumeliotis, Gaurav S .
+ Sukhatme and George A.
+ Bekey
+\end_layout
+
+\begin_layout Date
+May 1999
+\end_layout
+
+\begin_layout Abstract
+将移动机器人定位问题看作是一个两阶段迭代估计过程。首先对姿态进行估计，然后再对姿态进行估计。这里开发的卡尔曼滤波器在陀螺建模中采用姿态估计的间接(误差状态)形式
+。这种选择的主要好处是避免了移动机器人复杂的动态建模及其与环境的交互。该滤波器将来自陀螺的姿态速率信息和绝对方位测量值最佳地结合起来。拟议的实施是独立于车辆的结
+构或地面的形态。这种方法只要携带一组等效的传感器，就可以很容易地转移到另一个移动平台上。首先对二维情况进行了详细的研究。给出了将该方法扩展到三维情况下的结果。两
+个方面的结果都证明了该方法的有效性。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+1997年7月4日，火星探路者任务在火星表面部署了一个自主的微型探测器。由于往返通信延迟时间等挑战，机器人具有高度的自主寻找目标和规避风险的能力。未来的火星任务
+包括漫游者用更长时间的去到相距数公里的科学研究地点。为了自主导航，这些漫游者需要知道他们的确切位置和方向，即定位自己。定位是自主移动机器人的一个关键问题。为了解
+决这个问题，开发了不同的技术；这些技术可以分为两大类：
+\end_layout
+
+\begin_layout Itemize
+相对(局部)定位：通过将编码器或惯性传感器提供的信息与初始条件的知识相结合来评估位置和方向。
+\end_layout
+
+\begin_layout Itemize
+绝对(全局)定位：允许车辆直接使用导航信标、主动或被动地标、地图匹配或全球定位系统(GPS)确定其位置的技术。
+\end_layout
+
+\begin_layout Standard
+相对定位也被称为航位推算，使用两组传感器：里程计传感器和惯性导航系统(INS)。在大多数移动机器人中，里程表是通过光学编码器来实现的，它可以监测车轮的转数和方向
+盘的角度。使用简单的几何结构(车辆的运动模型)，编码器数据用于计算车辆相对于已知起始位置的位置。INS广泛应用于航空领域，最近也应用于户外机器人[1]。它们由提
+供角速率和速度速率信息的陀螺仪和加速度计组成。通过整合这些信息，可以计算出车辆的位置和方向。航位推算因其简单而被广泛使用，但由于与噪声、滑动和建模不准确有关的误
+差而不适合长距离测量。
+\end_layout
+
+\begin_layout Standard
+由于上述原因，车辆位置和方向的计算存在误差，通常随着时间的推移而无限制地增长。卡尔曼滤波技术[9]在过去40年中成功地应用于位置估计问题，这一技术得到了实质性的
+改进。
+\end_layout
+
+\begin_layout Standard
+限制误差增长的下一步依赖于使用全球传感器测量或环境地图的绝对定位技术。这可以大大提高估计的准确性，并将相关的不确定性保持在一定的范围内。
+\end_layout
+
+\begin_layout Standard
+本文的主要贡献是：
+\end_layout
+
+\begin_layout Standard
+我们列举了在户外移动机器人中应用动态建模进行姿态估计的缺点。通过选择陀螺模型，避免了特定飞行器的繁琐建模及其与动态环境的相互作用。陀螺信号出现在系统方程(而不是
+测量方程)中，因此问题的表述需要一种间接(误差状态)卡尔曼滤波方法。
+\end_layout
+
+\begin_layout Standard
+详细推导了二维情况下线性估计量的方程，并将间接卡尔曼滤波器作为抑制偏差影响的信号处理单元进行了研究，并将陀螺信号与来自绝对方位传感器的信号进行了优化组合
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+在这个二维例子中，这个测量可以来自磁罗盘或太阳传感器。从现在起，我们假设该传感器测量车辆的绝对方向。
+\end_layout
+
+\end_inset
+
+。并给出了三维估计量的计算结果。
+\end_layout
+
+\begin_layout Standard
+在下一节中，我们将讨论先前的相关工作；在第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:动态模型替换"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中，我们将讨论动态模型替换背后的基本原理；在第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:卡尔曼滤波器的形式"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中，我们将讨论各种形式的卡尔曼滤波器，有利于间接形式；在第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:单偏差补偿陀螺的平面运动"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中，我们将讨论带有单偏差补偿陀螺的平面运动情况以及对三维情况的扩展。最后，我们对本文进行了总结，并对今后的工作进行了讨论。
+\end_layout
+
+\begin_layout Section
+以前的工作
+\end_layout
+
+\begin_layout Standard
+为了解决室内应用中的系统误差，在[3]中给出了一种称为Umbmark测试的校准技术。在[4]中，同样的作者讨论了一种他们称之为回转里程表的技术，这种技术大部分时
+间都使用里程表数据，而仅在回转里程表数据存在显著差异的短暂情况下(例如，当车辆经过颠簸时)替换回转里程表数据。这样，系统就基本上不受与陀螺仪有关的漂移的影响。
+\end_layout
+
+\begin_layout Standard
+在[8]中使用了一个互补的卡尔曼滤波器[5]来估计机器人在低频运动时的加速度计信号和高频运动时的陀螺信号的姿态。然后使用姿态信息计算位置增量。
+\end_layout
+
+\begin_layout Standard
+在[1]中，作者使用了一个低成本的惯性导航系统(3个陀螺仪和一个三轴加速度计)和2个倾斜传感器。他们的方法是在系统中包含有关惯性传感器误差特性的先验信息，并直接
+在扩展卡尔曼滤波器(EKF)中使用该信息来估计位置。
+\end_layout
+
+\begin_layout Standard
+绝对定位的例子包括[14]将基本定位算法形式化为车辆跟踪问题，使用EKF将信标观测与地图匹配，以保持对移动机器人位置的估计；其中[2]的作者使用EKF融合已知地
+标的里程测量和角度测量，其中[25]的作者使用贝叶斯方法用于学习本地化的地标。
+\end_layout
+
+\begin_layout Standard
+上述方法大多局限于平面运动。此外，它们的精度在很大程度上取决于某种形式的绝对定位系统的存在。我们提出了一种估计算法，该算法能够合并绝对位置测量，但也能够在没有外
+部提供的定位信息的情况下提供可靠的估计。我们的方法的重点是使用间接卡尔曼滤波器对误差状态进行姿态估计
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+根据更新后的姿态更新位置是直接的方式，不会被进一步的考虑。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+动态模型替换
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:动态模型替换"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在我们的方法中，我们避免了动态建模。原因如下：
+\end_layout
+
+\begin_layout Itemize
+最基本的原因是，每次对机器人进行修改(即质量改变、零件重新定位或尺寸改变)，都必须重新进行动态建模。生成的估计量是为特定的结构而定制的。稍有不同的车辆需要一个新
+的估算器。
+\end_layout
+
+\begin_layout Itemize
+一个更实际的原因是动态建模需要大量的状态(例如，Rocky 7，一个火星探测器原型，有6个轮子，4个转向节，3个转向节)。就计算需要而言，估计量必须是实用的。估
+计状态的大小可以有很大的计算需求，而精度增益很小。
+\end_layout
+
+\begin_layout Itemize
+动态建模和增加的复杂性并不总是产生预期的结果。一个例子是Lefferts和Markley[12]试图对Nimbus-6航天器的姿态动力学进行建模，这表明采用精细
+扭矩模型的动态建模仍然不能给出可接受的姿态确定精度。因此，航空航天领域的大多数姿态估计应用都使用动态模型替换模式的陀螺仪[27]。
+\end_layout
+
+\begin_layout Itemize
+对比飞行器与地面的相互作用，在崎岖地形上运动的移动机器人建模要比航天器建模复杂得多。航天器在空间弹道上的外力，可以用引力定律精确描述。月球车与地面的相互作用取决
+于许多参数，需要做出假设(经常使用点接触假设)。车辆地形动态效应的建模，如车轮碰撞、车轮打滑、车轮下沉，需要事先了解地面参数(即摩擦系数，作为车轮打滑率、土壤抗
+剪强度、弹性模量等的函数)。此外，横向滑移不可观测，在动力学模型中也不能解释。为了获得作用在每个车轮上的扭矩的实际值，还需要对电机进行精确建模。
+\end_layout
+
+\begin_layout Itemize
+从另一个角度来看，大多数车辆都有一个悬架系统，其目的是将车辆的运动与地形形态分离开来。“理想”悬挂系统将支持车辆的运动，在某种程度上模仿气垫船的运动。然后，机器
+人可以以非常平稳的方式移动。这样的运动很容易被有效地估计，以下方法依赖于使用惯性导航系统作为动态模型替换，并且独立于特定地形。
+\end_layout
+
+\begin_layout Section
+卡尔曼滤波器的形式
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:卡尔曼滤波器的形式"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如前所述，卡尔曼滤波已广泛应用于定位。在移动机器人应用中经常出现的是线性卡尔曼滤波器和扩展卡尔曼滤波器(EKF)形式的全状态卡尔曼滤波器。在这项工作中，我们选择
+使用线性卡尔曼滤波器和EKF的误差状态形式。在第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:单偏差补偿陀螺的平面运动"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中，我们推导出这种公式所需的方程式。在本节中，我们将研究选择间接反馈形式的原因，而不是机器人技术文献中常见的其他形式。
+\end_layout
+
+\begin_layout Subsection
+间接与直接卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+结合惯性导航系统(INS)实现卡尔曼滤波器的一个非常重要的方面是使用间接(indirect)形式而不是直接(direct)形式，也分别称为误差状态(error
+ state)和全状态公式[15]。顾名思义，在全状态(直接)公式中，全状态(如方向)在滤波器变量中，测量值为INS输出(如陀螺输出)和外部源信号。在误差状态(
+间接)公式中，方向误差是估计变量之间的误差，每个向滤波器显示的测量值是INS和外部源数据之间的误差。
+\end_layout
+
+\begin_layout Standard
+直接过滤实现有一些严重的缺点。在INS环路中，使用全状态表示法，滤波器必须保持对车辆角运动的明确、准确的感知，即包含一个动态模型，并尝试以相对较高的频率抑制噪声
+和错误数据。
+\end_layout
+
+\begin_layout Standard
+此外，在滤波器的全状态描述中所涉及的动力学包括一个高频分量，并且只有非线性模型才能很好地描述。卡尔曼滤波器的发展是以一个适当的线性系统模型为基础的，而这种全状态
+模型是不存在的。
+\end_layout
+
+\begin_layout Standard
+直接滤波器设计的另一个缺点是，如果滤波器失效(如暂时的计算机故障)，整个导航算法将失效。没有滤波器，INS就没用了。从可靠性的角度来看，在这种故障情况下，最好提
+供紧急降级性能模式。在发生故障的情况下，间接滤波器可以作为INS数据的积分器继续提供估计值。直接滤波器是故障检测和识别的理想选择[22,23]。
+\end_layout
+
+\begin_layout Standard
+间接(误差状态)卡尔曼滤波器利用惯导系统和外部数据源之间的差异来估计导航和姿态信息中的误差。惯性导航系统本身能够非常精确地跟踪车辆的高频运动，无需在滤波器中明确
+地建模这些动力学。相反，间接滤波器所基于的动力学是一组惯性系统误差传播方程，这些方程是低频的，并且非常充分地表示为线性的。由于滤波器不在INS环路内，而且是基于
+低频动力学的，因此其采样率比直接滤波器要低得多。事实上，一个有效的间接滤波器可以基于采样周期(外部源)为几分钟的条件来开发[15]。出于这些原因，误差状态公式基
+本上用于所有地面辅助惯性导航系统[24]。
+\end_layout
+
+\begin_layout Subsection
+前馈与反馈间接卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+前馈和反馈间接卡尔曼滤波器的基本区别主要在于它们处理更新误差估计的方式。在第一种情况下，更新后的误差估计被前馈，以在不更新INS的情况下修正当前的方位估计。在反
+馈公式中，修正实际上反馈给INS以修正其“新”起点，即新时间步的集成将从哪个状态开始。在某种意义上，前馈和反馈形式之间的差异等于线性化卡尔曼滤波器和扩展卡尔曼滤
+波器之间的差异[16]。在第二种情况下，状态传播从测量后的校正(更新)状态开始，而在线性化滤波器中，传播继续处于测量出现时传播已达到的状态，因此忽略刚刚计算的校
+正。因此，线性化卡尔曼滤波器和前馈间接卡尔曼滤波器可以自由漂移，误差不受限制。
+\end_layout
+
+\begin_layout Section
+单偏差补偿陀螺的平面运动
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:单偏差补偿陀螺的平面运动"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在所有使用陀螺的姿态估计方法中，最大的困难是低频噪声分量，也称为偏差或漂移，这违反了标准卡尔曼滤波所要求的白噪声假设。从太空计划的早期[17,10,6]，这个问
+题引起了许多研究人员的兴趣。在卡尔曼滤波器中加入陀螺噪声模型，通过适当增加状态矢量，有可能在满足可观测性要求时提供传感器偏差的估计。卡尔曼滤波器中陀螺噪声模型的
+早期实现可以在[19,18,26]中找到。
+\end_layout
+
+\begin_layout Standard
+正如我们已经提到的，对
+\begin_inset Formula $\theta$
+\end_inset
+
+(平面情况下的车辆横摆)的估计将意味着推导一个形式方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\ddot{\theta}=f(\tau,\dot{\theta},\theta,v,\alpha,\overrightarrow{p}_{vehicle},\overrightarrow{p}_{ground})\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\tau$
+\end_inset
+
+是执行器扭矩，
+\begin_inset Formula $\dot{\theta}$
+\end_inset
+
+和
+\begin_inset Formula $v$
+\end_inset
+
+分别是角速度和平移速度，
+\begin_inset Formula $\alpha$
+\end_inset
+
+是线性加速度。
+\begin_inset Formula $\overrightarrow{p}_{vehicle}$
+\end_inset
+
+是车辆参数向量，
+\begin_inset Formula $\overrightarrow{p}_{ground}$
+\end_inset
+
+参数化了地面形态、土壤摩擦等。为了避免由于第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:动态模型替换"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+节中提到的所有原因而发展出那样一个方程，我们开发了一个方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的替换。替换后的陀螺仪输出信号与飞行器的偏差和角速度有关。
+\end_layout
+
+\begin_layout Standard
+在我们的方法中，因为[7]，我们使用简单而现实的模型。在该模型中，角速度
+\begin_inset Formula $\omega=\dot{\theta}$
+\end_inset
+
+与陀螺输出
+\begin_inset Formula $\omega_{m}$
+\end_inset
+
+有关，根据方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\theta}=\omega_{m}+b+n_{r}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $b$
+\end_inset
+
+是漂移率偏差，
+\begin_inset Formula $n_{r}$
+\end_inset
+
+是漂移率噪声。假设
+\begin_inset Formula $n_{r}$
+\end_inset
+
+是一个协方差为
+\begin_inset Formula $N_{r}$
+\end_inset
+
+的高斯白噪声过程。
+\end_layout
+
+\begin_layout Standard
+漂移率偏差
+\begin_inset Formula $b$
+\end_inset
+
+不是静态量，而是由第二个高斯白噪声过程(陀螺漂移率斜坡噪声
+\begin_inset Formula $n_{w}$
+\end_inset
+
+)驱动。因此
+\begin_inset Formula $\dot{b}=n_{w}$
+\end_inset
+
+的协方差为
+\begin_inset Formula $N_{w}$
+\end_inset
+
+。假设这两个噪声过程是不相关的。
+\end_layout
+
+\begin_layout Standard
+如前所述，我们研究了飞行器在平面上运动时姿态估计的简单情况。假设只使用一个陀螺仪，并且另一个传感器以频繁的间隔直接提供绝对方位信息(偏航)。
+\end_layout
+
+\begin_layout Subsection
+反馈间接卡尔曼滤波公式
+\end_layout
+
+\begin_layout Standard
+根据方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，真实角速度为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\theta}_{true}=\omega_{m}+b_{true}+n_{r}\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\dot{b}_{true}=n_{\omega}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+以矩阵形式重新排列，我们有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\theta_{true}\\
+b_{true}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\theta_{true}\\
+b_{true}
+\end{array}\right]+\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\omega_{m}+\left[\begin{array}{c}
+n_{r}\\
+n_{\omega}
+\end{array}\right]\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+绝对方位测量为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+z=\theta_{m}=\left[\begin{array}{cc}
+1 & 0\end{array}\right]\left[\begin{array}{c}
+\theta_{true}\\
+b_{true}
+\end{array}\right]+n_{\theta}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\begin_inset Formula $n_{\theta}$
+\end_inset
+
+是传感器测量绝对方向的噪声。假设
+\begin_inset Formula $n_{\theta}$
+\end_inset
+
+是一个协方差为
+\begin_inset Formula $N_{\theta}$
+\end_inset
+
+的高斯白噪声过程。
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+项
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\omega_{m}$
+\end_inset
+
+类似于方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示系统的驱动(控制)输入，需要消除。这可以通过两种方式实现。第一种方法是将其添加到状态并进行估计。这意味着通过方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)建立
+\begin_inset Formula $\dot{\omega}$
+\end_inset
+
+的表达式。第二种选择(这里选择)是将估计算法表示为间接卡尔曼滤波器。通过积分陀螺信号(假设为恒定偏差)获得的方位估计值由以下公式得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\theta}_{i}=\omega_{m}+b_{i}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中估计偏差率为
+\begin_inset Formula $\dot{b}_{i}=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，积分器的状态方程为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\theta_{i}\\
+b_{i}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\theta_{i}\\
+b_{i}
+\end{array}\right]+\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\omega_{m}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+减去方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，方向误差可写为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta\dot{\theta}=\Delta b+n_{r}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在消除了
+\begin_inset Formula $\omega_{m}$
+\end_inset
+
+。
+\begin_inset Formula $\Delta\theta$
+\end_inset
+
+是方向误差，
+\begin_inset Formula $\Delta b$
+\end_inset
+
+是偏差误差。减去
+\begin_inset Formula $\dot{b}_{true}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{b}_{i}$
+\end_inset
+
+的方程，偏差误差可以写成
+\begin_inset Formula $\Delta\dot{b}=n_{\omega}$
+\end_inset
+
+。间接(误差状态)卡尔曼滤波器的误差传播方程可重新排列为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\Delta\theta\\
+\Delta b
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\Delta\theta\\
+\Delta b
+\end{array}\right]+\left[\begin{array}{c}
+n_{r}\\
+n_{\omega}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+或者以更紧凑的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\Delta x=F\Delta x+n
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们假设提供给间接卡尔曼滤波器的测量值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta z=\theta_{m}-\theta_{i}=\theta_{true}+n_{\theta}-\theta_{i}=\Delta\theta+n_{\theta}\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+通过陀螺信号积分得到
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+，
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\theta_{m}$
+\end_inset
+
+是绝对方位测量。这个矩阵形式的方程变成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta z=\left[\begin{array}{cc}
+1 & 0\end{array}\right]\left[\begin{array}{c}
+\Delta\theta\\
+\Delta b
+\end{array}\right]+n_{\theta}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+或者以更紧凑的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta z=H\Delta x+n_{\theta}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差的连续卡尔曼滤波方程为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{P}=FP+PF^{T}+Q-PH^{T}R^{-1}HP
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $P$
+\end_inset
+
+是协方差矩阵，
+\begin_inset Formula $F$
+\end_inset
+
+是系统矩阵，
+\begin_inset Formula $H$
+\end_inset
+
+是测量矩阵，
+\begin_inset Formula $Q$
+\end_inset
+
+是系统噪声协方差矩阵，
+\begin_inset Formula $R$
+\end_inset
+
+是测量噪声协方差矩阵。当
+\begin_inset Formula $\lim_{t\to\infty}(\dot{P})=0$
+\end_inset
+
+时，考虑稳态情况下的该方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\mathbf{0} & =\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{cc}
+p_{11} & p_{12}\\
+p_{12} & P_{22}
+\end{array}\right]\\
+ & +\left[\begin{array}{cc}
+p_{11} & p_{12}\\
+p_{12} & P_{22}
+\end{array}\right]\left[\begin{array}{cc}
+0 & 0\\
+1 & 0
+\end{array}\right]\\
+ & +\left[\begin{array}{cc}
+N_{r} & 0\\
+0 & N_{\omega}
+\end{array}\right]\\
+ & -\left[\begin{array}{cc}
+p_{11} & p_{12}\\
+p_{12} & P_{22}
+\end{array}\right]\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\left[N_{\theta}\right]^{-1}\left[\begin{array}{cc}
+1 & 0\end{array}\right]\left[\begin{array}{cc}
+p_{11} & p_{12}\\
+p_{12} & P_{22}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+求解矩阵
+\begin_inset Formula $P$
+\end_inset
+
+的元素，我们发现：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+p_{11}=\sqrt{N_{\theta}}\sqrt{N_{r}+2\sqrt{N_{\omega}N_{\theta}}}\\
+p_{12}=\sqrt{N_{\omega}N_{\theta}}\\
+p_{22}=\sqrt{N_{\omega}}\sqrt{N_{r}+2\sqrt{N_{\omega}N_{\theta}}}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+稳态卡尔曼增益为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+K=PH^{T}R^{-1}=\left[\begin{array}{c}
+\sqrt{\dfrac{N_{r}+2\sqrt{N_{\omega}N_{\theta}}}{N_{\theta}}}\\
+\sqrt{\dfrac{N_{\omega}}{N_{\theta}}}
+\end{array}\right]=\left[\begin{array}{c}
+k_{1}\\
+k_{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+间接卡尔曼滤波器估计误差状态。带附加校正的估计传播方程为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\hat{\Delta\theta}\\
+\hat{\Delta b}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\hat{\Delta\theta}\\
+\hat{\Delta b}
+\end{array}\right]+\left[\begin{array}{c}
+k_{1}\\
+k_{2}
+\end{array}\right]\left(\Delta z-\hat{\Delta\theta}\right)\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+替换误差状态估计
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c}
+\hat{\Delta\theta}=\hat{\theta}-\theta_{i}\\
+\hat{\Delta b}=\hat{b}-b_{i}
+\end{array}\label{eq:19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在估计传播方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\hat{\theta}-\theta_{i}\\
+\hat{b}-b_{i}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\hat{\theta}-\theta_{i}\\
+\hat{b}-b_{i}
+\end{array}\right]+\left[\begin{array}{c}
+k_{1}\\
+k_{2}
+\end{array}\right]\left(\Delta z-\hat{\Delta\theta}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+分离估计量和综合量，以得到反馈公式，我们有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\hat{\theta}\\
+\hat{b}
+\end{array}\right] & =\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\hat{\theta}\\
+\hat{b}
+\end{array}\right]\\
+ & +\left[\begin{array}{c}
+k_{1}\\
+k_{2}
+\end{array}\right]\left(\Delta z-\hat{\Delta\theta}\right)\\
+ & +\left(\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\theta_{i}\\
+b_{i}
+\end{array}\right]-\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\theta_{i}\\
+b_{i}
+\end{array}\right]\right)
+\end{array}\label{eq:21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的注意到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta z-\hat{\Delta\theta}=\left(\theta_{m}-\theta_{i}\right)-\left(\hat{\theta}-\theta_{i}\right)=\theta_{m}-\hat{\theta}\label{eq:22}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在从(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\hat{\theta}\\
+\hat{b}
+\end{array}\right]=\left[\begin{array}{cc}
+0 & 1\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\hat{\theta}\\
+\hat{b}
+\end{array}\right]+\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\omega_{m}+\left[\begin{array}{c}
+k_{1}\\
+k_{2}
+\end{array}\right]\left(\theta_{m}-\hat{\theta}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+采用拉普拉斯变换和求解
+\begin_inset Formula $\hat{\Theta}(s)$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\Theta}(s)=\dfrac{s^{2}}{s^{2}+k_{1}s+k_{2}}\dfrac{\Omega_{m}(s)}{s}+\dfrac{k_{1}s+k_{2}}{s^{2}+k_{1}s+k_{2}}\Theta_{m}(s)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里可以重写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\Theta}(s)=F(s)\dfrac{\Omega_{m}(s)}{s}+\left(1-F(s)\right)\Theta_{m}(s)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这表明，间接卡尔曼滤波器根据其噪声特性以互补的方式对两种不同的信息源(即综合陀螺信号和绝对方位测量)进行加权。为了更直观地了解间接卡尔曼滤波器如何处理噪声，我们
+研究了传感器输入仅为噪声的情况(即传感器信号在任何频率下都不包含任何有用信息)。
+\end_layout
+
+\begin_layout Standard
+在图1中，在第一个图中，我们看到积分过程
+\begin_inset Formula $1/s$
+\end_inset
+
+对陀螺噪声的影响。由于积分过程的存在，低频中已经很强的噪声分量被放大，因此任何有用的低频信息都会受到这种噪声的污染。显而易见的结论是，我们不能依靠陀螺积分来估计
+低频运动。在较高的频率下，积分器的作用是抑制陀螺噪声，因此陀螺对高频运动是可靠的。理想情况是将综合陀螺信息与绝对方位传感器(如太阳传感器或罗盘)融合，该传感器具
+有互补的噪声剖面(即，噪声在低频时小，在高频时大)。如果不能做到这一点，即使是一个恒定的噪声剖面(对于所有频率来说都是一样的)也会提高估计值。假设第二种情况，图
+1的第二个图中描述了集成陀螺仪和绝对方位传感器的噪声分布。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure1.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+In the first plot the power spectral density of the gyro noise is displayed
+ before and after integration.
+ In the second plot the power spectral densities of the integrated gyro
+ noise and of the absolute orientation sensor noise are shown.
+ The third plot displays the power spectral densities of 
+\begin_inset Formula $F(s)$
+\end_inset
+
+ which filters the integrated gyro noise, and 
+\begin_inset Formula $1-F(s)$
+\end_inset
+
+ which filters the absolute orientation sensor noise.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这一点上，我们应该澄清间接卡尔曼滤波器是如何将来自两个不同来源的信息作为一个信号处理实体进行最佳组合的。解释来自图1的第三个图。过滤集成陀螺信号的功能
+\begin_inset Formula $F(s)$
+\end_inset
+
+起到高通滤波器的作用。它抑制低频噪声含量，并允许更高的频率通过不失真。相反，过滤绝对方位传感器的功能
+\begin_inset Formula $1-F(s)$
+\end_inset
+
+就像一个低通滤波器。它允许来自绝对方位传感器的关键低频信息在不失真的情况下通过，同时降低较高的频率内容。这是可取的，因为如果估计器在高频范围内依赖于陀螺仪，它的
+性能会更好。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure2.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+a.
+ In the first plot the orientation covariance is displayed.
+ In the second plot the bias covariance is shown.
+ Both of these covariances reach a low steady state.
+ This is expected since the system is observable, b.
+ The solid line represents the true value of the gyro bias.
+ The dotted line is the estimate of the bias from the Indirect Kalman filter.
+ Though the estimate follows the true value it is obvious that there is
+ a lag.
+ This is because the absolute orientation sensor does not measure the bias
+ directly.
+ It only measures its effect on the orientation error.
+ In all the results shown here the accuracy of the absolute orientation
+ sensor was 
+\begin_inset Formula $3^{\circ}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+3D情况
+\end_layout
+
+\begin_layout Standard
+三维情况下的误差状态方程如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\delta\overrightarrow{q}\\
+\Delta\overrightarrow{b}
+\end{array}\right] & =\left[\begin{array}{cc}
+\left[\left[\overrightarrow{\omega}_{m}\right]\right] & -(1/2)I_{3\times3}\\
+0_{3\times3} & 0_{3\times3}
+\end{array}\right]\left[\begin{array}{c}
+\delta\overrightarrow{q}\\
+\Delta\overrightarrow{b}
+\end{array}\right]\\
+ & +\left[\begin{array}{cc}
+-(1/2)I_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & I_{3\times3}
+\end{array}\right]\left[\begin{array}{c}
+\overrightarrow{n}_{r}\\
+\overrightarrow{n}_{w}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数表示法如下[13]。真实姿态
+\begin_inset Formula $q_{true}$
+\end_inset
+
+和估计(积分)姿态
+\begin_inset Formula $q_{i}$
+\end_inset
+
+之间的四元数误差为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta q\simeq\left[\begin{array}{cc}
+\delta\overrightarrow{q} & 1\end{array}\right]^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此误差由四元数组成(乘法)
+\begin_inset Formula $q_{true}=\delta q\otimes q_{i}$
+\end_inset
+
+给出。在二维情况下，偏差误差定义为真实偏差与估计偏差之间的差异
+\begin_inset Formula $\Delta\overrightarrow{b}=\Delta\overrightarrow{b}_{true}-\Delta\overrightarrow{b}_{i}$
+\end_inset
+
+。按照类似于二维案例的步骤，已经为三维案例开发了一个间接卡尔曼滤波器。由于空间限制，我们这里不推导三维公式 - 读者可参考[20,21]了解该公式。三维运动的扩
+展显示了与二维情况相同的优点，图3显示了四元数组件之一的跟踪示例。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure3.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+In both plots only the first element of the quaternion vector is shown.
+ The first plot presents the real value of 
+\begin_inset Formula $q_{1}$
+\end_inset
+
+, its estimate derived from the integration of the gyro signal, and its
+ measured value using an absolute orientation sensor such as a compass.
+ The second plot presents the real value of 
+\begin_inset Formula $q_{1}$
+\end_inset
+
+ again for comparison purposes and its estimate as calculated by the Indirect
+ Kalman filter.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+本文将定位问题分解为姿态估计和位置估计。我们专注于在不建立车辆动力学模型的情况下获得良好的姿态估计。用陀螺模型代替了动力学模型。为此，本文提出了一种间接(误差状
+态)卡尔曼滤波器，该滤波器将惯性导航和绝对测量相结合。本文推导的系统线性形式和平面情况下的测量方程使我们能够检验卡尔曼滤波器作为信号处理单元的作用。将此公式扩展
+到3D案例中显示了相同的好处。文中还给出了一个三维跟踪实例。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Standard
+[1] B.
+ Barshan and H.
+ F.
+ Durrant-Whyte.
+ Inertial navigation systems for mobile robots.
+ IEEE Transactions on Robotics and Automation , 11(3):328{342, June 1995.
+\end_layout
+
+\begin_layout Standard
+[2] Ph.
+ Bonnifait and G.
+ Garcia.
+ A multisensor localization algorithm for mobile robots and it's real-time
+ experimental validation.
+ In Proceedings of the 1996 IEEE International Conference on Robotics and
+ Automation , pages 1395{1400, 1996.
+\end_layout
+
+\begin_layout Standard
+[3] J.
+ Borenstein and L.
+ Feng.
+ Correction of systematic odometry errors in mobile robots.
+ In Proceedings of the 1995 IEEE International Conference on Robotics and
+ Automation , pages 569{574, 1995.
+ [4] J.
+ Borenstein and L.
+ Feng.
+ Gyrodometry: A new method for combining data from gyros and odometry in
+ mobile robots.
+ In Proceedings of the 1996 IEEE International Conference on Robotics and
+ Automation , pages 423{428, 1996.
+\end_layout
+
+\begin_layout Standard
+[5] S.
+ Cooper and H.
+ F.
+ Durant-Whyte.
+ A frequency response method for multi-sensor high-speed navigation systems.
+ In Proceedings of the 1994 IEEE Conference on Multisensor Fusion and Integratio
+n Systems , 1994.
+\end_layout
+
+\begin_layout Standard
+[6] A.
+ Dushman.
+ On gyro drift models and their evaluation.
+ IRE Transactions on Aerospace and Navigational Electronics , ANE-9:230{234,
+ Dec.
+ 1962.
+\end_layout
+
+\begin_layout Standard
+[7] R.L.
+ Farrenkopf.
+ Analytic steady-state accuracy solutions for two common spacecraft estimators.
+ Journal of Guidance and Control , 1:282{284, July-Aug.
+ 1978.
+\end_layout
+
+\begin_layout Standard
+[8] Y.
+ Fuke and E.
+ Krotkov.
+ Dead reckoning for a lunar rover on uneven terrain.
+ In Proceedings of the 1996 IEEE International Conference on Robotics and
+ Automation , pages 411{416, 1996.
+\end_layout
+
+\begin_layout Standard
+[9] M.
+ S.
+ Grewal and A.
+ P.
+ Andrews.
+ Kalman Filtering, Theory and Practice .
+ Prentice Hall, 1993.
+\end_layout
+
+\begin_layout Standard
+[10] R.L.
+ Hammon.
+ An application of random process theory to gyro drift analysis.
+ IRE Transactions on Aeronautical and Navigational Electronics , ANE-7:230{
+ 234, Dec.
+ 1962.
+\end_layout
+
+\begin_layout Standard
+[11] S.
+ Hayati, R.
+ Volpe, P.
+ Backes, J.
+ Balaram, and R.
+ Welch.
+ Microrover research for exploration of mars.
+ In Proceedings of the 1996 AIAA Forum on Advanced Developments in Space
+ Robotics , University of Wisconsin, Madison, August 1-2 1996.
+\end_layout
+
+\begin_layout Standard
+[12] E.J.
+ Le erts and F.L.
+ Markley.
+ Dynamics modeling for attitude determination.
+ AIAA Paper 76-1910 , Aug.
+ 1976.
+\end_layout
+
+\begin_layout Standard
+[13] E.J.
+ Le erts, F.L.
+ Markley, and M.D.
+ Shuster.
+ Kalman filtering for spacecraft attitude estimation.
+ Journal of Guidance, Control, and Dynamics , 5(5):417{429, Sept.-Oct.
+ 1982.
+\end_layout
+
+\begin_layout Standard
+[14] J.
+ J.
+ Leonard and H.
+ F.
+ Durrant-Whyte.
+ Mobile robot localization by tracking geometric beacons.
+ IEEE Transactions on Robotics and Automation , 7(3):376{ 382, June 1991.
+\end_layout
+
+\begin_layout Standard
+[15] P.
+ S.
+ Maybeck.
+ Stochastic Models, Estimation and Control , volume 141-1 of Mathematics
+ in Science and Engineering , chapter 6.
+ Academic Press, 1979.
+\end_layout
+
+\begin_layout Standard
+[16] P.
+ S.
+ Maybeck.
+ Stochastic Models, Estimation and Control , volume 141-2 of Mathematics
+ in Science and Engineering .
+ Academic Press, 1982.
+\end_layout
+
+\begin_layout Standard
+[17] G.C.
+ Newton.
+ Inertial guidance limitations imposed by uctuation phenomena in gyroscopes.
+ In Proceedings of the IRE , volume 48, pages 520{527, April 1960.
+\end_layout
+
+\begin_layout Standard
+[18] D.C.
+ Pauling, D.B.
+ Jackson, and C.D.
+ Brown.
+ Spars algorithms and simulation results.
+ In Proceedings of the Symposium on Spacecraft Attitude Determination, Aerospace
+ Corp.
+ Rept.
+ TR-0066 (6306)-12 , volume 1, pages 293{317, Sept-Oct 1969.
+\end_layout
+
+\begin_layout Standard
+[19] J.E.
+ Potter and W.E.
+ Vander Velde.
+ Optimum mixing of gyroscope and star tracker data.
+ Journal of Spacecraft and Rockets , 5:536{540, May 1968.
+\end_layout
+
+\begin_layout Standard
+[20] S.
+ I.
+ Roumeliotis, G.
+ S.
+ Sukhatme, and G.
+ A.
+ Bekey.
+ Smoother-based 3-d attitude estimation for mobile robot localization.
+ Technical Report IRIS-98-363, USC, 1998.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://iris.usc.edu/irislib/"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+[21] S.
+ I.
+ Roumeliotis, G.
+ S.
+ Sukhatme, and G.
+ A.
+ Bekey.
+ Smoother-based 3-d attitude estimation for mobile robot localization.
+ In Proceedings of the 1999 IEEE International Conference on Robotics and
+ Automation , 1999.
+ Submitted.
+\end_layout
+
+\begin_layout Standard
+[22] S.I.
+ Roumeliotis, G.S.
+ Sukhatme, and G.A.
+ Bekey.
+ Fault detection and identi cation in a mobile robot using multiple-model
+ estimation.
+ In Proceedings of the 1998 IEEE International Conference in Robotics and
+ Automation , May 1998.
+\end_layout
+
+\begin_layout Standard
+[23] S.I.
+ Roumeliotis, G.S.
+ Sukhatme, and G.A.
+ Bekey.
+ Sensor fault detection and identi cation in a mobile robot.
+ In Proceedings of the 1998 IEEE/RSJ International Conference on Intelligent
+ Robots and Systems , 1998.
+\end_layout
+
+\begin_layout Standard
+[24] G.M.
+ Siouris.
+ Aerospace Avionics Systems , chapter 5.
+ Academic Press, Inc., 1993.
+\end_layout
+
+\begin_layout Standard
+[25] S.
+ Thrun.
+ Bayesian landmark learning for mobile robot localization.
+ Machine Learning , 1998.
+ to appear.
+\end_layout
+
+\begin_layout Standard
+[26] N.F.
+ Toda, J.L.
+ Heiss, and F.H.
+ Schlee.
+ Spars: The system, algorithms, and test results.
+ In Proceedings of the Symposium on Spacecraft Attitude Determination, Aerospace
+ Corp.
+ Rept.
+ TR-0066 (6306)-12 , volume 1, pages 361{370, Sept-Oct 1969.
+\end_layout
+
+\begin_layout Standard
+[27] J.R.
+ Wertz, editor.
+ Spacecraft Attitude Determination and Control , volume 73 of Astrophysics
+ and Space Science Library .
+ D.
+ Reidel Publishing Company, Dordrecht, The Netherlands, 1978.
+\end_layout
+
+\end_body
+\end_document
