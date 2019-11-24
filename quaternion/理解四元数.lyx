@@ -1,0 +1,4141 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "理解四元数"
+target "https://www.3dgep.com/understanding-quaternions/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Jeremiah"
+target "https://www.3dgep.com/author/jeremiah/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Wyman"
+target "https://www.qiujiawei.com/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+June 25, 2012
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure1.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Understanding Quaternions
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这篇文章中我会尝试用简单的方式去解释四元数的概念，我将解释你如何用可视化的方式解释四元数以及几种对四元数的操作。我将把矩阵、欧拉角和四元数放在一起比较，并解释
+什么时候该用四元数、什么时候该用欧拉角或矩阵。
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+你不可能在45分钟内完全理解四元数。
+\end_layout
+
+\begin_layout Plain Layout
+这篇文章对数学要求很高，不适合胆小的人。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在计算机图形学中，我们使用转换矩阵来表示空间中的一个位置(translation操作)以及它的方向(rotation操作)。一个可选的转换矩阵还可以表示对一个目
+标的缩放(scale)或错切(shear)等。 我们可以把转换矩阵想象成一个“基空间(basis space)”，当你用这个矩阵乘以向量、点（或甚至其它矩阵）后
+， 你就把这些向量、点、矩阵转换进这个矩阵所代表的空间了。
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我不会讨论转换矩阵的细节。对于描述转换矩阵的细节，你可以查看我前面的名为
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵"
+target "https://www.3dgep.com/?p=259"
+
+\end_inset
+
+文章。
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我想要用另外一种方式讨论用四元数来描述空间里的物体的方向(rotation)。
+\end_layout
+
+\begin_layout Standard
+四元数的概念是由爱尔兰数学家
+\begin_inset CommandInset href
+LatexCommand href
+name "William Rowan Hamilton先生"
+target "https://en.wikipedia.org/wiki/William_Rowan_Hamilton"
+
+\end_inset
+
+发明的（1843年，都柏林，爱尔兰）。Hamilton当时正和他的妻子前往
+\begin_inset CommandInset href
+LatexCommand href
+name "爱尔兰皇家研究院"
+target "https://en.wikipedia.org/wiki/Royal_Irish_Academy"
+
+\end_inset
+
+，当他从
+\begin_inset CommandInset href
+LatexCommand href
+name "Brougham桥"
+target "https://en.wikipedia.org/wiki/Broom_Bridge"
+
+\end_inset
+
+通过皇家运河时，他领悟到了一个激动人心的东西，并立刻把它刻在桥的一个石头上：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+i^{2}=j^{2}=k^{2}=ijk=-1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure2.jpg
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— William Rowan Hamilton Plaque on Broome Bridge on the Royal Canal 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+commemorating his discovery of the fundamental formula for quaternion multiplica
+tion.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+复数
+\end_layout
+
+\begin_layout Standard
+在我们能够完全理解四元数之前，我们必须先知道四元数是怎么来的。四元数的根源是基于复数系统的概念。
+\end_layout
+
+\begin_layout Standard
+除了知名的数集（
+\begin_inset CommandInset href
+LatexCommand href
+name "自然数"
+target "http://mathworld.wolfram.com/NaturalNumber.html"
+
+\end_inset
+
+、
+\begin_inset CommandInset href
+LatexCommand href
+name "整数"
+target "http://mathworld.wolfram.com/Integer.html"
+
+\end_inset
+
+、
+\begin_inset CommandInset href
+LatexCommand href
+name "实数"
+target "http://mathworld.wolfram.com/RealNumber.html"
+
+\end_inset
+
+、
+\begin_inset CommandInset href
+LatexCommand href
+name "有理数"
+target "http://mathworld.wolfram.com/RationalNumber.html"
+
+\end_inset
+
+）之外，复数系统引入了一个新的数集——虚数。虚数的发明是为了解一些特定的无解的方程，例如：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+x^{2}+1=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+要解这个等式，必须让
+\begin_inset Formula $x^{2}=−1$
+\end_inset
+
+，这当然是不行的，因为任意实数（正数或负数）的平方都是非负数。
+\end_layout
+
+\begin_layout Standard
+一般而言，数学家是不能忍受一个等式是无解的。于是，一个新的术语被发明了，它就是
+\begin_inset CommandInset href
+LatexCommand href
+name "虚数"
+target "http://mathworld.wolfram.com/ImaginaryNumber.html"
+
+\end_inset
+
+，一个可以解上面这个等式的数。
+\end_layout
+
+\begin_layout Standard
+虚数有这样的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+i^{2}=−1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+不要为这个术语较真，因为逻辑上这个数是不存在的。只要知道
+\begin_inset Formula $i$
+\end_inset
+
+是一个平方等于
+\begin_inset Formula $-1$
+\end_inset
+
+的东西即可。
+\end_layout
+
+\begin_layout Standard
+虚数的集合可以用
+\begin_inset Formula $\mathbb{I}$
+\end_inset
+
+来表示。
+\end_layout
+
+\begin_layout Standard
+复数的集合
+\begin_inset Formula $\mathbb{C}$
+\end_inset
+
+是一个实数和一个虚数的和，形式如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+z=a+bi & a,b\in\mathbb{R}, & i^{2}=-1\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以认为所有实数都是
+\begin_inset Formula $b=0$
+\end_inset
+
+的复数、所有虚数都是
+\begin_inset Formula $a=0$
+\end_inset
+
+的复数。
+\end_layout
+
+\begin_layout Subsection
+复数的加减
+\end_layout
+
+\begin_layout Standard
+复数可以通过加减实部和虚部来加减。
+\end_layout
+
+\begin_layout Standard
+加法：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(a_{1}+b_{1}i)+(a_{2}+b_{2}i)=(a_{1}+a_{2})+(b_{1}+b_{2})i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+减法：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(a_{1}+b_{1}i)-(a_{2}+b_{2}i)=(a_{1}-a_{2})+(b_{1}-b_{2})i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+复数的系数缩放
+\end_layout
+
+\begin_layout Standard
+复数乘以标量，即复数的每一项乘以标量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\lambda(a_{1}+b_{1}i)=\lambda a_{1}+\lambda b_{1}i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+复数的积
+\end_layout
+
+\begin_layout Standard
+复数也可以通过应用正规代数规则来相乘。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z_{1} & =(a_{1}+b_{1}i)\\
+z_{2} & =(a_{2}+b_{2}i)\\
+z_{1}z_{2} & =(a_{1}+b_{1}i)(a_{2}+b_{2}i)\\
+ & =a_{1}a_{2}+a_{1}b_{2}i+b_{1}a_{2}i+b_{1}b_{2}i^{2}\\
+ & =(a_{1}a_{2}-b_{1}b_{2})+(a_{1}b_{2}+b_{1}a_{2})i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+复数的平方
+\end_layout
+
+\begin_layout Standard
+复数也可以通过自身相乘来平方：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z & =(a+bi)\\
+z^{2} & =(a+bi)(a+bi)\\
+ & =(a^{2}-b^{2})+2abi
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+共轭复数
+\end_layout
+
+\begin_layout Standard
+复数的共轭(
+\begin_inset Formula $\mathbf{conjugate}$
+\end_inset
+
+)就是指把复数的虚数部分变成负的。共轭复数的符号是
+\begin_inset Formula $\bar{z}$
+\end_inset
+
+或
+\begin_inset Formula $z^{*}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z & =(a+bi)\\
+z^{*} & =(a-bi)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+复数和它的共轭复数的乘积是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z & =(a+bi)\\
+z^{*} & =(a-bi)\\
+zz^{*} & =(a+bi)(a-bi)\\
+ & =a^{2}-abi+abi+b^{2}\\
+ & =a^{2}+b^{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+复数的绝对值
+\end_layout
+
+\begin_layout Standard
+我们可以用复数的共轭(
+\begin_inset Formula $\mathbf{conjugate}$
+\end_inset
+
+)来计算复数的绝对值（或范数(
+\begin_inset Formula $\mathbf{norm}$
+\end_inset
+
+)或幅度(
+\begin_inset Formula $\mathbf{magnitude}$
+\end_inset
+
+)）。复数的绝对值是复数乘以其共轭(
+\begin_inset Formula $\mathbf{conjugate}$
+\end_inset
+
+)的平方根，表示为
+\begin_inset Formula $\left|z\right|$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z & =(a+bi)\\
+\left|z\right| & =\sqrt{zz^{*}}\\
+ & =\sqrt{(a+bi)(a-bi)}\\
+ & =\sqrt{a^{2}+b^{2}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+两复数的商
+\end_layout
+
+\begin_layout Standard
+为了计算两个复数的商，我们将分子和分母乘以分母的复共轭。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z_{1} & =(a_{1}+b_{1}i)\\
+z_{2} & =(a_{2}+b_{2}i)\\
+\dfrac{z_{1}}{z_{2}} & =\dfrac{(a_{1}+b_{1}i)}{(a_{2}+b_{2}i)}\\
+ & =\dfrac{(a_{1}+b_{1}i)(a_{2}-b_{2}i)}{(a_{2}+b_{2}i)(a_{2}-b_{2}i)}\\
+ & =\dfrac{a_{1}a_{2}-a_{1}b_{2}i+b_{1}a_{2}i-b_{1}b_{2}i^{2}}{a_{2}^{2}+b_{2}^{2}}\\
+ & =\dfrac{a_{1}a_{2}+b_{1}b_{2}}{a_{2}^{2}+b_{2}^{2}}+\dfrac{b_{1}a_{2}-a_{1}b_{2}}{a_{2}^{2}+b_{2}^{2}}i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $i$
+\end_inset
+
+的幂
+\end_layout
+
+\begin_layout Standard
+如果我们声明
+\begin_inset Formula $i^{2}=-1$
+\end_inset
+
+，那么也应该有可能将
+\begin_inset Formula $i$
+\end_inset
+
+提升到其他次幂：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccccccc}
+i^{0} & = &  &  &  &  & 1\\
+i^{1} & = &  &  &  &  & i\\
+i^{2} & = &  &  &  &  & -1\\
+i^{3} & = & ii^{2} & = &  &  & -i\\
+i^{4} & = & i^{2}i^{2} & = &  &  & 1\\
+i^{5} & = & ii^{4} & = &  &  & i\\
+i^{6} & = & ii^{5} & = & i^{2} & = & -1\\
+i^{7} & = & ii^{6} &  &  & = & -i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果按照这个顺序写下去，会出现这样一个模式：
+\begin_inset Formula $(1,i,-1,-i,1,\ldots)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一个类似的模式也出现在递增的负数幂：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{lcr}
+i^{0} & = & 1\\
+i^{-1} & = & -i\\
+i^{-2} & = & -1\\
+i^{-3} & = & i\\
+i^{-4} & = & 1\\
+i^{-5} & = & -i\\
+i^{-6} & = & -1\\
+i^{-7} & = & i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+你可能已经在数学里头见过类似的模式，但是是以
+\begin_inset Formula $(x,y,-x,-y,x,\ldots)$
+\end_inset
+
+的形式，这是在2D笛卡尔平面对一个点逆时针旋转
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+时生成的；
+\begin_inset Formula $(x,-y,-x,y,x,\ldots)$
+\end_inset
+
+则是在2D笛卡尔平面对一个点顺时针旋转
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+时生成的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure3.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Cartesian Plane
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+复数平面
+\end_layout
+
+\begin_layout Standard
+我们也能够把复数映射到一个2D网格平面——
+\begin_inset CommandInset href
+LatexCommand href
+name "复数平面"
+target "https://en.wikipedia.org/wiki/Complex_plane"
+
+\end_inset
+
+，只需要把实数(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)映射到横轴、虚数(
+\begin_inset Formula $\mathbf{Imaginary}$
+\end_inset
+
+)映射到纵轴。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure4.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Complex Plane
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如前面的序列所示，我们可以认为，对一个复数乘以
+\begin_inset Formula $i$
+\end_inset
+
+，这个复数就在复数平面上旋转了
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+让我们看看这是不是真的。我们随机地在复数平面上取一个绝对点
+\begin_inset Formula $p$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p=2+i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $p$
+\end_inset
+
+乘以
+\begin_inset Formula $i$
+\end_inset
+
+后得到
+\begin_inset Formula $q$
+\end_inset
+
+： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p & =2+i\\
+q & =pi\\
+ & =(2+i)i\\
+ & =2i+i^{2}\\
+ & =-1+2i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $q$
+\end_inset
+
+乘以
+\begin_inset Formula $i$
+\end_inset
+
+后得到
+\begin_inset Formula $r$
+\end_inset
+
+： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =-1+2i\\
+r & =qi\\
+ & =(-1+2i)i\\
+ & =-i+2i^{2}\\
+ & =-2-i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $r$
+\end_inset
+
+乘以
+\begin_inset Formula $i$
+\end_inset
+
+后得到
+\begin_inset Formula $s$
+\end_inset
+
+： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+r & =-2-i\\
+s & =ri\\
+ & =(-2-i)i\\
+ & =-2i-i^{2}\\
+ & =1-2i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $s$
+\end_inset
+
+乘以
+\begin_inset Formula $i$
+\end_inset
+
+后得到
+\begin_inset Formula $t$
+\end_inset
+
+： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+s & =1-2i\\
+t & =si\\
+ & =(1-2i)i\\
+ & =i-2i^{2}\\
+ & =2+i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $t$
+\end_inset
+
+刚好是开始的
+\begin_inset Formula $p$
+\end_inset
+
+。如果我们把这些复数放到复数平面上，就得到下面的图：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure5.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Complex Numbers on the Complex Plane
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们也可以按顺时针方向旋转，只需要把上面的乘数
+\begin_inset Formula $i$
+\end_inset
+
+改成
+\begin_inset Formula $-i$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+旋转子（Rotors)
+\end_layout
+
+\begin_layout Standard
+我们也可以在复数平面上进行任意角度的旋转，只需要定义下面这个复数： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=\cos\theta+i\sin\theta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将任意复数乘以旋转子
+\begin_inset Formula $q$
+\end_inset
+
+，得出一般公式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p & =a+bi\\
+q & =\cos\theta+i\sin\theta\\
+pq & =(a+bi)(\cos\theta+i\sin\theta)\\
+a'+b'i & =a\cos\theta-b\sin\theta+(a\sin\theta+b\cos\theta)i
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也可以写成矩阵的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{cc}
+a' & -b'\\
+b' & a'
+\end{array}\right]=\left[\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right]\left[\begin{array}{cc}
+a & -b\\
+b & a
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这也是一个在复数平面绕原点逆时针旋转任意点的方法。（译注：这句话应该是在说旋转矩阵）
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+四元数
+\end_layout
+
+\begin_layout Standard
+利用复数系统和复平面的知识，我们可以把它推广到三维空间，除了
+\begin_inset Formula $i$
+\end_inset
+
+之外，我们还可以在数字系统中加入两个虚数。
+\end_layout
+
+\begin_layout Standard
+四元数的一般形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+q=s+xi+yj+zk & s,x,y,z\in\mathbb{R}\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上面的公式是根据Hamilton的著名的表达式得到的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+i^{2}=j^{2}=k^{2}=ijk=-1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以及：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+ij=k & jk=i & ki=j\\
+ji=-k & kj=-i & ik=-j
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+你可能已经注意到了，
+\begin_inset Formula $i$
+\end_inset
+
+、
+\begin_inset Formula $j$
+\end_inset
+
+、
+\begin_inset Formula $k$
+\end_inset
+
+之间的关系非常像笛卡尔坐标系下单位向量的叉积规则：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+\mathbf{x}\times\mathbf{y}=\mathbf{z} & \mathbf{y}\times\mathbf{z}=\mathbf{x} & \mathbf{z}\times\mathbf{x}=\mathbf{y}\\
+\mathbf{y}\times\mathbf{x}=-\mathbf{z} & \mathbf{z}\times\mathbf{y}=-\mathbf{x} & \mathbf{x}\times\mathbf{z}=-\mathbf{y}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hamilton自己也发现
+\begin_inset Formula $i$
+\end_inset
+
+、
+\begin_inset Formula $j$
+\end_inset
+
+、
+\begin_inset Formula $k$
+\end_inset
+
+虚数可以被用来表达3个笛卡尔坐标系单位向量
+\begin_inset Formula $\mathbf{i}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{j}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{k}$
+\end_inset
+
+，并且仍然保持有虚数的性质，也即
+\begin_inset Formula $\mathbf{i}^{2}=\mathbf{j}^{2}=\mathbf{k}^{2}=-1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure6.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Visualizing the Properties of 
+\begin_inset Formula $\mathbf{i}\mathbf{j}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{j}\mathbf{k}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{k}\mathbf{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+上图展示了如何用
+\begin_inset Formula $\mathbf{i}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{j}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{k}$
+\end_inset
+
+作为笛卡尔坐标系的单位向量。
+\end_layout
+
+\begin_layout Subsection
+作为有序对的四元数
+\end_layout
+
+\begin_layout Standard
+我们可以用有序对的形式来表示四元数： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+q=[s,\mathbf{v}] & s\in R,\mathbf{v}\in\mathbb{R}^{3}\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中的
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，也可以用它各自独立的
+\begin_inset Formula $3$
+\end_inset
+
+个分量表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+q=[s,x\mathbf{i}+y\mathbf{j}+z\mathbf{k}] & s,x,y,z\in\mathbb{R}\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用这种表示法，我们可以更容易地展示四元数和复数之间的相似性。
+\end_layout
+
+\begin_layout Subsection
+四元数的加减
+\end_layout
+
+\begin_layout Standard
+和复数类似，四元数也可以被加减：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q_{a} & =[s_{a},\mathbf{a}]\\
+q_{b} & =[s_{b},\mathbf{b}]\\
+q_{a}+q_{b} & =[s_{a}+s_{b},\mathbf{a}+\mathbf{b}]\\
+q_{a}-q_{b} & =[s_{a}-s_{b},\mathbf{a}-\mathbf{b}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的积
+\end_layout
+
+\begin_layout Standard
+我们也可以表示四元数的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q_{a} & = & [s_{a},\mathbf{a}]\\
+q_{b} & = & [s_{b},\mathbf{b}]\\
+q_{a}q_{b} & = & [s_{a},\mathbf{a}][s_{b},\mathbf{b}]\\
+ & = & (s_{a}+x_{a}i+y_{a}j+z_{a}k)(s_{b}+x_{b}i+y_{b}j+z_{b}k)\\
+ & = & (s_{a}s_{b}-x_{a}x_{b}-y_{a}y_{b}-z_{a}z_{b})+\\
+ &  & (x_{a}s_{b}+s_{a}x_{b}-z_{a}y_{b}+y_{a}z_{b})i+\\
+ &  & (y_{a}s_{b}+z_{a}x_{b}+s_{a}y_{b}-x_{a}z_{b})j+\\
+ &  & (z_{a}s_{b}-y_{a}x_{b}+x_{a}y_{b}+s_{a}z_{b})k
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以看到，四元数的乘积依然还是一个四元数。如果我们把虚数
+\begin_inset Formula $i$
+\end_inset
+
+、
+\begin_inset Formula $j$
+\end_inset
+
+ 、
+\begin_inset Formula $k$
+\end_inset
+
+替换成有序对：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+i=[0,\mathbf{i}] & j=[0,\mathbf{j}] & k=[0,\mathbf{k}]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以及还有
+\begin_inset Formula $[1,\mathbf{0}]=1$
+\end_inset
+
+，将它们代入前面的表达式，就得到了：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+[s_{a},\mathbf{a}][s_{b},\mathbf{b}] & = & (s_{a}s_{b}-x_{a}x_{b}-y_{a}y_{b}-z_{a}z_{b})[1,\mathbf{0}]+\\
+ &  & (x_{a}s_{b}+s_{a}x_{b}-z_{a}y_{b}+y_{a}z_{b})[0,\mathbf{i}]+\\
+ &  & (y_{a}s_{b}+z_{a}x_{b}+s_{a}y_{b}-x_{a}z_{b})[0,\mathbf{j}]+\\
+ &  & (z_{a}s_{b}-y_{a}x_{b}+x_{a}y_{b}+s_{a}z_{b})[0,\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+再把这个表达式扩展成多个有序对的和：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+[s_{a},\mathbf{a}][s_{b},\mathbf{b}] & = & [s_{a}s_{b}-x_{a}x_{b}-y_{a}y_{b}-z_{a}z_{b},\mathbf{0}]+\\
+ &  & [\mathbf{0},(x_{a}s_{b}+s_{a}x_{b}-z_{a}y_{b}+y_{a}z_{b})\mathbf{i}]+\\
+ &  & [\mathbf{0},(y_{a}s_{b}+z_{a}x_{b}+s_{a}y_{b}-x_{a}z_{b})\mathbf{j}]+\\
+ &  & [\mathbf{0},(z_{a}s_{b}-y_{a}x_{b}+x_{a}y_{b}+s_{a}z_{b})\mathbf{k}]+
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们与四元数单位相乘并提取公共向量分量，我们可以这样重写此方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+[s_{a},\mathbf{a}][s_{b},\mathbf{b}] & = & [s_{a}s_{b}-x_{a}x_{b}-y_{a}y_{b}-z_{a}z_{b},\mathbf{0}]+\\
+ &  & [0,s_{a}(x_{b}\mathbf{i}+y_{b}\mathbf{j}+z_{b}\mathbf{k})+s_{b}(x_{a}\mathbf{i}+y_{a}\mathbf{j}+z_{a}\mathbf{k})\\
+ &  & +(y_{a}z_{b}-z_{a}y_{b})\mathbf{i}+(z_{a}x_{b}-x_{a}z_{b})\mathbf{j}+(x_{a}y_{b}-y_{a}x_{b})\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个等式是两个有序对的和。第一个有序对是一个实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数，第2个是一个纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数。这两个四元数也可以合并成一个：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+[s_{a},\mathbf{a}][s_{b},\mathbf{b}] & = & [s_{a}s_{b}-x_{a}x_{b}-y_{a}y_{b}-z_{a}z_{b},\\
+ &  & s_{a}(x_{b}\mathbf{i}+y_{b}\mathbf{j}+z_{b}\mathbf{k})+s_{b}(x_{a}\mathbf{i}+y_{a}\mathbf{j}+z_{a}\mathbf{k})+\\
+ &  & (y_{a}z_{b}-z_{a}y_{b})\mathbf{i}+(z_{a}x_{b}-x_{a}z_{b})\mathbf{j}+(x_{a}y_{b}-y_{a}x_{b})\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果把下面的表达式代入上面的等式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+\mathbf{a} & = & x_{a}\mathbf{i}+y_{a}\mathbf{j}+z_{a}\mathbf{k}\\
+\mathbf{b} & = & x_{b}\mathbf{i}+y_{b}\mathbf{j}+z_{b}\mathbf{k}\\
+\mathbf{a}\cdot\mathbf{b} & = & x_{a}x_{b}+y_{a}y_{b}+z_{a}z_{b}\\
+\mathbf{a}\times\mathbf{b} & = & \left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k}\\
+x_{a} & y_{a} & z_{a}\\
+x_{b} & y_{b} & z_{b}
+\end{array}\right|\\
+ & = & (y_{a}z_{b}-z_{a}y_{b})\mathbf{i}+(z_{a}x_{b}-x_{a}z_{b})\mathbf{j}+(x_{a}y_{b}-y_{a}x_{b})\mathbf{k}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+（译注：注意，第三条'
+\begin_inset Formula $\cdot$
+\end_inset
+
+'和第四条'
+\begin_inset Formula $\times$
+\end_inset
+
+'并不是四元数的点乘和叉乘，而是向量的点乘和叉乘。其实按照历史的顺序来说叉乘是在这里被定义的。）
+\end_layout
+
+\begin_layout Standard
+我们就得到了：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+[s_{a},\mathbf{a}][s_{b},\mathbf{b}]=[s_{a}s_{b}-\mathbf{a}\cdot\mathbf{b},s_{a}\mathbf{b}+s_{b}\mathbf{a}+\mathbf{a}\times\mathbf{b}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就是四元数乘积的一般式。
+\end_layout
+
+\begin_layout Subsection
+实四元数
+\end_layout
+
+\begin_layout Standard
+一个实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数是一个虚部向量为
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+向量的四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[s,\mathbf{0}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两个实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数的乘积是另一个实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q_{a} & = & [s_{a},\mathbf{0}]\\
+q_{b} & = & [s_{b},\mathbf{0}]\\
+q_{a}q_{b} & = & [s_{a},\mathbf{0}][s_{b},\mathbf{0}]\\
+ & = & [s_{a}s_{b},\mathbf{0}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这和两个虚部为
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+的复数的乘积几乎一样：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+z_{1} & = & a_{1}+0i\\
+z_{2} & = & a_{2}+0i\\
+z_{1}z_{2} & = & (a_{1}+0i)(a_{2}+0i)\\
+ & = & a_{1}a_{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的系数缩放
+\end_layout
+
+\begin_layout Standard
+我们也可以用一个系数（实数）去乘四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q & = & [s,\mathbf{v}]\\
+\lambda q & = & \lambda[s,\mathbf{v}]\\
+ & = & [\lambda s,\lambda\mathbf{v}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以使用上面所示的乘积或实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数将四元数乘以标量作为实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数来确认这一点：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q & = & [s,\mathbf{v}]\\
+\lambda & = & [\lambda,\mathbf{0}]\\
+\lambda q & = & [\lambda,\mathbf{0}][s,\mathbf{v}]\\
+ & = & [\lambda s,\lambda\mathbf{v}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+纯四元数
+\end_layout
+
+\begin_layout Standard
+与实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数类似，Hamilton还将纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数定义为具有零标量项的四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[0,\mathbf{v}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也可以写成下面的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=xi+yj+zk
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后是两个纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q_{a} & = & [0,\mathbf{a}]\\
+q_{b} & = & [0,\mathbf{b}]\\
+q_{a}q_{b} & = & [0,\mathbf{a}][0,\mathbf{b}]\\
+ & = & [-a\cdot b,a\times b]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的加法形式
+\end_layout
+
+\begin_layout Standard
+我们可以把四元数写成实(
+\begin_inset Formula $\mathbf{Real}$
+\end_inset
+
+)四元数和纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数的和：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+q & = & [s,\mathbf{v}]\\
+ & = & [s,\mathbf{0}]+[0,\mathbf{v}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+单位四元数
+\end_layout
+
+\begin_layout Standard
+给定任意的向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，我们可以把这个向量写成一个系数和一个单位方向向量的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{cc}
+\mathbf{v}=v\hat{\mathbf{v}} & v=|\mathbf{v}|,|\hat{\mathbf{v}}|=1\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将这个定义和纯四元数的定义结合，就得到了：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[0,\mathbf{v}]\\
+ & =[0,v\hat{\mathbf{v}}]\\
+ & =v[0,\hat{\mathbf{v}}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们还可以描述一个具有零标量和单位向量的单位四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{q}=[0,\hat{\mathbf{v}}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的二元形式
+\end_layout
+
+\begin_layout Standard
+我们现在可以把单位四元数的定义和四元数的加法形式结合到一起，就创造了一种新的四元数的表示法，这种表示法和复数的表示法形似：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[s,\mathbf{v}]\\
+ & =[s,\mathbf{0}]+[0,\mathbf{v}]\\
+ & =[s,\mathbf{0}]+v[0,\hat{\mathbf{v}}]\\
+ & =s+v\hat{q}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就给了我们一种和复数非常相似的四元数表示法：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+z & =a+bi\\
+q & =s+v\hat{q}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+共轭四元数
+\end_layout
+
+\begin_layout Standard
+共轭四元数的计算，就是将四元数的虚向量取反：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[s,\mathbf{v}]\\
+q^{*} & =[s,-\mathbf{v}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数和它的共轭四元数的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+qq^{*} & =[s,\mathbf{v}][s,-\mathbf{v}]\\
+ & =[s^{2}-\mathbf{v}\cdot(-\mathbf{v}),-s\mathbf{v}+s\mathbf{v}+\mathbf{v}\times(-\mathbf{v})]\\
+ & =[s^{2}+\mathbf{v}\cdot\mathbf{v},\mathbf{0}]\\
+ & =[s^{2}+v^{2},\mathbf{0}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数范数
+\end_layout
+
+\begin_layout Standard
+回忆下复数范数的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+|z| & =\sqrt{a^{2}+b^{2}}\\
+zz^{*} & =|z|^{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似的，四元数的范数可以这样定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[s,\mathbf{v}]\\
+|q| & =\sqrt{s^{2}+v^{2}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这也让我们可以这样表达四元数范数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+qq^{*}=|q|^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数规范化
+\end_layout
+
+\begin_layout Standard
+利用四元数范数的定义，就可以对四元数进行规范化。要让一个四元数规范化，只需要让这个四元数去除以它的
+\begin_inset Formula $|q|$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q^{\text{′}}=\dfrac{q}{\sqrt{s^{2}+v^{2}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+举一个例子，让我们规范化下面这个四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[1,4\mathbf{i}+4\mathbf{j}-4\mathbf{k}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第一步，先计算四元数的范数(
+\begin_inset Formula $\mathbf{norm}$
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+|q| & =\sqrt{1^{2}+4^{2}+4^{2}+(-4)^{2}}\\
+ & =\sqrt{49}\\
+ & =7
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，我们必须将四元数除以四元数的范数来计算标准化四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q' & =\dfrac{q}{|q|}\\
+ & =\dfrac{(1+4\mathbf{i}+4\mathbf{j}-4\mathbf{k})}{7}\\
+ & =\dfrac{1}{7}+\dfrac{4}{7}\mathbf{i}+\dfrac{4}{7}\mathbf{j}-\dfrac{4}{7}\mathbf{k}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的逆
+\end_layout
+
+\begin_layout Standard
+四元数的逆用
+\begin_inset Formula $q^{-1}$
+\end_inset
+
+表示。要计算四元数的逆，需要用四元数的共轭四元数去除以四元数的范数的平方：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q^{-1}=\dfrac{q^{*}}{|q|^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了证明这个式子，我们先根据逆的定义，有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+qq^{-1}=[1,\mathbf{0}]=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两边都左乘共轭四元数
+\begin_inset Formula $q^{*}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q^{*}qq^{-1}=q^{*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过替换我们得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+|q|^{2}q^{-1} & =q^{*}\\
+q^{-1} & =\dfrac{q^{*}}{|q|^{2}}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于单位四元数，它的范数是
+\begin_inset Formula $1$
+\end_inset
+
+，所以可以写成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q^{-1}=q^{*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的点积
+\end_layout
+
+\begin_layout Standard
+与矢量点积类似，我们也可以通过乘以相应的标量部分并求和结果来计算两个四元数之间的点积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q_{1} & =[s_{1},x_{1}\mathbf{i}+y_{1}\mathbf{j}+z_{1}\mathbf{k}]\\
+q_{2} & =[s_{2},x_{2}\mathbf{i}+y_{2}\mathbf{j}+z_{2}\mathbf{k}]\\
+q_{1}\cdot q_{2} & =s_{1}s_{2}+x_{1}x_{2}+y_{1}y_{2}+z_{1}z_{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们也可以利用四元数点积，来计算四元数之间的角度差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\cos\theta=\dfrac{s_{1}s_{2}+x_{1}x_{2}+y_{1}y_{2}+z_{1}z_{2}}{|q_{1}||q_{2}|}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于单位四元数，我们可以简化上面的等式： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\cos\theta=s_{1}s_{2}+x_{1}x_{2}+y_{1}y_{2}+z_{1}z_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数的指数函数
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:四元数的指数函数"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数指数的定义是由绝对收敛级数给出的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+e^{z}=\sum_{k=0}^{\infty}\dfrac{z^{k}}{k!}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+众所周知，根据这个定义，如果
+\begin_inset Formula $x$
+\end_inset
+
+，
+\begin_inset Formula $y$
+\end_inset
+
+可交换，我们有
+\begin_inset Formula $e^{x}e^{y}=e^{y}e^{x}=e^{x+y}$
+\end_inset
+
+。由于实四元数与所有其他四元数可交换，对于
+\begin_inset Formula $a\in\mathbb{R}$
+\end_inset
+
+，我们有
+\begin_inset Formula $\begin{array}{cc}
+e^{a+z}=e^{a}e^{z} & \forall z\in\mathbb{H}\end{array}$
+\end_inset
+
+所以，如果
+\begin_inset Formula $z=a+b\mathbf{i}+c\mathbf{j}+d\mathbf{k}=a+\mathbf{v}$
+\end_inset
+
+，我们有
+\begin_inset Formula $e^{z}=e^{a}e^{\mathbf{v}}$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+是一个虚（或向量）四元数。现在我们有：
+\end_layout
+
+\begin_layout Paragraph
+声明
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{v}\in\mathbb{H}_{p}$
+\end_inset
+
+是一个虚的四元数，设
+\begin_inset Formula $\theta=\left|\mathbf{v}\right|$
+\end_inset
+
+，我们有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+e^{\mathbf{v}}=\cos\theta+\mathbf{v}\dfrac{\sin\theta}{\theta}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+证明
+\end_layout
+
+\begin_layout Standard
+我们注意到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{v}^{2}=(b\mathbf{i}+c\mathbf{j}+d\mathbf{k})(b\mathbf{i}+c\mathbf{j}+d\mathbf{k})=-b^{2}-c^{2}-d^{2}=-\left|\mathbf{v}\right|^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+\mathbf{v}^{0} & = & 1\\
+\mathbf{v}^{1} & = & \theta\\
+\mathbf{v}^{2} & = & -\theta^{2}\\
+\mathbf{v}^{3} & = & -\theta^{2}\mathbf{v}\\
+\mathbf{v}^{4} & = & \theta^{4}\\
+\mathbf{v}^{5} & = & \theta^{4}\mathbf{v}\\
+\mathbf{v}^{6} & = & -\theta^{6}\\
+\mathbf{v}^{7} & = & -\theta^{6}\mathbf{v}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个系列变成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+e^{\mathbf{v}} & =\Sigma_{k=0}^{\infty}\dfrac{\mathbf{v}^{k}}{k!}\\
+ & =1+\dfrac{\mathbf{v}}{1!}-\dfrac{\theta^{2}}{2!}-\dfrac{\theta^{2}\mathbf{v}}{3!}+\dfrac{\theta^{4}}{4!}+\dfrac{\theta^{4}\mathbf{v}}{5!}-\dfrac{\theta^{6}}{6!}+\cdots\\
+ & =1+\dfrac{\theta\mathbf{v}}{1!\theta}-\dfrac{\theta^{2}}{2!}-\dfrac{\theta^{3}\mathbf{v}}{3!\theta}+\dfrac{\theta^{4}}{4!}+\dfrac{\theta^{5}\mathbf{v}}{5!\theta}-\dfrac{\theta^{6}}{6!}+\cdots\\
+ & =\left(1-\dfrac{\theta^{2}}{2!}+\dfrac{\theta^{4}}{4!}-\dfrac{\theta^{6}}{6!}+\cdots\right)+\dfrac{\mathbf{v}}{\theta}\left(\dfrac{\theta}{1!}-\dfrac{\theta^{3}}{3!}+\dfrac{\theta^{5}}{5!}+\cdots\right)\\
+ & =\cos\theta+\dfrac{\mathbf{v}}{\theta}\sin\theta
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以四元数的指数函数是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+e^{z}=e^{a+\mathbf{v}}=e^{a}\left(\cos\left|\mathbf{v}\right|+\dfrac{\mathbf{v}}{\left|\mathbf{v}\right|}\sin\left|\mathbf{v}\right|\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+旋转
+\end_layout
+
+\begin_layout Standard
+前面我们定义了一个特殊的复数：旋转子(
+\begin_inset Formula $\mathbf{Rotor}$
+\end_inset
+
+)。它是用来旋转2D复数平面的点的： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=\cos\theta+i\sin\theta
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据四元数和复数的相似性，应该有可能设计一个可以旋转3D空间的点的四元数： 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[\cos\theta,\sin\theta\mathbf{v}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们测试一下这个理论是否可靠，方法就是计算四元数
+\begin_inset Formula $q$
+\end_inset
+
+和向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的积。第一步，我们把
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+写成纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数的形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p=[0,\mathbf{p}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以及单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[s,\lambda\hat{\mathbf{v}}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从而：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p' & =qp\\
+ & =[s,\lambda\hat{\mathbf{v}}][0,\mathbf{p}]\\
+ & =[-\lambda\hat{\mathbf{v}}\cdot\mathbf{p},s\mathbf{p}+\lambda\hat{\mathbf{v}}\times\mathbf{p}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以看到结果是一个同时有系数、有虚向量的四元数。
+\end_layout
+
+\begin_layout Standard
+让我们先考虑特殊的情形：
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+与
+\begin_inset Formula $\hat{\mathbf{v}}$
+\end_inset
+
+正交。这种情况下，点乘部分等于
+\begin_inset Formula $-\lambda\hat{\mathbf{v}}\cdot\mathbf{p}=0$
+\end_inset
+
+。所以上面的四元数就变成了纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p'=[0,s\mathbf{p}+\lambda\hat{\mathbf{v}}\times\mathbf{p}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这时候，要使
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+绕
+\begin_inset Formula $\hat{\mathbf{v}}$
+\end_inset
+
+旋转，我们只需要代入
+\begin_inset Formula $s=\cos\theta$
+\end_inset
+
+和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\lambda=\sin\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ ：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p'=[0,\cos\theta\mathbf{p}+\sin\theta\hat{\mathbf{v}}\times\mathbf{p}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，让我们找一个例子来测试上面的公式。譬如向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+绕
+\begin_inset Formula $z$
+\end_inset
+
+轴(就是
+\begin_inset Formula $k$
+\end_inset
+
+轴)旋转
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+，那么我们的四元数
+\begin_inset Formula $q$
+\end_inset
+
+就变成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[\cos\theta,\sin\theta\mathbf{k}]\\
+ & =[\dfrac{\sqrt{2}}{2},\dfrac{\sqrt{2}}{2}\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，选一个特殊的向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+，并且
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+要和
+\begin_inset Formula $k$
+\end_inset
+
+轴正交，譬如把
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+放到
+\begin_inset Formula $i$
+\end_inset
+
+轴上，也就是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p=[0,2\mathbf{i}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+好了，现在计算下
+\begin_inset Formula $qp$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p' & =qp\\
+ & =\left[\dfrac{\sqrt{2}}{2},\dfrac{\sqrt{2}}{2}\mathbf{k}\right][0,2\mathbf{i}]\\
+ & =\left[0,2\dfrac{\sqrt{2}}{2}\mathbf{i}+2\dfrac{\sqrt{2}}{2}\mathbf{k}\times\mathbf{i}\right]\\
+ & =[0,\sqrt{2}\mathbf{i}+\sqrt{2}\mathbf{j}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+结果是一个绕了
+\begin_inset Formula $k$
+\end_inset
+
+轴转了
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+的纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数。 我们可以确认这个四元数的向量部分的长度是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+|p'| & =\sqrt{\sqrt{2}^{2}+\sqrt{2}^{2}}\\
+ & =2
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这正是我们所期望的！
+\end_layout
+
+\begin_layout Standard
+我们可以用图像展示旋转过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure7.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Quaternion Rotation (1)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，让我们考虑更一般化的四元数，即和
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+不正交的四元数。现在让我们把
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的向量部分偏移
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\hat{\mathbf{v}} & =\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k}\\
+\mathbf{p} & =2\mathbf{i}\\
+q & =[\cos\theta,\sin\theta\hat{\mathbf{v}}]\\
+p & =[0,\mathbf{p}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+把向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+乘以
+\begin_inset Formula $q$
+\end_inset
+
+，我们得到：
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p' & =qp\\
+ & =[\cos\theta,\sin\theta\hat{\mathbf{v}}][0,\mathbf{p}]\\
+ & =[-\sin\theta\hat{\mathbf{v}}\cdot\mathbf{p},\cos\theta\mathbf{p}+\sin\theta\mathbf{v}\times\mathbf{p}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入我们设定的
+\begin_inset Formula $\hat{\mathbf{v}}$
+\end_inset
+
+,
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+，以及
+\begin_inset Formula $\theta=45^{\circ}$
+\end_inset
+
+，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+p' & =\left[-\dfrac{\sqrt{2}}{2}(\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k})\cdot(2\mathbf{i}),\dfrac{\sqrt{2}}{2}2\mathbf{i}+\dfrac{\sqrt{2}}{2}(\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k})\times2\mathbf{i}\right]\\
+ & =[-1,\sqrt{2}\mathbf{i}+\mathbf{j}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，算出来的结果已经不是纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数了，并且，它并没有旋转
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+、范数也不再是
+\begin_inset Formula $2$
+\end_inset
+
+(反而变小了，变成
+\begin_inset Formula $\sqrt{3}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+我们可以用图像展示旋转过程：
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+从技术上讲，在三维空间中表示四元数
+\begin_inset Formula $p′$
+\end_inset
+
+是不正确的，因为它实际上是一个4D向量！为了简单起见，我将只可视化四元数的矢量分量。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure8.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Quaternion Rotation (2)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，还有一线生机。Hamilton发现（但没有正式宣布），如果对
+\begin_inset Formula $qp$
+\end_inset
+
+右乘
+\begin_inset Formula $q$
+\end_inset
+
+的逆，出来的结果是一个纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数，并且四元数向量部分的范数可以保持不变。让我们试试应用在我们的例子里。
+\end_layout
+
+\begin_layout Standard
+首先计算
+\begin_inset Formula $q^{-1}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q & =[\cos\theta,\sin\theta(\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k})]\\
+q^{-1} & =[\cos\theta,-\sin\theta(\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k})]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(译注：这里
+\begin_inset Formula $q^{-1}=q^{*}$
+\end_inset
+
+是因为
+\begin_inset Formula $q$
+\end_inset
+
+是单位四元数)
+\end_layout
+
+\begin_layout Standard
+再代入
+\begin_inset Formula $\theta=45^{\circ}$
+\end_inset
+
+，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q^{-1} & =[\dfrac{\sqrt{2}}{2},-\dfrac{\sqrt{2}}{2}(\dfrac{\sqrt{2}}{2}\mathbf{i}+\dfrac{\sqrt{2}}{2}\mathbf{k})]\\
+ & =\dfrac{1}{2}[\sqrt{2},-\mathbf{i}-\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并结合
+\begin_inset Formula $qp$
+\end_inset
+
+和
+\begin_inset Formula $q^{-1}$
+\end_inset
+
+的先前值给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+qp & =[-1,\sqrt{2}\mathbf{i}+\mathbf{j}]\\
+qpq^{-1} & =[-1,\sqrt{2}\mathbf{i}+\mathbf{j}]\dfrac{1}{2}[\sqrt{2},-\mathbf{i}-\mathbf{k}]\\
+ & =\dfrac{1}{2}[-\sqrt{2}-(\sqrt{2}\mathbf{i}+\mathbf{j})\cdot(-\mathbf{i}-\mathbf{k}),\mathbf{i}+\mathbf{k}+\sqrt{2}(\sqrt{2}\mathbf{i}+\mathbf{j})-\mathbf{i}+\sqrt{2}\mathbf{j}+\mathbf{k}]\\
+ & =\dfrac{1}{2}[-\sqrt{2}+\sqrt{2},\mathbf{i}+\mathbf{k}+2\mathbf{i}+\sqrt{2}\mathbf{j}-\mathbf{i}+\sqrt{2}\mathbf{j}+\mathbf{k}]\\
+ & =[0,\mathbf{i}+\sqrt{2}\mathbf{j}+\mathbf{k}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这下是纯(
+\begin_inset Formula $\mathbf{Pure}$
+\end_inset
+
+)四元数了，并且它的范数是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+|p'| & =\sqrt{1^{2}+\sqrt{2}^{2}+1^{2}}\\
+ & =\sqrt{4}\\
+ & =2
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这和原始的
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的范数一致。
+\end_layout
+
+\begin_layout Standard
+下面的图像展示了旋转结果：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure9.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Quaternion Rotation (3)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以我们可以看到，这个结果是一个纯四元数，并且原四元数的向量的范数也保持住了。但是还有一个问题：向量被旋转了
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+而不是
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+。这刚好是我们需要的度数的两倍！为了正确地让一个向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+绕某个轴向量旋转一个角度
+\begin_inset Formula $\theta$
+\end_inset
+
+，我们必须以目标角度的一半来计算。因此，我们构造了下面的四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=[\cos\dfrac{1}{2}\theta,\sin\dfrac{1}{2}\theta\hat{\mathbf{v}}]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就是旋转四元数的一般形式！
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+四元数插值
+\end_layout
+
+\begin_layout Standard
+在计算机图形学中使用四元数，其中一个重要原因是四元数非常适合用来表示空间中的旋转。四元数解决了其他3维空间旋转算法会遇到的恼人的问题，比如使用欧拉角来表示旋转操
+作时会遇到的万向节锁问题(
+\begin_inset CommandInset href
+LatexCommand href
+name "Gimbal lock"
+target "https://en.wikipedia.org/wiki/Gimbal_lock"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+使用四元数，我们可以定义好几种方案来表示3维空间的转动插值。第一种是
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+，它被用来把一个点(物体)从一个方向平滑地插值到另一个方向。第二个是
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+的扩展版本，被称为
+\begin_inset Formula $\mathbf{SQAD}$
+\end_inset
+
+，它被用来处理用一系列方向定义得到的一条路径的插值。
+\end_layout
+
+\begin_layout Subsection
+SLERP
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+代表
+\begin_inset Formula $\mathrm{\mathbf{S}pherical\;\mathbf{L}inear\;Int\mathbf{erp}olation}$
+\end_inset
+
+。
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+可以在两个方向之间平滑地插值。
+\end_layout
+
+\begin_layout Standard
+第一个方向设为
+\begin_inset Formula $q_{1}$
+\end_inset
+
+，第二个方向设为
+\begin_inset Formula $q_{2}$
+\end_inset
+
+(请记住，这2个指示方向的四元数是单位四元数，不然阅读下文会混乱）。被插值前的点设为
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+，插值后的点设为
+\begin_inset Formula $\mathbf{p}'$
+\end_inset
+
+。而插值参数
+\begin_inset Formula $t$
+\end_inset
+
+，当
+\begin_inset Formula $t=0$
+\end_inset
+
+时会把
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+转到
+\begin_inset Formula $q_{1}$
+\end_inset
+
+，当
+\begin_inset Formula $t=1$
+\end_inset
+
+时会转到
+\begin_inset Formula $q_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+标准的线性插值公式是(译注：这个公式是笛卡尔坐标系下的，不是指四元数)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{p}′=\mathbf{p}_{1}+t(\mathbf{p}_{2}−\mathbf{p}_{1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应用这个等式的一般步骤是：
+\end_layout
+
+\begin_layout Itemize
+计算
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{p}_{2}$
+\end_inset
+
+之间的差。 
+\end_layout
+
+\begin_layout Itemize
+把差额的小数部分计算出来。
+\end_layout
+
+\begin_layout Itemize
+通过两点之间的分数差调整原始值。
+\end_layout
+
+\begin_layout Standard
+我们可以使用相同的基本原理在两个四元数方向之间进行插值。
+\end_layout
+
+\begin_layout Subsubsection
+四元数的差
+\end_layout
+
+\begin_layout Standard
+第一步要求我们必须计算
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+之间的差。对于四元数，这相当于计算两个四元数之间的角度差(angular difference)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta q=q_{1}^{-1}q_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+（译注：由
+\begin_inset Formula $q_{1}\Delta q=q_{2}$
+\end_inset
+
+推出 ）
+\end_layout
+
+\begin_layout Subsubsection
+四元数的幂运算
+\end_layout
+
+\begin_layout Standard
+下一步是把差额的小数部分去掉。我们可以把四元数的小数部分提高到数值在范围
+\begin_inset Formula $[0\ldots1]$
+\end_inset
+
+内的幂。
+\end_layout
+
+\begin_layout Standard
+四元数的幂运算的一般化公式是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q^{t}=\exp(t\log q)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，(纯)四元数的
+\begin_inset Formula $\exp$
+\end_inset
+
+函数的公式是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\exp(q) & =\exp([0,\theta\hat{\mathbf{v}}])\\
+ & =[\cos\theta,\sin\theta\hat{\mathbf{v}}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(纯)四元数的对数公式是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\log q & =\log(\cos\theta+\sin\theta\hat{\mathbf{v}})\\
+ & =\log(\exp(\theta\hat{\mathbf{v}}))\\
+ & =\theta\hat{\mathbf{v}}\\
+ & =[0,\theta\hat{\mathbf{v}}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(译注：上述的2次公式推导，其实省略了很多证明过程。具体可以参考：第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数的指数函数"
+
+\end_inset
+
+节 四元数的指数函数)
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $t=0$
+\end_inset
+
+，我们有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q_{0} & =\exp(0\log q)\\
+ & =\exp([\cos(0),\sin(0)\hat{\mathbf{v}}])\\
+ & =\exp([1,\mathbf{0}])\\
+ & =[1,\mathbf{0}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+而对于
+\begin_inset Formula $t=1$
+\end_inset
+
+，有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+q_{1} & =\exp(\log q)\\
+ & =q
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+两个四元数的分数差
+\end_layout
+
+\begin_layout Standard
+对于角旋转的插值计算，我们利用
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+的角度分数差来调整原始方向
+\begin_inset Formula $q_{1}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q\text{′}=q_{1}(q_{1}^{-1}q_{2})^{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这也就是使用四元数的球面线性插值的一般形式。然而，这不是
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+函数的常用形式。
+\end_layout
+
+\begin_layout Standard
+我们可以应用类似的用于计算向量的球面插值公式，到四元数里。计算向量的球面插值的一般形式定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{v}_{t}=\dfrac{\sin((1-t)\theta)}{\sin\theta}\mathbf{v}_{1}+\dfrac{\sin(t\theta)}{\sin\theta}\mathbf{v}_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用图像表示如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 理解四元数-figure10.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+— Quaternion Interpolation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个公式可以原封不动地应用到四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{t}=\dfrac{\sin((1-t)\theta)}{\sin\theta}q_{1}+\dfrac{\sin(t\theta)}{\sin\theta}q_{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但这个公式需要提供角度
+\begin_inset Formula $\theta$
+\end_inset
+
+，我们可以计算
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+的点积从而得出角度
+\begin_inset Formula $\theta$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\cos\theta & =\dfrac{q_{1}\cdot q_{2}}{|q1||q2|}\\
+ & =\dfrac{s_{1}s_{2}+x_{1}x_{2}+y_{1}y_{2}+z_{1}z_{2}}{|q_{1}||q_{2}|}\\
+\theta & =\arccos\left(\dfrac{s_{1}s_{2}+x_{1}x_{2}+y_{1}y_{2}+z_{1}z_{2}}{|q_{1}||q_{2}|}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+注意事项
+\end_layout
+
+\begin_layout Standard
+这个方案有两个问题，必须在实现过程中加以考虑。
+\end_layout
+
+\begin_layout Standard
+第一，如果四元数点积的结果是负值，那么后面的插值就会在4D球面上绕远路，这并不是我们想要的。为了解决这个问题，我们测试点积的结果，当结果是负值时，我们将两个四元
+数的其中一个取反，取反它的系数和向量部分，并不会改变它代表的方向。而经过这一步操作，可以保证这个旋转走的是最短路径。
+\end_layout
+
+\begin_layout Standard
+第二，当
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+的角度差非常小，小到导致
+\begin_inset Formula $\sin\theta$
+\end_inset
+
+趋向
+\begin_inset Formula $0$
+\end_inset
+
+时，会出现第二个问题。如果这个情况出现了，当我们除以
+\begin_inset Formula $\sin\theta$
+\end_inset
+
+时就会得到一个未定义的结果。在这个情况下，我们可以回退去使用
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+的线性插值。
+\end_layout
+
+\begin_layout Subsection
+SQUAD
+\end_layout
+
+\begin_layout Standard
+正如一个
+\begin_inset Formula $\mathbf{SLERP}$
+\end_inset
+
+可以被用来计算四元数之间的插值，一个
+\begin_inset Formula $\mathbf{SQUAD}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(
+\begin_inset Formula $\mathrm{\mathbf{S}phericaland\;\mathbf{Quad}rangle}$
+\end_inset
+
+)可以被用来对旋转路径进行平滑插值。
+\end_layout
+
+\begin_layout Standard
+如果我们有四元数序列：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{1},q_{2},q_{3},\ldots,q_{n-2},q_{n-1},q_{n}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后我们再定义一个“辅助”四元数(
+\begin_inset Formula $s_{i}$
+\end_inset
+
+)，它是一个中间控制点：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+s_{i}=\exp\left(-\dfrac{\log(q_{i+1}q_{i}^{-1})+\log(q_{i-1}q_{i}^{-1})}{4}\right)q_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以，沿着子曲线的方向可以定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{i-1},q_{i},q_{i+1},q_{i+2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $t$
+\end_inset
+
+时刻的方向就是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{squad}(q_{i},q_{i+1},s_{i},s_{i+1},t)=\mathrm{slerp}(\mathrm{slerp}(q_{i},q_{i+1},t),\mathrm{slerp}(s_{i},s_{i+1},t),2t(1-t))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+尽管很难理解，四元数比使用矩阵或欧拉角来表示旋转提供了一些明显的优势。
+\end_layout
+
+\begin_layout Itemize
+利用SLERP和SQUAD进行四元数插值，为空间方向间的平滑插值提供了一种方法。
+\end_layout
+
+\begin_layout Itemize
+使用四元数串联旋转比以矩阵形式表示的组合旋转更快。
+\end_layout
+
+\begin_layout Itemize
+对于单位范数四元数，通过减去四元数的矢量部分来求其旋转的逆。如果矩阵不是正交的，则计算旋转矩阵的逆要慢得多（如果是，则只是矩阵的转置）。
+\end_layout
+
+\begin_layout Itemize
+将四元数转换为矩阵的速度略快于欧拉角。
+\end_layout
+
+\begin_layout Itemize
+四元数只需要
+\begin_inset Formula $4$
+\end_inset
+
+个数字（如果它们是标准化的，则需要
+\begin_inset Formula $3$
+\end_inset
+
+个数字。实际部分可以在运行时计算）以表示旋转。旋转矩阵至少需要
+\begin_inset Formula $9$
+\end_inset
+
+个值。
+\end_layout
+
+\begin_layout Standard
+然而，尽管有利于使用四元数的所有优点，也有一些缺点。
+\end_layout
+
+\begin_layout Itemize
+由于浮点舍入误差，四元数可能会变得无效，但是这种“误差蠕变”可以通过重新规范化四元数来解决。
+\end_layout
+
+\begin_layout Itemize
+遏制使用四元数最重要的问题可能是它们很难理解。我希望在阅读了这篇文章之后，这个问题能得到解决。
+\end_layout
+
+\begin_layout Standard
+有几个数学库实现了四元数，其中一些库正确地实现了四元数。以我个人的经验，我发现GLM(OpenGL Math Library)是一个很好的数学库，有一个很好的四
+元数实现。如果你有兴趣在你自己的应用程序中使用四元数，这是我推荐的库。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+下载Demo
+\end_layout
+
+\begin_layout Standard
+我实现了一个小demo来演示一个四元数如何被用来旋转一个3维物体。这个demo是用
+\begin_inset CommandInset href
+LatexCommand href
+name "Unity"
+target "https://unity3d.com/"
+
+\end_inset
+
+ 3.5.2实现的，你可以
+\begin_inset CommandInset href
+LatexCommand href
+name "免费下载"
+target "https://unity3d.com/unity/download/"
+
+\end_inset
+
+它和阅读它的脚本。zip文件还包含一个Windows二进制可执行文件，但是使用Unity，你还可以生成一个Mac应用程序（Unity 4也引入了Linux构建）
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "Understanding Quaternions.zip"
+target "https://docs.google.com/open?id=0B0ND0J8HHfaXdzM0dmdGUzBLV1U"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Reference
+\end_layout
+
+\begin_layout Itemize
+Vince, J (2011).
+ Quaternions for Computer Graphics.
+ 1st.
+ ed.
+ London: Springer.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 理解四元数-figure11.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Dunn, F.
+ and Parberry, I.
+ (2002).
+ 3D Math Primer for Graphics and Game Development.
+ 1st.
+ ed.
+ Plano, Texas: Wordware Publishing, Inc.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 理解四元数-figure12.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternions – Wikipedia"
+target "https://en.wikipedia.org/wiki/Quaternion"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternions and Spatial Rotation – Wikipedia"
+target "https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Exponential Function of Quaternion - Derivation"
+target "http://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+指数函数的泰勒展开公式的证明：
+\begin_inset CommandInset href
+LatexCommand href
+name "MacLaurin series of Exponential function"
+target "http://www.songho.ca/math/taylor/taylor_exp.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\cos$
+\end_inset
+
+&
+\begin_inset Formula $\sin$
+\end_inset
+
+三角函数的泰勒展开公式的证明：
+\begin_inset CommandInset href
+LatexCommand href
+name "MacLaurin series of Trigonometric function"
+target "http://www.songho.ca/math/taylor/taylor_tri.html"
+
+\end_inset
+
+ & 
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternions, Interpolation and Animation"
+target "http://web.mit.edu/2.998/www/QuaternionReport1.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+后记 
+\end_layout
+
+\begin_layout Itemize
+本文翻译自：
+\begin_inset CommandInset href
+LatexCommand href
+name "Understanding Quaternions"
+target "https://www.3dgep.com/understanding-quaternions/"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+翻译参考了：
+\begin_inset CommandInset href
+LatexCommand href
+name "《理解四元数》"
+target "https://www.qiujiawei.com/understanding-quaternions/"
+
+\end_inset
+
+一文。主要是此译文有些地方采用了意译的方式，而我认为直译更能体现原作者的精妙原意，特别是简介的第一段关于“基空间(basis space)”与转换的描述。另外，
+后来原作者根据读者的反馈又做了一些小调整。所以我重新做了翻译。此外，数学公式中的字体也按照原作者的排版。但是为了便于理解，我对其中一些公式中的项的位置做了调整，
+特别是在四元数乘法推导过程中的参数。
+\end_layout
+
+\begin_layout Itemize
+增加了第
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:四元数的指数函数"
+
+\end_inset
+
+节四元数的指数函数，原文来自
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Exponential Function of Quaternion - Derivation"
+target "http://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation"
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+，翻译参考了“
+\begin_inset CommandInset href
+LatexCommand href
+name "四元数公式的补充"
+target "https://www.qiujiawei.com/quaternion2/"
+
+\end_inset
+
+”。
+\end_layout
+
+\begin_layout Itemize
+凡有错误，都是我所引入。
+\end_layout
+
+\end_body
+\end_document
