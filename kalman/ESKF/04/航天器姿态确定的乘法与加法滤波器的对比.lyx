@@ -1,0 +1,2002 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "航天器姿态确定的乘法与加法滤波器的对比"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "F. Landis Markley"
+target "https://www.researchgate.net/profile/Landis_Markley"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+July 2004
+\end_layout
+
+\begin_layout Abstract
+由于没有全局非奇异的旋转三参数表示，迫使姿态卡尔曼滤波器估计出奇异的或冗余的姿态表示。我们使用简化的运动学和测量模型比较了两种滤波策略。我们的偏好策略估计是高维
+非奇异参数化指定的参考姿态的姿态偏差的三参数表示。假设与之参考的偏差足够小，可以避免三维参数化的任何奇异性或不连续性。我们指出了另一种直接估计四参数四元数表示的
+策略的一些缺点。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+实时航天器姿态估计一般采用扩展卡尔曼滤波器(EKF)[1,2]。虽然
+\begin_inset Formula $3\times3$
+\end_inset
+
+正交姿态矩阵是航天器姿态的基本表示，但正交性要求对其
+\begin_inset Formula $9$
+\end_inset
+
+个要素施加了
+\begin_inset Formula $6$
+\end_inset
+
+个约束，反映了旋转矩阵的特殊正交群
+\begin_inset Formula $SO(3)$
+\end_inset
+
+具有维数
+\begin_inset Formula $3$
+\end_inset
+
+的事实。因此，大多数EKFs使用的是
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的低维参数化，最早使用的是最小三维参数化[3]；但高维参数化可以避免所有三个参数表示中出现的奇点或不连续性[4]。四分量四元数具有全局非奇异表示
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的最低维数，但它仍然有一个多余的自由度。因此，我们面临使用或有奇异或有冗余的姿态表示的困境。我们避免这种困境的首选策略是使用非奇异表示作为参考姿态，使用三分量表
+示与此参考姿态的偏差。这种方法，我们称之为乘法EKF(Multiplicative EKF, MEKF)，它隐含在一些早期的航天器姿态估计[5-8]中，并在参考
+文献[9]中进行了详细讨论。另一种策略是加法EKF (Additive EKF, AEKF)，将四元数的四个分量视为独立参数[10]。
+\end_layout
+
+\begin_layout Standard
+我们首先简要概述四元数估计，强调概念上的困难。然后在简化运动学和测量的模型中讨论了MEKF。接下来是对两个版本的AEKF的分析，使用与MEKF相同的模型，并总结
+我们的结论。参考文献[11]是本文的扩展版本，参考文献[12]给出了离散测量情况下的并行分析。
+\end_layout
+
+\begin_layout Section
+四元数估计
+\end_layout
+
+\begin_layout Standard
+姿态矩阵一般写成四元数的齐次二次函数[13]，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A(\bar{q})=A\left(\left[\begin{array}{c}
+\mathbf{q}\\
+q_{4}
+\end{array}\right]\right)=(q_{4}^{2}-|\mathbf{q}|^{2})\boldsymbol{I}_{3\times3}+2\mathbf{q}\mathbf{q}^{T}-2q_{4}[\mathbf{q}\times]\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\boldsymbol{I}_{3\times3}$
+\end_inset
+
+表示
+\begin_inset Formula $3\times3$
+\end_inset
+
+单位矩阵，交叉积矩阵为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+[\mathbf{q}\times]\equiv\left[\begin{array}{ccc}
+0 & -q_{3} & q_{2}\\
+q_{3} & 0 & -q_{1}\\
+-q_{2} & q_{1} & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们使用参考文献[8]和[13]的四元数积约定，所以
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A(\bar{p}\otimes\bar{q})=A\left(\left[\begin{array}{c}
+\mathbf{p}\\
+p_{4}
+\end{array}\right]\otimes\left[\begin{array}{c}
+\mathbf{q}\\
+q_{4}
+\end{array}\right]\right)=A\left(\left[\begin{array}{c}
+p_{4}\mathbf{q}+q_{4}\mathbf{p}-\mathbf{p}\times\mathbf{q}\\
+p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
+\end{array}\right]\right)=A(\bar{p})A(\bar{q})\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+传统的“加法”四元数滤波器通过定义估计
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+和误差
+\begin_inset Formula $\Delta\bar{q}$
+\end_inset
+
+有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+\hat{\bar{q}}\equiv E\left\{ \bar{q}\right\}  & \text{and} & \Delta\bar{q}=\bar{q}-\hat{\bar{q}}\end{array}\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $E\left\{ \cdot\right\} $
+\end_inset
+
+表示期望值。这意味着
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left\{ \left|\bar{q}\right|^{2}\right\} =E\left\{ \left|\hat{\bar{q}}+\Delta\bar{q}\right|^{2}\right\} =\left|\hat{\bar{q}}\right|^{2}+E\left\{ \left|\Delta\bar{q}\right|^{2}\right\} \geq\left|\hat{\bar{q}}\right|^{2}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+只有当
+\begin_inset Formula $\Delta\bar{q}$
+\end_inset
+
+等于零时才具有相等性。只有当四元数有单位范数时，方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)才给出正交矩阵。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，如果随机变量
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+具有单位范数且不是无误差，则其期望范数必须小于
+\begin_inset Formula $1$
+\end_inset
+
+。虽然单位范数约束的违反将体现在姿态误差方差的阶数上，但对于加法四元数EKFs，我们将其视为一个严重的概念问题，因此我们首先转到MEKF。
+\end_layout
+
+\begin_layout Section
+乘法EKF
+\end_layout
+
+\begin_layout Standard
+MEKF用四元数的积表示姿态。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}=\delta\bar{q}(\mathbf{a})\otimes\bar{q}_{ref}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+是某个单位参考四元数，
+\begin_inset Formula $\delta\bar{q}(\mathbf{a})$
+\end_inset
+
+是一个单位四元数，表示从
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+到真实姿态
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+的旋转，由三分量矢量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+参数化。虽然有几种
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的参数化表示可供选择[9]，但在本文中，最重要的是小角度旋转
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\bar{q}(\mathbf{a})=\bar{1}+\dfrac{1}{2}\bar{\mathbf{a}}+order(\left|\mathbf{a}\right|^{2})\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\begin_inset Formula $\bar{1}$
+\end_inset
+
+表示单位四元数，
+\begin_inset Formula $\bar{\mathbf{a}}$
+\end_inset
+
+表示向量部分为
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+和标量部分为
+\begin_inset Formula $0$
+\end_inset
+
+的四元数。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中
+\begin_inset Formula $\delta\bar{q}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+的两种姿态表示显然是多余的。MEKF的基本思想是计算三分量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的无约束估计，同时使用正确规范化的四分量
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+提供全局非奇异姿态表示。给出
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的估计值
+\begin_inset Formula $\hat{\mathbf{a}}\equiv E\left\{ \mathbf{a}\right\} $
+\end_inset
+
+，方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)说明
+\begin_inset Formula $\delta\bar{q}(\hat{\mathbf{a}})\otimes\bar{q}_{ref}$
+\end_inset
+
+是真实姿态四元数
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+的相应估计。我们通过选择参考四元数
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+来消除姿态表示中的冗余，使得
+\begin_inset Formula $\hat{\mathbf{a}}$
+\end_inset
+
+恒等于零，从而避免了三分量表示的任何奇异性或不连续性。由于
+\begin_inset Formula $\delta\bar{q}(\mathbf{0})$
+\end_inset
+
+是特征四元数，因此这个选择导致参考四元数是真四元数的估计。将
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+识别为姿态估计意味着
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+是姿态误差的三分量表示。这为姿态误差统计提供了一种一致的处理方法，用
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的协方差表示机体坐标系内姿态误差的协方差。MEKF的基本概念优势在于，
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+是定义上的单位四元数。
+\end_layout
+
+\begin_layout Subsection
+动力学
+\end_layout
+
+\begin_layout Standard
+四元数运动方程是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\bar{q}}=\dfrac{1}{2}\bar{\mathbf{\omega}}\otimes\bar{q}\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{\omega}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是机体坐标系中的角速度矢量。因为
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+也是一个单位四元数，所以它必须遵守
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\bar{q}}_{ref}=\dfrac{1}{2}\bar{\mathbf{\omega}}_{ref}\otimes\bar{q}_{ref}\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，参考姿态的角速度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{\omega}_{ref}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+必须由要求
+\begin_inset Formula $\hat{\mathbf{a}}$
+\end_inset
+
+恒等于
+\begin_inset Formula $0$
+\end_inset
+
+的条件来确定。请注意，
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{\omega}_{ref}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+不是随机变量。利用方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的时间导数，将整个方程与
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+的倒数右乘，然后重新排列，得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\bar{q}}=\dfrac{1}{2}\left(\bar{\mathbf{\omega}}\otimes\delta\bar{q}-\delta\bar{q}\otimes\bar{\mathbf{\omega}}_{ref}\right)\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在假设简单的运动模型
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{\omega}(t)=\hat{\mathbf{\omega}}(t)+\mathbf{n}_{\omega}(t)\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\hat{\mathbf{\omega}}(t)$
+\end_inset
+
+是名义角速度，
+\begin_inset Formula $\mathbf{n}_{\omega}(t)$
+\end_inset
+
+是零均值高斯过程噪声过程，遵守
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left\{ \mathbf{n}_{\omega}(t)\mathbf{n}_{\omega}^{T}(t')\right\} =\delta(t-t')Q=\delta(t-t')\sigma_{\omega}^{2}\boldsymbol{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\delta(t-t')$
+\end_inset
+
+表示狄拉克
+\begin_inset Formula $\delta$
+\end_inset
+
+函数。将方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的时间导数，并在
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{n}_{\omega}$
+\end_inset
+
+中线性化，得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{a}}=\hat{\mathbf{\omega}}-\mathbf{\omega}_{ref}+F_{a}\mathbf{a}+G_{a}\mathbf{n}_{\omega}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+F_{a}\equiv-\dfrac{1}{2}\left[\left(\hat{\mathbf{\omega}}+\mathbf{\omega}_{ref}\right)\times\right] & \text{and} & G_{a}\equiv\boldsymbol{I}_{3\times3}\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+测量
+\end_layout
+
+\begin_layout Standard
+我们在机体坐标系中对向量
+\begin_inset Formula $\mathbf{v}_{B}$
+\end_inset
+
+的测量建模
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{z}=\mathbf{v}_{B}=\mathbf{h}(\mathbf{a})+\mathbf{n}_{z}=A(\bar{q})\mathbf{v}_{I}+\mathbf{n}_{z}\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\begin_inset Formula $\mathbf{v}_{I}$
+\end_inset
+
+是惯性系中的相应矢量，
+\begin_inset Formula $\mathbf{n}_{z}$
+\end_inset
+
+是零均值高斯测量噪声，假设是各向同性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+R=E\left\{ \mathbf{n}_{z}\mathbf{n}_{z}^{T}\right\} =\sigma_{z}^{2}\boldsymbol{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)并在
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+中线性化得出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{h}(\mathbf{a})=\hat{\mathbf{v}}_{B}+H_{a}\mathbf{a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\hat{\mathbf{v}}_{B}$
+\end_inset
+
+表示机体坐标系中的预测的测量值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\mathbf{v}}_{B}\equiv A(\bar{q}_{ref})\mathbf{v}_{I}\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并且测量灵敏度矩阵为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+H_{a}=\left[\hat{\mathbf{v}}_{B}\times\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+姿态误差估计
+\begin_inset Formula $\hat{\mathbf{a}}$
+\end_inset
+
+由方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的期望值传播，其中
+\begin_inset Formula $\hat{\mathbf{a}}=0$
+\end_inset
+
+，在测量上的条件是假设测量是连续的[1]。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\hat{\mathbf{a}}}=\hat{\mathbf{\omega}}-\mathbf{\omega}_{ref}+P_{a}H_{a}^{T}R^{-1}\left[\mathbf{z}-\mathbf{h}(\mathbf{0})\right]=\hat{\mathbf{\omega}}-\mathbf{\omega}_{ref}-\sigma_{z}^{-2}P_{a}\hat{\mathbf{v}}_{B}\times\mathbf{v}_{B}\label{eq:20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+式中，
+\begin_inset Formula $P_{a}$
+\end_inset
+
+是误差向量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的协方差。这是使用近似值
+\begin_inset Formula $\mathbf{\omega}_{ref}\approx\hat{\mathbf{\omega}}$
+\end_inset
+
+来传播的，它只忽略了比在EKF中通常保留的更高阶的项，并给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dot{P}_{a} & =F_{a}P_{a}+P_{a}F_{a}^{T}+G_{a}QG_{a}^{T}-P_{a}H_{a}^{T}R^{-1}H_{a}P_{a}\\
+ & =-[\hat{\mathbf{\omega}}\times]P_{a}-P_{a}[\hat{\mathbf{\omega}}\times]^{T}+\sigma_{\omega}^{2}\boldsymbol{I}-\sigma_{z}^{-2}P_{a}\left[\hat{\mathbf{v}}_{B}\times\right]^{T}\left[\hat{\mathbf{v}}_{B}\times\right]P_{a}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于MEKF要求
+\begin_inset Formula $\dot{\hat{\mathbf{a}}}$
+\end_inset
+
+恒等于零，方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{\omega}_{ref}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{\omega}_{ref}=\hat{\mathbf{\omega}}+\sigma_{z}^{-2}P_{a}(\mathbf{v}_{B}\times\hat{\mathbf{v}}_{B})\label{eq:22}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程第一个项包含假定的运动学，而第二个项包含测量更新。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)保持参考四元数的单位范数。与离散测量相比，连续测量不需要重置操作[9]。我们强调，MEKF不需要方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的积分，方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)只用于推导方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Section
+加法EKF
+\end_layout
+
+\begin_layout Standard
+AEKF放宽四元数规范化条件，将四元数的四个分量作为独立参数，四元数估计和误差由方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出。线性化方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出了误差矢量动力学。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta\dot{\bar{q}}=\dfrac{1}{2}\left(\hat{\bar{\mathbf{\omega}}}+\bar{\mathbf{n}}_{\omega}\right)\otimes\left(\hat{\bar{q}}+\Delta\bar{q}\right)-\dfrac{1}{2}\hat{\bar{\mathbf{\omega}}}\otimes\hat{\bar{q}}=F_{q}\Delta\bar{q}+G_{q}\mathbf{n}_{\omega}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ccc}
+F_{q}=\dfrac{1}{2}\left[\begin{array}{cc}
+-[\mathbf{\omega}\times] & \mathbf{\omega}\\
+-\mathbf{\omega}^{T} & 0
+\end{array}\right] & \text{and} & G_{q}=\dfrac{1}{2}\left[\begin{array}{c}
+\hat{q}_{4}\boldsymbol{I}+[\hat{\mathbf{q}}\times]\\
+-\hat{\mathbf{q}}^{T}
+\end{array}\right]\end{array}\equiv\dfrac{1}{2}\hat{\Xi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+AEKF中的四元数在角度和范数上都存在不确定性。角度不确定性的形式由方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出，但
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+在MEKF中的作用在AEKF中由
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+承担。范数误差和
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+平行，所以我们可以写
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{q}=\delta\bar{q}(\mathbf{a})\otimes\hat{\bar{q}}+\beta\hat{\bar{q}}\approx\left[\begin{array}{cc}
+\hat{\Xi} & \hat{\bar{q}}\end{array}\right]\left[\begin{array}{c}
+\frac{1}{2}\mathbf{a}\\
+1
+\end{array}\right]+\beta\hat{\bar{q}}=\hat{\bar{q}}+\left[\begin{array}{cc}
+\hat{\Xi} & \hat{\bar{q}}\end{array}\right]\left[\begin{array}{c}
+\frac{1}{2}\mathbf{a}\\
+\beta
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+近似的方程式来自于乘积法则和方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。注意，标准误差
+\begin_inset Formula $\beta$
+\end_inset
+
+是一个相对误差(将
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+的规范化数值乘以
+\begin_inset Formula $1+\beta$
+\end_inset
+
+)，而不是绝对误差(将
+\begin_inset Formula $\beta$
+\end_inset
+
+加到
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+的规范化数值)。那么
+\begin_inset Formula $4\times4$
+\end_inset
+
+四元数协方差是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P_{q}\equiv E\left\{ \Delta\bar{q}\Delta\bar{q}^{T}\right\} =\left[\begin{array}{cc}
+\hat{\Xi} & \hat{\bar{q}}\end{array}\right]\left[\begin{array}{cc}
+\dfrac{1}{4}P_{a} & \dfrac{1}{2}\mathbf{P}_{c}\\
+\dfrac{1}{2}\mathbf{P}_{c}^{T} & p_{n}
+\end{array}\right]\left[\begin{array}{cc}
+\hat{\Xi} & \hat{\bar{q}}\end{array}\right]^{T}\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $P_{a}$
+\end_inset
+
+为
+\begin_inset Formula $3\times3$
+\end_inset
+
+姿态协方差，
+\begin_inset Formula $p_{n}$
+\end_inset
+
+为四元数范数方差，
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+是姿态/范数协方差的向量。这种因式分解不适用于无约束四元数估计，它直接估计四分量
+\begin_inset Formula $\Delta\bar{q}$
+\end_inset
+
+和
+\begin_inset Formula $4\times4$
+\end_inset
+
+ 
+\begin_inset Formula $P_{q}$
+\end_inset
+
+；但它阐明了AEKF与MEKF的关系。
+\end_layout
+
+\begin_layout Subsection
+测量
+\end_layout
+
+\begin_layout Standard
+方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的AEKF测量模型与MEKF中的模型非常相似。然而，AEKF使用不同的姿态矩阵
+\begin_inset Formula $A(\bar{q})$
+\end_inset
+
+参数化，
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+被视为四元数
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+的函数，而不是姿态误差矢量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的函数。我们将考虑AEKF的两种不同实现。第一种，我们称之为二次表示AEKF，用方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表示
+\begin_inset Formula $A(\bar{q})$
+\end_inset
+
+。我们已经看到，除非四元数有单位范数，否则这个姿态矩阵是不正交的，但是我们将证明这些测量在二次表示AEKF中驱动范数趋向单位范数。第二种实现是使用在方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中利用
+\begin_inset Formula $\bar{q}/\left|\bar{q}\right|$
+\end_inset
+
+规范化四元数形成的正交姿态矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A_{R}(\bar{q})\equiv A(\bar{q}/\left|\bar{q}\right|)=\left|\bar{q}\right|^{-2}A(\bar{q})\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们将其称为射线表示AEKF，因为在四元数空间中，沿射线(穿过原点的直线)的任意非零四元数表示相同的姿态。单位四元数表示的双重歧义性对应于射线穿过单位球体的两个
+点。经过大量的代数运算，我们找到了测量灵敏度矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+H_{q}\equiv\left.\partial\mathbf{h}/\partial\bar{q}\right|_{\hat{\bar{q}}}=2\left|\hat{\bar{q}}\right|^{-2}\left(\left[\hat{\mathbf{v}}_{B}\times\right]\hat{\Xi}^{T}+k\hat{\mathbf{v}}_{B}\hat{\bar{q}}^{T}\right)\label{eq:28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，
+\begin_inset Formula $\hat{\mathbf{v}}_{B}$
+\end_inset
+
+是方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的预测测量值，用
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+代替
+\begin_inset Formula $\bar{q}_{ref}$
+\end_inset
+
+，其中
+\begin_inset Formula $k=1$
+\end_inset
+
+表示二次AEKF，
+\begin_inset Formula $k=0$
+\end_inset
+
+表示射线AEKF。测量灵敏度矩阵的形式意味着四元数范数误差(与
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+平行)在二次AEKF中是可观测的，但在射线表示AEKF中是不可观测的。
+\end_layout
+
+\begin_layout Standard
+方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的期望值取决于测量值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dot{\hat{\bar{q}}} & =\frac{1}{2}\hat{\bar{\mathbf{\omega}}}\otimes\hat{\bar{q}}+P_{q}H_{q}R^{-1}\left[\mathbf{z}-\mathbf{h}\left(\hat{\bar{q}}\right)\right]\\
+ & =\frac{1}{2}\bar{\mathbf{\omega}}_{eff}\otimes\hat{\bar{q}}+\sigma_{z}^{-2}\left[\left(\hat{\mathbf{v}}_{B}\times\mathbf{P}_{c}+2kp_{n}\hat{\mathbf{v}}_{B}\right)\cdot\left(\mathbf{v}_{B}-\hat{\mathbf{v}}_{B}\right)\right]\hat{\bar{q}}
+\end{array}\label{eq:29}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\mathbf{\omega}}_{eff}\equiv\hat{\mathbf{\omega}}+\sigma_{z}^{-2}\left\{ P_{a}\left(\mathbf{v}_{B}\times\hat{\mathbf{v}}_{B}\right)+2k\left[\hat{\mathbf{v}}_{B}\cdot\left(\mathbf{v}_{B}-\hat{\mathbf{v}}_{B}\right)\right]\mathbf{P}_{c}\right\} \label{eq:30}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)右侧与
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+平行的项修改了四元数估计的范数，但并不难证明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\left(\hat{\bar{q}}/\left|\hat{\bar{q}}\right|\right)}{\mathrm{d}t}=\frac{1}{2}\bar{\mathbf{\omega}}_{eff}\otimes\left(\hat{\bar{q}}/\left|\hat{\bar{q}}\right|\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于射线表示AEKF(
+\begin_inset Formula $k=0$
+\end_inset
+
+)中的
+\begin_inset Formula $\mathbf{\omega}_{eff}$
+\end_inset
+
+与MEKF中的
+\begin_inset Formula $\mathbf{\omega}_{ref}$
+\end_inset
+
+相同，并且由于射线表示AEKF使用规范化四元数通过方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算姿态，因此它给出了与MEKF相同的姿态估计。射线表示AEKF被用于估算ALEXIS和CAPER航天器的姿态[14,15]。
+\end_layout
+
+\begin_layout Standard
+二次表示AEKF(
+\begin_inset Formula $k=1$
+\end_inset
+
+)不同。由于姿态矩阵依赖于四元数范数，因此方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)右侧平行于
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+的项是重要的。如果
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+不是一个单位四元数，并且
+\begin_inset Formula $p_{n}$
+\end_inset
+
+不是零，
+\begin_inset Formula $\mathbf{v}_{B}-\hat{\mathbf{v}}_{B}$
+\end_inset
+
+会在
+\begin_inset Formula $\hat{\mathbf{v}}_{B}$
+\end_inset
+
+上产生一个错误，，将
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+的范数趋向单位范数。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的角度更新与射线表示AEKF和MEKF相同，如果在
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+为零的情况下，但如果
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+不为零，情况则不同。在后一种情况下，很难避免二次表示AEKF给出错误估计的结论。
+\end_layout
+
+\begin_layout Standard
+替换方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进入协方差传播方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{P}_{q}=F_{q}P_{q}+P_{q}F_{q}^{T}+G_{q}QG_{q}^{T}-P_{q}H_{q}^{T}R^{-1}H_{q}P_{q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过一些代数，给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\dot{P}_{a}=-\left[\hat{\mathbf{\omega}}\times\right]P_{a}-P_{a}\left[\hat{\mathbf{\omega}}\times\right]^{T}+\sigma_{\omega}^{2}\boldsymbol{I}-\sigma_{z}^{-2}\left(P_{a}\left[\hat{\mathbf{v}}_{B}\times\right]^{T}\left[\hat{\mathbf{v}}_{B}\times\right]P_{a}+4k\left|\hat{\mathbf{v}}_{B}\right|^{2}\mathbf{P}_{c}\mathbf{P}_{c}^{T}\right)\label{eq:33a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{P}}_{c}=-\hat{\mathbf{\omega}}\times\mathbf{P}_{c}-\sigma_{z}^{-2}\left(P_{a}\left[\hat{\mathbf{v}}_{B}\times\right]^{T}\left[\hat{\mathbf{v}}_{B}\times\right]+4k\left|\hat{\mathbf{v}}_{B}\right|^{2}p_{n}\right)\mathbf{P}_{c}\label{eq:33b}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\dot{p}_{n}=-\sigma_{z}^{-2}\left(\left|\hat{\mathbf{v}}_{B}\times\mathbf{P}_{c}\right|^{2}+4k\left|\hat{\mathbf{v}}_{B}\right|^{2}p_{n}^{2}\right)\label{eq:33c}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，
+\begin_inset Formula $3\times3$
+\end_inset
+
+姿态协方差
+\begin_inset Formula $P_{a}$
+\end_inset
+
+在射线表示AEKF(
+\begin_inset Formula $k=0$
+\end_inset
+
+)中遵循与MEKF相同的方程。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，如果
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+的初始值为零，则在任何一个AEKF中，
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+始终为零。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，如果初始估计
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+是初始协方差的特征向量，则为这种情况；这包括初始
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+化
+\begin_inset Formula $P_{q}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+为单位矩阵的倍数的情况。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的测量项将驱动
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+趋向零，如果它没有被初始化为零。在射线表示AEKF中，当
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+为零时，范数方差
+\begin_inset Formula $p_{n}$
+\end_inset
+
+为常数，当姿态估计收敛到小误差时，由于
+\begin_inset Formula $P_{a}$
+\end_inset
+
+与
+\begin_inset Formula $p_{n}$
+\end_inset
+
+混合在四元数协方差
+\begin_inset Formula $P_{q}$
+\end_inset
+
+中，这可能导致姿态协方差的显著性损失。
+\end_layout
+
+\begin_layout Standard
+二次表示AEKF(
+\begin_inset Formula $k=1$
+\end_inset
+
+)中的姿态协方差
+\begin_inset Formula $P_{a}$
+\end_inset
+
+与其他两个滤波器不同，除非
+\begin_inset Formula $\mathbf{P}_{c}$
+\end_inset
+
+为零。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的最后一项在二次表示AEKF中将
+\begin_inset Formula $p_{n}$
+\end_inset
+
+驱动为零，因此与零向量
+\begin_inset Formula $\hat{\bar{q}}$
+\end_inset
+
+运算
+\begin_inset Formula $4\times4$
+\end_inset
+
+协方差矩阵将变为奇异矩阵。只有在四元数模长中加入非物理过程噪声，才能避免二次表示AEKF的潜在不稳定性。请注意，
+\begin_inset Formula $\left|\hat{\bar{q}}\right|$
+\end_inset
+
+趋向单位范数和
+\begin_inset Formula $p_{n}$
+\end_inset
+
+趋向
+\begin_inset Formula $0$
+\end_inset
+
+的收敛纯粹是测量处理的结果，既不需要“蛮力”将四元数规范化，也不需要范数强制执行伪测量。然而，在AEKF实施过程中，由于数值和离散化效应而产生的范数误差的存在下
+，发现这种潜台词是有用的[10]。
+\end_layout
+
+\begin_layout Section
+讨论
+\end_layout
+
+\begin_layout Standard
+在本文所考虑的方法中，由于协方差矩阵的维数较低，因此MEKF所需的计算工作量最小。MEKF在概念上也是最令人满意的，因为它尊重旋转群的维数，并且根据定义，它的姿
+态估计是一个单位四元数。
+\end_layout
+
+\begin_layout Standard
+射线表示AEKF在概念上比MEKF简单，因为它不需要除四元数以外的任何姿态参数化，并且它以一些额外的计算负担为代价提供相同的姿态估计和协方差。数值意义问题可能是
+由不可观测的四元数范数自由度引起的，但这些问题并没有给应用带来困难。
+\end_layout
+
+\begin_layout Standard
+二次表示AEKF建立在不太安全的基础上。我们已经证明当四元数接近单位范数，则姿态矩阵接近正交矩阵，这是测量处理的自然结果，而不借助于四元数的“蛮力”规范化或范数
+强制伪测量。如果初始四元数估计是初始
+\begin_inset Formula $4\times4$
+\end_inset
+
+四元数协方差的特征向量，则姿态误差和四元数范数误差始终不相关，姿态协方差和姿态估计与其他滤波器相同。如果姿态误差与四元数范数误差之间的相关性不为零，则姿态更新和
+姿态协方差与其他滤波器不同。因为姿态矩阵不是完全正交的，
+\begin_inset Formula $4\times4$
+\end_inset
+
+协方差矩阵变得奇异，所以在任何情况下，都应谨慎地考虑该方法提供的估计，这可能导致不稳定，只有在四元数模长中添加非物理过程噪声才能避免。
+\end_layout
+
+\begin_layout Standard
+考虑加法EKFs的动机，尽管MEKF具有概念和计算上的优势，但似乎是它们表面上与线性卡尔曼滤波器相似。这种相似性是令人迷惑的，因为过程噪声和任何要估计的动态参数
+都是以乘法方式输入，而不是以加法方式输入到四元数运动学方程中。实际的测量模型也是非线性的，因此我们认为没有任何理由比MEKF更倾向于AEKF。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+Gelb, Arthur, ed., Applied Optimal Estimation, Cambridge, MA, the MIT Press,
+ 1974
+\end_layout
+
+\begin_layout Enumerate
+Schmidt, Stanley F., “The Kalman Filter: Its Recognition and Development
+ for Aerospace Applications,” Journal of Guidance and Control, Vol.
+ 4, No.
+ 1, pp.
+ 67,1981
+\end_layout
+
+\begin_layout Enumerate
+Farrell, J.
+ L., “Attitude Determination by Kalman Filtering,” Automatica, Vol.
+ 6,1970, pp.
+ 419-430
+\end_layout
+
+\begin_layout Enumerate
+Stuelpnagel, John, “On the Parameterization of the Three-Dimensional Rotation
+ Group,” SIAM Review, Vol.
+ 6, No.
+ 4, pp.
+ 422-430, 1964
+\end_layout
+
+\begin_layout Enumerate
+Paulson, D.
+ C., Jackson, D.
+ B., and Brown, C.
+ D., “SPARS Algorithms and Simulation Results,” Proceedings of the Symposium
+ on Spacecrafr Attitude Determination, Aerospace Corp.
+ Report TR-0066 (5306)-12, Vol.
+ 1, pp.
+ 293-317, Sept.-Oct.
+ 1969
+\end_layout
+
+\begin_layout Enumerate
+Toda, N.
+ F., Heiss, J.
+ L., and Schlee, F.
+ H., “SPARS: the System, Algorithm, and Test Results,” Proceedings of the
+ Symposium on Spacecrafr Attitude Determination, Aerospace Corp.
+ Report TR-0066 (5306)-12, Vol.
+ 1, pp.
+ 361-370, Sept.-Oct.
+ 1969
+\end_layout
+
+\begin_layout Enumerate
+Murrell, James W., “Precision Attitude Determination for Multimission Spacecraft,
+” AIAA Paper 78-1248, AIM Guidance and Control Conference, Palo Alto, CA,
+ August 1978
+\end_layout
+
+\begin_layout Enumerate
+Lefferts, E.
+ J., Markley, F.
+ L., and Shuster, M.
+ D., “Kalman Filtering for Spacecraft Attitude Estimation,” Journal of Guidance,
+ Control, and Dynamics, Vol.
+ 5, No.
+ 5, pp.
+ 417-429, 1982
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.
+ L., “Attitude Error Representations for Kalman Filtering,” Journal of Guidance,
+ Control, andDynamics, Vol.
+ 26, No.
+ 2, pp.
+ 31 1-317,2003
+\end_layout
+
+\begin_layout Enumerate
+Bar-Itzhack, I.
+ Y., and Oshman, Y.
+ “Attitude Determination from Vector Observations: Quaternion Estimation,”
+ IEEE Transactions on Aerospace and Electronic Systems, Vol.
+ AES-21, pp.
+ 128-136, 1985
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.
+ L., “Attitude Estimation or Quaternion Estimation?,” Journal of the Astronautica
+l Sciences, (in press)
+\end_layout
+
+\begin_layout Enumerate
+Pittelkau, M.
+ E., An Analysis of the Quaternion Attitude Determination Filter, Journal
+ of the Astronautical Sciences, Vol.
+ 51, No.
+ 1, pp.
+ 103-120, 2003.
+\end_layout
+
+\begin_layout Enumerate
+Shuster, Malcolm D., “A Survey of Attitude Representations,” Journal of the
+ Astronautical Sciences, Vol.
+ 41, No.
+ 4, pp.
+ 439-517, 1993
+\end_layout
+
+\begin_layout Enumerate
+Psiaki, M.L., Theiler, J., Bloch, J., Ryan, S., Dill, R.W., and Warner, R.E., “ALEXIS
+ Spacecraft Attitude Reconstruction with ThermaWlexible Motions Due to Launch
+ Damage,” Journal of Guidance, Control, and Dynamics, Vol.
+ 20, NO.
+ 5 , pp.
+ 1033-1041, 1997
+\end_layout
+
+\begin_layout Enumerate
+Psiaki, M.L., Klatt, E.M., Kintner, P.M.
+ Jr., and Powell, S.P., “Attitude Estimation for a Flexible Spacecraft in an
+ Unstable Spin,” Journal of Guidance, Control, and Dynamics, Vol.
+ 25, No.
+ 1, pp.
+ 88-95,2002
+\end_layout
+
+\end_body
+\end_document
