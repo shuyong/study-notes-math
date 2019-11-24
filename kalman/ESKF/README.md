@@ -42,7 +42,7 @@
     + 基于Camera-IMU的定位：可观测性分析和一致性改进
 
 10. [Quaternion kinematics for the error-state KF - 2017](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf)
-    + 误差状态卡尔曼滤波器的四元数运动学
+    + 误差状态卡尔曼滤波器的四元数动力学
     + 潦草注释: https://github.com/TurtleZhong/msckf_mono/
     + 同一个人: http://www.xinliang-zhong.vip/msckf_notes/
 
