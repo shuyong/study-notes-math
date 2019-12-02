@@ -1,7 +1,7 @@
 Quaternion kinematics for the error-state KF - 2017
 http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf
 
-1711.02508.tar : 文档的原始源码，tex 版本。从下面地址获得
+1711.02508.tar : 文档的原始源码，tex 版本。从这个地址获得 
 https://arxiv.org/abs/1711.02508
 
 误差状态卡尔曼滤波器的四元数动力学
