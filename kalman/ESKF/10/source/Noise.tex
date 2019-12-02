@@ -1,0 +1,444 @@
+% !TEX root = kinematics.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{随机噪声和扰动的积分}
+\label{sec:IntNoise}
+
+我们现在的目标是给出适当的方法来积分动力学系统中的随机变量。 
+当然，我们不能对未知的随机值进行积分，但是为了不确定性的传播，我们可以对它们的方差和协方差进行积分。 
+这是必要的，以建立协方差矩阵的估计器，为系统是连续性质 (并指定在连续时间)，但估计在一个离散的方式。
+
+考虑连续时间动力学系统，
+%
+\begin{equation}
+\dot\bfx = f(\bfx,\bfu,\bfw)~,
+\label{equ:contSysWithNoise}
+\end{equation}
+%
+其中 $\bfx$ 是状态向量， $\bfu$ 是包含噪声 $\tilde\bfu$ 的控制信号的向量，因此控制测量为 $\bfu_m=\bfu+\tilde\bfu$，并且 $\bfw$ 是随机扰动的向量。 
+噪声和扰动都是假设的白高斯过程，由，
+%
+\begin{equation}
+\tilde\bfu \sim \cN\{0,\bfU^c\} \quad , \quad \bfw^c\sim\cN\{0,\bfW^c\}~,
+\end{equation}
+%
+其中超级索引 $\bullet^c$ 表示连续时间不确定性规范，我们希望对其进行积分。
+
+在控制信号中的噪声水平的性质，$\tilde\bfu$，和随机扰动，$\bfw$，之间存在着重要的区别：
+%
+\begin{itemize}
+\item 
+在离散化时，控制信号在时间瞬间 $n\Dt$ 进行采样，具有 $\bfu_{m,n}\triangleq\bfu_m(n\Dt)=\bfu(n\Dt)+\tilde\bfu(n\Dt)$ 。
+很明显，被测部分在积分区间内被视为常数，即， $\bfu_m(t)=\bfu_{m,n}$，因此采样时间 $n\Dt$ 处的噪声级也保持不变，
+%
+\begin{equation}
+\tilde\bfu(t)=\tilde\bfu(n\Dt) = \tilde\bfu_n, \quad n\Dt<t<(n+1)\Dt~. \label{equ:uint}
+\end{equation}
+%
+\item  
+扰动 $\bfw$ 从未采样。 
+
+\end{itemize}
+%
+
+
+因此，这两个随机过程在 $\Dt$ 上的积分是不同的。 
+让我们检查一下。 
+
+\bigskip
+连续时间误差状态动力学方程 \eqRef{equ:contSysWithNoise} 可以线性化为
+%
+\begin{equation}
+\dot{\delta\bfx} = \bfA\delta\bfx + \bfB\tilde\bfu + \bfC \bfw~, \label{equ:contTime}
+\end{equation}
+%
+其中 
+%
+\begin{equation}
+\bfA\triangleq\pjac{f}{\delta\bfx}{\bfx,\bfu_m}\quad,\quad
+\bfB\triangleq\pjac{f}{\tilde\bfu}{\bfx,\bfu_m}\quad,\quad
+\bfC\triangleq\pjac{f}{\bfw}{\bfx,\bfu_m}~,
+\end{equation}
+%
+并在取样周期 $\Dt$ 内进行积分，得出，
+%
+\begin{align}
+\delta\bfx_{n+1} &= \delta\bfx_n 
++ \int_{n\Dt}^{(n+1)\Dt} \left(
+\bfA\delta\bfx(\tau) + \bfB\tilde\bfu(\tau) + \bfC\bfw^c(\tau)
+\right) d\tau \\
+ &= \delta\bfx_n 
++ \int_{n\Dt}^{(n+1)\Dt} \bfA\delta\bfx(\tau)   d\tau
++ \int_{n\Dt}^{(n+1)\Dt} \bfB\tilde\bfu(\tau)   d\tau 
++ \int_{n\Dt}^{(n+1)\Dt} \bfC\bfw^c(\tau) d\tau 
+\end{align}
+%
+它有三个性质截然不同的本质。 
+它们可以积分如下：
+%
+\begin{enumerate}
+\item 从 \appRef{sec:ClosedFormInt} ，我们知道动力学部分是可积分的，并给出了转换矩阵，
+%
+\begin{equation}
+\delta\bfx_n 
++ \int_{n\Dt}^{(n+1)\Dt} \bfA\delta\bfx(\tau)   d\tau = \Phi\tdot\delta\bfx_n
+\end{equation}
+%
+其中 $\Phi=e^{\bfA\Dt}$ 可以以闭合的形式计算或计算在不同精度的近似值。
+
+\item 从方程 \eqRef{equ:uint} 我们有
+%
+\begin{equation}
+\int_{n\Dt}^{(n+1)\Dt} \bfB\tilde\bfu(\tau)   d\tau = \bfB\Dt\tilde\bfu_n
+\end{equation}
+%
+这意味着，一旦采样，测量噪声将以确定的方式进行积分，因为其在积分区间内的行为是已知的。
+
+\item 从概率论我们知道，在一个周期 $\Dt$ 内连续的高斯白噪声的积分产生一个离散的高斯白脉冲 $\bfw_n$ ，描述如下
+%
+\begin{equation}
+\bfw_n\triangleq\int_{n\Dt}^{(n+1)\Dt}\bfw(\tau)d\tau 
+\quad,\quad
+\bfw_n \sim \cN\{0,\bfW\} 
+\quad,\quad
+ \text{with } \bfW = \bfW^c\Dt
+\end{equation}
+%
+我们发现，与上述测量噪声相反，扰动在积分区间内不具有确定性行为，因此必须随机积分。
+
+\end{enumerate}%
+%
+因此，离散时间误差状态动力学系统可以写成
+%
+\begin{equation}
+\delta\bfx_{n+1} = \bfF_\bfx\delta\bfx_n + \bfF_\bfu\tilde\bfu_n + \bfF_\bfw \bfw_n \label{equ:discTime}
+\end{equation}
+%
+其中得出转换矩阵、控制矩阵和扰动矩阵
+%
+\begin{equation}
+\bfF_\bfx=\Phi = e^{\bfA\Dt} \quad , \quad \bfF_\bfu=\bfB\Dt \quad , \quad \bfF_\bfw = \bfC \quad , \quad 
+\end{equation}
+%
+%where it is illustrative to appreciate the different contributions of the step time $\Dt$ in the integrated values. The
+噪声和扰动水平定义为
+%
+\begin{equation}
+\tilde\bfu_n\sim\cN\{0,\bfU\} \quad , \quad \bfw_n\sim\cN\{0,\bfW\} \label{equ:discMat}
+\end{equation}
+%
+其中 
+%
+\begin{equation}
+\bfU = \bfU^c \quad , \quad \bfW = \bfW^c\Dt~. \label{equ:discCov}
+\end{equation}
+%
+\begin{table*}
+\renewcommand{\arraystretch}{1.3}
+\caption{积分对系统和协方差矩阵的影响。}
+\centering
+\vspace{1ex}
+\begin{tabular}{|c|c|c|}
+\hline
+说明 & 连续时间 $t$ & 离散时间 $n\Dt$\\
+\hline
+\hline
+状态 & $\dot\bfx=f^c(\bfx,\bfu,\bfw)$ & $\bfx_{n+1} = f(\bfx_n,\bfu_n,\bfw_n)$ \\
+误差状态 & $\dot{\delta\bfx}=\bfA\delta\bfx+\bfB\tilde\bfu+\bfC\bfw$ & $\delta\bfx_{n+1}=\bfF_\bfx\delta\bfx_n+\bfF_\bfu\tilde\bfu_n+\bfF_\bfw\bfw_n$ \\
+\hline
+系统矩阵 & $\bfA$ & $\bfF_\bfx=\Phi=e^{\bfA\Dt}$ \\
+控制矩阵 & $\bfB$ & $\bfF_\bfu=\bfB\Dt$ \\
+扰动矩阵 & $\bfC$ & $\bfF_\bfw=\bfC$ \\
+\hline
+控制协方差 & $\bfU^c$ & $\bfU=\bfU^c$  \\
+扰动协方差 & $\bfW^c$ & $\bfW=\bfW^c\Dt$  \\
+\hline
+\end{tabular}
+\label{tab:IntEffects}
+\end{table*}%
+
+这些结果汇总在 \tabRef{tab:IntEffects} 中。
+EKF 的预测阶段将根据以下公式传播误差状态的均值和协方差矩阵
+%
+\begin{align}
+\hat{\delta\bfx}_{n+1} &= \bfF_\bfx \hat{\delta\bfx}_n \\
+\bfP_{n+1} &= \bfF_\bfx\bfP_n\bfF_\bfx\tr + \bfF_\bfu\bfU\bfF_\bfu\tr + \bfF_\bfw\bfW\bfF_\bfw\tr \nonumber\\
+&= e^{\bfA\Dt}\bfP_n(e^{\bfA\Dt})\tr + \Dt^2\bfB\bfU^c\bfB\tr + \Dt\bfC\bfW^c\bfC\tr \label{equ:NoisePertCovUpdate}
+\end{align}
+
+在这里，观察积分间隔 $\Dt$对协方差更新方程 \eqRef{equ:NoisePertCovUpdate}的三项的不同影响是重要的和说明性的：动力学误差项是指数的，测量误差项是二次的，扰动误差项是线性的。 
+
+
+%=============================================================
+\subsection{噪声和扰动脉冲}
+\label{sec:pertImpulses}
+
+一个是经常遇到的 (例如，当重用现有代码或解释其他作者的文档) 时，EKF预测方程的形式比我们在这里使用的更简单，即，
+%
+\begin{equation}
+\bfP_{n+1} = \bfF_\bfx\bfP_n\bfF_\bfx\tr + \bfQ~.
+\end{equation}
+%
+这对应于一般的离散时间动力系统，
+%
+\begin{equation}
+\delta\bfx_{n+1} = \bfF_\bfx\delta\bfx_n+\bfi
+\end{equation}
+%
+其中
+%
+\begin{equation}
+\bfi \sim \cN\{0,\bfQ\}
+\end{equation}
+%
+是在时间 $t_{n+1}$ 瞬间直接添加到状态向量的随机 (白色，高斯) 脉冲的向量。  
+矩阵 $\bfQ$ 被简单地认为是脉冲协方差矩阵。 
+根据我们所看到的，我们应该计算这个协方差矩阵如下，
+%
+\begin{equation}
+\bfQ = \Dt^2\,\bfB\,\bfU^c\,\bfB\tr + \Dt\,\bfC\,\bfW^c\,\bfC\tr~.
+\end{equation}
+
+在脉冲不影响全状态的情况下，通常情况下，矩阵 $\bfQ$ 不是全对角的，并且可能包含大量的零。 
+然后可以写出等价的形式
+%
+\begin{equation}
+\delta\bfx_{n+1} = \bfF_\bfx\,\delta\bfx_n+\bfF_\bfi\,\bfi
+\end{equation}
+%
+其中
+%
+\begin{equation}
+\bfi \sim \cN\{0,\bfQ_\bfi\}~,
+\end{equation}
+%
+其中，矩阵 $\bfF_\bfi$ 简单地将每个单独的脉冲映射到它影响到的状态向量的一部分。 
+相关的协方差 $\bfQ_\bfi$ 则更小且全对角线。 
+请参阅下一节以获取示例。 
+在这种情况下，ESKF 时间更新变成
+%
+\begin{align}
+\hat{\delta\bfx}_{n+1} &= \bfF_\bfx\,\hat{\delta\bfx}_n \\
+\bfP_{n+1} &= \bfF_\bfx\,\bfP_n\,\bfF_\bfx\tr + \bfF_\bfi\,\bfQ_\bfi\,\bfF_\bfi\tr~.
+\end{align}
+%
+
+
+显然，所有这些形式都是等价的，如下面关于一般扰动 $\bfQ$ 的双特征值所示，
+%
+\begin{equation}
+\bfF_\bfi\,\bfQ_\bfi\,\bfF_\bfi\tr = \eqbox{\bfQ} =  \Dt^2\,\bfB\,\bfU^c\,\bfB\tr + \Dt\,\bfC\,\bfW^c\,\bfC\tr~.
+\end{equation}
+
+
+
+%=============================================================
+\subsection{完整的 IMU 示例}
+
+我们研究了对于 IMU 的误差状态 Kalman 滤波器的构造。 
+误差状态系统在方程 \eqRef{equ:efull} 中定义，并包括标称状态 $\bfx$ ，误差状态 $\delta\bfx$ ，噪声控制信号 $\bfu_m=\bfu+\tilde\bfu$ 和扰动 $\bfw$, 由以下指定，
+%
+\begin{equation}
+\bfx = \begin{bmatrix}
+\bfp \\
+\bfv \\
+\bfq \\
+\bfa_b \\
+\bfomega_b \\
+\bfg
+\end{bmatrix}
+\quad , \quad
+\delta\bfx = \begin{bmatrix}
+\delta\bfp \\
+\delta\bfv \\
+\delta\bftheta \\
+\delta\bfa_b \\
+\delta\bfomega_b \\
+\delta\bfg
+\end{bmatrix}
+\quad , \quad
+\bfu_m=\begin{bmatrix}
+\bfa_m \\ \bfomega_m
+\end{bmatrix} 
+\quad , \quad
+\tilde\bfu=\begin{bmatrix}
+\tilde\bfa \\ \tilde\bfomega
+\end{bmatrix} 
+\quad , \quad
+\bfw = \begin{bmatrix}
+\bfa_w \\ \bfomega_w
+\end{bmatrix}
+\end{equation}
+
+在IMU的模型中，控制噪声对应于IMU测量中的加性噪声。 
+扰动会影响偏差，从而产生它们的随机游走行为。 
+动力学矩阵、控制矩阵和扰动矩阵是 (参见方程 \eqRef{equ:contTime}， \eqRef{equ:FullIMU_Fmat} 和 \eqRef{equ:efull})，
+%
+\begin{equation}
+\label{equ:IMU_ABC}
+\bfA = \begin{bmatrix}
+  0& \bfP_\bfv&  0&  0&  0&  0\\
+  0&  0& \bfV_\bftheta& \bfV_\bfa&  0& \bfV_\bfg\\
+  0&  0& \Theta_\bftheta&  0& \Theta_\bfomega&  0\\
+  0&  0&  0&  0&  0&  0\\
+  0&  0&  0&  0&  0&  0\\
+  0&  0&  0&  0&  0&  0
+\end{bmatrix}
+\quad,\quad
+\bfB = \begin{bmatrix}
+0 & 0 \\
+-\bfR & 0 \\
+0 & -\bfI \\
+0 & 0 \\
+0 & 0 \\
+0 & 0 \\
+\end{bmatrix}
+\quad,\quad
+\bfC = \begin{bmatrix}
+0 & 0 \\
+0 & 0 \\
+0 & 0 \\
+\bfI & 0 \\
+0 & \bfI \\
+0 & 0 \\
+\end{bmatrix}
+\end{equation}
+
+在三个轴上具有相同类型的加速度计和陀螺仪三元组的 IMUs 的常规情况下，噪声和扰动是各向同性的。
+它们的标准偏差以标量形式指定，如下所示
+%
+\begin{equation}
+\sigma_{\tilde\bfa}\ [m/s^2] \quad,\quad \sigma_{\tilde\bfomega} \  [rad/s] \quad,\quad \sigma_{\bfa_w}\ [m/s^2\sqrt{s}] \quad,\quad \sigma_{\bfomega_w}\ [rad/s\sqrt{s}]
+\end{equation}
+%
+并且它们的协方差矩阵是纯对角的，给出为
+%
+\begin{equation}
+\bfU^c=\begin{bmatrix}
+\sigma_{\tilde\bfa}^2\bfI & 0 \\ 0 & \sigma_{\tilde\bfomega}^2\bfI  
+\end{bmatrix} \qquad ,\qquad
+\bfW^c=\begin{bmatrix}
+\sigma_{\bfa_w}^2\bfI & 0 \\ 0 & \sigma_{\bfomega_w}^2\bfI  
+\end{bmatrix} ~.
+\end{equation}
+
+系统随采样测量值变化，间隔为 $\Dt$ ，接着是方程 \eqsRef{equ:discTime}{equ:discCov}，其中转换矩阵 $\bfF_\bfx=\Phi$ 可通过多种方式计算 --- 见之前的附录。 
+
+%%-------------------------------------------------------------
+\subsubsection{噪声和扰动脉冲}
+%\label{sec:pertImpulsesIMU}
+
+%\TODO{Describe first the general case, and then the isotropic case}
+
+在脉冲 $\bfi$ 形式的扰动规范的情况下，我们可以如下重新定义我们的系统，
+%
+\begin{equation}
+\delta\bfx_{n+1} = \bfF_\bfx(\bfx_n, \bfu_m)\tdot \delta\bfx_n+\bfF_\bfi\tdot\bfi
+\end{equation}
+%
+其中标称状态、误差状态、控制和脉冲向量定义为，
+%
+\begin{equation}
+\bfx=\begin{bmatrix}\bfp\\\bfv\\\bfq\\\bfa_b\\\bfomega_b\\\bfg\end{bmatrix} \quad, \quad
+\delta\bfx=\begin{bmatrix}\delta\bfp\\\delta\bfv\\\delta\bftheta\\\delta\bfa_b\\\delta\bfomega_b\\\delta\bfg\end{bmatrix} \quad, \quad
+\bfu_m = \begin{bmatrix}
+\bfa_m \\
+\bfomega_m
+\end{bmatrix} 
+\quad,  \quad
+\bfi = \begin{bmatrix}
+\bfv_\bfi \\
+\bftheta_\bfi \\
+\bfa_\bfi \\
+\bfomega_\bfi
+\end{bmatrix}~,
+\end{equation}
+%
+转换矩阵和扰动矩阵定义为，
+%
+\begin{equation}
+\bfF_\bfx = \Phi = e^{\bfA\Dt}
+\qquad,\qquad
+\bfF_\bfi 
+%= \begin{bmatrix}
+%\bfB & \bfC
+%\end{bmatrix} 
+= \begin{bmatrix}
+ 0 &  0 & 0 & 0 \\
+ \bfI &  0 & 0 & 0 \\
+ 0 &  \bfI & 0 & 0 \\
+ 0 &  0 & \bfI & 0 \\
+ 0 & 0 & 0 & \bfI \\
+ 0 &  0 & 0 & 0 
+\end{bmatrix} ~,
+\end{equation}
+%
+并且脉冲方差指定为
+%
+\begin{equation}
+\bfi \sim \cN\{0,\bfQ_\bfi\}
+\quad,\quad
+\bfQ_\bfi = \begin{bmatrix}
+\sigma_{\tilde\bfa}^2\Dt^2\bfI &&0&\\
+& \sigma_{\tilde\bfomega}^2\Dt^2\bfI &&\\
+&& \sigma_{\bfa_w}^2\Dt\bfI &\\
+&0&& \sigma_{\bfomega_w}^2\Dt\bfI 
+\end{bmatrix}~.
+\end{equation}
+
+
+
+$\bfF_\bfi$ 的细小的规范可能看起来令人惊讶，特别是对于方程 \eqRef{equ:IMU_ABC} 所给出的 $\bfB$ 的规范。
+所发生的情况是，误差在  $\bfQ_\bfi$ 中定义为各向同性，并因此 $-\bfR\sigma^2\bfI(-\bfR)\tr = \sigma^2\bfI$ 和 $-\bfI\sigma^2\bfI(-\bfI)\tr = \sigma^2\bfI$，导致对 $\bfF_\bfi$ 给定该表达式。
+当考虑非各向同性 IMUs 时，这是不可能的，这里一个适当的 Jacobian 矩阵 $\bfF_\bfi=\begin{bmatrix}
+\bfB & \bfC
+\end{bmatrix}$ 应当与适当的 $\bfQ_\bfi$ 规范一起使用。
+
+%\begin{bmatrix}
+% 0 &  0 & 0 & 0 \\
+% \bfI &  0 & 0 & 0 \\
+% 0 &  \bfI & 0 & 0 \\
+% 0 &  0 & \bfI & 0 \\
+% 0 & 0 & 0 & \bfI \\
+% 0 &  0 & 0 & 0 
+%\end{bmatrix}
+
+\bigskip
+我们当然可以用全态扰动脉冲，
+%
+\begin{equation}
+\delta\bfx_{n+1} = \bfF_\bfx(\bfx_n, \bfu_m)\tdot \delta\bfx_n+\bfi
+\end{equation}
+%
+其中
+%
+\begin{equation}
+\bfi = \begin{bmatrix}
+0 \\
+\bfv_\bfi \\
+\bftheta_\bfi \\
+\bfa_\bfi \\
+\bfomega_\bfi \\
+0
+\end{bmatrix}
+\quad,\quad
+\bfi \sim \cN\{0,\bfQ\}
+\quad,\quad
+\bfQ = \begin{bmatrix}
+0 & \\
+& \sigma_{\tilde\bfa}^2\Dt^2\bfI &&&0&\\
+&& \sigma_{\tilde\bfomega}^2\Dt^2\bfI &&\\
+&&& \sigma_{\bfa_w}^2\Dt\bfI &\\
+&0&&& \sigma_{\bfomega_w}^2\Dt\bfI \\
+&&&&&0
+\end{bmatrix}~.
+\end{equation}
+
+
+
+\bigskip
+\bigskip
+\bigskip
+
+再见。
+

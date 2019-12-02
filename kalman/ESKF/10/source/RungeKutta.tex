@@ -1,0 +1,150 @@
+% !TEX root = kinematics.tex
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Runge-Kutta 数值积分方法}
+\label{sec:NumInt}
+
+我们的目标是积分那些形式的非线性微分方程
+%
+\begin{equation}
+\dot\bfx = f(t,\bfx)
+\end{equation}
+%
+在一个有限的时间间隔 $\Dt$上，为了将它们转换成一个差分方程，即，
+%
+\begin{equation}
+\bfx(t+\Dt) =  \bfx(t)+\int_t^{t+\Dt}f(\tau,\bfx(\tau))d\tau~,
+\end{equation}
+%
+或者等效地，如果我们假设 $t_n = n\Dt$ 和 $\bfx_n\triangleq \bfx(t_n)$ ，
+\begin{equation}
+\bfx_{n+1} =  \bfx_n+\int_{n\Dt}^{(n+1)\Dt}f(\tau,\bfx(\tau))d\tau~.
+\end{equation}
+
+最常用的方法之一是 Runge-Kutta 方法 (从现在开始简写为 RK)。
+这些方法使用多次迭代来估计区间上的导数，然后使用此导数在步骤 $\Dt$上积分。
+
+
+在接下来的章节中，我们将介绍几种 RK 法，从最简单的方法到最一般的方法，并根据它们最常用的名称来命名。 
+
+
+\bigskip
+注意：这里所有的材料都来自英文维基百科中的 \emph{Runge-Kutta method} 条目。
+
+%=============================================================
+\subsection{欧拉法}
+\label{sec:Euler}
+
+欧拉方法假设导数 $f(\cdot)$ 在区间上是常数，因此
+%
+\begin{equation}
+\eqbox{\bfx_{n+1} =  \bfx_n + \Dt\tdot f(t_n,\bfx_n)~.}
+\end{equation}
+
+作为一种通用的 RK 方法，它对应于一个单阶段方法，可以描述如下。 
+计算初始点的导数，
+%
+\begin{equation}
+k_1 = f(t_n,\bfx_n)~,
+\end{equation}
+%
+用它来计算终点的积分值，
+%
+\begin{equation}
+\bfx_{n+1} = \bfx_n + \Dt\tdot k_1~.
+\end{equation}
+
+%=============================================================
+\subsection{中点法}
+
+中点法假定导数是区间中点处的导数，并进行一次迭代以计算该中点处 $\bfx$ 的值，即：，
+%
+\begin{equation}
+\eqbox{\bfx_{n+1} =  \bfx_n + \Dt\tdot f \Big( t_n + \frac{1}{2}\Dt \ ,\ \bfx_n + \frac{1}{2} \Dt \tdot f(t_n , \bfx_n) \Big)}~.
+\end{equation}
+
+中点法可以解释为两步法，如下所示。 
+首先，使用 Euler 方法积分到中点，使用前面定义的 $k_1$ ，
+%
+%
+\begin{align}
+k_1 &= f(t_n,\bfx_n) \\
+\bfx(t_n+\tfrac12\Dt) &=  \bfx_n + \frac{1}{2} \Dt\tdot k_1~.
+\end{align}%
+%
+然后使用该值计算中点 $k_2$ 处的导数，从而得出积分
+%
+%
+\begin{align}
+k_2 &= f(t_n+\tfrac12\Dt \ ,\ \bfx(t_n+\tfrac12\Dt)) \\
+\bfx_{n+1} &=  \bfx_n + \Dt\tdot k_2~.
+\end{align}%
+
+
+
+%=============================================================
+\subsection{RK4 方法}
+
+这通常被简单地称为 Runge-Kutta 方法。 
+它假定在间隔的开始、中点和结束处 $f()$ 的计算值。 
+并且它使用四个阶段或迭代来计算积分，四个导数 $k_1\dots k_4$ 是按顺序得到的。 
+然后这些导数或斜率(\emph{slopes})被加权平均，以获得区间内导数的四阶估计。 
+
+RK4 方法更适合指定为一个小算法，而不是像上述两种方法一样，是一步计算公式。RK4 积分步骤是，
+
+\begin{equation}
+\eqbox{\bfx_{n+1} = \bfx_n + \frac{\Dt}{6} \Big( k_1 + 2k_2 + 2k_3 + k_4 \Big) }~,
+\end{equation}
+% 
+也就是说，增量是通过假设一个斜率来计算的，该斜率是 $k_1,k_2,k_3,k_4$ 斜率的加权均值，其中
+%
+%
+\begin{align}
+k_1 &= f(t_n, \bfx_n) \\
+k_2 &= f\Big(t_n + \frac{1}{2}\Dt \ ,\ \bfx_n + \frac{\Dt}{2} k_1\Big) \\
+k_3 &= f\Big(t_n + \frac{1}{2}\Dt \ ,\ \bfx_n + \frac{\Dt}{2} k_2\Big) \\
+k_4 &= f\Big(t_n + \Dt \ ,\ \bfx_n + \Dt \tdot k_3\Big) ~.
+\end{align}%
+
+不同的斜率有以下解释：
+%
+\begin{itemize}
+\item $k_1$ 是间隔开始时的斜率，使用 $\bfx_n$ ，(欧拉法)；
+\item   $ k_2$ 是间隔中点处的斜率，使用 $\bfx_n + \tfrac12 \Dt\tdot k_1$，(中点法)；
+\item    $k_3$ 再次是中点处的斜率，但现在使用 $\bfx_n + \tfrac12 \Dt\tdot k_2$ ；
+\item    $k_4$ 是间隔结束时的斜率，使用 $\bfx_n + \Dt\tdot k_3 $ 。
+
+
+\end{itemize}
+
+%=============================================================
+\subsection{一般 Runge-Kutta 法}
+
+更详细的 RK 方法是可能的。 
+它们的目标是减少误差和/或提高稳定性。 
+它们采取一般形式
+%
+\begin{equation}
+\eqbox{\bfx_{n+1} = \bfx_n + \Dt \sum_{i=1}^s b_i k_i} ~,
+\end{equation}
+%
+其中
+%
+\begin{equation}
+k_i = f\Big( t_n+\Dt \tdot c_i ,  \bfx_n + \Dt \sum_{j=1}^s a_{ij}  k_j \Big)~,
+\end{equation}
+%
+也就是说，迭代次数 (方法的顺序) 是 $s$，平均权重由 $b_i$定义，计算时间由 $c_i$定义，而斜率 $k_i$ 是使用 $a_{ij}$ 值确定的。 
+依赖于项 $a_{ij}$ 的结构，可以有显式(\emph{explicit})或隐式(\emph{implicit})的 RK 方法。 
+
+\begin{itemize}
+\item 在显式方法中，所有 $k_i$ 均按顺序计算，即仅使用先前计算的值。 
+这意味着矩阵 $[a_{ij}]$ 是具有零对角线项的下三角形 (即，对于 $j\ge i$ 有 $a_{ij}=0$ )。
+Euler 法、中点法和 RK4 方法是显式的。
+
+\item 隐式方法有一个完整的 $[a_{ij}]$ 矩阵，需要解一组线性方程来确定所有 $k_i$ 。 
+因此，它们的计算成本更高，但相对于显式方法，它们能够提高精度和稳定性。
+\end{itemize}
+
+有关详细信息，请参阅专门文档。

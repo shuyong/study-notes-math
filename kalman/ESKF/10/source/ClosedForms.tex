@@ -1,0 +1,555 @@
+% !TEX root = kinematics.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{闭式积分方法}
+\label{sec:ClosedFormInt}
+
+在许多情况下，可以为积分步骤得到一个封闭形式的表达式。 
+我们现在考虑一阶线性微分方程的情况，
+%
+\begin{equation}
+\dot\bfx(t)=\bfA\tdot\bfx(t)~,
+\end{equation}
+%
+也就是说，这个关系是线性的，并且在区间上是常数。 
+在这种情况下，在区间 $[t_n , t_n+\Dt]$ 上的积分导致
+%
+\begin{equation}
+\bfx_{n+1}= e^{\bfA\tdot\Dt}\bfx_n = \Phi\bfx_n~,
+\end{equation}
+%
+其中 $\Phi$ 称为转换矩阵。 
+这个转换矩阵的泰勒展开式是
+%
+\begin{equation}
+\Phi= e^{\bfA\tdot\Dt}=\bfI + \bfA\Dt + \frac{1}{2} \bfA^2\Dt^2 + \frac{1}{3!}\bfA^3\Dt^3 + \dots   = \sum_{k=0}^\infty \frac{1}{k!}\bfA^k\Dt^k ~.
+\label{equ:TaylorExp}
+\end{equation}
+
+
+在为 $\bfA$的已知实例编写此级数时，有时可以在结果中标识已知级数。 
+这允许以封闭形式编写结果积分。 
+下面是几个例子。
+
+%=============================================================
+\subsection{角度误差的积分}
+\label{sec:ClosedFormAngle}
+
+例如，考虑无偏差和噪声的角度误差动力学 (方程~\eqRef{equ:equat}的简化版本)，
+%
+\begin{equation}
+\dot{\delta\bftheta} = -\hatx\bfomega\delta\bftheta 
+\end{equation}
+%
+它的转换矩阵可以写成泰勒级数，
+%
+%
+\begin{align}
+\Phi &= e^{-\hatx\bfomega\Dt} \label{equ:phiexp}\\
+&= \bfI -\hatx\bfomega\Dt + \frac12\hatx\bfomega^2\Dt^2 - \frac{1}{3!}\hatx\bfomega^3\Dt^3 + \frac{1}{4!}\hatx\bfomega^4\Dt^4 - \dots 
+\end{align}%
+%
+现在定义 $\bfomega\Dt \triangleq \bfu \Delta\theta$，旋转的单一轴和旋转角度，并应用方程 \eqRef{equ:prop2}，我们可以分组各项并得到
+%
+%
+\begin{align}
+\Phi 
+&= \bfI -\hatx{\bfu}\Delta\theta + \frac12\hatx{\bfu}^2\Delta\theta^2 - \frac{1}{3!}\hatx{\bfu}^3\Delta\theta^3 + \frac{1}{4!}\hatx{\bfy}^4\Delta\theta^4 - \dots \nonumber\\
+&= \bfI - \hatx{\bfu}\left(\Delta\theta - \frac{\Delta\theta^3}{3!} + \frac{\Delta\theta^5}{5!} - \cdots\right) + \hatx{\bfu}^2\left(\frac{\Delta\theta^2}{2!} - \frac{\Delta\theta^4}{4!}  + \frac{\Delta\theta^6}{6!} - \cdots\right) \nonumber\\
+&= \bfI - \hatx{\bfu}\sin\Delta\theta + \hatx{\bfu}^2(1-\cos\Delta\theta) ~,
+\end{align}%
+%
+这是一个封闭形式的解。
+
+\bigskip
+这个解对应于一个旋转矩阵， $\Phi=\bfR\{-\bfu\Delta\theta\} = \bfR\{\bfomega\Dt\}\tr$, 根据 Rodrigues 旋转公式 \eqRef{equ:rodrigues} ，该结果可通过直接检查方程 \eqRef{equ:phiexp} 并回顾 \eqRef{equ:vectomat} 获得。
+因此，让我们把它写成最终的闭式结果，
+%
+\begin{equation}
+\eqbox{\Phi=\bfR\{\bfomega\Dt\}\tr}~.
+\end{equation}
+
+%=============================================================
+\subsection{简化 IMU 示例}
+\label{sec:IMUexample}
+
+考虑简化的，由误差状态动力学控制的 IMU 驱动系统，
+%
+\begin{subequations}
+%
+\begin{align}
+\dot{\delta\bfp}   &= \delta\bfv \\
+\dot{\delta\bfv}   &= -\bfR\hatx{\bfa}\,\delta\bftheta \\
+\dot{\delta\bftheta} &= -\hatx\bfomega\delta\bftheta~,
+\end{align}%%
+\end{subequations}%
+%
+其中 $(\bfa,\bfomega)$ 是 IMU 读数，我们已经消除了重力和传感器偏差。 
+这个系统是由状态向量和动力学矩阵定义的，
+%
+\begin{equation}
+\bfx = \begin{bmatrix}
+\delta\bfp \\ \delta\bfv \\ \delta\bftheta
+\end{bmatrix}
+\qquad
+\bfA = \begin{bmatrix}
+0 & \bfP_\bfv & 0 \\
+0 & 0 & \bfV_\bftheta \\
+0 & 0 & \Theta_\bftheta
+\end{bmatrix}~.
+\end{equation}
+%
+其中
+%
+%
+\begin{align}
+\bfP_\bfv &= \bfI \\
+\bfV_\bftheta &= -\bfR\hatx{\bfa} \\
+\Theta_\bftheta &= -\hatx\bfomega \label{equ:ThetaThetaDef}
+\end{align}%
+
+
+它在一个时间步长 $\Dt$ 内的积分是 $\bfx_{n+1}= e^{(\bfA\Dt)}\tdot\bfx_n=\Phi\tdot\bfx_n$ 。
+转换矩阵 $\Phi$ 允许泰勒展开方程 \eqRef{equ:TaylorExp}，在 $\bfA\Dt$ 的递增幂中。
+我们可以写出 $\bfA$ 的几个幂来得到它们的一般形式，
+%
+\begin{equation}
+\bfA \!=\! \begin{bmatrix}
+0 & \bfP_\bfv & 0 \\
+0 & 0 & \bfV_\bftheta \\
+0 & 0 & \Theta_\bftheta
+\end{bmatrix}
+\!,
+\bfA^2 \!=\! 
+\begin{bmatrix} 
+0 & 0 & \bfP_v\bfV_\bftheta \\ 
+0 & 0 & \bfV_\bftheta\Theta_\bftheta \\
+0 & 0 & \Theta_\bftheta^2
+\end{bmatrix}
+\!,
+\bfA^3 \!=\! 
+\begin{bmatrix} 
+0 & 0 & \bfP_v\bfV_\bftheta\Theta_\bftheta \\ 
+0 & 0 & \bfV_\bftheta\Theta_\bftheta^2 \\
+0 & 0 & \Theta_\bftheta^3
+\end{bmatrix}
+\!,
+\bfA^4 \!=\! 
+\begin{bmatrix} 
+0 & 0 & \bfP_v\bfV_\bftheta\Theta_\bftheta^2 \\ 
+0 & 0 & \bfV_\bftheta\Theta_\bftheta^3 \\
+0 & 0 & \Theta_\bftheta^4
+\end{bmatrix}
+\!,
+\end{equation}
+%
+从中可以看出，对于 $k>1$ ，
+%
+\begin{equation}
+\bfA^{k>1} = 
+\begin{bmatrix} 
+0 & 0 & \bfP_v\bfV_\bftheta\Theta_\bftheta^{k-2} \\ 
+0 & 0 & \bfV_\bftheta\Theta_\bftheta^{k-1} \\
+0 & 0 & \Theta_\bftheta^k
+\end{bmatrix}
+\end{equation}
+
+我们可以观察到 $\bfA$ 的幂增长项有一个固定的部分和一个幂增长项 $\Theta_\bftheta$。
+这些幂次项可以导致封闭形式的解，如前一节所述。 
+
+
+我们将矩阵 $\Phi$ 分区如下，
+%
+\begin{equation}
+\Phi = \begin{bmatrix}
+\bfI & \Phi_{\bfp\bfv} & \Phi_{\bfp\bftheta} \\
+0 & \bfI & \Phi_{\bfv\bftheta} \\
+0 & 0 & \Phi_{\bftheta\bftheta}
+\end{bmatrix}~,
+\end{equation}
+%
+让我们一步步前进，一个接一个地探索 $\Phi$ 的所有非零块。 
+
+\paragraph{平凡对角项}
+从对角线上的两个上项开始，它们就是如所示的特征值。 
+
+\paragraph{旋转对角线项}
+接下来是旋转对角线项 $\Phi_{\bftheta\bftheta}$，将新的角度误差与旧的角度误差联系起来。 
+为这个项写完整的泰勒级数会导致
+%
+\begin{equation}
+\Phi_{\bftheta\bftheta} = 
+\sum_{k=0}^\infty \frac{1}{k!}\Theta_\bftheta^k \Dt^k = \sum_{k=0}^\infty \frac{1}{k!}\hatx{-\bfomega}^k \Dt^k ~, \label{equ:thetaThetaSeries}
+\end{equation}
+%
+如前面章节所见，它对应于我们众所周知的旋转矩阵，
+%
+\begin{equation}
+\eqbox{\Phi_{\bftheta\bftheta} = \bfR\{\bfomega\Dt\}\tr}~.
+\end{equation}
+
+\paragraph{位置对比速度项}
+最简单的非对角项是 $\Phi_{\bfp\bfv}$，它是
+%
+\begin{equation}
+\eqbox{\Phi_{\bfp\bfv} = \bfP_\bfv\Dt = \bfI\Dt}~.
+\end{equation}
+
+\paragraph{速度对比角度项}
+现在我们来关注 $\Phi_{\bfv, \bftheta}$ 项，通过写它的级数，
+%
+\begin{equation}
+\Phi_{\bfv\bftheta} = \bfV_\bftheta\Dt 
++ \frac{1}{2}\bfV_\bftheta\Theta_\bftheta\Dt^2 
++ \frac{1}{3!}\bfV_\bftheta\Theta_\bftheta^2\Dt^3
++\cdots
+\end{equation}
+%
+\begin{equation}
+\Phi_{\bfv\bftheta} = \Dt\bfV_\bftheta( \bfI 
++ \frac{1}{2}\Theta_\bftheta\Dt 
++ \frac{1}{3!}\Theta_\bftheta^2\Dt^2
++\cdots)
+\end{equation}
+%
+减少到
+%
+\begin{equation}
+\Phi_{\bfv\bftheta} = \Dt\bfV_\bftheta\left( \bfI 
++ \sum_{k\ge1}\frac{(\Theta_\bftheta\Dt)^k}{(k+1)!} 
+\right)
+\end{equation}
+
+
+现在我们有两个选择。 
+我们可以在第一个有效项处截断级数，得到 $\Phi_{\bfv\bftheta} = \bfV_\bftheta\Dt$，但这不是一个封闭形式。 
+有关使用此简化方法的结果，请参见下一节。
+或者，让我们将因数 $\bfV_\bftheta$ 分解出来并写成
+%
+\begin{equation}
+\Phi_{\bfv\bftheta} = \bfV_\bftheta\Sigma_1
+\end{equation}
+%
+其中
+%
+\begin{equation}
+\Sigma_1 = \bfI\Dt 
++ \frac{1}{2}\Theta_\bftheta\Dt^2 
++ \frac{1}{3!}\Theta_\bftheta^2\Dt^3
++\cdots~.
+\end{equation}
+%
+把级数 $\Sigma_1$ 再拼接成我们为 $\Phi_{\bftheta\bftheta}$ ，方程 \eqRef{equ:thetaThetaSeries} 所写的级数，有两个例外：
+\begin{itemize}
+\item 在 $\Sigma_1$ 中的 $\Theta_\bftheta$ 的幂次与 $\tfrac{1}{k!}$ 的有理系数，和与 $\Dt$ 的幂次不匹配
+。
+实际上，我们在这里注意到，在 $\Sigma_1$ 中的分指数 ``1'' 表示事实，$\Theta_\bftheta$ 的一个幂次在每个成员中已经缺失。
+
+\item 级数开头的一些项已经丢失。 
+再一次, 分指数 ``1'' 指示一个这样项已经缺失。
+\end{itemize}
+
+第一个问题可以通过将方程 \eqRef{equ:prop2} 应用到方程 \eqRef{equ:ThetaThetaDef}来解决，这将产生特征
+%
+\begin{equation}
+\Theta_\bftheta
+ = \frac{\hatx\bfomega^3}{\norm\bfomega^2}
+ = \frac{-\Theta_\bftheta^3 }{\norm\bfomega^2} ~. \label{equ:skewPowerAugment2}
+\end{equation}
+%
+这个表达式允许我们将级数中的 $\Theta_\bftheta$ 的幂次增加 ``2''，并写出，如果 $\bfomega \neq 0$，
+%
+\begin{equation}
+\Sigma_1 =
+  \bfI\Dt 
+- \frac{\Theta_\bftheta}{\norm\bfomega^2}\left(\frac12\Theta_\bftheta^2\Dt^2 + \frac1{3!}\Theta_\bftheta^3\Dt^3 + \dots \right) ~,
+\end{equation}
+%
+否则就是 $\Sigma_1=\bfI\Dt$ 。 
+新级数中的所有幂都与正确的系数相匹配。 
+当然，如前所述，有些项是缺失的。 
+第二个问题可以通过增加和减少缺少的项，并用它的闭合形式替换整个级数来解决。 
+我们得到
+%
+\begin{equation}
+\Sigma_1 =
+  \bfI\Dt 
+- \frac{\Theta_\bftheta}{\norm\bfomega^2}\left(\bfR\{\bfomega\Dt\}\tr - \bfI - \Theta_\bftheta\Dt \right) ~,
+\end{equation}
+%%
+这是一个有效的闭式解，如果 $\bfomega\neq 0$ 。
+所以我们终于可以写
+%
+\begin{subequations}
+\begin{empheq}
+ [left={\Phi_{\bfv\bftheta}=\empheqlbrace},box=\fbox]
+ {alignat=2}
+ &-\bfR\hatx{\bfa}\Dt   &&  \bfomega\to 0 \\
+ &-\bfR\hatx{\bfa} \left(\bfI\Dt 
++ \frac{\hatx\bfomega}{\norm\bfomega^2}\left(\bfR\{\bfomega\Dt\}\tr - \bfI + \hatx\bfomega\Dt \right)
+\right)
+ &\quad & \bfomega \neq 0
+\end{empheq}
+\end{subequations}
+
+%\item 
+\paragraph{位置对比角度项}
+让我们把 $\Phi_{\bfp\bftheta}$ 这个项放在最后。 
+它的泰勒级数是，
+%
+\begin{equation}
+\Phi_{\bfp\bftheta} = 
+  \frac{1}{2 }\bfP_\bfv\bfV_\bftheta\Dt^2
++ \frac{1}{3!}\bfP_\bfv\bfV_\bftheta\Theta_\bftheta\Dt^3 
++ \frac{1}{4!}\bfP_\bfv\bfV_\bftheta\Theta_\bftheta^2\Dt^4
++\cdots
+\end{equation}
+%
+我们算出常数项，得到，
+%
+\begin{equation}
+\Phi_{\bfp\bftheta} = \bfP_\bfv\bfV_\bftheta\ \Sigma_2~,
+\end{equation}
+%
+其中
+%
+\begin{equation}
+\Sigma_2 = 
+  \frac{1}{2 }\bfI\Dt^2
++ \frac{1}{3!}\Theta_\bftheta\Dt^3 
++ \frac{1}{4!}\Theta_\bftheta^2\Dt^4
++ \cdots ~.
+\end{equation}
+%
+在这里我们注意到在 $\Sigma_2$ 中的分指数 ``2''，允许以下解释：
+%
+\begin{itemize}
+\item 在级数中的每一个项中，$\Theta_\bftheta$ 的两个幂次已经缺失，
+\item 在级数中的开始的两个项已经缺失。
+\end{itemize}
+
+再一次，我们使用方程 \eqRef{equ:skewPowerAugment2} 来增加 $\Theta_\bftheta$ 的指数，得到
+%
+\begin{equation}
+\Sigma_2 = 
+  \frac{1}{2}\bfI \Dt^2
+- \frac{1}{\norm\bfomega^2}\left(
+  \frac{1}{3!}\Theta_\bftheta^3\Dt^3 
++ \frac{1}{4!}\Theta_\bftheta^4\Dt^4
++ \cdots \right)~.
+\end{equation}
+%
+我们用不完全级数的闭式形式代替它，
+%
+\begin{equation}
+\Sigma_2 =
+  \frac12\bfI \Dt^2
+- \frac{1}{\norm\bfomega^2}
+\left(
+  \bfR\{\bfomega\Dt\}\tr 
+	- \bfI 
+	- \Theta_\bftheta\Dt
+	- \frac{1}{2}\Theta_\bftheta^2\Dt^2
+\right)~,
+\end{equation}
+%
+这导致最终的结果
+%
+\begin{subequations}
+\begin{empheq}[left={\Phi_{\bfp\bftheta}=\empheqlbrace},box=\fbox]{alignat=2}
+ & -\bfR\hatx{\bfa} \frac{\Dt^2}{2} && \bfomega\to 0  \\
+ & -\bfR\hatx{\bfa} 
+\left(
+\frac12\bfI \Dt^2
+- \frac{1}{\norm\bfomega^2}
+\left(
+  \bfR\{\bfomega\Dt\}\tr 
+	- \sum_{k=0}^2\frac{(-\hatx\bfomega\Dt)^k}{k!}
+\right)\right)
+ &\quad &\omega\neq 0 
+\end{empheq}
+\end{subequations}
+
+
+
+
+%=============================================================
+\subsection{完整的 IMU 示例}
+\label{sec:closedFormFullImu}
+
+为了给出推广简化IMU示例中公开的方法的方法，我们需要更仔细地检查完整的IMU情况。
+
+考虑完整的 IMU 系统方程 \eqRef{equ:efull}，它可以产生
+%
+\begin{equation}
+\dot{\delta\bfx} = \bfA\delta\bfx + \bfB\bfw~,
+\end{equation}
+%
+其离散时间积分需要转换矩阵 
+%
+\begin{equation}
+\Phi=\sum_{k=0}^\infty\frac{1}{k!}\bfA^k\Dt^k = \bfI + \bfA\Dt + \frac12\bfA^2\Dt^2 + \dots~, \label{equ:tranmatseries}
+\end{equation}
+%
+这是我们想计算的。 
+动力学矩阵 $\bfA$ 是块稀疏的，其块可以通过检查原始方程 \eqRef{equ:efull} 容易地确定，
+
+%
+\begin{equation}
+\bfA = \begin{bmatrix}
+  0& \bfP_\bfv&  0&  0&  0&  0\\
+  0&  0& \bfV_\bftheta& \bfV_\bfa&  0& \bfV_\bfg\\
+  0&  0& \Theta_\bftheta&  0& \Theta_\bfomega
+&  0\\
+  0&  0&  0&  0&  0&  0\\
+  0&  0&  0&  0&  0&  0\\
+  0&  0&  0&  0&  0&  0
+\end{bmatrix}~. \label{equ:FullIMU_Fmat}
+\end{equation}
+%
+
+正如我们之前所做的，让我们写出一些 $\bfA$ 的幂次，
+%
+%
+\begin{align*}
+\bfA^2 &= \begin{bmatrix}
+  ~~0~~& ~~0~~& ~\bfP_\bfv \bfV_\bftheta~& \bfP_\bfv \bfV_\bfa&          0& \bfP_\bfv \bfV_\bfg\\
+  0& 0& ~\bfV_\bftheta \Theta_\bftheta~&    0&      ~\bfV_\bftheta \Theta_\bfomega~&    0\\
+  0& 0&  \Theta_\bftheta^2&     0& \Theta_\bftheta \Theta_\bfomega&     0\\
+  0& 0&     0&     0&          0&     0\\
+  0& 0&     0&     0&          0&     0\\
+  0& 0&     0&     0&          0&     0
+\end{bmatrix}\\
+\bfA^3 &= \begin{bmatrix}
+  ~~0~~& ~~0~~& \bfP_\bfv \bfV_\bftheta \Theta_\bftheta& ~0~&             ~\bfP_\bfv \bfV_\bftheta \Theta_\bfomega~& ~~0~~\\
+  0& 0&  \bfV_\bftheta \Theta_\bftheta^2&    0&     \bfV_\bftheta \Theta_\bftheta \Theta_\bfomega&    0\\
+  0& 0&     \Theta_\bftheta^3&     0& \Theta_\bftheta^2\Theta_\bfomega&     0\\
+  0& 0&        0&     0&                    0&     0\\
+  0& 0&        0&     0&                    0&     0\\
+  0& 0&        0&     0&                    0&     0
+\end{bmatrix}\\
+\bfA^4 &= \begin{bmatrix}
+  ~~0~~& ~~0~~& \bfP_\bfv \bfV_\bftheta \Theta_\bftheta^2 & ~0~&         \bfP_\bfv \bfV_\bftheta\Theta_\bftheta \Theta_\bfomega& ~~0~~\\
+  0& 0&    \bfV_\bftheta \Theta_\bftheta^3&    0&  \bfV_\bftheta \Theta_\bftheta^2 \Theta_\bfomega&    0\\
+  0& 0&       \Theta_\bftheta^4&     0& \Theta_\bftheta^3\Theta_\bfomega&     0\\
+  0& 0&          0&     0&                              0&     0\\
+  0& 0&          0&     0&                              0&     0\\
+  0& 0&          0&     0&                              0&     0
+\end{bmatrix}~.%
+\end{align*}%
+%
+基本上，我们观察到以下情况，
+
+\begin{itemize}
+\item
+在 $\bfA$ 中对角线中的唯一项，旋转项 $\Theta_\bftheta$ ，按 $\bfA^k$ 幂次的顺序向右和向上传播。
+所有不受此传播影响的项都将消失。 
+这种传播从以下三个方面影响级数 $\{\bfA^k\}$ 的结构：
+\item 
+在第三次幂之后， $\bfA$ 的幂的稀疏性是稳定的。 
+也就是说，在 $\bfA$ 中对于大于3的幂，没有更多的非零块出现或消失。
+\item 
+左上 $3\times 3$ 块，对应于前一示例中的简化IMU模型，相对于该示例没有改变。 
+因此，其封闭形式的解在被解开之前保持住。
+\item 
+与陀螺仪偏差误差有关的项 (第五列的项) 引入了类似的级数 $\Theta_\bftheta$ 的幂次，可以用我们在简化示例中使用的相同技术来解决。 
+\end{itemize}
+
+在这一点上，我们感兴趣的是找到一种广义方法，用以指导转换矩阵 $\Phi$ 的闭式元素的构造。
+让我们回顾一下我们对 $\Sigma_1$ 和 $\Sigma_2$ 级数的评论，
+%
+\begin{itemize}
+\item 分指数与级数中每个成员中缺失的 $\Theta_\bftheta$ 的幂相一致。
+\item 分指数与级数开头缺失的项的数量相一致。
+\end{itemize}
+
+考虑到这些性质，让我们引入级数 $\Sigma_n(\bfX,y)$，它被定义为\footnote{注意，作为 $\bfX$ ，一个不一定可逆的平方矩阵 (如 $\bfX=\Theta_\bftheta$ 的情况)，我们不允许用 $\Sigma_n=\bfX^{-n}\sum_{k=n}^\infty\frac{1}{k!}(y\bfX)^{k}$ 重新排列 $\Sigma_n$ 的定义。}
+%
+\begin{equation}
+\Sigma_n(\bfX,y) \triangleq \sum_{k=n}^\infty \frac{1}{k!}\bfX^{k-n}y^k = \sum_{k=0}^\infty \frac{1}{(k+n)!}\bfX^{k}y^{\,k+n}= y^n\sum_{k=0}^\infty \frac{1}{(k+n)!}\bfX^k y^k
+\end{equation}
+%
+其中，从项 $n$ 开始的加和，与矩阵 $\bfX$ 缺失 $n$ 次幂的项。 
+紧接着， $\Sigma_1$ 和 $\Sigma_2$ 响应于 
+%
+\begin{equation}
+\Sigma_n=\Sigma_n(\Theta_\bftheta,\Dt)~,
+\end{equation}
+%
+和这个 $\Sigma_0 = \bfR\{\bfomega\Dt\}\tr$ 。
+我们现在可以写出转换矩阵方程 \eqRef{equ:tranmatseries} 作为这些级数的函数，
+%
+\begin{equation}
+\Phi = \begin{bmatrix}
+\bfI & \bfP_\bfv\Dt & \bfP_\bfv\bfV_\bftheta\Sigma_2 &  \tfrac12\bfP_\bfv\bfV_\bfa\Dt^2 & \bfP_\bfv\bfV_\bftheta\Sigma_3\bftheta_\bfomega & \tfrac12\bfP_\bfv\bfV_\bfg\Dt^2 \\
+0 & \bfI & \bfV_\bftheta\Sigma_1 &  \bfV_\bfa\Dt & \bfV_\bftheta\Sigma_2\bftheta_\bfomega & \bfV_\bfg\Dt \\
+0 & 0 & \Sigma_0 &  0 & \Sigma_1\bftheta_\bfomega & 0 \\
+0 & 0 & 0 & \bfI & 0 & 0 \\
+0 & 0 & 0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & 0 & 0 & \bfI \\
+\end{bmatrix}~.\label{equ:fullIMUtranmat}
+\end{equation}�
+
+现在我们的问题已经发展到找到 $\Sigma_n$ 的一般闭式表达式的问题。
+让我们观察到目前为止我们得到的闭式结果，
+%
+%
+\begin{align}
+\Sigma_0 &= \bfR\{\bfomega\Dt\}\tr \\
+\Sigma_1 &=
+  \bfI\Dt 
+- \frac{\Theta_\bftheta}{\norm\bfomega^2}\left(\bfR\{\bfomega\Dt\}\tr - \bfI - \Theta_\bftheta\Dt \right) \\
+\Sigma_2 &= 
+  \frac12 \bfI\Dt^2
+- \frac{1}{\norm\bfomega^2}\left(
+  \bfR\{\bfomega\Dt\}\tr - \bfI - \Theta_\bftheta\Dt - \frac12\Theta_\bftheta^2\Dt^2
+ \right)~.
+\end{align}%
+
+为了展开 $\Sigma_3$，我们需要应用特征方程 \eqRef{equ:skewPowerAugment2} 两次 (因为我们缺失三次幂，而每次应用方程 \eqRef{equ:skewPowerAugment2} 只会将这个数字增加两次)，得到
+%
+\begin{equation}
+\Sigma_3 = 
+  \frac1{3!}\bfI\Dt^3 
++ \frac{\Theta_\bftheta}{\norm\bfomega^4}
+	\left(
+		  \frac1{4!}\Theta_\bftheta^4\Dt^4
+		+ \frac1{5!}\Theta_\bftheta^5\Dt^5
+		+ \dots
+	\right)~,
+\end{equation}%
+%
+这导致
+%
+\begin{equation}
+\Sigma_3 = 
+  \frac1{3!}\bfI\Dt^3 
++ \frac{\Theta_\bftheta}{\norm\bfomega^4}
+	\left(
+		\bfR\{\bfomega\Dt\}\tr - \bfI - \Theta_\bftheta\Dt - \frac12\Theta_\bftheta^2\Dt^2 - \frac1{3!}\Theta_\bftheta^3\Dt^3
+	\right)~.
+\end{equation}%
+%
+通过仔细检查级数 $\Sigma_0\dots\Sigma_3$，我们现在可以为 $\Sigma_n$ 导出一般闭式表达式，如下所示，
+%
+\begin{subequations}
+\begin{empheq}[left={\Sigma_n=\empheqlbrace},box=\widefbox]{alignat=2}
+ & \frac1{n!}\bfI\Dt^n && \bfomega \to 0 \\
+ & \bfR\{\bfomega\Dt\}\tr && n = 0 \\
+ &  \frac1{n!}\bfI\Dt^n
+- \frac{(-1)^{\tfrac{n+1}{2}}\hatx\bfomega}{\norm\bfomega^{n+1}}
+	\left(
+		\bfR\{\bfomega\Dt\}\tr - \sum_{k=0}^n \frac{(-\hatx\bfomega\Dt)^k}{k!}
+	\right) && n \text{ odd}  \\
+ &   \frac1{n!}\bfI\Dt^n
++ \frac{(-1)^{\tfrac{n}{2}}}{\norm\bfomega^n}\left(
+  \bfR\{\bfomega\Dt\}\tr - \sum_{k=0}^n \frac{(-\hatx\bfomega\Dt)^k}{k!}
+	\right) &\quad & n \text{ even} 
+\end{empheq}
+\end{subequations}
+
+转换矩阵 $\Phi$ 的最终结果紧接着在方程 \eqRef{equ:fullIMUtranmat} 的相应位置替换 $\Sigma_n,\ n\in\{0,1,2,3\}$ 的适当值。
+
+值得注意的是，现在出现在这些新的 $\Sigma_n$ 表达式中的级数有有限个项，并因此可以有效地计算它们。 
+也就是说， $\Sigma_n$ 的表达式是一个只要 $n<\infty$ 的闭形式，这种情况总是存在的 
+在本例中，我们有 $n\leq 3$ ，如我们在方程 \eqRef{equ:fullIMUtranmat} 中所观察到的。

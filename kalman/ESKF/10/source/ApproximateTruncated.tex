@@ -1,0 +1,214 @@
+% !TEX root = kinematics.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{截断级数的近似方法}
+
+在前一节中，我们设计了复杂的、IMU驱动的动态系统的转换矩阵的闭式表达式，用它们的线性化、误差状态形式 $\dot{\delta\bfx}=\bfA\delta\bfx$ 来表示。
+闭式表达式可能总是令人感兴趣的，但目前还不清楚我们应该在哪一点上担心高阶误差及其对实际算法性能的影响。 
+在IMU积分误差以相对较高的速率观测 (并因此得到补偿) 的系统中，如视觉惯性或GPS惯性融合方案中，这一点尤其重要。
+
+在这一节中，我们设计了用于逼近转换矩阵的方法。 
+它们从转换矩阵可以表示为泰勒级数的相同假设出发，然后用最重要的项截断这些级数。 
+这种截断可以按系统执行或按块执行。
+
+%=============================================================
+\subsection{系统截断}
+
+%-------------------------------------------------------------
+\subsubsection{一阶截断：有限差分法}
+
+一种典型的、广泛使用的集成方法
+%
+\begin{equation*}
+\dot\bfx = f(t,\bfx) 
+\end{equation*}
+%
+是基于计算导数的有限差分法，即，
+%
+\begin{equation}
+\dot\bfx \triangleq \lim_{\delta t\to 0} \frac{\bfx(t+\delta t)-\bfx(t)}{\delta t} \approx \frac{\bfx_{n+1}-\bfx_n}{\Dt}ª.
+\end{equation}
+%
+这会立即导致
+%
+\begin{equation}
+\bfx_{n+1} \approx \bfx_n + \Dt\,f(t_n,\bfx_n)~,
+\end{equation}
+%
+这就是欧拉方法。 
+函数 $f()$ 在积分间隔开始时的线性化导致
+%
+\begin{subequations}
+\begin{equation}
+\bfx_{n+1} \approx \bfx_n + \Dt\,\bfA\,\bfx_n~,
+\end{equation}
+%
+其中 $ \bfA\triangleq\dpar{f}{\bfx}{(t_n,\bfx_n)}$ 是一个 Jacobian 矩阵。 
+这严格等同于将指数解写入线性化微分方程，并在线性项处截断级数 (即，以下关系与前一关系相同)，
+%
+\begin{equation}
+\bfx_{n+1} = e^{\bfA\Dt}\bfx_n \approx (\bfI + \Dt\,\bfA)\,\bfx_n~.
+\end{equation}
+\end{subequations}
+%
+这意味着欧拉方法 (\appRef{sec:Euler})，有限差分法和一阶泰勒截断法都是一样的。 
+我们得到了近似的转换矩阵，
+%
+\begin{equation}
+\eqbox{\Phi \approx \bfI+\Dt\bfA}~.
+\end{equation}
+
+对于 \secRef{sec:IMUexample} 的简化 IMU 例子，有限差分法得到近似的转换矩阵。
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & 0 \\
+0 & \bfI & -\bfR\hatx{\bfa}\Dt \\
+0 & 0 & \bfI-\hatx{\bfomega\Dt}
+\end{bmatrix}~.
+\end{equation}
+%
+然而，我们已经从 \secRef{sec:ClosedFormAngle} 知道，旋转项有一个紧致的封闭解， $\Phi_{\bftheta\bftheta}=\bfR(\bfomega \Dt)\tr$ 。
+根据它可以方便地重新编写转换矩阵，
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & 0 \\
+0 & \bfI & -\bfR\hatx{\bfa}\Dt \\
+0 & 0 & \bfR\{\bfomega\Dt\}\tr
+\end{bmatrix}~.
+\end{equation}
+
+%-------------------------------------------------------------
+\subsubsection{N阶截断}
+
+高阶截断将提高近似转换矩阵的精度。 
+截断的一个特别有趣的顺序是利用结果的稀疏性到其最大值。 
+换句话说，没有新的非零项出现的顺序。
+
+对于 \secRef{sec:IMUexample} 中的简化 IMU 示例，此阶数为2，结果是
+%
+\begin{equation}
+{\bf\Phi} 
+\approx \bfI + \bfA\Dt + \frac12\bfA^2\Dt^2
+= \begin{bmatrix}
+\bfI & \bfI\Dt & -\frac12\bfR\hatx{\bfa}\Dt^2                           \\
+0    & \bfI    &        -\bfR\hatx{\bfa}(\bfI - \frac12\hatx{\bfomega}\Dt)\Dt  \\
+0    & 0       &         \bfR\{\bfomega\Dt\}\tr
+\end{bmatrix}~.
+\end{equation}
+
+对于 \secRef{sec:closedFormFullImu} 中的完整 IMU 示例，此阶数为 3，结果是
+%
+\begin{equation}
+{\bf\Phi} \approx \bfI + \bfA\Dt + \frac12\bfA^2\Dt^2 + \frac16\bfA^3\Dt^3~,
+\end{equation}
+%
+因为空间的原因，这里没有给出完整的表格。 
+读者可以参考在 \secRef{sec:closedFormFullImu} 中的 $\bfA$， $\bfA^2$ 和 $\bfA^3$ 的表达式。
+
+
+%=============================================================
+\subsection{按块截断}
+\label{sec:BlockWiseTruncation}
+先前解释的封闭形式的一个相当好的近似结果是在第一个显著项上截断转换矩阵的每个块的泰勒级数。 
+也就是说，我们没有像前面所说的那样，以 $\bfA$ 的全幂次截断级数，而是将每个块单独考虑。 
+因此，需要按块分析截断。 
+我们用两个例子来探讨它。
+
+对于 \secRef{sec:IMUexample} 的简化IMU示例，我们有 $\Sigma_1$ 和 $\Sigma_2$级数，可以将其截断如下
+%
+\begin{empheq}{alignat=6}
+\Sigma_1 &= 
+   \bfI\Dt 
+&+ \frac{1}{2}\Theta_\bftheta\Dt^2 
+&+ \cdots 
+&{}
+&\approx \bfI\Dt \\
+\Sigma_2 &= 
+{}
+&  \frac{1}{2 }\bfI\Dt^2
+&+ \frac{1}{3!}\Theta_\bftheta\Dt^3 
+&+ \cdots 
+&\approx  \  \frac{1}{2}\bfI\Dt^2 
+& ~.
+\end{empheq}
+%
+这导致了近似的转换矩阵。
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & -\frac12\bfR\hatx{\bfa} \Dt^2 \\
+0 & \bfI & -\bfR\hatx{\bfa} \Dt \\
+0 & 0 & \bfR(\bfomega \Dt)\tr
+\end{bmatrix}~,
+\end{equation}
+%
+这比上述全系统一阶截断中的更精确 (因为现在出现了右上角的)，但仍然容易获得和计算，特别是与 \secRef{sec:ClosedFormInt} 中展开的闭合形式相比。 
+再次注意，我们对最低项采用了闭合形式，即 $\Phi_{\bftheta\bftheta}=\bfR(\bfomega \Dt)\tr$ 。
+
+在一般情况下，它可以用级数的第一个项来近似每个 $\Sigma_n$ ，除了 $\Sigma_0$ 之外，即，
+%
+\begin{equation}
+\eqbox{
+\Sigma_0=\bfR\{\bfomega\Dt\}\tr~,\qquad \Sigma_{n>0} \approx \frac{1}{n!}\bfI\Dt^n}  ~.
+\end{equation}%
+
+对于完整的IMU实例，将前面的 $\Sigma_n$ 反馈进入方程 \eqRef{equ:fullIMUtranmat} 产生近似的转换矩阵，
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & -\frac{1}{2}\bfR\hatx{\bfa}\Dt^2 &  -\tfrac12\bfR\Dt^2 & \frac{1}{3!}\bfR\hatx{\bfa}\Dt^3 & \tfrac12\bfI\Dt^2 \\
+0 & \bfI & -\bfR\hatx{\bfa}\Dt &  -\bfR\Dt & \frac{1}{2}\bfR\hatx{\bfa}\Dt^2 & \bfI\Dt \\
+0 & 0 & \bfR\{\bfomega\Dt\}\tr &  0 & -\bfI\Dt & 0 \\
+0 & 0 & 0 & \bfI & 0 & 0 \\
+0 & 0 & 0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & 0 & 0 & \bfI \\
+\end{bmatrix}\label{equ:FullIMU_PhiTrunc}
+\end{equation}
+%
+其中 (参见方程 \eqRef{equ:efull})
+%
+\begin{equation*}
+\bfa=\bfa_m-\bfa_b~,\quad\bfomega=\bfomega_m-\bfomega_b~,\quad\bfR=\bfR\{\bfq\}~,
+\end{equation*}
+%
+并且这里我们用适当的值替换了矩阵块 (另见方程 \eqRef{equ:efull}),
+%
+\begin{equation*}
+\bfP_\bfv=\bfI~, \quad 
+\bfV_\bftheta=-\bfR\hatx{\bfa}~, \quad 
+\bfV_\bfa=-\bfR~, \quad
+\bfV_\bfg=\bfI~, \quad
+\Theta_\bftheta=-\hatx\bfomega~, \quad
+\Theta_\bfomega=-\bfI 
+\end{equation*}
+
+这种方法的一个简单的简化是将矩阵中的每个块限制为某个最大阶数 $n$。
+对于 $n=1$ 我们有，
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & 0 & 0 & 0 & 0 \\
+0 & \bfI & -\bfR\hatx{\bfa}\Dt &  -\bfR\Dt & 0 & \bfI\Dt \\
+0 & 0 & \bfR\{\bfomega\Dt\}\tr &  0 & -\bfI\Dt & 0 \\
+0 & 0 & 0 & \bfI & 0 & 0 \\
+0 & 0 & 0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & 0 & 0 & \bfI \\
+\end{bmatrix}~,\label{equ:FullIMU_PhiTrunc1}
+\end{equation}
+%
+这是欧拉方法，而对于 $n=2$ ，
+%
+\begin{equation}
+\Phi \approx \begin{bmatrix}
+\bfI & \bfI\Dt & -\frac{1}{2}\bfR\hatx{\bfa}\Dt^2 &  -\tfrac12\bfR\Dt^2 & 0 & \tfrac12\bfI\Dt^2 \\
+0 & \bfI & -\bfR\hatx{\bfa}\Dt &  -\bfR\Dt & \frac{1}{2}\bfR\hatx{\bfa}\Dt^2 & \bfI\Dt \\
+0 & 0 & \bfR\{\bfomega\Dt\}\tr &  0 & -\bfI\Dt & 0 \\
+0 & 0 & 0 & \bfI & 0 & 0 \\
+0 & 0 & 0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & 0 & 0 & \bfI \\
+\end{bmatrix}~.\label{equ:FullIMU_PhiTrunc2}
+\end{equation}
+%
+对于 $n\ge3$ ，我们有完整的形式方程 \eqRef{equ:FullIMU_PhiTrunc} 。

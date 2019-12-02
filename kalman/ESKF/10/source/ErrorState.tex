@@ -1,0 +1,885 @@
+% !TEX root = kinematics.tex
+
+
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{IMU驱动的系统的误差状态动力学}
+\label{sec:es-kinematics}
+
+%=============================================================
+\subsection{动机}
+
+我们希望使用 Hamilton 四元数来表示在空间或姿态(\emph{attitude})上的方向，写出惯性系统动力学的误差状态方程，输入数据为带有偏差和噪声的加速度计和陀螺仪的读数。
+
+加速度计和陀螺仪的读数通常来自惯性测量单元 (IMU)。
+集成 IMU 读数导致具有随时间漂移的航位推算定位系统。
+避免漂移是将这些信息与绝对位置读数，如 GPS 或视觉数据，融合的问题。
+
+误差状态 Kalman 滤波器 (ESKF) 是我们可以用于此目的的工具之一。 
+在 Kalman 滤波范式中，这些是ESKF最显著的资产~\citep{MADYASTHA-11}：
+
+\begin{itemize}
+\item 方向误差状态最小 (即，其参数数量与自由度相同)，避免了过度参数化 (或冗余) 的相关问题，以及相关协方差矩阵奇异性的风险，这通常是由强制约束引起的。
+\item 误差状态系统总是在接近原点的位置运行，因此远离可能的参数奇异性、万向节锁问题，或类似的问题，从而提供保证在所有时间里线性化有效性始终保持不变。
+\item 误差状态总是很小，这意味着所有二阶乘积都可以忽略不计。 
+这使得 Jacobians 矩阵的计算变得非常简单和快速。 
+有些Jacobians 矩阵数值甚至可能是常数或等于可用状态量。
+\item 误差动力学变化很慢，因为所有大信号动力学已集成在标称状态。这意味着我们可以以低于预测的速度应用 KF 修正 (这是观测误差的唯一方法)。
+\end{itemize}
+
+
+%=============================================================
+\subsection{误差状态 Kalman 滤波器的解释}
+
+在误差状态滤波器公式中，我们提到真实、标称和误差状态值，真实状态表示为标称和误差状态的适当组合 (线性加和、四元数积或矩阵积)。 
+其思想是将标称状态视为大信号 (非线性可积)，将误差状态视为小信号 (线性可积，适用于线性高斯滤波)。
+
+误差状态过滤器可以解释如下。 
+一方面，高频 IMU 数据 $\bfu_m$ 被集成到标称状态 $\bfx$中， 
+该标称状态不考虑噪声项 $\bfw$ 和其他可能的模型缺陷。 
+因此，它会累积误差。 
+这些误差被收集进误差状态 $\delta\bfx$ 中并且用误差状态 Kalman 滤波器 (ESKF)进行估计，这时合并了所有的噪声和扰动。 
+误差状态由小信号量组成，其演化函数由一个 (时变) 线性动力学系统正确定义，其动力学、控制和测量矩阵由标称状态值计算。 
+与标称状态积分并行，ESKF 预测误差状态的高斯估计。 
+它只是预测，因为到目前为止还没有其他的测量方法来修正这些估计。 
+滤波器校正是在 IMU 以外的信息(例如GPS、视觉等)到达时执行的，该信息能够使误差变得可观测，并且通常以比积分阶段低得多的速率发生。 
+这种校正提供了误差状态的后验高斯估计。 
+在此之后，将误差状态的均值注入标称状态，然后重置为零。 
+误差状态的协方差矩阵被方便地更新以反映这种重置。 
+这个系统就一直这样循环下去。
+
+%\begin{enumerate}
+%\item Have nominal state $\bfx$, error state $\delta\bfx$, covariance of error state $\bfP$. Have:
+%%    
+%$$\bfx_t = \bfx \oplus \delta\bfx$$
+%%
+%the true state is a composition of the nominal state and the error state (see 5. below for details)
+%\item  Time-Update. Update the nominal state
+%%
+%    $$\bfx = f(\bfx,\bfu,0)$$
+%%
+%    where
+%        $f()$ is the dynamic function,
+%        $\bfu$ is the control signal, and
+%        $\bfn=0$ is the noise mean.
+%\item  Time-Update. Update the covariance of the error state
+%%
+%    $$\bfP = \bfF_\bfx \bfP \bfF_\bfx\tr + \bfF_\bfn \bfQ \bfF_\bfn\tr$$
+%%
+%    where        $\bfF_\bfx = d f() / d \delta\bfx$   the derivative \wrt $\delta\bfx$,
+%        $\bfF_\bfn = d f() / d \bfn$    the derivative \wrt $\bfn$, and
+%        $\bfQ$ covariance of the perturbation noise
+%\item Measurement-update. Compute the Kalman gain
+%%
+%    $$\bfK = \bfP \bfH' / (\bfH \bfP \bfH' + \bfR)$$
+%%
+%    where
+%        $h()$ is the measurement function,
+%        $\bfH = d h() / d \delta\bfx$    the derivative of the measurement function $h()$ \wrt the error state $\delta\bfx$, and
+%        $\bfR$ = covariance of the measurement noise
+%\item  Measurement-update. Compute the error state
+%%
+%    $$\delta\bfx = \bfK ( \bfy - h(\bfx) )$$
+%%
+%    where
+%        $\bfy$ is the measurement, and
+%        $h(\bfx)$ is the measurement function evaluated at the nominal state (computed in step 1)
+%\item  Measurement-update. Update the nominal state
+%    $$\bfx = \bfx \oplus \delta\bfx$$
+%    where
+%        $\oplus$ is a composition. As $\bfx = [\bfv~ \bfq]$ and $\delta\bfx = [\delta\bfv~ \delta\bftheta]$, we have two cases:
+%            general vectors, $\bfv = \bfv + \delta\bfv$, and
+%            quaternion, $\bfq = \delta\bfq \otimes \bfq$,
+%                where
+%                $\ot$ is the quaternion product, and
+%                $\delta\bfq$ is obtained from $\delta\bftheta$ with \eqRef{equ:vectoquatEuler}.
+%\item  Measurement-update. Update the covariance of the error state
+%   $$ \bfP = \bfP - \bfK (\bfH \bfP \bfH\tr + \bfR) \bfK\tr$$
+%\item  Return to 1.
+%\end{enumerate}
+
+%=============================================================
+\subsection{连续时间的系统动力学}
+
+所有相关变量的定义总结于 \tabRef{tab:errorstatevar}。
+关于约定的两项重要决定值得一提：
+\begin{itemize}
+\item
+角度速率 $\bfomega$ 是相对于标称四元数的局部(\emph{locally})定义。 
+这使得我们可以直接使用陀螺仪测量值 $\bfomega_m$ ，因为它们提供机体参考角速率。
+\item
+角度误差 $\delta\bftheta$ 同样是相对于标称方向的局部(\emph{locally})定义。 
+这不一定是最佳的方法，但它符合大多数 IMU 集成工作的选择 --- 我们可以称之为经典方法(\emph{classical approach})。 
+现有的证据 \citep{LI-2012} 表明全局定义的角度误差具有更好的性质。 
+本文档 \secRef{sec:ESKFglobal}也将对此进行探讨，但这里的大多数开发、示例和算法都基于这种局部定义的角度误差。
+\end{itemize}
+
+\begin{table*}[tb]
+\renewcommand{\arraystretch}{1.3}
+\caption{误差状态 Kalman 滤波器中的所有变量。}
+\centering
+\vspace{1ex}
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+数量 & 真实 & 标称 & 误差 & 组合 & 测量 & 噪声 \\
+\hline
+\hline
+全状态 ($ ^1$)& $\bfx_t$ & $\bfx$ & $\delta\bfx$ & $\bfx_t = \bfx\oplus\delta\bfx$ & & \\
+\hline
+\hline
+位置 & $\bfp_t$ & $\bfp$ & $\delta\bfp$ & $\bfp_t = \bfp+\delta\bfp$ & & \\
+速度 & $\bfv_t$ & $\bfv$ & $\delta\bfv$ &$\bfv_t = \bfv+\delta\bfv$& & \\
+四元数 ($ ^{2,3}$)& $\bfq_t$ & $\bfq$ & ${\delta\bfq}$ &$\bfq_t = \bfq\ot{\delta\bfq}$& & \\
+旋转矩阵 ($ ^{2,3}$)& $\bfR_t$ & $\bfR$ & $\delta\bfR$ &$\bfR_t = \bfR\,\delta\bfR$& & \\
+ \multirow{2}{*}{角度向量 ($ ^{4}$)} &  &  &  \multirow{2}{*}{$\delta\bftheta$} & 
+$\delta\bfq = e^{\delta\bftheta/2} 
+%	\approx \begin{bmatrix}1\\\delta\bftheta/2\end{bmatrix}
+	$ & & \\
+& & & & 
+$\delta\bfR = e^{\hatx{\delta\bftheta}} 
+%	\approx \bfI + \hatx{\delta\bftheta}
+	$ & &\\
+\hline 
+加速度计偏差 & $\bfa_{bt}$ & $\bfa_b$ & $\delta\bfa_b$ &$\bfa_{bt} = \bfa_b+\delta\bfa_b$& & $\bfa_w$ \\
+陀螺偏差 & $\bfomega_{bt}$ & $\bfomega_b$ & $\delta\bfomega_b$ &$\bfomega_{bt} = \bfomega_b+\delta\bfomega_b$& & $\bfomega_w$ \\
+重力矢量 & $\bfg_t$ & $\bfg$ & $\delta\bfg$ & $\bfg_t = \bfg+\delta\bfg$ & & \\
+\hline\hline
+加速度 & $\bfa_t$ & 
+&&& $\bfa_m$ & $\bfa_n$ \\
+角速率 & $\bfomega_t$ & 
+&&& $\bfomega_m$ & $\bfomega_n$ \\
+\hline
+\multicolumn{7}{l}{($ ^1$) 符号 $\oplus$ 指示一般组合} \\
+\multicolumn{7}{l}{($ ^2$) 指示非最小表示} \\
+\multicolumn{7}{l}{($ ^3$) 全局定义角度误差的组合公式，参见 \tabRef{tab:local_to_global} }\\
+\multicolumn{7}{l}{($ ^4$) 指数定义，参见方程 (\ref{equ:vectoquat}) 和 (\ref{equ:vectomat},\,\ref{equ:rodrigues})}
+\end{tabular}
+\label{tab:errorstatevar}
+\end{table*}%
+
+
+%-------------------------------------------------------------
+%-------------------------------------------------------------
+\subsubsection{真实状态动力学}
+
+真实状态动力学是
+%
+\begin{subequations}
+%
+\begin{align}
+\dot\bfp_t &= \bfv_t \\
+\dot\bfv_t &= \bfa_t \\
+\dot{\bfq_t} &= \frac{1}{2}\bfq_t\ot\bfomega_t \\
+\dot\bfa_{bt} &= \bfa_w \\
+\dot\bfomega_{bt} &= \bfomega_w \\
+\dot\bfg_t &= 0
+\end{align}%
+\end{subequations}
+%
+这里，在机体坐标系中，从 IMU 中以带噪声的传感器读数 $\bfa_m$ 和 $\bfomega_m$ 的形式获得真实的加速度 $\bfa_t$ 和角速度 $\bfomega_t$ 。即\footnote{在旋转动力学中描述的方程 \eqRef{equ:gyroModel}，通常忽略地球的旋转速率 $\bfomega_\cE$ ，否则将是 $\bfomega_m = \bfomega_t + \bfR_t\tr\bfomega_\cE + \bfomega_{bt} + \bfomega_n$。
+在绝大多数实际情况下，考虑非零地球旋转速率是不合理的复杂。
+然而，我们注意到，当使用高端 IMU 传感器时，噪声和偏差非常小，对地球旋转速率的值 $\omega_\cE=15^\circ$/h $\approx 7.3\cdot10^{-5}\,$rad/s ，可能会变得直接可测量；在这种情况下，为了保持 IMU 误差模型的有效性，在公式中这转速 $\bfomega_\cE$ 不应该被忽略。}
+%
+%
+\begin{align}
+\bfa_m &= \bfR_t\tr(\bfa_t - \bfg_t) + \bfa_{bt} + \bfa_n \\
+\bfomega_m &= \bfomega_t + \bfomega_{bt} + \bfomega_n \label{equ:gyroModel}
+\end{align}%
+%
+还有 $\bfR_t\triangleq\bfR\{\bfq_t\}$。这样，真实值就可以被分离出来 (这意味着我们已经将测量方程颠倒了)，
+%
+%
+\begin{align}
+\bfa_t &= \bfR_t(\bfa_m - \bfa_{bt} - \bfa_n) + \bfg_t \\
+\bfomega_t &= \bfomega_m - \bfomega_{bt} - \bfomega_n.
+\end{align}%
+%
+代入上面的结果得到动力学系统
+%
+\begin{subequations}
+%
+\begin{align}
+\dot\bfp_t &= \bfv_t \label{equ:pos} \\
+\dot\bfv_t &= \bfR_t(\bfa_m - \bfa_{bt} - \bfa_n) + \bfg_t \label{equ:vel} \\
+\dot{\bfq_t} &= \frac{1}{2}\bfq_t\ot(\bfomega_m - \bfomega_{bt} - \bfomega_n) \label{equ:quat}\\
+\dot\bfa_{bt} &= \bfa_w \label{equ:abias}\\
+\dot\bfomega_{bt} &= \bfomega_w \label{equ:wbias}\\
+\dot\bfg_t &= 0 \label{equ:grav}
+\end{align}%
+\end{subequations}
+%
+我们可以把它命名为 $\dot\bfx_t=f_t(\bfx_t,\bfu,\bfw)$ 。 
+这个系统具有状态 $\bfx_t$，由 IMU 带噪声的读数 $\bfu_m$控制，并受白高斯噪声 $\bfw$干扰，所有这些都定义为
+%
+\begin{equation}
+\bfx_t = \begin{bmatrix}
+\bfp_t \\ \bfv_t \\ \bfq_t \\ \bfa_{bt} \\ \bfomega_{bt} \\ \bfg_t
+\end{bmatrix} 
+\Quad
+\bfu = \begin{bmatrix}
+\bfa_m - \bfa_n \\ \bfomega_m - \bfomega_n
+\end{bmatrix}
+\Quad
+\bfw = \begin{bmatrix}
+\bfa_w \\ \bfomega_w
+\end{bmatrix}~.
+\end{equation}
+%
+
+\bigskip
+需要注意的是，在上述公式中，重力矢量 $\bfg_t$ 将由滤波器估计。 
+它有一个常数演化方程 \eqRef{equ:grav}，对应于已知为常数的量级。 
+系统从一个固定且任意已知的初始方向 $\bfq_t(t=0)=\bfq_0$开始，该初始方向通常不在水平面上，这使得初始重力矢量通常未知。 
+为了简单起见，通常取 $\bfq_0=(1, 0, 0, 0)$ 并因此 $\bfR_0=\bfR\{\bfq_0\}=\bfI$ 。 
+我们估计在坐标系 $\bfq_0$ 中表示的 $\bfg_t$ ，而不是在水平坐标系中表示的 $\bfq_t$ ，以便将方向上的初始不确定度转换为重力方向上的初始不确定度。 
+我们这样做是为了改善线性：事实上，方程 \eqRef{equ:vel} 现在在 $\bfg$中是线性的，它携带了所有的不确定性，并且初始方向 $\bfq_0$ 是已知的，没有不确定性，因此 $\bfq$ 开始时没有不确定性。 
+一旦估计了重力矢量，水平面就可以恢复，如果需要，整个状态和恢复的运动轨迹就可以重新定向，以反映估计的水平面。 
+更多理由参见 \citep{LUPTON-09} 。 
+这当然是可选的，读者可以自由地从系统中删除所有与重力相关的方程，并采用更经典的方法考虑 $\bfg\triangleq(0,0,-9.8xx)$，其中 $xx$ 是实验现场重力矢量的适当小数位数，且初始方向 $\bfq_0$ 不确定。
+
+
+
+%-------------------------------------------------------------
+\subsubsection{标称状态动力学}
+
+标称状态动力学对应于无噪声或扰动的建模系统，
+%
+\begin{subequations}
+%
+\begin{align}
+\dot\bfp &= \bfv \label{equ:pdot}\\
+\dot\bfv &= \bfR(\bfa_m - \bfa_b) + \bfg \label{equ:vdot}\\
+\dot{\bfq} &= \frac{1}{2}\bfq\ot(\bfomega_m - \bfomega_b) \\
+\dot\bfa_b &= 0 \\
+\dot\bfomega_b &= 0 \\
+\dot\bfg &= 0 .
+\end{align}%
+\end{subequations}
+%
+
+
+
+
+%-------------------------------------------------------------
+\subsubsection{误差状态动力学}
+
+目标是确定误差状态的线性化动力学。 
+对于每个状态方程，我们写下其组合 (在 \tabRef{tab:errorstatevar})，求解误差状态并简化所有二阶无穷小。 
+我们在这里给出了全误差状态动力学系统，并进行了评述和证明。
+%
+\begin{subequations}\label{equ:efull}
+%
+\begin{align}
+\dot{\delta\bfp} &= \delta\bfv \label{equ:epos}\\
+\dot{\delta\bfv} &= -\bfR\hatx{\bfa_m-\bfa_b}\delta\bftheta - \bfR\delta\bfa_b + \delta\bfg - \bfR\bfa_n \label{equ:evel}\\
+\dot{\delta\bftheta} &= -\hatx{\bfomega_m-\bfomega_b}\delta\bftheta - \delta\bfomega_b - \bfomega_n \label{equ:equat}\\
+\dot{\delta\bfa_b} &= \bfa_w \label{equ:eabias}\\
+\dot{\delta\bfomega_b} &= \bfomega_w \label{equ:ewbias}\\
+\dot{\delta\bfg} &= 0 .\label{equ:egrav}
+\end{align}%
+\end{subequations}
+%
+方程 \eqRef{equ:epos}， \eqRef{equ:eabias}， \eqRef{equ:ewbias} 和 \eqRef{equ:egrav}，分别是位置、两个偏差和重力误差，很容易由线性方程组导出其误差状态动力学。 
+作为一个例子，考虑真实和标称位置方程 \eqRef{equ:pos} 和 \eqRef{equ:pdot}，从 \tabRef{tab:errorstatevar} 中可知它们的组合 $\bfp_t=\bfp+\delta\bfp$ ，并求解 $\dot{\delta \bfp}$ 以获得 \eqRef{equ:epos}。
+
+速度方程 \eqRef{equ:evel} 和方向误差方程 \eqRef{equ:equat}，需要对非线性方程 \eqRef{equ:vel} 和 \eqRef{equ:quat} 进行一些非平凡的操作，以获得线性化动力学% of the linear velocity error $\delta\bfv$ and the angular error $\delta\bftheta$
+。 
+它们的证明在以下两个部分中展开。
+
+
+\paragraph{方程 \eqRef{equ:evel}：线速度误差。}
+
+我们希望确定 $\dot{\delta\bfv}$，速度误差的动力学。 
+我们从以下关系开始
+%
+%
+\begin{align}
+\bfR_t &= \bfR(\bfI+\hatx{\delta\bftheta})  + O(\norm{\delta\bftheta}^2) \label{equ:Rt}\\
+\dot\bfv &= \bfR\bfa_\cB + \bfg, \label{equ:vdot2}
+\end{align}%
+%
+其中方程 \eqRef{equ:Rt} 是 $\bfR_t$的小信号近似，并且在方程 \eqRef{equ:vdot2} 中我们重写方程 \eqRef{equ:vdot} 但引入 $\bfa_\cB$ 和 $\delta\bfa_\cB$，定义为机体坐标系中的大信号和小信号加速度，
+%
+%
+\begin{align}
+\bfa_\cB &\triangleq \bfa_m - \bfa_b \label{equ:nomacc}\\
+\delta\bfa_\cB &\triangleq -\delta\bfa_b - \bfa_n  \label{equ:pertacc}
+\end{align}%
+%
+所以我们可以把惯性系中的真实加速度写成大、小信号项的组合，
+%
+\begin{equation}
+\bfa_t = \bfR_t(\bfa_\cB+\delta\bfa_\cB) + \bfg + \delta\bfg.
+\end{equation}%
+
+我们以两种不同的形式 (左和右展开)，继续写 $\dot\bfv_t$ 的表达式 \eqRef{equ:vel} ，其中 $O(\norm{\delta\bftheta}^2)$ 这项被忽略了，
+%
+%
+\begin{align*}
+\dot\bfv+\dot{\delta\bfv} =& \eqbox{\dot\bfv_t} = \bfR(\bfI+\hatx{\delta\bftheta})(\bfa_\cB+\delta\bfa_\cB)+\bfg + \delta\bfg \\
+\bfR\bfa_\cB+\bfg+\dot{\delta\bfv} =&~~~~~~= \bfR\bfa_\cB+\bfR\delta\bfa_\cB+\bfR\hatx{\delta\bftheta}\bfa_\cB+\bfR\hatx{\delta\bftheta}\delta\bfa_\cB+\bfg+\delta\bfg 
+\end{align*}%
+%
+将 $\bfR\bfa_\cB+\bfg$ 从左和右移动到
+%
+\begin{equation}
+\dot{\delta\bfv} = \bfR(\delta\bfa_\cB+\hatx{\delta\bftheta}\bfa_\cB) + \bfR\hatx{\delta\bftheta}\delta\bfa_\cB + \delta\bfg
+\end{equation}%
+%
+去掉二阶项，重新组织一些交叉积 (用 $\hatx{\bfa}\bfb=-\hatx{\bfb}\bfa$)，我们得到
+%
+\begin{equation}
+\dot{\delta\bfv} = \bfR(\delta\bfa_\cB - \hatx{\bfa_\cB}\delta\bftheta) + \delta\bfg,
+\end{equation}%
+%
+然后，回顾方程 \eqRef{equ:nomacc} 和 \eqRef{equ:pertacc}，
+%
+\begin{equation}
+{\dot{\delta\bfv} = \bfR(-\hatx{\bfa_m-\bfa_b}\delta\bftheta - \delta\bfa_b - \bfa_n) + \delta\bfg}
+\end{equation}%
+%
+在适当的重新排列后，会导致线速度误差的动力学变化，
+%
+\begin{equation}
+\eqbox{\dot{\delta\bfv} = -\bfR\hatx{\bfa_m-\bfa_b}\delta\bftheta - \bfR\delta\bfa_b + \delta\bfg - \bfR\bfa_n}\ .
+\end{equation}%
+%
+为了进一步澄清这个表达式，我们常常可以假设加速度计噪声是白色的、不相关的、各向同性的\footnote{如果三个 $XYZ$ 加速计不相同，则不能进行此假设。}，
+%
+\begin{equation}
+\bbE[\bfa_n] = 0 \Quad \bbE[\bfa_n\bfa_n\tr]=\sigma_a^2\bfI,
+\end{equation}%
+%
+也就是说，协方差椭球是以原点为中心的球体，这意味着其均值和协方差矩阵在旋转时是不变的 (\emph{Proof:} $\bbE[\bfR\bfa_n] = \bfR\bbE[\bfa_n] = 0$ and $\bfE[(\bfR\bfa_n)(\bfR\bfa_n)\tr] = \bfR\bbE[\bfa_n\bfa_n\tr]\bfR\tr = \bfR\sigma_a^2\bfI\bfR\tr = \sigma_a^2\bfI$)。
+然后我们可以重新定义加速度计的噪声矢量，完全没有影响，根据
+%
+\begin{equation}
+\bfa_n \gets \bfR\bfa_n
+\end{equation}%
+%
+这给出
+%
+\begin{equation}
+\eqbox{\dot{\delta\bfv} = -\bfR\hatx{\bfa_m-\bfa_b}\delta\bftheta - \bfR\delta\bfa_b + \delta\bfg - \bfa_n}\ .
+\end{equation}%
+
+
+\paragraph{方程 \eqRef{equ:equat}：方向误差。}
+
+
+我们想确定 $\dot{\delta\bftheta}$，角度误差的动力学。我们从以下关系开始
+%
+%
+\begin{align}
+\dot{\bfq_t} &= \frac{1}{2}\bfq_t\ot\bfomega_t \\
+\dot{\bfq} &= \frac{1}{2}\bfq\ot\bfomega ,
+\end{align}%
+%
+这是四元数导数的真实定义和标称定义。
+
+就像我们对加速度所做的那样，为了清晰起见，我们把大信号和小信号项按角度速率分组，
+%
+%
+\begin{align}
+\bfomega &\triangleq \bfomega_m - \bfomega_b \label{equ:nomangrate}\\
+\delta\bfomega &\triangleq -\delta\bfomega_b - \bfomega_n, \label{equ:pertangrate}
+\end{align}%
+%
+所以这个 $\bfomega_t$ 可以写为一个标称部分和一个误差部分，
+%
+\begin{equation}
+\bfomega_t = \bfomega + \delta\bfomega .
+\end{equation}%
+
+
+我们用两种不同的方法(左和右展开)继续计算 $\dot{\bfq_t}$
+%
+%
+\begin{align*}
+\dot{{(\bfq\ot{\delta\bfq})}} =& \eqbox{\dot{\bfq_t}} = \frac{1}{2}\bfq_t\ot\bfomega_t \\
+\dot{\bfq}\ot{\delta\bfq} + \bfq\ot\dot{{\delta\bfq}} =&~~~~~~= \frac{1}{2}\bfq\ot{\delta\bfq}\ot\bfomega_t \\
+\frac{1}{2}\bfq\ot\bfomega\ot{\delta\bfq}+\bfq\ot\dot{{\delta\bfq}} =&& 
+\end{align*}%
+%
+简化前导 $\bfq$ 和分离 $\dot{{\delta\bfq}}$ ，我们获得
+%
+%
+\begin{align}
+\begin{bmatrix}
+0\\\dot{\delta\bftheta}
+\end{bmatrix} = \eqbox{2\dot{{\delta\bfq}}} &= {\delta\bfq}\ot\bfomega_t - \bfomega\ot{\delta\bfq} \nonumber \\
+&= [\bfq]_R(\bfomega_t){\delta\bfq} - [\bfq]_L(\bfomega){\delta\bfq} \nonumber \\
+&= \begin{bmatrix}
+0 & -(\bfomega_t-\bfomega)\tr \\
+(\bfomega_t-\bfomega) & -\hatx{\bfomega_t+\bfomega} 
+\end{bmatrix}\begin{bmatrix}
+1 \\
+\delta\bftheta/2
+\end{bmatrix} + O(\norm{\delta\bftheta}^2) \nonumber \\
+&= \begin{bmatrix}
+0 & -\delta\bfomega\tr \\
+\delta\bfomega & -\hatx{2\bfomega+\delta\bfomega} 
+\end{bmatrix}\begin{bmatrix}
+1 \\
+\delta\bftheta/2
+\end{bmatrix} + O(\norm{\delta\bftheta}^2) 
+\end{align}%
+%
+结果是一个标量和一个矢量等式
+%
+\begin{subequations}
+%
+\begin{align}
+0 &= \delta\bfomega\tr\delta\bftheta + O(|\delta\bftheta|^2) \\
+\dot{\delta\bftheta} &= \delta\bfomega - \hatx\bfomega\delta\bftheta - \frac{1}{2}\hatx{\delta\bfomega}\delta\bftheta + O(\norm{\delta\bftheta}^2).
+\end{align}%
+\end{subequations}
+%
+第一个方程导致 $\delta\bfomega\tr\delta\bftheta = O(\norm{\delta\bftheta}^2)$，这是由二阶无穷小形成的，不是很有用。 
+第二个方程在忽略所有二阶项之后得到，
+%
+\begin{equation}
+{\dot{\delta\bftheta} = -\hatx\bfomega\delta\bftheta} + \delta\bfomega 
+\end{equation}%
+%
+并且最后，回顾方程 \eqRef{equ:nomangrate} 和 \eqRef{equ:pertangrate}，我们得到了角度误差的线性化动力学，
+%
+\begin{equation}
+\eqbox{\dot{\delta\bftheta} = -\hatx{\bfomega_m-\bfomega_b}\delta\bftheta - \delta\bfomega_b - \bfomega_n}\ .
+\end{equation}%
+
+%=============================================================
+\subsection{离散时间系统动力学}
+
+上面的微分方程需要积分到差分方程中，以考虑离散时间间隔 $\Dt>0$ 。
+积分方法可能有所不同。 
+在某些情况下，可以使用精确的闭式解。 
+在其他情况下，可采用不同精度的数值积分。 
+有关积分方法的相关详细信息，请参阅附录。
+
+需要对以下子系统进行积分：
+%
+\begin{enumerate}
+\item 标称状态。
+\item 误差状态。
+\begin{enumerate}
+\item 确定性部分：状态动力学和控制。
+\item 随机部分：噪声和扰动。
+\end{enumerate}
+\end{enumerate}
+
+%-----------------------------------------------
+%-------------------------------------------------------------
+\subsubsection{标称状态动力学}
+
+我们可以把标称状态的差分方程写为
+%
+\begin{subequations}
+%
+\begin{align}
+\bfp &\gets \bfp + \bfv\, \Dt + \frac{1}{2}(\bfR(\bfa_{m}-\bfa_{b})+\bfg)\, \Dt ^2\\
+\bfv &\gets \bfv + (\bfR(\bfa_{m}-\bfa_{b})+\bfg)\, \Dt \\
+\bfq &\gets \bfq\ot \bfq\{(\bfomega_{m} - \bfomega_{b})\, \Dt\} \\
+\bfa_{b} &\gets \bfa_{b} \\
+\bfomega_{b} &\gets \bfomega_{b} \\
+\bfg &\gets \bfg~,
+\end{align}%
+\end{subequations}%
+%
+根据方程 \eqRef{equ:vectoquat} ，其中， $x\gets f(x,\bullet)$ 表示类型为 $x_{k+1} = f(x_k,\bullet_k)$, $\bfR\triangleq\bfR\{\bfq\}$ 的时间更新是与当前标称方向 $\bfq$ 相关联的旋转矩阵，并且 $\bfq\{v\}$ 是与旋转 $v$ 相关联的四元数。
+
+我们还可以使用更精确的积分，请参阅附录了解更多信息。
+
+
+
+%===============================================
+%-------------------------------------------------------------
+\subsubsection{误差状态动力学}
+
+
+确定性部分是正常积分的 (在这种情况下，我们遵循 \appRef{sec:BlockWiseTruncation} 中的方法。)，同时随机部分的积分产生随机脉冲 (参见 \appRef{sec:IntNoise})，因此，
+%
+\begin{subequations}
+%
+\begin{align}
+\delta\bfp &\gets \delta\bfp + \delta\bfv\,\Dt \\
+\delta\bfv &\gets \delta\bfv + (-\bfR\hatx{\bfa_{m}-\bfa_{b}}\delta\bftheta - \bfR\delta\bfa_{b} + \delta\bfg)\Dt + \bfv_\bfi \\
+\delta\bftheta &\gets \bfR\tr\{(\bfomega_{m}-\bfomega_{b})\Dt\}\delta\bftheta - \delta\bfomega_{b} \Dt + \bftheta_\bfi \\
+\delta\bfa_{b} &\gets \delta\bfa_{b} + \bfa_\bfi \\
+\delta\bfomega_{b} &\gets \delta\bfomega_{b} + \bfomega_\bfi \\
+\delta\bfg &\gets \delta\bfg ~.
+\end{align}%
+\end{subequations}
+
+这里， $\bfv_\bfi$， $\bftheta_\bfi$， $\bfa_\bfi$ 和 $\bfomega_\bfi$ 是应用于速度、方向和偏差估计的随机脉冲，由白色高斯过程建模。 
+它们的均值为零，并且它们的协方差矩阵由在时间步 $\Dt$ 内的 $\bfa_n$, $\bfomega_n$, $\bfa_w$ 和 $\bfomega_w$ 的协方差的积分获得的  (参见 \appRef{sec:IntNoise})，
+%
+%
+\begin{align}
+\bfV_\bfi &= \sigma_{\tilde\bfa_n}^2\Dt^2\bfI \quad &&[m^2/s^2]\\
+\Theta_\bfi &= \sigma_{\tilde\bfomega_n}^2\Dt^2\bfI \quad &&[rad^2] \\
+\bfA_\bfi &= \sigma_{\bfa_w}^2\Dt\bfI \quad &&[m^2/s^4] \\
+\bfOmega_\bfi &= \sigma_{\bfomega_w}^2\Dt\bfI \quad &&[rad^2/s^2] 
+\end{align}%
+%
+其中， $\sigma_{\tilde\bfa_n}[m/s^2]$, $\sigma_{\tilde\bfomega_n}[rad/s]$, $\sigma_{\bfa_w}[m/s^2\sqrt{s}]$ 和 $\sigma_{\bfomega_w}[rad/s\sqrt{s}]$ 应根据 IMU 数据表中的信息或通过实验测量确定。
+
+
+
+%-------------------------------------------------------------
+\subsubsection{误差状态 Jacobians 矩阵和扰动矩阵}
+
+
+Jacobians 矩阵是通过简单检查前一节中的误差状态差分方程得到的。 
+
+为了以紧凑的形式编写这些方程，我们考虑标称状态向量 $\bfx$，误差状态向量 $\delta\bfx$，输入向量 $\bfu_m$，和扰动脉冲向量 $\bfi$，如下所示 (关于细节和理由，参见 \appRef{sec:pertImpulses})，
+%
+\begin{equation}
+\bfx=\begin{bmatrix}\bfp\\\bfv\\\bfq\\\bfa_b\\\bfomega_b\\\bfg\end{bmatrix} \quad, \quad
+\delta\bfx=\begin{bmatrix}\delta\bfp\\\delta\bfv\\\delta\bftheta\\\delta\bfa_b\\\delta\bfomega_b\\\delta\bfg\end{bmatrix} \quad, \quad
+\bfu_m = \begin{bmatrix}
+\bfa_m \\
+\bfomega_m
+\end{bmatrix} 
+\quad,  \quad
+\bfi = \begin{bmatrix}
+\bfv_\bfi \\
+\bftheta_\bfi \\
+\bfa_\bfi \\
+\bfomega_\bfi
+\end{bmatrix}
+\end{equation}
+
+
+\bigskip
+误差状态系统现在是
+%
+\begin{equation}
+\delta\bfx \gets f(\bfx,\delta\bfx,\bfu_m,\bfi)=\bfF_\bfx(\bfx, \bfu_m)\tdot \delta\bfx+\bfF_\bfi\tdot\bfi,
+\end{equation}
+%
+ESKF 预测方程写为：
+%
+%
+\begin{align}
+\hat{\delta\bfx} &\gets \bfF_\bfx(\bfx, \bfu_m)\tdot \hat{\delta\bfx} \label{equ:errorMeanPred} \\
+\bfP &\gets \bfF_\bfx\,\bfP\,\bfF_\bfx\tr + \bfF_\bfi\,\bfQ_\bfi\,\bfF_\bfi\tr \label{equ:errorCovPred} ~,
+\end{align}%
+%
+其中 $\delta\bfx\sim\cN\{\hat{\delta\bfx},\bfP\}$\footnote{$x\sim\cN\{\mu,\Sigma\}$ 意味着 $x$ 是一个高斯随机变量，其均值和协方差矩阵由 $\mu$ 和 $\Sigma$指定。}; $\bfF_\bfx$ 和 $\bfF_\bfi$ 是 $f()$ 的相对于误差和扰动向量的 Jacobians 矩阵；并且 $\bfQ_\bfi$ 是扰动脉冲的协方差矩阵。
+
+Jacobians 矩阵和协方差矩阵的表达式如下所示。 
+此处出现的所有与状态相关的值直接从标称状态中提取。
+%
+\begin{equation} \label{equ:Fx_local_euler}
+\bfF_\bfx = \pjac{f}{\delta\bfx}{\bfx,\bfu_m} = \begin{bmatrix}
+\bfI & \bfI\Dt & 0                             & 0               & 0                     & 0 \\
+0 & \bfI    & -\bfR\hatx{\bfa_m-\bfa_b}\Dt     & -\bfR\Dt            & 0                     & \bfI\Dt \\
+0 & 0    & \bfR\tr\{(\bfomega_m-\bfomega_b)\Dt\}   & 0               & -\bfI\Dt                  & 0 \\
+0 & 0    & 0                             & \bfI & 0                     & 0 \\
+0 & 0    & 0                             & 0               & \bfI  & 0 \\
+0 & 0    & 0                             & 0               & 0                     & \bfI \\
+\end{bmatrix}
+\end{equation}%
+%
+\begin{equation}
+\bfF_\bfi = \pjac{f}{\bfi}{\bfx,\bfu_m} = \begin{bmatrix}
+0 & 0 & 0 & 0 \\
+\bfI & 0 & 0 & 0 \\
+0 & \bfI & 0 & 0 \\
+0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & \bfI \\
+0 & 0 & 0 & 0 
+\end{bmatrix}  
+\quad,\quad
+\bfQ_\bfi = \begin{bmatrix}
+\bfV_\bfi & 0        & 0      & 0 \\ 
+0      & \bfTheta_\bfi & 0      & 0 \\ 
+0      & 0        & \bfA_\bfi & 0 \\ 
+0      & 0        & 0      & \bfOmega_\bfi 
+\end{bmatrix}~.
+\end{equation}%
+%
+
+请特别注意， $\bfF_\bfx$ 是系统的转换矩阵，它可以用不同的方式近似到不同的精度水平。 
+我们在这里展示了它最简单的形式之一，欧拉形式 (Euler form)。
+参阅附录 \ref{sec:ClosedFormInt} 到 \ref{sec:TranMatRK} 以供进一步参考。
+
+还请注意，作为误差 $\delta\bfx$ 的均值，被初始化为零，线性方程 \eqRef{equ:errorMeanPred} 总是返回零。 
+当然，你应该在你的代码中跳过方程 \eqRef{equ:errorMeanPred} 中的代码行。 
+不过，我建议你把它写下来，但你把它注释掉，这样你才能确定你没有忘记任何事情。
+
+最后，请注意，你不应该跳过协方差预测方程 \eqRef{equ:errorCovPred}！！实际上， $\bfF_\bfi\,\bfQ_\bfi\,\bfF_\bfi\tr$ 这些项不为空，并且因此协方差持续增长 --- 所以该方程必须处在任何预测步骤当中。
+
+
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{互补传感数据与 IMU 融合}
+\label{sec:fusion}
+
+当 IMU 以外的其它信息，如 GPS 或视觉数据到达时，我们继续校正 ESKF。
+在一个良好设计的系统中，这将使 IMU 的偏差可观测，并允许 ESKF 去正确估计它们。 
+这里有很多种可能性，最流行的是 GPS + IMU，单目视觉 + IMU，和立体视觉 + IMU。 
+近年来，视觉传感器与 IMU 的结合引起了人们的广泛关注，并由此产生了大量的科学研究。 
+这些视觉 + IMU 设置对于在无 GPS 的环境中使用非常有趣，可以在移动设备 (通常是智能手机)上实现，也可以在无人机和其他小型、灵活的平台上实现。
+
+\bigskip
+
+虽然IMU信息到目前为止已用于对 ESKF 进行预测，但可其它信息用于校正滤波器，从而观测 IMU 偏差误差。 
+校正包括三个步骤：
+\begin{enumerate}
+\item
+ 通过滤波器校正观测误差状态， 
+\item
+ 将观测到的误差注入标称状态，并且
+\item	
+ 重置误差状态。 
+\end{enumerate}%
+%
+这些步骤将在以下章节中介绍。
+
+%=============================================================
+\subsection{通过滤波器校正观测误差状态}
+
+像往常一样假设我们有一个传感器，它可以根据状态传递信息，比如
+%
+\begin{equation}
+\bfy = h(\bfx_t) + v~,
+\end{equation}
+%
+其中 $h()$ 是系统状态 (真实状态)的一般非线性函数，并且 $v$ 是协方差为 $\bfV$ 的白高斯噪声，
+%
+\begin{equation}
+v\sim\cN\{0,\bfV\}~.
+\end{equation}
+
+我们的滤波器正在估计误差状态，因此滤波器校正方程\footnote{我们给出协方差更新的最简单形式， $\bfP \gets
+ (\bfI-\bfK\bfH)\bfP$ 。 
+众所周知，这种形式的数值稳定性较差，因为其结果不能保证对称或正定。 
+读者可以自由使用更稳定的形式，如 1) 对称形式 $\bfP\gets\bfP-\bfK(\bfH\bfP\bfH\tr+\bfV)\bfK\tr$ 和 2) 对称和正 \emph{Joseph} 形式 $\bfP \gets (\bfI-\bfK\bfH)\bfP(\bfI-\bfK\bfH)\tr+\bfK\bfV\bfK\tr$ 。}，
+%
+%
+\begin{align}
+\bfK &= \bfP\bfH\tr(\bfH\bfP\bfH\tr+\bfV)\inv \\
+\hat{\delta\bfx} &\gets \bfK(\bfy-h(\hat\bfx_t)) \\
+\bfP &\gets (\bfI-\bfK\bfH)\bfP
+\end{align}%
+%
+要求 Jacobian 矩阵 $\bfH$ 相对于误差状态 $\delta\bfx$ 定义，并且在最佳真实状态估计 $\hat\bfx_t=\bfx\oplus\hat{\delta\bfx}$ 下进行评估。
+由于现阶段的误差状态均值为零 (我们还没有观测到)，我们有 $\hat\bfx_t = \bfx$ 并且我们可以使用标称误差 $\bfx$ 作为评估点，从而得出
+%
+\begin{equation}
+\bfH \equiv \pjac{h}{\delta\bfx}{\bfx}~.
+\end{equation}
+
+%-------------------------------------------------------------
+\subsubsection{滤波器校正的 Jacobian 矩阵计算}
+
+上面的 Jacobian 矩阵可以用多种方法计算。 
+最能说明问题的是利用链式规则， 
+%
+\begin{equation}
+\bfH \triangleq \pjac{h}{\delta\bfx}{\bfx} 
+= \pjac{h}{\bfx_t}{\bfx}\pjac{\bfx_t}{\delta\bfx}{\bfx} = \bfH_\bfx\ \bfX_{\delta\bfx}~.
+\end{equation}
+%
+这里， $\bfH_\bfx\triangleq\pjac{h}{\bfx_t}{\bfx}$ 是 $h()$ 相对于其自身参数的标准 Jacobian 矩阵 (即，Jacobian 矩阵中的数值``1''可用于常规 EKF)。
+链式规则的第一部分取决于所用特定传感器的测量功能，这里不介绍。 
+
+第二部分，$\bfX_{\delta\bfx}\triangleq\pjac{\bfx_t}{\delta\bfx}{\bfx}$，是真实状态相对于误差状态的 Jacobian 矩阵。 
+这一部分可以在这里推导出来，因为它只依赖于 ESKF 的状态组合。我们有导数，
+%
+\begin{equation}
+\bfX_{\delta\bfx} = 
+\begin{bmatrix}
+\dpar{(\bfp+\delta\bfp)}{\delta\bfp} &&&&& \\ 
+& \dpar{(\bfv+\delta\bfv)}{\delta\bfv} &&&0& \\ 
+&& \dpar{(\bfq\otimes\delta\bfq)}{\delta\bftheta} &&& \\ 
+&&& \dpar{(\bfa_b+\delta\bfa_b)}{\delta\bfa_b} && \\ 
+&0&&& \dpar{(\bfomega_b+\delta\bfomega_b)}{\delta\bfomega_b} & \\ 
+&&&&& \dpar{(\bfg+\delta\bfg)}{\delta\bfg} 
+\end{bmatrix}
+\end{equation}
+%
+这将导致所有特征值为 $3\times3$ 块 (例如， $\dpar{(\bfp+\delta\bfp)}{\delta\bfp}=\bfI_3$) 除了 $4\times3$ 的四元数项 $\bfQ_{\delta\bftheta} = \dparil{(\bfq\otimes\delta\bfq)}{\delta\bftheta}$。因此我们有了形式，
+%
+\begin{equation}
+\bfX_{\delta\bfx}\triangleq\pjac{\bfx_t}{\delta\bfx}{\bfx} = \begin{bmatrix}
+\bfI_6 & 0 & 0 \\
+0 &  \bfQ_{\delta\bftheta} & 0 \\
+0 & 0 & \bfI_9
+\end{bmatrix}
+\end{equation}
+
+
+使用链式规则，方程 \eqsRef{equ:quatMatProd}{equ:quatMatrix}，和 $\delta\bfq \underset{\delta\bftheta\to 0}{\longrightarrow} \begin{bmatrix}
+1 \\ \frac12\delta\bftheta
+\end{bmatrix}$ 的极限，四元数项 $\bfQ_{\delta\bftheta}$ 可导出如下，
+%
+{
+\setlength{\arraycolsep}{2pt}
+\begin{align*}
+\bfQ_{\delta\bftheta} \triangleq \pjac{(\bfq\otimes\delta\bfq)}{\delta\bftheta}{\bfq} 
+&=\pjac{(\bfq\otimes\delta\bfq)}{\delta\bfq}{\bfq} \pjac{\delta\bfq}{\delta\bftheta}{\hat{\delta\bftheta}=0} \\
+&= \pjac{([\bfq]_L\delta\bfq)}{\delta\bfq}{\bfq} \pjac{\begin{bmatrix}
+1 \\ \frac12\delta\bftheta
+\end{bmatrix}}{\delta\bftheta}{\hat{\delta\bftheta}=0} \\
+&= [\bfq]_L\,\frac12\begin{bmatrix}
+0 & 0 & 0 \\
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix} ~,
+\end{align*}
+%
+这导致
+%
+\begin{equation}
+\bfQ_{\delta\bftheta}
+= \frac{1}{2}\begin{bmatrix}
+-q_x &-q_y &-q_z\\
+ q_w &-q_z & q_y\\
+ q_z & q_w &-q_x\\
+-q_y & q_x & q_w\\
+\end{bmatrix}~.
+\end{equation}•
+
+%=============================================================
+\subsection{将观测误差注入标称状态}
+
+在 ESKF 更新之后，使用适当的组合 (四元数加法或乘积，参见 \tabRef{tab:errorstatevar})，
+%
+\begin{equation}
+\bfx \gets \bfx \oplus \hat{\delta\bfx}~, \label{equ:errorInjection}
+\end{equation}
+%
+也就是说，
+%
+\begin{subequations}
+%
+\begin{align}
+\bfp &\gets \bfp + \hat{\delta\bfp} \\
+\bfv &\gets \bfv + \hat{\delta\bfv} \\
+\bfq &\gets \bfq \otimes \bfq\{\hat{\delta\bftheta}\} \label{equ:quatErrorInjection}\\
+\bfa_b &\gets \bfa_b + \hat{\delta\bfa_b} \\
+\bfomega_b &\gets \bfomega_b + \hat{\delta\bfomega_b} \\
+\bfg &\gets \bfg + \hat{\delta\bfg} 
+\end{align}%
+\end{subequations}%
+
+%=============================================================
+\subsection{ESKF复位}
+
+误差注入标称状态后，误差状态均值 $\hat{\delta\bfx}$ 被重置。 
+这与方向部分特别相关，因为新的方向误差将是相对于新标称状态的方向坐标系的局部表示。 
+为了使 ESKF 更新完成，需要根据此项修改更新误差的协方差。
+
+\bigskip
+
+让我们调用误差重置函数 $g()$ 。 
+它是这样写为，
+%
+\begin{equation}
+\delta\bfx \gets g(\delta\bfx) = \delta\bfx \ominus \hat{\delta\bfx}~, \label{equ:resetFcn}
+\end{equation}
+%
+其中 $\ominus$ 代表 $\oplus$ 的组合的逆。
+因此，ESKF 误差重置操作是，
+%
+\begin{align}
+\hat{\delta\bfx} &\gets 0 \\
+\bfP &\gets \bfG\,\bfP\,\bfG\tr~.
+\end{align}
+%
+其中 $\bfG$ 是 Jacobian 矩阵，定义为，
+%
+\begin{equation}
+\bfG \triangleq \pjac{g}{\delta\bfx}{\hat{\delta\bfx}}~.
+\end{equation}
+
+与上面的更新 Jacobian 矩阵类似，这个 Jacobian 矩阵是除方向误差之外的所有对角块上的特征矩阵。 
+我们给出了完整的表达式，并在下一节中继续推导方向误差块， $\partial\delta\bftheta^+/\partial\delta\bftheta = \bfI - \hatx{\frac12\hat{\delta\bftheta}}$ ，
+%
+\begin{equation}
+\bfG = \begin{bmatrix}
+\bfI_6 & 0 & 0 \\
+0 & \bfI - \hatx{\frac12\hat{\delta\bftheta}} & 0 \\
+0 & 0 & \bfI_9
+\end{bmatrix}~.
+\end{equation}
+
+在大多数情况下，误差项 $\hat{\delta\bftheta}$ 可以被忽略，直接导出 Jacobian 矩阵 $\bfG=\bfI_{18}$，从而导致微小的误差重置。 
+这就是 ESKF 的大多数实现所做的。
+这里提供的表达式应该产生更精确的结果，这可能有助于减少里程计系统中的长期误差漂移。
+
+
+%-------------------------------------------------------------
+\subsubsection{相对于方向误差的重置操作的 Jacobian 矩阵}
+
+我们要得到新的角度误差 $\delta\bftheta^+$ 相对于旧的误差 $\delta\bftheta$ 和观测误差 $\hat{\delta\bftheta}$ 的表达式。考虑以下事实：
+\begin{itemize}
+\item
+在误差复位时，真实方向没有改变，即 $\bfq_t^+ = \bfq_t$。这就提供了：
+%
+\begin{equation}
+\bfq^+\ot\delta\bfq^+ = \bfq\ot \delta\bfq~.
+\end{equation}
+%
+\item
+观测到的误差均值已注入标称状态 (参见方程 \eqRef{equ:quatErrorInjection} 和 \eqRef{equ:rotComposition})：
+%
+\begin{equation}
+\bfq^+ = \bfq\ot \hat{\delta\bfq}~.
+\end{equation}
+\end{itemize}
+
+结合这两个特征，我们得到 $\delta\bfq^+$ 的表达式，
+%
+\begin{equation}
+\delta\bfq^+ 
+= (\bfq^+)^* \ot \bfq \ot \delta\bfq 
+= (\bfq \ot \hat{\delta\bfq})^* \ot \bfq \ot \delta\bfq 
+= \hat{\delta\bfq}^* \ot \delta\bfq 
+= [\hat{\delta\bfq}^*]_L\cdot\delta\bfq~.
+\end{equation}
+%
+考虑到这点，
+%
+$\hat{\delta\bfq}^* \approx \begin{bmatrix}
+1 \\ -\frac12\hat{\delta\bftheta}
+\end{bmatrix}$,
+%
+上面的特征可以扩展为
+%
+\begin{equation}
+\begin{bmatrix}
+1 \\ \frac12\delta\bftheta^+
+\end{bmatrix}
+=
+\begin{bmatrix}
+1                  & \frac12\hat{\delta\bftheta}\tr \\
+-\frac12\hat{\delta\bftheta} & \bfI - \hatx{\frac12\hat{\delta\bftheta}}
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+1 \\ \frac12\delta\bftheta
+\end{bmatrix} + \cO(\norm{\delta\bftheta}^2) ~,
+\end{equation}
+%
+它给出了一个标量方程和一个矢量方程，
+%
+\begin{subequations}
+%
+\begin{align}
+\frac14\hat{\delta\bftheta}\tr\delta\bftheta &= \cO(\norm{\delta\bftheta}^2)\\
+\delta\bftheta^+ &= -\hat{\delta\bftheta} + \left(\bfI - \hatx{\frac12\hat{\delta\bftheta}}\right)\delta\bftheta + \cO(\norm{\delta\bftheta}^2)~,
+\end{align}%
+\end{subequations}
+%
+其中第一个并不是很有用，因为它只是无穷小的关系。 
+从第二个方程可以看出 $\hat{\delta\bftheta}^+ = 0$，这是我们对复位操作的期望。 
+Jacobian 矩阵通过简单的检验得到，
+%
+\begin{equation}
+\eqbox{\dpar{\delta\bftheta^+}{\delta\bftheta} = \bfI - \hatx{\frac12\hat{\delta\bftheta}}}~.
+\end{equation}

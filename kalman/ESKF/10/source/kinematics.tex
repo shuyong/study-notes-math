@@ -1,0 +1,140 @@
+%!TEX TS-program = xelatex
+
+%\pdfoutput=1
+
+% IRI report class
+%\documentclass{iritr}
+%\IRIreport{16}{02}
+%\coriri{Joan Sol\`a}{1 7337}{jsola}
+
+% article class
+\documentclass[12pt]{ctexart}
+\usepackage[T1]{fontenc}
+%\usepackage{a4wide}
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    top=30mm,
+    bottom=30mm,
+    left=25.4mm,
+    right=25.4mm,
+    textwidth =6.375 true in % Width of text line.
+}
+
+\usepackage{amsfonts, amssymb, amsmath} 
+\usepackage[english]{babel}
+%\usepackage{subfigure}
+%\usepackage[xetex]{graphicx}
+\usepackage{multirow}
+\usepackage{bm} % bold greek symbols via \bm command instead of \bf.
+\usepackage{cancel}
+
+\usepackage{caption}
+\captionsetup{margin=10pt}
+\captionsetup{font=small}
+%\captionsetup{labelfont=bf}
+
+%\usepackage{cite}
+\usepackage{natbib}
+
+% Customization packages
+\usepackage{customCommands} % Joan Sola's macros
+\usepackage{eufrak}
+
+% A better \pm symbol
+\usepackage{tikz}
+\renewcommand{\pm}{\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.1ex] \draw (0.0,0) -- (1.0,0) (0.5,0.1) -- (0.5,1.0) (0.0,0.55) -- (1.0,0.55);}}%
+
+\renewcommand\Re{\operatorname{Re}}
+\renewcommand\Im{\operatorname{Im}}
+
+% Emphasized equations
+\usepackage{empheq}
+\newcommand*\widefbox[1]{\fbox{\hspace{1em}#1\hspace{1em}}}
+
+% Comments
+\newcommand{\COM}[1]{{\color{red}#1}}
+%\renewcommand{\COM}[1]{}
+
+% Define a few useful shortcuts
+\newcommand{\pv}{\bfp_v}
+\renewcommand{\qv}{\bfq_v}
+\newcommand{\qI}{\bfq_{{\,}_{\bf 1}}}
+\newcommand{\q}{\,\bfq}
+\newcommand{\dq}{\,\dot\bfq}
+\newcommand{\ddq}{\,\ddot\bfq}
+\newcommand{\dddq}{\,\dddot\bfq}
+\newcommand{\ddddq}{\,\ddddot\bfq}
+\newcommand{\w}{\,\bfomega}
+\newcommand{\aw}{\,\ol\bfomega}
+\newcommand{\dw}{\,\dot\bfomega}
+\newcommand{\e}{&=}
+\newcommand{\nw}{\norm{\bfomega}}
+\newcommand{\Q}[1]{[#1]}
+\newcommand{\QL}[1]{\Q{#1}_L}
+\newcommand{\QR}[1]{\Q{#1}_R}
+\newcommand{\bth}{\bftheta}
+\newcommand{\dth}{\delta\bftheta}
+\newcommand{\nth}{\norm{\bftheta}}
+\newcommand{\te}{\triangleq}
+
+
+\usepackage[	bookmarks,%
+			colorlinks = true,%
+			linkcolor = black,%
+			citecolor = blue,%
+			pdfauthor = {Joan\ Sola},%
+			pdftitle = {误差状态卡尔曼滤波器的四元数动力学},%
+			xetex
+			]{hyperref} 
+			
+\setcounter{tocdepth}{3}
+
+
+\title{误差状态卡尔曼滤波器的四元数动力学}
+\author{Joan Sol\`a}
+\date{October 12, 2017}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{Abstract.tex}
+
+\input{Quaternion.tex}
+
+\input{ErrorState.tex}
+
+\input{ESKF_global.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+\input{RungeKutta.tex}
+
+\input{ClosedForms.tex}
+
+\input{ApproximateTruncated.tex}
+
+\input{TransitionRK.tex}
+
+\input{Noise.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% BIBLIOGRAPHIES
+%\bibliographystyle{../LatexTools/springer/spbasic}
+\bibliographystyle{apalike}
+\bibliography{../LatexTools/bibSLAM,../LatexTools/quaternion,../LatexTools/filtering}
+
+
+
+\end{document}

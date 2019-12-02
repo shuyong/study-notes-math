@@ -1,0 +1,427 @@
+% !TEX root = kinematics.tex
+
+
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{使用全局角度误差的 ESKF}
+\label{sec:ESKFglobal}
+
+在本节中，我们将探讨在全局参考中定义角度误差的含义，而不是我们目前使用的局部定义。 
+我们回顾第 \ref{sec:es-kinematics} 节和第 \ref{sec:fusion} 节的发展，并详细说明了与新定义相关的变化。
+
+全局定义的角度误差 $\delta\bftheta$ 意味着一个左手侧(\emph{left hand side})的组合，即，
+%
+\begin{equation*}
+\bfq_t = \delta\bfq\ \ot \bfq = \bfq\{\delta\bftheta\} \ot \bfq~.
+\end{equation*}
+
+为了完备性，我们注意保持角度速率向量 $\bfomega$的局部定义，即在连续时间内 $\dot\bfq=\frac12\bfq\ot\bfomega$ ，并且因此在离散时间内 $\bfq \gets \bfq\ot\bfq\{\bfomega\Dt\}$ ，不考虑全局定义的角度误差。 
+这是为了方便起见，因为陀螺仪提供的角度速率的测量是在机体内，也就是说，是局部的。
+
+%=============================================================
+\subsection{连续时间的系统动力学}
+
+%-------------------------------------------------------------
+\subsubsection{真实和标称状态动力学}
+
+真实动力学和标称动力学不涉及误差，其方程不变。
+
+%-------------------------------------------------------------
+\subsubsection{误差状态动力学}
+
+我们先写下误差状态动力学方程，并进行评论和证明。
+%
+\begin{subequations}\label{equ:efullglobal}
+%
+\begin{align}
+\dot{\delta\bfp} &= \delta\bfv \label{equ:epglobal} \\
+\dot{\delta\bfv} &= -\hatx{\bfR(\bfa_m-b\bfa_b)}\delta\bftheta - \bfR\delta\bfa_b + \delta\bfg - \bfR\bfa_n \label{equ:evglobal}\\
+\dot{\delta\bftheta} &= -\bfR\delta\bfomega_b - \bfR\bfomega_n \label{equ:etglobal}\\
+\dot{\delta\bfa_b} &= \bfa_w \label{equ:eabglobal}\\
+\dot{\delta\bfomega_b} &= \bfomega_w \label{equ:ewbglobal}\\
+\dot{\delta\bfg} &= 0 ~, \label{equ:egglobal}
+\end{align}%
+\end{subequations}%
+%
+这里, 再次的, 所有方程除了 $\dot{\delta\bfv}$ 和 $\dot{\delta\bftheta}$ 之外都是平凡的。 
+非平凡表达式如下所示。
+
+
+\paragraph{方程 \eqRef{equ:evglobal}：线速度误差。}
+
+我们希望确定 $\dot{\delta\bfv}$，速度误差的动力学。 
+我们从以下关系开始
+%
+%
+\begin{align}
+\bfR_t &= (\bfI+\hatx{\delta\bftheta})\bfR  + O(\norm{\delta\bftheta}^2) \label{equ:Rtglobal}\\
+\dot\bfv &= \bfR\bfa_\cB + \bfg~, \label{equ:vdot2global}
+\end{align}%
+%
+其中方程 \eqRef{equ:Rtglobal} 是使用全局定义的误差 $\bfR_t$ 的小信号近似，并且在方程 \eqRef{equ:vdot2global} 中，我们引入 $\bfa_\cB$ 和 $\delta\bfa_\cB$ 作为在机体坐标系中的大信号和小信号加速度，定义于方程 \eqRef{equ:nomacc} 和 \eqRef{equ:pertacc}，正如我们对局部定义的情况所做的那样。
+
+我们以两种不同的形式 (左和右展开)，继续写出 $\dot\bfv_t$ 的表达式方程 \eqRef{equ:vel} ，其中 $O(\norm{\delta\bftheta}^2)$ 这项被忽略了，
+%
+%
+\begin{align*}
+\dot\bfv+\dot{\delta\bfv} =& \eqbox{\dot\bfv_t} = (\bfI + \hatx{\delta\bftheta})\bfR(\bfa_\cB+\delta\bfa_\cB) + \bfg + \delta\bfg \\
+\bfR\bfa_\cB+\bfg+\dot{\delta\bfv} =&
+~~~~~~= \bfR\bfa_\cB+\bfR\delta\bfa_\cB + \hatx{\delta\bftheta}\bfR\bfa_\cB + \hatx{\delta\bftheta}\bfR\delta\bfa_\cB + \bfg + \delta\bfg 
+\end{align*}%
+%
+将 $\bfR\bfa_\cB+\bfg$ 从左和右移动到
+%
+\begin{equation}
+\dot{\delta\bfv} = \bfR\delta\bfa_\cB + \hatx{\delta\bftheta}\bfR(\bfa_\cB + \delta\bfa_\cB) + \delta\bfg
+\end{equation}%
+%
+去掉二阶项，重新组织一些交叉积 (用 $\hatx{\bfa}\bfb=-\hatx{\bfb}\bfa$)，我们得到
+%
+\begin{equation}
+\dot{\delta\bfv} = \bfR\delta\bfa_\cB - \hatx{\bfR\bfa_\cB}\delta\bftheta + \delta\bfg~,
+\end{equation}%
+%
+然后，回顾方程 \eqRef{equ:nomacc} 和 \eqRef{equ:pertacc} 并重新排列，我们得到了速度误差导数的表达式，
+%
+\begin{equation}
+\eqbox{{\dot{\delta\bfv} = -\hatx{\bfR(\bfa_m-\bfa_b)}\delta\bftheta - \bfR\delta\bfa_b + \delta\bfg - \bfR\bfa_n }}
+\end{equation}%
+
+
+\paragraph{方程 \eqRef{equ:etglobal}：方向误差。}
+
+我们先写出四元数导数的真实和标称定义，
+%
+%
+\begin{align}
+\dot{\bfq_t} &= \frac{1}{2}\bfq_t\ot\bfomega_t \\
+\dot{\bfq} &= \frac{1}{2}\bfq\ot\bfomega~,
+\end{align}%
+%
+并提醒我们使用的是全局定义的角度误差，即，
+%
+\begin{equation}
+\bfq_t = \delta\bfq\ot\bfq~.
+\end{equation}
+%
+正如我们对局部定义的误差情况所做的那样，我们还对大信号和小信号角度速率方程 \eqsRef{equ:nomangrate}{equ:pertangrate}进行分组。 
+我们用两种不同的方法(左和右展开)继续计算 $\dot{\bfq_t}$ ，
+%
+%
+\begin{align*}
+\dot{{({\delta\bfq}\ot\bfq)}} =& \eqbox{\dot{\bfq_t}} = \frac{1}{2}\bfq_t\ot\bfomega_t \\
+\dot{\delta\bfq}\ot{\bfq} + \delta\bfq\ot\dot{{\bfq}} =&~~~~~~= \frac{1}{2}\delta\bfq\ot\bfq\ot\bfomega_t \\
+\dot{\delta\bfq}\ot{\bfq} + \frac{1}{2}\delta\bfq\ot\bfq\ot\bfomega =&&  
+\end{align*}%
+%
+得到 $\bfomega_t = \bfomega + \delta\bfomega$，这就减少到
+%
+\begin{equation}
+\dot{\delta\bfq}\ot{\bfq} = \frac{1}{2}\delta\bfq\ot\bfq\ot\delta\bfomega~.
+\end{equation}
+%
+将左右项右乘以 $\bfq^*$，并回顾 $\bfq\ot\delta\bfomega\ot\bfq^* \equiv \bfR\delta\bfomega$，我们可以进一步展开如下，
+%
+%
+\begin{align}
+\dot{\delta\bfq} &= \frac{1}{2}\delta\bfq\ot\bfq\ot\delta\bfomega\ot\bfq^* \nonumber \\
+&= \frac{1}{2}\delta\bfq\ot(\bfR\delta\bfomega) \nonumber \\
+&= \frac{1}{2}\delta\bfq\ot\delta\bfomega_G~,
+\end{align}%
+%
+用 $\delta\bfomega_G \triangleq \bfR\delta\bfomega$ 表示全局坐标系中的小信号角度速率。那么，
+%
+%
+\begin{align}
+\begin{bmatrix}
+0\\\dot{\delta\bftheta}
+\end{bmatrix} = \eqbox{2\dot{{\delta\bfq}}} 
+&= {\delta\bfq}\ot\delta\bfomega_G \nonumber \\
+&= \Omega(\delta\bfomega_G)\,\delta\bfq \nonumber \\
+&= \begin{bmatrix}
+0 & -\delta\bfomega_G\tr \\
+\delta\bfomega_G & -\hatx{\delta\bfomega_G} 
+\end{bmatrix}\begin{bmatrix}
+1 \\
+\delta\bftheta/2
+\end{bmatrix} + O(\norm{\delta\bftheta}^2) ~,
+\end{align}%
+%
+结果是一个标量和一个矢量等式
+%
+\begin{subequations}
+%
+\begin{align}
+0 &= \delta\bfomega_G\tr\delta\bftheta + O(|\delta\bftheta|^2) \\
+\dot{\delta\bftheta} &= \delta\bfomega_G - \frac{1}{2}\hatx{\delta\bfomega_G}\delta\bftheta + O(\norm{\delta\bftheta}^2).
+\end{align}%
+\end{subequations}
+%
+第一个方程导致 $\delta\bfomega_G\tr\delta\bftheta = O(\norm{\delta\bftheta}^2)$，这是由二阶无穷小形成的，不是很有用。 
+第二个方程在忽略所有二阶项之后得到，
+%
+\begin{equation}
+\dot{\delta\bftheta} = \delta\bfomega_G = \bfR\delta\bfomega ~.
+\end{equation}%
+%
+并且最后，回顾方程 %\eqRef{equ:nomangrate} and 
+方程 \eqRef{equ:pertangrate}，我们得到了全局角度误差的线性化动力学，
+%
+\begin{equation}
+\eqbox{\dot{\delta\bftheta} = - \bfR\delta\bfomega_b - \bfR\bfomega_n}\ .
+\end{equation}%
+
+%=============================================================
+\subsection{离散时间系统动力学}
+%-------------------------------------------------------------
+\subsubsection{标称状态}
+标称状态方程不涉及误差，因此与局部定义的方向误差的情况相同。 
+
+%-------------------------------------------------------------
+\subsubsection{误差状态}
+
+利用欧拉积分，我们得到以下一组差分方程，
+%
+\begin{subequations}
+%
+\begin{align}
+\delta\bfp &\gets \delta\bfp + \delta\bfv\,\Dt \\
+\delta\bfv &\gets \delta\bfv + (-\hatx{\bfR(\bfa_{m}-\bfa_{b})}\delta\bftheta - \bfR\delta\bfa_{b} + \delta\bfg)\Dt + \bfv_\bfi \\
+\delta\bftheta &\gets \delta\bftheta - \bfR\delta\bfomega_{b} \Dt + \bftheta_\bfi \\
+\delta\bfa_{b} &\gets  \delta\bfa_{b} + \bfa_\bfi \\
+\delta\bfomega_{b} &\gets \delta\bfomega_{b} + \bfomega_\bfi \\
+\delta\bfg &\gets \delta\bfg .
+\end{align}%
+\end{subequations}
+
+%-------------------------------------------------------------
+\subsubsection{误差状态 Jacobians 矩阵和扰动矩阵}
+
+转换矩阵是通过简单检查上述方程得到的，
+%
+\begin{equation}
+\bfF_\bfx = %\pjac{f}{\delta\bfx}{\bfx,\bfu_m} = 
+\begin{bmatrix}
+\bfI & \bfI\Dt & 0                             & 0               & 0                     & 0 \\
+0 & \bfI    & \eqbox{-\hatx{\bfR(\bfa_m-\bfa_b)}\Dt}     & -\bfR\Dt            & 0                     & \bfI\Dt \\
+0 & 0    & \eqbox{\bfI}   & 0               & \eqbox{-\bfR\Dt}                  & 0 \\
+0 & 0    & 0                             & \bfI & 0                     & 0 \\
+0 & 0    & 0                             & 0               & \bfI  & 0 \\
+0 & 0    & 0                             & 0               & 0                     & \bfI \\
+\end{bmatrix}~.
+\end{equation}
+
+我们观察到相对于局部定义的角度误差的三个变化 (比较上面 Jacobian 矩阵中的方框项与方程 \eqRef{equ:Fx_local_euler} 中的对应项)；这些变化汇总在 \tabRef{tab:local_to_global}中。
+
+
+在考虑各向同性噪声和 \appRef{sec:IntNoise}的扩展之后，扰动 Jacobian 矩阵和扰动矩阵保持不变。
+%
+\begin{equation}
+\bfF_\bfi = %\pjac{f}{\bfi}{\bfx,\bfu_m} = 
+\begin{bmatrix}
+0 & 0 & 0 & 0 \\
+\bfI & 0 & 0 & 0 \\
+0 & \bfI & 0 & 0 \\
+0 & 0 & \bfI & 0 \\
+0 & 0 & 0 & \bfI \\
+0 & 0 & 0 & 0 
+\end{bmatrix}  
+\quad,\quad
+\bfQ_\bfi = \begin{bmatrix}
+\bfV_\bfi & 0        & 0      & 0 \\ 
+0      & \bfTheta_\bfi & 0      & 0 \\ 
+0      & 0        & \bfA_\bfi & 0 \\ 
+0      & 0        & 0      & \bfOmega_\bfi 
+\end{bmatrix}~.
+\end{equation}%
+%
+
+
+%=============================================================
+\subsection{互补传感数据融合}
+
+当考虑全局角度误差时，涉及 ESKF 机制的融合方程变化很小。 
+我们通过 ESKF 校正、将误差注入标称状态和复位步骤来修正误差状态观测中的这些变化。
+
+%-------------------------------------------------------------
+\subsubsection{误差状态观测}
+
+相对于局部误差定义的唯一区别在于观测函数的 Jacobian 块，该 Jacobian 块将方向与角度误差联系起来。 
+这个新 Jacobian 块在下面被展开。
+
+使用方程 \eqsRef{equ:quatMatProd}{equ:quatMatrix} 和一阶近似， $\delta\bfq\rightarrow \begin{bmatrix}
+1 \\ \frac12\delta\bftheta
+\end{bmatrix}$，四元数项 $\bfQ_{\delta\bftheta}$ 可推导如下，
+%
+\begin{subequations}
+\begin{align}
+\bfQ_{\delta\bftheta} \triangleq \pjac{(\delta\bfq\otimes\bfq)}{\delta\bftheta}{\bfq} 
+&=\pjac{(\delta\bfq\otimes\bfq)}{\delta\bfq}{\bfq} \pjac{\delta\bfq}{\delta\bftheta}{\hat{\delta\bftheta}=0} \\
+&= [\bfq]_R\,\frac12\begin{bmatrix}
+0 & 0 & 0 \\
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix} \\
+&= \frac{1}{2}\begin{bmatrix}
+-q_x &-q_y &-q_z\\
+ q_w & q_z &-q_y\\
+-q_z & q_w & q_x\\
+ q_y &-q_x & q_w\\
+\end{bmatrix}~.
+\end{align}
+\end{subequations}
+
+
+%-------------------------------------------------------------
+\subsubsection{将观测误差注入标称状态}
+
+标称和误差状态的组合 $\bfx \gets \bfx\oplus\hat{\delta\bfx}$ 如下所示，
+%
+\begin{subequations}
+%
+\begin{align}
+\bfp &\gets \bfp + \delta\bfp \\
+\bfv &\gets \bfv + \delta\bfv \\
+\bfq &\gets \bfq\{\hat{\delta\bftheta}\} \ot \bfq \\ 
+\bfa_b &\gets \bfa_b + \delta\bfa_b \\
+\bfomega_b &\gets \bfomega_b + \delta\bfomega_b \\
+\bfg &\gets \bfg + \delta\bfg ~.
+\end{align}%
+\end{subequations}
+%
+其中只有用于四元数更新的公式受到影响。 
+这被汇总于 \tabRef{tab:local_to_global}。
+
+%-------------------------------------------------------------
+\subsubsection{ESKF 复位}
+
+ESKF 误差均值被重置，并且协方差被升级，根据，
+%
+%
+\begin{align}
+\hat{\delta\bfx} &\gets 0 \\
+\bfP &\gets \bfG\bfP\bfG\tr
+\end{align}%
+%
+与 Jacobian 矩阵
+%
+\begin{equation}
+\bfG = \begin{bmatrix}
+\bfI_6 & 0 & 0 \\
+0 & \bfI+\hatx{\hat{\frac12\delta\bftheta}} & 0 \\
+0 & 0 & \bfI_9
+\end{bmatrix}
+\end{equation}
+%
+其非平凡项扩展如下。 
+我们的目标是得到新的角度误差 $\delta\bftheta^+$ 相对于旧的角度误差 $\delta\bftheta$ 的表达式。 
+我们考虑这些事实：
+\begin{itemize}
+\item
+误差复位时，真实方向不变，即 $\bfq_t^+ \equiv \bfq_t$。这就提供了：
+%
+\begin{equation}
+\delta\bfq^+\ot\bfq^+ = \delta\bfq\ot \bfq~.
+\end{equation}
+%
+\item
+观测到的误差均值已注入标称状态 (参见方程 \eqRef{equ:quatErrorInjection} 和 \eqRef{equ:rotComposition}):
+%
+\begin{equation}
+\bfq^+ = \hat{\delta\bfq} \ot \bfq ~.
+\end{equation}
+\end{itemize}
+
+结合这两个特征，相对于旧的，我们得到了新的方向误差和观测误差 $\hat{\delta\bfq}$ 的表达式，
+%
+\begin{equation}
+\delta\bfq^+ = \delta\bfq \ot \hat{\delta\bfq}^*  = [\hat{\delta\bfq}^*]_R\cdot\delta\bfq~.
+\end{equation}
+%
+考虑到这点，
+%
+$\hat{\delta\bfq}^* \approx \begin{bmatrix}
+1 \\ -\frac12\hat{\delta\bftheta}
+\end{bmatrix}$,
+%
+上面的特征可以扩展为
+%
+\begin{equation}
+\begin{bmatrix}
+1 \\ \frac12\delta\bftheta^+
+\end{bmatrix}
+=
+\begin{bmatrix}
+1                  & \frac12\hat{\delta\bftheta}\tr \\
+-\frac12\hat{\delta\bftheta} & \bfI + \hatx{\frac12\hat{\delta\bftheta}}
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+1 \\ \frac12\delta\bftheta
+\end{bmatrix} + \cO(\norm{\delta\bftheta}^2)
+\end{equation}
+%
+它给出了一个标量方程和一个矢量方程，
+%
+\begin{subequations}
+%
+\begin{align}
+\frac14\hat{\delta\bftheta}\tr\delta\bftheta &= \cO(\norm{\delta\bftheta}^2)\\
+\delta\bftheta^+ &= -\hat{\delta\bftheta} + \left(\bfI + \hatx{\frac12\hat{\delta\bftheta}}\right)\delta\bftheta + \cO(\norm{\delta\bftheta}^2)
+\end{align}%
+\end{subequations}
+%
+其中第一个并不是很有用，因为它只是无穷小的关系。 
+从第二个方程可以看出 $\hat{\delta\bftheta}^+ = 0$，这是我们对复位操作的期望。 
+Jacobian 矩阵通过简单的检验得到，
+%
+\begin{equation}
+\eqbox{\dpar{\delta\bftheta^+}{\delta\bftheta} = \bfI + \hatx{\frac12\hat{\delta\bftheta}}}~.
+\end{equation}
+
+相对于局部误差情况的差异被汇总于 \tabRef{tab:local_to_global}。
+
+
+\begin{table*}[tb]
+\renewcommand{\arraystretch}{1.7}
+\caption{与方向误差定义相关的算法修正。}
+\label{tab:local_to_global}
+\vspace{1ex}
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+上下文 & 项 & 局部角度误差 & 全局角度误差 \\
+\hline
+\hline
+误差组合 & $\bfq_t$ & $\bfq_t = \bfq\ot\delta\bfq$ & $\bfq_t = \delta\bfq\ot\bfq$ \\
+\hline
+\hline
+\multirow{3}{*}{Euler 积分} & $\dparil{\delta\bfv^+}{\delta\bftheta}$ & $-\bfR\hatx{\bfa_m-\bfa_b}\Dt$ & $-\hatx{\bfR(\bfa_m-\bfa_b)}\Dt$ \\
+&$\dparil{\delta\bftheta^+}{\delta\bftheta}$ & $\bfR\tr\{(\bfomega_m-\bfomega_b)\Dt\}$ & $\bfI$ \\
+&$\dparil{\delta\bftheta^+}{\delta\bfomega_b}$ & $-\bfI\Dt$ &  $-\bfR\Dt$ \\
+\hline
+\hline
+误差观测 & $
+\bfQ_{\delta\bftheta}
+%\dparil{(\delta\bfq\otimes\bfq)}{\delta\bftheta}
+%\dparil{[\bfq]_L}{\delta\bftheta}
+$ & $\frac12\begin{bmatrix}
+-q_x &-q_y &-q_z\\
+ q_w &-q_z & q_y\\
+ q_z & q_w &-q_x\\
+-q_y & q_x & q_w\\
+\end{bmatrix}$ & $\frac12\begin{bmatrix}
+-q_x &-q_y &-q_z\\
+ q_w & q_z &-q_y\\
+-q_z & q_w & q_x\\
+ q_y &-q_x & q_w\\
+\end{bmatrix}$ \\
+\hline
+误差注入 &  %$\bfq\gets\bfq\oplus\hat{\delta\bftheta}$  
+& $\bfq \gets \bfq \ot \bfq\{\hat{\delta\bftheta}\}$ & $\bfq \gets \bfq\{\hat{\delta\bftheta}\} \ot \bfq$ \\ 
+\hline
+误差重置 & $\dparil{\delta\bftheta^+}{\delta\bftheta}$ & $\bfI - \hatx{\frac12\hat{\delta\bftheta}}$ & $\bfI + \hatx{\frac12\hat{\delta\bftheta}}$ \\
+\hline
+\end{tabular}
+\end{table*}

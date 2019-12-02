@@ -1,0 +1,143 @@
+% !TEX root = kinematics.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{基于 Runge-Kutta 积分的转换矩阵}
+\label{sec:TranMatRK}
+
+还有另一种近似转换矩阵的方法是使用 Runge-Kutta 积分法。
+当动力学矩阵 $\bfA$ 不能被认为是积分区间的常数时，这可能是必要的，即，
+%
+\begin{equation}
+\dot\bfx(t)=\bfA(t)\bfx(t)~. \label{equ:RKtran1}
+\end{equation}
+
+让我们重写以下两个关系，分别在连续时间和离散时间内定义同一个系统。 
+它们包括动力学矩阵 $\bfA$ 和转换矩阵 $\Phi$ ，
+%
+\begin{align}
+\dot\bfx(t) &= \bfA(t)\tdot\bfx(t) \label{equ:ode_dxFx} \\
+\bfx(t_n+\tau) &= \Phi(t_n+\tau|t_n)\tdot\bfx(t_n)~.
+\end{align}
+%
+这些方程允许我们以两种方式展开 $\dot\bfx(t_n+\tau)$ ，如下所示 (左和右展开，请注意表示时间导数的小点)，
+%
+\begin{align}
+\dot{(\Phi(t_n+\tau|t_n)\bfx(t_n))} =& \eqbox{\dot\bfx(t_n+\tau)} =  \bfA(t_n+\tau)\bfx(t_n+\tau) \nonumber \\
+\dot\Phi(t_n+\tau|t_n)\bfx(t_n)+\Phi(t_n+\tau|t_n)\dot\bfx(t_n) =&~~~~~~~~~~~~~~~=  \bfA(t_n+\tau)\Phi(t_n+\tau|t_n)\bfx(t_n) \nonumber \\
+\dot\Phi(t_n+\tau|t_n)\bfx(t_n) =&& \label{equ:last}
+\end{align}%
+%
+这里，注意方程 \eqRef{equ:last} 来自于 $\dot\bfx(t_n)=\dot\bfx_n=0$，因为它是一个采样值。 
+那么，
+%
+\begin{equation}
+\dot\Phi(t_n+\tau|t_n) = \bfA(t_n+\tau)\Phi(t_n+\tau|t_n) \label{equ:ode_dPhiFtPhi}
+\end{equation}
+%
+它与方程 \eqRef{equ:ode_dxFx} 的 ODE 相同，现在应用于转换矩阵而不是状态向量。 
+%
+%We know that, in the cases where $\bfA$ is considered constant over the integration interval (\ie, $\bfA(t) = \bfA(t_n)\triangleq\bfA$ for $t_n<t<t_n+\Dt$), the transition matrix can be computed in closed form, $\Phi=e^{\bfA\Dt}$, or approximated by truncation of its Taylor series. 
+%If $\bfA(t)$ does not want to be considered constant, then one can attempt numerical integration of \eqRef{equ:ode_dPhiFtPhi} using any high-order runge-Kutta method. 
+记住，由于特征 $\bfx(t_n)=\Phi_{t_n|t_n}\bfx(t_n)$，区间开始处的转换矩阵 $t=t_n$总是特征值，
+%
+\begin{equation}
+\Phi_{t_n|t_n} = \bfI~.
+\end{equation}
+
+使用 RK4 和 $f(t,\Phi(t))=\bfA(t)\Phi(t)$ ，我们有
+%
+\begin{equation}
+\Phi\triangleq\Phi(t_n+\Dt|t_n) = \bfI + \frac{\Dt}{6}(\bfK_1+2\bfK_2+2\bfK_3+\bfK_4)
+\end{equation}
+%
+其中
+%
+%
+\begin{align}
+\bfK_1 &= \bfA(t_n) \\
+\bfK_2 &= \bfA\Big(t_n + \frac{1}{2}\Dt \Big)\Big(\bfI + \frac{\Dt}{2} \bfK_1 \Big)\\
+\bfK_3 &= \bfA\Big(t_n + \frac{1}{2}\Dt \Big)\Big( \bfI + \frac{\Dt}{2} \bfK_2\Big) \\
+\bfK_4 &= \bfA\Big(t_n + \Dt \Big)\Big( \bfI + \Dt \tdot \bfK_3\Big) ~.
+\end{align}%
+
+%=============================================================
+\subsection{误差状态示例}
+
+让我们考虑非线性时变系统的误差状态 Kalman 滤波
+%
+\begin{equation}
+\dot\bfx_t(t) = f(t, \bfx_t(t), \bfu(t))
+\end{equation}
+%
+其中 $\bfx_t$ 表示真实状态，而 $\bfu$ 是控制输入。 
+这个真实状态是由 $\oplus$ 表示的标称状态 $\bfx$ 和误差状 $\delta\bfx$ 的组合，
+%
+\begin{equation}
+\bfx_t(t) = \bfx(t) \oplus \delta\bfx(t)
+\end{equation}
+%
+其中，误差状态动力学允许线性形式，其时变依赖于标称状态 $\bfx$ 和控制 $\bfu$，即，
+%
+\begin{equation}
+\dot{\delta\bfx} = \bfA(\bfx(t),\bfu(t))\tdot\delta\bfx
+\end{equation}
+%
+这就是说，在方程 \eqRef{equ:RKtran1} 中的误差状态动力学矩阵具有 $\bfA(t) = \bfA(\bfx(t),\bfu(t))$ 的形式。 
+可以写出误差状态转换矩阵的动力学，
+%
+\begin{equation}
+\dot{\Phi}(t_n+\tau|t_n)=\bfA(\bfx(t),\bfu(t))\tdot\Phi(t_n+\tau|t_n)~.
+\end{equation}
+%
+为了对这个方程进行 RK 积分，我们需要在 RK 评估点处的 $\bfx(t)$ 和 $\bfu(t)$的值，其中对于 RK4 的值为 $\{t_n,t_n+\Dt/2,t_n+\Dt\}$ 。
+从简单的方法开始，通过对当前和最后测量值的线性插值，可以获得评估点处的控制输入 $\bfu(t)$ ，
+%
+%
+\begin{align}
+\bfu(t_n) &= \bfu_n\\
+\bfu(t_n+\Dt/2) &= \frac{\bfu_n+\bfu_{n+1}}{2} \\
+\bfu(t_n+\Dt) &= \bfu_{n+1}
+\end{align}%
+%
+标称状态动力学应使用最佳可行的积分方法进行积分。 
+例如，使用 RK4 积分，我们有，
+%
+%
+\begin{align*}
+\bfk_1 &= f(\bfx_n,\bfu_n) \nonumber \\
+\bfk_2 &= f(\bfx_n+\frac{\Dt}{2}\bfk_1,\frac{\bfu_n+\bfu_{n+1}}{2}) \nonumber\\
+\bfk_3 &= f(\bfx_n+\frac{\Dt}{2}\bfk_2,\frac{\bfu_n+\bfu_{n+1}}{2}) \nonumber\\
+\bfk_4 &= f(\bfx_n+\Dt\bfk_3,\bfu_{n+1}) \nonumber\\
+\bfk &= (\bfk_1+2\bfk_2+2\bfk_3+\bfk_4)/6 ~,
+\end{align*}%
+%
+这给出了评估点的估计值，
+%
+%
+\begin{align}
+\bfx(t_n) &= \bfx_n \\
+\bfx(t_n+\Dt/2) &= \bfx_n+\frac{\Dt}{2}\bfk\\
+\bfx(t_n+\Dt) &= \bfx_n+\Dt\,\bfk ~.
+\end{align}%
+%
+这里我们注意到 $\bfx(t_n+\Dt/2)=\frac{\bfx_n+\bfx_{n+1}}{2}$，我们用来控制的线性插值。 
+考虑到 RK 更新的线性特性，这并不奇怪。
+
+无论我们以何种方式获得标称状态值，我们现在都可以计算转换矩阵积分的 RK4 矩阵，
+%
+%
+\begin{align*}
+\bfK_1 &= \bfA(\bfx_n,\bfu_n) \\
+\bfK_2 &= \bfA\Big(\bfx_n+\frac{\Dt}{2}\bfk, \frac{\bfu_n+\bfu_{n+1}}{2}\Big)\Big(\bfI + \frac{\Dt}{2} \bfK_1 \Big)\\
+\bfK_3 &= \bfA\Big(\bfx_n+\frac{\Dt}{2}\bfk, \frac{\bfu_n+\bfu_{n+1}}{2}\Big)\Big(\bfI + \frac{\Dt}{2} \bfK_2 \Big)\\
+\bfK_4 &= \bfA\Big(\bfx_n+\Dt\bfk, \bfu_{n+1}\Big)\Big(\bfI + \Dt \bfK_3 \Big)\\
+\bfK &= (\bfK_1+2\bfK_2+2\bfK_3+\bfK_4)/6 
+\end{align*}%
+% 
+最终导致，
+%
+\begin{equation}
+\eqbox{\Phi\triangleq\Phi_{t_n+\Dt|t_n} = \bfI + \Dt\,\bfK}
+\end{equation}
+
+
