@@ -23,7 +23,7 @@
 \item 误差状态系统总是在接近原点的位置运行，因此远离可能的参数奇异性、万向节锁问题，或类似的问题，从而提供保证在所有时间里线性化有效性始终保持不变。
 \item 误差状态总是很小，这意味着所有二阶乘积都可以忽略不计。 
 这使得 Jacobians 矩阵的计算变得非常简单和快速。 
-有些Jacobians 矩阵数值甚至可能是常数或等于可用状态量。
+有些 Jacobians 矩阵数值甚至可能是常数或等于可用状态量。
 \item 误差动力学变化很慢，因为所有大信号动力学已集成在标称状态。这意味着我们可以以低于预测的速度应用 KF 修正 (这是观测误差的唯一方法)。
 \end{itemize}
 
@@ -36,12 +36,12 @@
 
 误差状态过滤器可以解释如下。 
 一方面，高频 IMU 数据 $\bfu_m$ 被集成到标称状态 $\bfx$中， 
-该标称状态不考虑噪声项 $\bfw$ 和其他可能的模型缺陷。 
+该标称状态不考虑噪声项 $\bfw$ 和其它可能的模型缺陷。 
 因此，它会累积误差。 
 这些误差被收集进误差状态 $\delta\bfx$ 中并且用误差状态 Kalman 滤波器 (ESKF)进行估计，这时合并了所有的噪声和扰动。 
 误差状态由小信号量组成，其演化函数由一个 (时变) 线性动力学系统正确定义，其动力学、控制和测量矩阵由标称状态值计算。 
 与标称状态积分并行，ESKF 预测误差状态的高斯估计。 
-它只是预测，因为到目前为止还没有其他的测量方法来修正这些估计。 
+它只是预测，因为到目前为止还没有其它的测量方法来修正这些估计。 
 滤波器校正是在 IMU 以外的信息(例如GPS、视觉等)到达时执行的，该信息能够使误差变得可观测，并且通常以比积分阶段低得多的速率发生。 
 这种校正提供了误差状态的后验高斯估计。 
 在此之后，将误差状态的均值注入标称状态，然后重置为零。 
@@ -142,7 +142,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 \hline 
 加速度计偏差 & $\bfa_{bt}$ & $\bfa_b$ & $\delta\bfa_b$ &$\bfa_{bt} = \bfa_b+\delta\bfa_b$& & $\bfa_w$ \\
 陀螺偏差 & $\bfomega_{bt}$ & $\bfomega_b$ & $\delta\bfomega_b$ &$\bfomega_{bt} = \bfomega_b+\delta\bfomega_b$& & $\bfomega_w$ \\
-重力矢量 & $\bfg_t$ & $\bfg$ & $\delta\bfg$ & $\bfg_t = \bfg+\delta\bfg$ & & \\
+重力向量 & $\bfg_t$ & $\bfg$ & $\delta\bfg$ & $\bfg_t = \bfg+\delta\bfg$ & & \\
 \hline\hline
 加速度 & $\bfa_t$ & 
 &&& $\bfa_m$ & $\bfa_n$ \\
@@ -227,15 +227,15 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 %
 
 \bigskip
-需要注意的是，在上述公式中，重力矢量 $\bfg_t$ 将由滤波器估计。 
+需要注意的是，在上述公式中，重力向量 $\bfg_t$ 将由滤波器估计。 
 它有一个常数演化方程 \eqRef{equ:grav}，对应于已知为常数的量级。 
-系统从一个固定且任意已知的初始方向 $\bfq_t(t=0)=\bfq_0$开始，该初始方向通常不在水平面上，这使得初始重力矢量通常未知。 
+系统从一个固定且任意已知的初始方向 $\bfq_t(t=0)=\bfq_0$开始，该初始方向通常不在水平面上，这使得初始重力向量通常未知。 
 为了简单起见，通常取 $\bfq_0=(1, 0, 0, 0)$ 并因此 $\bfR_0=\bfR\{\bfq_0\}=\bfI$ 。 
 我们估计在坐标系 $\bfq_0$ 中表示的 $\bfg_t$ ，而不是在水平坐标系中表示的 $\bfq_t$ ，以便将方向上的初始不确定度转换为重力方向上的初始不确定度。 
 我们这样做是为了改善线性：事实上，方程 \eqRef{equ:vel} 现在在 $\bfg$中是线性的，它携带了所有的不确定性，并且初始方向 $\bfq_0$ 是已知的，没有不确定性，因此 $\bfq$ 开始时没有不确定性。 
-一旦估计了重力矢量，水平面就可以恢复，如果需要，整个状态和恢复的运动轨迹就可以重新定向，以反映估计的水平面。 
+一旦估计了重力向量，水平面就可以恢复，如果需要，整个状态和恢复的运动轨迹就可以重新定向，以反映估计的水平面。 
 更多理由参见 \citep{LUPTON-09} 。 
-这当然是可选的，读者可以自由地从系统中删除所有与重力相关的方程，并采用更经典的方法考虑 $\bfg\triangleq(0,0,-9.8xx)$，其中 $xx$ 是实验现场重力矢量的适当小数位数，且初始方向 $\bfq_0$ 不确定。
+这当然是可选的，读者可以自由地从系统中删除所有与重力相关的方程，并采用更经典的方法考虑 $\bfg\triangleq(0,0,-9.8xx)$，其中 $xx$ 是实验现场重力向量的适当小数位数，且初始方向 $\bfq_0$ 不确定。
 
 
 
@@ -279,7 +279,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 \end{align}%
 \end{subequations}
 %
-方程 \eqRef{equ:epos}， \eqRef{equ:eabias}， \eqRef{equ:ewbias} 和 \eqRef{equ:egrav}，分别是位置、两个偏差和重力误差，很容易由线性方程组导出其误差状态动力学。 
+方程 \eqRef{equ:epos}， \eqRef{equ:eabias}， \eqRef{equ:ewbias} 和 \eqRef{equ:egrav}，分别是位置、两个偏差和重力误差，从线性方程组导出，并且它们的误差状态动力学是平凡的。 
 作为一个例子，考虑真实和标称位置方程 \eqRef{equ:pos} 和 \eqRef{equ:pdot}，从 \tabRef{tab:errorstatevar} 中可知它们的组合 $\bfp_t=\bfp+\delta\bfp$ ，并求解 $\dot{\delta \bfp}$ 以获得 \eqRef{equ:epos}。
 
 速度方程 \eqRef{equ:evel} 和方向误差方程 \eqRef{equ:equat}，需要对非线性方程 \eqRef{equ:vel} 和 \eqRef{equ:quat} 进行一些非平凡的操作，以获得线性化动力学% of the linear velocity error $\delta\bfv$ and the angular error $\delta\bftheta$
@@ -351,7 +351,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 \end{equation}%
 %
 也就是说，协方差椭球是以原点为中心的球体，这意味着其均值和协方差矩阵在旋转时是不变的 (\emph{Proof:} $\bbE[\bfR\bfa_n] = \bfR\bbE[\bfa_n] = 0$ and $\bfE[(\bfR\bfa_n)(\bfR\bfa_n)\tr] = \bfR\bbE[\bfa_n\bfa_n\tr]\bfR\tr = \bfR\sigma_a^2\bfI\bfR\tr = \sigma_a^2\bfI$)。
-然后我们可以重新定义加速度计的噪声矢量，完全没有影响，根据
+然后我们可以重新定义加速度计的噪声向量，完全没有影响，根据
 %
 \begin{equation}
 \bfa_n \gets \bfR\bfa_n
@@ -425,7 +425,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 \end{bmatrix} + O(\norm{\delta\bftheta}^2) 
 \end{align}%
 %
-结果是一个标量和一个矢量等式
+结果是一个标量和一个向量等式
 %
 \begin{subequations}
 %
@@ -454,7 +454,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 上面的微分方程需要积分到差分方程中，以考虑离散时间间隔 $\Dt>0$ 。
 积分方法可能有所不同。 
 在某些情况下，可以使用精确的闭式解。 
-在其他情况下，可采用不同精度的数值积分。 
+在其它情况下，可采用不同精度的数值积分。 
 有关积分方法的相关详细信息，请参阅附录。
 
 需要对以下子系统进行积分：
@@ -527,7 +527,7 @@ $\delta\bfR = e^{\hatx{\delta\bftheta}}
 
 
 %-------------------------------------------------------------
-\subsubsection{误差状态 Jacobians 矩阵和扰动矩阵}
+\subsubsection{误差状态 Jacobian 矩阵和扰动矩阵}
 
 
 Jacobians 矩阵是通过简单检查前一节中的误差状态差分方程得到的。 
@@ -568,7 +568,7 @@ ESKF 预测方程写为：
 %
 其中 $\delta\bfx\sim\cN\{\hat{\delta\bfx},\bfP\}$\footnote{$x\sim\cN\{\mu,\Sigma\}$ 意味着 $x$ 是一个高斯随机变量，其均值和协方差矩阵由 $\mu$ 和 $\Sigma$指定。}; $\bfF_\bfx$ 和 $\bfF_\bfi$ 是 $f()$ 的相对于误差和扰动向量的 Jacobians 矩阵；并且 $\bfQ_\bfi$ 是扰动脉冲的协方差矩阵。
 
-Jacobians 矩阵和协方差矩阵的表达式如下所示。 
+Jacobian 矩阵和协方差矩阵的表达式如下所示。 
 此处出现的所有与状态相关的值直接从标称状态中提取。
 %
 \begin{equation} \label{equ:Fx_local_euler}
@@ -621,7 +621,7 @@ Jacobians 矩阵和协方差矩阵的表达式如下所示。
 在一个良好设计的系统中，这将使 IMU 的偏差可观测，并允许 ESKF 去正确估计它们。 
 这里有很多种可能性，最流行的是 GPS + IMU，单目视觉 + IMU，和立体视觉 + IMU。 
 近年来，视觉传感器与 IMU 的结合引起了人们的广泛关注，并由此产生了大量的科学研究。 
-这些视觉 + IMU 设置对于在无 GPS 的环境中使用非常有趣，可以在移动设备 (通常是智能手机)上实现，也可以在无人机和其他小型、灵活的平台上实现。
+这些视觉 + IMU 设置对于在无 GPS 的环境中使用非常有趣，可以在移动设备 (通常是智能手机)上实现，也可以在无人机和其它小型、灵活的平台上实现。
 
 \bigskip
 
@@ -808,7 +808,7 @@ v\sim\cN\{0,\bfV\}~.
 \end{bmatrix}~.
 \end{equation}
 
-在大多数情况下，误差项 $\hat{\delta\bftheta}$ 可以被忽略，直接导出 Jacobian 矩阵 $\bfG=\bfI_{18}$，从而导致微小的误差重置。 
+在大多数情况下，误差项 $\hat{\delta\bftheta}$ 可以被忽略，直接导出 Jacobian 矩阵 $\bfG=\bfI_{18}$，从而导致一个平凡的误差重置。 
 这就是 ESKF 的大多数实现所做的。
 这里提供的表达式应该产生更精确的结果，这可能有助于减少里程计系统中的长期误差漂移。
 
@@ -866,7 +866,7 @@ $\hat{\delta\bfq}^* \approx \begin{bmatrix}
 \end{bmatrix} + \cO(\norm{\delta\bftheta}^2) ~,
 \end{equation}
 %
-它给出了一个标量方程和一个矢量方程，
+它给出了一个标量方程和一个向量方程，
 %
 \begin{subequations}
 %

@@ -6,7 +6,7 @@
 
 我们现在的目标是给出适当的方法来积分动力学系统中的随机变量。 
 当然，我们不能对未知的随机值进行积分，但是为了不确定性的传播，我们可以对它们的方差和协方差进行积分。 
-这是必要的，以建立协方差矩阵的估计器，为系统是连续性质 (并指定在连续时间)，但估计在一个离散的方式。
+这是必要的，为了在具有连续性质(并且在连续时间中指定)，但是以离散方式估计的系统中的估计器建立协方差矩阵。
 
 考虑连续时间动力学系统，
 %
@@ -29,7 +29,7 @@
 \begin{itemize}
 \item 
 在离散化时，控制信号在时间瞬间 $n\Dt$ 进行采样，具有 $\bfu_{m,n}\triangleq\bfu_m(n\Dt)=\bfu(n\Dt)+\tilde\bfu(n\Dt)$ 。
-很明显，被测部分在积分区间内被视为常数，即， $\bfu_m(t)=\bfu_{m,n}$，因此采样时间 $n\Dt$ 处的噪声级也保持不变，
+很明显，测量部分在积分区间内被视为常数，即， $\bfu_m(t)=\bfu_{m,n}$，因此采样时间 $n\Dt$ 处的噪声水平也保持不变，
 %
 \begin{equation}
 \tilde\bfu(t)=\tilde\bfu(n\Dt) = \tilde\bfu_n, \quad n\Dt<t<(n+1)\Dt~. \label{equ:uint}
@@ -388,7 +388,7 @@ EKF 的预测阶段将根据以下公式传播误差状态的均值和协方差�
 
 
 
-$\bfF_\bfi$ 的细小的规范可能看起来令人惊讶，特别是对于方程 \eqRef{equ:IMU_ABC} 所给出的 $\bfB$ 的规范。
+$\bfF_\bfi$ 的平凡的规范可能看起来令人惊讶，特别是对于方程 \eqRef{equ:IMU_ABC} 所给出的 $\bfB$ 的规范。
 所发生的情况是，误差在  $\bfQ_\bfi$ 中定义为各向同性，并因此 $-\bfR\sigma^2\bfI(-\bfR)\tr = \sigma^2\bfI$ 和 $-\bfI\sigma^2\bfI(-\bfI)\tr = \sigma^2\bfI$，导致对 $\bfF_\bfi$ 给定该表达式。
 当考虑非各向同性 IMUs 时，这是不可能的，这里一个适当的 Jacobian 矩阵 $\bfF_\bfi=\begin{bmatrix}
 \bfB & \bfC
