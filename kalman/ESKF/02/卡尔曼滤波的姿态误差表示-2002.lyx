@@ -10,7 +10,7 @@
 % http://bbs.ctex.org/viewthread.php?tid=60547
 \DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
 \end_preamble
-\options UTF8
+\options UTF8,fontset=founder
 \use_default_options true
 \begin_modules
 subequations
@@ -25,7 +25,7 @@ subequations
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100 100
@@ -39,8 +39,19 @@ subequations
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
+\use_hyperref true
+\pdf_title "卡尔曼滤波的姿态误差表示"
+\pdf_author "F. Landis Markley"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
 \use_geometry false
 \use_package amsmath 1
 \use_package amssymb 1
@@ -125,12 +136,14 @@ literal "false"
 
 \begin_layout Standard
 扩展卡尔曼滤波器(EKF)[1-4]用于航天器姿态估计有着悠久的历史。最早的应用程序[5]使用三个欧拉角来参数化姿态，最近的一个例子使用了旋转向量[6]。这两个
-参数化都需要先验函数的估计，并且都是有许多特定的奇异姿态，因此卡尔曼滤波也采用了其他参数化。寻找理想的参数化因旋转群的全局维参数化在拓扑上不可能而受阻[7]。
+参数化都需要先验函数的估计，并且都是有许多特定的奇异姿态，因此卡尔曼滤波采用了其它类型的参数化。寻找理想的参数化因旋转群的全局维参数化在拓扑上不可能而受阻[7]
+。
 \end_layout
 
 \begin_layout Standard
-单位四元数具有全局非奇异姿态参数化的最低维，并将姿态矩阵表示为一个齐次二次函数。四元数的运动传播方程在四元数分量和角速度向量中是双线性的。这些优点推动了滤波器的
-发展，滤波器使用四元数表示的全局姿态和姿态误差[8]。这些直接EKFs提供的线性测量更新违反了非线性四元数归一化约束，对于这个问题，成功程度不同[8-12]。
+单位四元数具有全局非奇异姿态参数化的最低维，并将姿态矩阵表示为一个齐次二次函数。四元数的运动传播方程在四元数分量和角速度向量中是双线性的。这些优点推动了基于四元
+数表示的全局姿态和姿态误差滤波器的发展[8]。然而，由这些直接EKFs提供的线性测量更新违反了非线性四元数规范化约束。针对这一问题提出了几种解决方案，取得了不同
+程度的成功[8-12]。
 \end_layout
 
 \begin_layout Standard
@@ -154,8 +167,8 @@ literal "false"
 \begin_inset Formula $3\times3$
 \end_inset
 
-矩阵上，而不会丢失任何信息。这使得测量更新遵循四元数范数约束到测量残差中的一阶，因此强制精确的四元数规范化只将四元数修改到二阶，并且因此超出了EKF的范围。Va
-thsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二阶滤波器，因为他的四元数更新违反了二阶规范约束。
+矩阵上，而不会丢失任何信息。这给出了一个测量更新，遵循四元数范数对测量残差中一阶的约束，因此强制执行精确四元数规范化会将四元数修改到二阶，并因此不在EKF的范围
+内。Vathsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二阶滤波器，因为他的四元数更新违反了二阶规范约束。
 \end_layout
 
 \begin_layout Standard
@@ -167,7 +180,8 @@ thsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二�
 \begin_inset Formula $3\times3$
 \end_inset
 
-协方差，同时用四元数参数化全局姿态。这实际上是原始方法[13,14]，它导致了与线性化EKF近似中协方差投影方法相同的算法。然而，它建立在更坚实的概念基础上。
+协方差，同时用四元数参数化全局姿态。此文实际上是原始方法[13,14]的出处，它导致了与线性化EKF近似的协方差投影方法相同的算法。然而，它建立在更坚实的概念基
+础上。
 \end_layout
 
 \begin_layout Standard
@@ -175,8 +189,8 @@ thsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二�
 \begin_inset Formula $3$
 \end_inset
 
-分量姿态误差向量与四元数的关系，并将MEKF方法推广到一致的二阶卡尔曼滤波器。为了设置阶段，我们首先简要讨论态度表示。然后，我们发展了MEKF的基本方程，并考虑
-了它对二阶的推广。
+分量姿态误差向量与四元数的关系，并将MEKF方法推广到一致的二阶卡尔曼滤波器。在开始阶段，我们首先简要讨论姿态表示。然后，我们扩展了MEKF的基本方程，并考虑了
+它对二阶的推广。
 \end_layout
 
 \begin_layout Section
@@ -184,7 +198,7 @@ thsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二�
 \end_layout
 
 \begin_layout Standard
-对姿态表示的良好评价是可用的[18,19]。我们提供了一个简短的讨论，以建立对本文感兴趣的表示的约定和符号。我们认为
+对姿态表示的良好评价是现成的[18,19]。我们提供一个简短的讨论，以建立对本文感兴趣的表示的约定和符号。我们认为
 \begin_inset Formula $3\times3$
 \end_inset
 
@@ -196,11 +210,11 @@ thsal[17]将这种方法扩展到了二阶，但结果似乎不是一致的二�
 \end_layout
 
 \begin_layout Standard
-欧拉定理[20]指出，一点固定的刚体最一般的运动是绕某个轴以
+欧拉定理[20]指出，一点固定的刚体最一般的运动是绕某个轴旋转
 \begin_inset Formula $\phi$
 \end_inset
 
-角旋转。我们用单位向量
+角度。我们用单位向量
 \begin_inset Formula $\mathbf{e}$
 \end_inset
 
@@ -235,7 +249,7 @@ A(\boldsymbol{\phi})=\boldsymbol{I}_{3\times3}-(\sin(\phi)/\phi)[\boldsymbol{\ph
 \begin_inset Formula $3\times3$
 \end_inset
 
-单位矩阵，同时叉乘矩阵是
+特征矩阵，同时叉乘矩阵是
 \end_layout
 
 \begin_layout Standard
@@ -264,7 +278,7 @@ noprefix "false"
 
 \end_inset
 
-)和旋转向量的运动学方程是超越方程并且具有病态行为，尽管对零旋转角来说作用是有限的。在旋转向量空间中，所有旋转都可以映射到半径为
+)和旋转向量的动力学方程是超越方程并且具有病态行为，尽管对零旋转角来说作用是有限的。在旋转向量空间中，所有旋转都可以映射到半径为
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -407,7 +421,7 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 \end_layout
 
 \begin_layout Standard
-这与历史乘法惯例不同，[18,24]用
+这与历史乘法约定不同，[18,24]用
 \begin_inset Formula $qp$
 \end_inset
 
@@ -419,7 +433,7 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 \begin_inset Formula $p\otimes q=qp$
 \end_inset
 
-关联。这里采用的公约具有以下有用的性质：
+关联。这里采用的约定具有以下有用的性质：
 \end_layout
 
 \begin_layout Standard
@@ -601,7 +615,7 @@ noprefix "false"
 \begin_inset Formula $q_{4}=0$
 \end_inset
 
-算子)，这对于旋转的全局表示是不可取的。姿态矩阵具有吉布斯向量表示。
+算子)，这对于旋转的全局表示是不可取的。姿态矩阵采用吉布斯向量表示
 \end_layout
 
 \begin_layout Standard
@@ -612,11 +626,7 @@ A(\mathbf{g})=\boldsymbol{I}_{3\times3}-2(1+g^{2})^{-1}\left\{ \left[\mathbf{g}\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-其中斜体用于表示除四元数的向量部分以外的任何三个向量的大小。
+其中斜体项用于表示除四元数的向量部分以外的任意three-vector的模数。
 \end_layout
 
 \begin_layout Subsection
@@ -635,11 +645,7 @@ Wiener[27]介绍了这些参数：
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-表示姿态矩阵
+表示姿态矩阵为
 \end_layout
 
 \begin_layout Standard
@@ -776,10 +782,6 @@ q(t)=\delta q(\mathbf{a}(t))\otimes q_{ref}(t)\label{eq:15}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \family roman
 \series medium
@@ -1300,10 +1302,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{q}(-)$
 \end_inset
@@ -1567,10 +1565,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 然后更新后的单位四元数由下式给出
 \end_layout
 
@@ -1607,10 +1601,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 以及姿态误差矩阵
 \end_layout
 
@@ -1626,7 +1616,7 @@ A(\delta q)=\boldsymbol{I}_{3\times3}-[\mathbf{a}\times]+\dfrac{1}{2}(\mathbf{a}
 \end_layout
 
 \begin_layout Standard
-因此，它们与EKF等价，EKF使用线性近似；但它们在
+因此，它们对于使用线性近似的EKF是等效的；但它们在
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
@@ -1705,10 +1695,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 利用方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1757,7 +1743,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-以该方程的期望值作为忽略相关性的通常的线性EKF近似，给出
+在忽略相关关系的一般线性EKF近似下，求该方程的期望值，给出
 \end_layout
 
 \begin_layout Standard
@@ -1787,10 +1773,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 或者
 \end_layout
 
@@ -1829,17 +1811,13 @@ kopf的陀螺动力学误差模型[31]，这意味着我们忽略了速率积分
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mathbf{\omega}(t)=\tilde{\mathbf{\omega}}(t)-\mathbf{b}(t)-\mathbf{\eta}_{1}(t)
+\mathbf{\omega}(t)=\tilde{\mathbf{\omega}}(t)-\mathbf{b}(t)-\mathbf{\boldsymbol{\eta}}_{1}(t)
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
-\begin_inset Formula $\mathbf{\eta}_{1}(t)$
+\begin_inset Formula $\mathbf{\boldsymbol{\eta}}_{1}(t)$
 \end_inset
 
 是零均值白噪声过程。陀螺漂移向量服从
@@ -1848,17 +1826,13 @@ kopf的陀螺动力学误差模型[31]，这意味着我们忽略了速率积分
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\dot{\mathbf{b}}(t)=\mathbf{\eta}_{2}(t)
+\dot{\mathbf{b}}(t)=\mathbf{\boldsymbol{\eta}}_{2}(t)
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
-\begin_inset Formula $\mathbf{\eta}_{2}(t)$
+\begin_inset Formula $\mathbf{\boldsymbol{\eta}}_{2}(t)$
 \end_inset
 
 是独立的零均值白噪声过程。这显然意味着
@@ -1970,11 +1944,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-其中引用四元数的时间依赖性隐式包含在
+其中参考四元数的时间依赖性隐式包含在
 \begin_inset Formula $\mathbf{f}(\mathbf{x}(t),t)$
 \end_inset
 
@@ -1999,17 +1969,13 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\Delta\mathbf{\omega}(t)\equiv\mathbf{\omega}(t)-\hat{\mathbf{\omega}}=\mathbf{\omega}(t)-\left[\tilde{\mathbf{\omega}}(t)-\hat{\mathbf{b}}(t)\right]=\hat{\mathbf{b}}(t)-\mathbf{b}(t)-\mathbf{\eta}_{1}(t)
+\Delta\mathbf{\omega}(t)\equiv\mathbf{\omega}(t)-\hat{\mathbf{\omega}}=\mathbf{\omega}(t)-\left[\tilde{\mathbf{\omega}}(t)-\hat{\mathbf{b}}(t)\right]=\hat{\mathbf{b}}(t)-\mathbf{b}(t)-\mathbf{\boldsymbol{\eta}}_{1}(t)
 \end{equation}
 
 \end_inset
@@ -2036,7 +2002,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在这里，我们抑制了方程中的下标，该下标包含任何三维参数化。这个状态向量服从传播方程。
+在这里，我们抑制了方程中的下标，该下标包含任何三维参数化。这个状态向量服从传播方程
 \end_layout
 
 \begin_layout Standard
@@ -2047,7 +2013,7 @@ noprefix "false"
 \dot{\mathbf{b}}
 \end{array}\right]=\left[\begin{array}{c}
 \mathbf{f}(\mathbf{x}(t),t)\\
-\mathbf{\eta}_{2}(t)
+\mathbf{\boldsymbol{\eta}}_{2}(t)
 \end{array}\right]
 \end{equation}
 
@@ -2083,7 +2049,7 @@ P_{c}^{T}(t) & P_{b}(t)
 \begin_inset Formula $\partial\mathbf{f}/\partial\mathbf{a}$
 \end_inset
 
-表示矩阵元素。
+表示矩阵元素
 \end_layout
 
 \begin_layout Standard
@@ -2094,10 +2060,6 @@ P_{c}^{T}(t) & P_{b}(t)
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 并定义矩阵
 \end_layout
 
@@ -2147,10 +2109,6 @@ E\left\{ \partial\mathbf{f}/\partial\mathbf{\eta}_{1}\right\}  & E\left\{ \parti
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2165,18 +2123,14 @@ Q_{1}(t) & 0_{3\times3}\\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-用
+并且
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \begin{array}{cc}
-E\left\{ \mathbf{\eta}_{i}(t)\mathbf{\eta}_{j}^{T}(t')\right\} =\delta_{ij}\delta(t-t')Q_{i} & \mathrm{for}\end{array}i,j=1,2
+E\left\{ \mathbf{\boldsymbol{\eta}}_{i}(t)\mathbf{\boldsymbol{\eta}}_{j}^{T}(t')\right\} =\delta_{ij}\delta(t-t')Q_{i} & \mathrm{for}\end{array}i,j=1,2
 \end{equation}
 
 \end_inset
@@ -2277,10 +2231,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中我们使用了方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2330,10 +2280,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2345,10 +2291,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 并且
 \end_layout
 
@@ -2397,10 +2339,6 @@ P_{a}(-) & P_{c}(-)\end{array}\right]^{T}H_{a}^{T}\left[H_{a}P_{a}(-)H_{a}^{T}+R
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $R$
 \end_inset
@@ -2416,10 +2354,6 @@ P_{a}(-) & P_{c}(-)\end{array}\right]^{T}H_{a}^{T}\left[H_{a}P_{a}(-)H_{a}^{T}+R
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\tilde{\mathbf{z}}$
 \end_inset
@@ -2614,10 +2548,6 @@ status open
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 和
 \end_layout
 
@@ -2635,9 +2565,6 @@ status open
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset Flex Subequations
 status open
 
@@ -2653,10 +2580,6 @@ K_{a}=P_{a}(-)[P_{a}(-)+R]^{-1}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 和
 \end_layout
 
@@ -2766,8 +2689,8 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-非线性卡尔曼滤波器中的二阶项在非线性性质对测量和过程噪声项具有重要意义时会变得重要。根据Maybeck的观点[4]，一个带有偏差校正项的一阶滤波器获得了二阶滤波
-器的基本优点，而不需要额外的二阶矩计算的计算惩罚。该滤波器对状态传播和测量残差方程进行二阶修正，但对协方差和增益使用EKF表达式。
+非线性卡尔曼滤波器中的二阶项在非线性性质对测量和过程噪声项具有重要意义时会变得重要。根据Maybeck的观点[4]，一个带有偏差修正项的一阶滤波器获得了二阶滤波
+器的基本好处，而无需额外的二阶矩计算的计算代价。该滤波器对状态传播和测量残差方程进行二阶修正，但对协方差和增益使用EKF表达式。
 \end_layout
 
 \begin_layout Subsection
@@ -2789,10 +2712,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中传播偏差校正由以下方程式给出：
 \end_layout
 
@@ -2849,10 +2768,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\mathbf{\omega}_{c}$
 \end_inset
@@ -2868,10 +2783,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\{i,j,k\}$
 \end_inset
@@ -2959,11 +2870,11 @@ noprefix "false"
 \begin_inset Formula $\mathbf{\omega}_{c}$
 \end_inset
 
-在估计误差中都是二阶的，用单位矩阵代替
+在估计误差中都是二阶的，用特征矩阵代替
 \begin_inset Formula $\left[\boldsymbol{I}_{3\times3}+\dfrac{1}{4}P_{a}(t)\right]$
 \end_inset
 
-与二阶滤波器是一致的，给出
+对二阶滤波器是一致的，给出
 \end_layout
 
 \begin_layout Standard
@@ -2978,11 +2889,15 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-由于姿态误差和陀螺漂移偏差误差之间的协方差矩阵的倾斜部分导致对角速率向量的二阶修正
+测量之间的时间传播由EKF改变，通过将二阶修正
 \begin_inset Formula $\mathbf{\omega}_{c}$
 \end_inset
 
-的增加，测量之间的时间传播从EKF改变。这相当于Vathsal得出的结果[17]。
+加到由姿态误差和陀螺漂移偏差之间的协方差的偏斜部分引起角速率向量的改变。这相当于Vathsal得出的结果[17]。
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsection
@@ -3005,11 +2920,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-测量偏差项由[4]给出
+其中测量偏差项由[4]给出
 \end_layout
 
 \begin_layout Standard
@@ -3095,10 +3006,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathrm{tr}$
 \end_inset
@@ -3111,7 +3018,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-考虑一个特殊情况，即姿态协方差
+现在考虑一个特殊情况，即姿态协方差
 \begin_inset Formula $P_{a}$
 \end_inset
 
@@ -3152,10 +3059,6 @@ u_{2}/u_{3}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -3167,10 +3070,6 @@ u_{2}/u_{3}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 是恒星跟踪器参考坐标系中恒星的单位向量，该坐标系通过正交变换矩阵
 \begin_inset Formula $B$
 \end_inset
@@ -3406,10 +3305,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 与方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
