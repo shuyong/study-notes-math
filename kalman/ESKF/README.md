@@ -54,10 +54,13 @@
     + PX4项目里24个状态的EKF。
     + [Using the ECL EKF](https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html)
 
-13. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
+13. [A Sequential Multiplicative Extended Kalman Filter for Attitude Estimation Using Vector Observations - 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5982416/)
+    + 基于向量观测的序贯乘性扩展卡尔曼滤波姿态估计
+
+14. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
     + 通过封装流形将通用传感器融合算法与声音状态表示相结合
 
-14. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
+15. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
     + 四元数姿态估计的卡尔曼滤波及流形理论的概念
     + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
 
