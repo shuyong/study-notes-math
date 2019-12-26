@@ -10,7 +10,7 @@
 % http://bbs.ctex.org/viewthread.php?tid=60547
 \DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
 \end_preamble
-\options UTF8
+\options UTF8,fontset=founder
 \use_default_options true
 \maintain_unincluded_children false
 \language chinese-simplified
@@ -22,7 +22,7 @@
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100 100
@@ -36,9 +36,22 @@
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
+\use_hyperref true
+\pdf_title "三维姿态估计的间接卡尔曼滤波---四元数代数教程"
+\pdf_author "Nikolas Trawny and Stergios I. Roumeliotis"
+\pdf_subject "三维姿态估计的间接卡尔曼滤波"
+\pdf_keywords "间接卡尔曼滤波"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -63,6 +76,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2.54cm
+\topmargin 3cm
+\rightmargin 2.54cm
+\bottommargin 2.54cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -86,7 +103,7 @@
 \begin_layout Title
 \begin_inset CommandInset href
 LatexCommand href
-name "三维姿态估计的间接卡尔曼滤波-四元数代数教程"
+name "三维姿态估计的间接卡尔曼滤波---四元数代数教程"
 target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
 literal "false"
 
@@ -155,7 +172,7 @@ March 2005
 \end_layout
 
 \begin_layout Standard
-注意，这不符合汉密尔顿符号。相反，这是一种惯例，导致四元数按“自然顺序”相乘(另见第
+注意，这不符合汉密尔顿符号。相反，这是一种约定，导致四元数按“自然顺序”相乘(另见第
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:四元数与旋转矩阵的关系"
@@ -165,7 +182,7 @@ noprefix "false"
 
 \end_inset
 
-节和文档[1，第473页])。这符合JPL提出的标准惯例[2]。
+节和文档[1，第473页])。这符合JPL提出的标准约定[2]。
 \end_layout
 
 \begin_layout Standard
@@ -397,7 +414,7 @@ p_{3}\\
 p_{4}
 \end{array}\right]\\
 \bar{q}\otimes\bar{p} & =\left[\begin{array}{cc}
-q_{4}\mathbf{I}_{3\times3}-[\mathbf{q}\times] & \mathbf{q}\\
+q_{4}\mathbf{I}_{3\times3}-\left\lfloor \mathbf{q}\times\right\rfloor  & \mathbf{q}\\
 -\mathbf{q}^{\mathrm{T}} & q_{4}
 \end{array}\right]\left[\begin{array}{c}
 \mathbf{p}\\
@@ -408,11 +425,11 @@ q_{4}\mathbf{p}+p_{4}\mathbf{q}-\mathbf{q}\times\mathbf{p}\\
 q_{4}p_{4}-\mathbf{q}^{\mathrm{T}}\mathbf{p}
 \end{array}\right]\nonumber \\
  & =\left[\begin{array}{c}
-p_{4}\mathbf{q}+\mathbf{p}q_{4}-[\mathbf{p}\times]\mathbf{q}\\
+p_{4}\mathbf{q}+\mathbf{p}q_{4}-\left\lfloor \mathbf{p}\times\right\rfloor \mathbf{q}\\
 p_{4}q_{4}-\mathbf{p}^{\mathrm{T}}\mathbf{q}
 \end{array}\right]\nonumber \\
 \bar{q}\otimes\bar{p} & =\left[\begin{array}{cc}
-p_{4}\mathbf{I}_{3\times3}+[\mathbf{p}\times] & \mathbf{p}\\
+p_{4}\mathbf{I}_{3\times3}+\left\lfloor \mathbf{p}\times\right\rfloor  & \mathbf{p}\\
 -\mathbf{p}^{\mathrm{T}} & p_{4}
 \end{array}\right]\left[\begin{array}{c}
 \mathbf{q}\\
@@ -1514,7 +1531,7 @@ _{G}^{L}\mathbf{C}\left(\bar{q}\right)=\mathbf{I}_{3\times3}-2q_{4}\left\lfloor 
 \end_layout
 
 \begin_layout Standard
-请注意，由于四元数乘法选择的惯例(参见等式(
+请注意，由于四元数乘法选择的约定(参见等式(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:2"
@@ -3019,7 +3036,7 @@ noprefix "false"
 节)或一阶(参见第
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subsec:零阶四元数积分器"
+reference "subsec:一阶四元数积分器"
 plural "false"
 caps "false"
 noprefix "false"
@@ -3172,7 +3189,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在下一节中，我们将发展误差向量的连续时间一阶状态方程。
+在下一节中，我们将扩展误差向量的连续时间一阶状态方程。
 \end_layout
 
 \begin_layout Subsection
@@ -3196,7 +3213,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align}
-\bar{q} & =\delta\bar{q}\otimes\hat{\bar{q}}\qquad\qquad|\dfrac{\mathrm{d}}{\mathrm{d}t}\\
+\bar{q} & =\delta\bar{q}\otimes\hat{\bar{q}}\qquad\qquad\qquad|\dfrac{\mathrm{d}}{\mathrm{d}t}\\
 \dot{\bar{q}} & =\dot{\delta\bar{q}}\otimes\hat{\bar{q}}+\delta\bar{q}\otimes\dot{\hat{\bar{q}}}
 \end{align}
 
@@ -3588,8 +3605,8 @@ name "subsec:离散时间误差状态方程"
 \end_layout
 
 \begin_layout Standard
-为了实现离散时间卡尔曼滤波方程，需要对上述误差传播模型进行离散化。特别是，我们必须找到状态转移矩阵
-\begin_inset Formula $\mathbf{\Phi}$
+为了实现离散时间卡尔曼滤波方程，需要对上述误差传播模型进行离散化。特别是，我们必须找到状态转换矩阵
+\begin_inset Formula $\boldsymbol{\Phi}$
 \end_inset
 
 和系统噪声协方差
@@ -3668,7 +3685,7 @@ name "subsec:状态转移矩阵\\Phi"
 \end_layout
 
 \begin_layout Standard
-与Lefferts等人[3]的符号一致，我们发现过渡矩阵具有以下块结构
+与Lefferts等人[3]的符号一致，我们发现转换矩阵具有以下块结构
 \end_layout
 
 \begin_layout Standard
@@ -4028,7 +4045,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-与过渡矩阵相似，我们可以通过取极限并应用L’Hôpital法则，得到小
+与转换矩阵相似，我们可以通过取极限并应用L’Hôpital法则，得到小
 \begin_inset Formula $\left|\hat{\boldsymbol{\omega}}\right|$
 \end_inset
 
@@ -4271,11 +4288,11 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在这个模型中，我们假设我们能够测量从传感器到太阳的矢量相对于传感器框架的投影，传感器框架
+在这个模型中，我们假设我们能够测量从传感器到太阳的矢量相对于传感器坐标系的投影，传感器坐标系
 \begin_inset Formula $^{S}\mathbf{r}_{\bigodot}$
 \end_inset
 
-在全局坐标框架中的表示
+在全局坐标坐标系中的表示
 \begin_inset Formula $^{G}\mathbf{r}_{\bigodot}$
 \end_inset
 
