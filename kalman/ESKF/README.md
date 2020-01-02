@@ -87,6 +87,8 @@
 1. [NXP® Sensor Fusion](https://www.nxp.com/support/developer-resources/software-development-tools/sensor-developer-resources/nxp-sensor-fusion:XTRSICSNSTLBOXX)
    + [Sensor Fusion Software with Matlab Models](https://community.nxp.com/thread/346827)
    + [Trajectory & Sensor Simulation Toolkit](https://github.com/memsindustrygroup/TSim)
+   + [Simulate motion for sensor fusion](https://blog.nxp.com/tech-insights/simulate-motion-for-sensor-fusion)
+   + [IMUSim](https://github.com/martinling/imusim)
 1. [Shows implementation of KF based sensor fusion of gyro, accel and camera measurements.](https://github.com/ankur6ue/SensorFusion_KF)
 1. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF)
 1. [RT-SLAM stands for Real Time SLAM (Simultaneous Localization And Mapping).](https://www.openrobots.org/wiki/rtslam/)
