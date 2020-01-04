@@ -1,0 +1,865 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+姿态估计为什么选择ESKF
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Abstract
+简单一点，没有高深数学知识，从基础方面介绍在姿态估计里为什么要选择ESKF。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在实际项目里，对于物体的姿态估计的算法，大多选择误差状态卡尔曼滤波器(ESKF)。对此的研究，航天领域是主力。此外，因为“误差状态动力学[6]”一文的发表，在S
+LAM领域，ESKF也成了主流。
+\end_layout
+
+\begin_layout Standard
+对此，国内有不少专业文档进行介绍，参见文档[9][10][11]。但是，这些专家、博士和硕士们，一上来就大谈李群和李代数，以摆弄数学公式为能事。一个公式的推导，
+如果不能撑满一页纸，一行公式不能撑破打印机，那都不叫本事。这些高人高来高去，真是让初学者看得眼花缭乱，五体投地。但是，最初始最根本的问题：姿态估计为什么选择ES
+KF？国内却没有人简单地总结出来。
+\end_layout
+
+\begin_layout Standard
+其实这个问题在本世纪初就由 F.
+ Landis Markley 这位白胡子老爷爷从数学上回答了这个问题。本文就此做一个梳理。其实理解这个问题，以及理解如何解决这个问题，并不需要李群和李代数这些
+高深的数学知识。只是在严格证明时才需要这些知识。
+\end_layout
+
+\begin_layout Section
+成果总结
+\end_layout
+
+\begin_layout Subsection
+解题思路
+\end_layout
+
+\begin_layout Standard
+Sensor Fusion 是一个大词，望之而生神秘感觉。其实姿态估计就是从多种传感器得到的数据相互校正，估计出局部坐标系和全局坐标系之间的姿态。之所以要用多种
+传感器的数据，是因为用任何一种传感器数据计算姿态，都有数学和物理上的问题，不能长期而精确地估计姿态。所以需要其它传感器的数据进行校正。而进行姿态数据间校正的最好
+方法，就是卡尔曼滤波器(KF)。其它数学方法，如梯度下降法和方向余弦法，则有较多的问题，不在本文讨论之列。
+\end_layout
+
+\begin_layout Standard
+姿态估计，一个通用的离散算法流程大约是：
+\end_layout
+
+\begin_layout Enumerate
+从陀螺仪获得角速度，应用姿态变化的微分方程，积分得到当前姿态。这一步，在KF里就是时间传播，就是预估步骤。计算得到的就是姿态的估计值，短期有效，长时间有较大累积
+误差，所以需要校正。
+\end_layout
+
+\begin_layout Enumerate
+从加速计获得包含了重力的加速度，对姿态的估计值做校正。
+\end_layout
+
+\begin_layout Enumerate
+从磁力计获得地磁数据，可以对姿态的估计值做校正。
+\end_layout
+
+\begin_layout Enumerate
+从其它和姿态有关的传感器获得数据，对姿态的估计值做校正。
+\end_layout
+
+\begin_layout Enumerate
+回到步骤1，周而复始地估计物体的姿态。
+\end_layout
+
+\begin_layout Standard
+因为陀螺仪、加速计和磁力计的输出都是3D矢量，所以如果只有陀螺仪、加速计的数据，就是6-DOF估计，再加上磁力计数据，就是9-DOF估计。角速度对于KF系统，就
+是控制输入(Control Input)，或者说驱动输入(Drive Input)。绝大多数姿态估计的系统，都是由角速度进行驱动的。重力数据和地磁数据做校正，最
+常用的方法就是固定矢量观测。从重力矢量，可以得到以重力矢量为法向量的当地水平面，从而校正了欧拉角中的Roll & Pitch。结合已知的水平面，从地磁矢量分离出
+水平面上指向磁极的矢量，从而校正了欧拉角中的Yaw。
+\end_layout
+
+\begin_layout Standard
+姿态估计系统，是非线性系统，所以标准的KF不能使用，所以需要选择KF的非线性扩展版本。EKF和UKF是首选。多个论文以及多年的实践表明，在姿态估计中，UKF的精
+度并不高于EKF，而UKF的计算量大约是EKF的两倍。这也许是因为非线性的姿态估计系统中的“准线性”特性比较大，因此EKF中的一阶Jacobian矩阵就足够近似
+了，而UKF的高阶非线性近似的优势没有能发挥出来。所以在大多数实际项目里，EKF算法是姿态估计的首选。
+\end_layout
+
+\begin_layout Subsection
+以前的成果
+\end_layout
+
+\begin_layout Standard
+在本世纪初以前，姿态估计就有两个流派：直接法和间接法。因为姿态表示大多数采用四元数，所以一个典型的、但非标准的区别方法就是，一个是一个是7参数法，一个是6参数法
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+\boldsymbol{x}=\left[\begin{array}{c}
+q_{4\times1}\\
+\boldsymbol{b}_{3\times1}
+\end{array}\right] & \mathrm{or} & \boldsymbol{x}=\left[\begin{array}{c}
+\boldsymbol{a}_{3\times1}\\
+\boldsymbol{b}_{3\times1}
+\end{array}\right]\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $q$
+\end_inset
+
+是代表当前姿态的四元数，
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+是代表当前姿态的误差的旋转矢量，
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+是陀螺仪输出的角速度偏差。状态向量里之所以有
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+的存在，是因为有论文分析角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的误差对整个系统的误差影响最大。但是
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+不一定是状态向量中必须的。Google CardBoard项目中的ESKF，就只有估计代表误差的旋转矢量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+，而对角速度偏差
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+采用其它算法估计。这样可以最小化状态向量，从而减少了矩阵乘法的计算量。
+\end_layout
+
+\begin_layout Standard
+以人的理解能力和喜好来说，应该更喜欢直接法。因为直接法实现简单，估计出来的姿态拿过来就可以用。而间接法估计的是当前姿态的误差。软件系统中要维护两个状态向量，一个
+叫标称状态，就是估计的当前姿态向量，一个是当前姿态的误差状态向量，就是用EKF估计的量。要将误差状态向量乘以当前姿态向量，才是当前姿态的最优估计值。间接法不容易
+理解，实现上和应用上也比直接法复杂。但为什么到现在，姿态估计都是选择间接法中的ESKF(又叫乘法EKF，Multiplicative EKF，MEKF)？这就是
+ F.
+ Landis Markley 这位白胡子老爷爷从数学上证明了MEKF最符合数学概念，可以精确到二阶项。而直接法和其它类型ESKF在数学概念上都有问题。具体参见
+文档[2][3][4]。
+\end_layout
+
+\begin_layout Subsection
+现在的成果
+\end_layout
+
+\begin_layout Standard
+数学上已经证明，表示3D空间的旋转的最小维度是4，也就是单位四元数。这对于4参数的四元数就引入了一个约束：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w^{2}+x^{2}+y^{2}+z^{2}=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并且操作旋转的算子是乘法而不是加减法。用李群的术语来说，就是单位四元数对于乘法是封闭的，但对加法不封闭，即任意两个单位四元数相乘可以得到一个单位四元数，但相加后
+并不是一个单位四元数。旋转矩阵的问题差不多和四元数对等。所有用3D向量表示旋转的方法都存在奇点或死锁问题，并且会有插值不连续和取值跳越的问题，这些问题都和
+\begin_inset Formula $\tan$
+\end_inset
+
+函数相关。
+\end_layout
+
+\begin_layout Standard
+在EKF中处理旋转的最大问题就是没有合理的方法来定义向量空间中的旋转。欧拉角、四元数和旋转矩阵不是向量，而是形式群。
+\end_layout
+
+\begin_layout Standard
+这是EKF的一个问题，因为它假定所有的状态变量都是向量。例如，想想如何形成四元数的协方差矩阵。协方差矩阵定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E\left[\left(x-\hat{x}\right)\left(x-\hat{x}\right)^{\mathrm{T}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是，在四元数的情况下，
+\begin_inset Formula $\left(q-\hat{q}\right)$
+\end_inset
+
+是什么意思？它不再是一个单位四元数。旋转矩阵也是这样。欧拉角更微妙一些，但类似的逻辑也适用(如果你减去两个欧拉角的“向量”，结果真正意味着什么？)。换一句话说，
+就是因为上面的约束，单位四元数里的4个参数是相关联的，一个姿态的微小变化，有可能引起多个参数的变化。旋转矩阵也一样。这就破坏了协方差的假定。于是EKF失效，因此
+直接法不可行。
+\end_layout
+
+\begin_layout Standard
+为了解决这些问题，一些做航天器姿态估计的聪明人对此进行了研究，并提出了“乘法”EKF(Multiplicative EKF)。在MEKF中，状态向量分为标称向量
+和误差向量两个部分。EKF中的协方差是根据关于某个代表参考姿态的单位四元数的“误差向量”定义的。使用标准四元数动力学传播四元数，然后更新四元数，并使用参数化为吉
+布斯矢量(gibbs vector)或罗德里格斯参数(rodriguez parameters)的3D矢量定义协方差。吉布斯矢量(gibbs vector)实际
+上是一个矢量，但它有一个奇点，所以它只适用于小的旋转。因此，需要一个参考四元数(标称向量)代表全局姿态，并用一个向量定义该参考四元数的小“误差”。“乘法”一词来
+源于这样一个事实，即你最终将这个误差向量“乘法”到参考四元数中，而不是像所有其他状态那样用简单的向量加法添加它。
+\end_layout
+
+\begin_layout Standard
+这时候李群/李代数上场，将加法算子
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减法算子
+\begin_inset Formula $\ominus$
+\end_inset
+
+映射为欧拉指数公式，实际上就是四元数乘法或旋转矩阵乘法，然后计算协方差。这就是文档[6]中4.1节解释的内容。这就让协方差矩阵符合定义。一切都完美符合数学要求，于
+是EKF又可以工作了。因此选择间接法是必然。
+\end_layout
+
+\begin_layout Standard
+这里还要说明一点，对EKF家族来说，ESKF / MEKF在算法上并没有增加新的东西，还是一个标准的EKF。只是所处理的这部分向量是代表旋转的误差，并且计算协方
+差的加减法被映射为欧拉指数公式。既然是一个标准的EKF，所以也很容易扩展其中的状态向量，例如增加加速度、速度、距离等等3D向量，例如，PX4项目里的ECL2，就
+有24个状态。只是新扩展出来的这些向量，都是标准的向量，所以计算协方差的加减法还是传统的向量加减法。
+\end_layout
+
+\begin_layout Section
+ESKF的优点
+\end_layout
+
+\begin_layout Standard
+虽然ESKF有着不容易理解，不容易实现和应用的问题。但是它也有很突出的优点。文档[6]总结了4点：
+\end_layout
+
+\begin_layout Enumerate
+方向误差状态最小 (即，其参数数量与自由度相同)，避免了过度参数化 (或冗余) 的相关问题，以及相关协方差矩阵奇异性的风险，这通常是由强制约束引起的。
+ 
+\end_layout
+
+\begin_layout Enumerate
+误差状态系统总是在接近原点的位置运行，因此远离可能的参数奇异性、万向节锁问题，或类似的问题，从而提供保证在所有时间里线性化有效性始终保持不变。
+\end_layout
+
+\begin_layout Enumerate
+误差状态总是很小，这意味着所有二阶乘积都可以忽略不计。这使得 Jacobians 矩阵的计算变得非常简单和快速。有些 Jacobians 矩阵数值甚至可能是常数
+或等于可用状态量。
+\end_layout
+
+\begin_layout Enumerate
+误差动力学变化很慢，因为所有大信号动力学已集成在标称状态。这意味着我们可以以低于预测的速度应用 KF 修正 (这是观测误差的唯一方法)。
+\end_layout
+
+\begin_layout Standard
+因为上面第3/4个优点，从而导致了文档[1]所提到的优点：规避动态建模。文档[1]描述的是在开发火星车的过程中，在不建立车辆动力学模型的情况下，用陀螺仪模型代替
+动力学模型，获得了良好的姿态估计。这个例子很能体现ESKF的优点。首先，火星表面的真实情况谁也不知道。其次，火星车的方案可能会有改动，如从4个轮子变成6个轮子，
+动力学模型会发生变化。最后，因为环境的变化，车辆的动力学模型的参数多变的，例如，在高速公路、戈壁和沙漠上，汽车的动力学模型的参数都不一样。因此基于车辆的动力学模
+型去估计姿态，会有很大的难度。但是，基于传感器模型去估计姿态误差，则规避了这些问题，因为传感器特性是已知的、可测量的，并且不会有太大的变化。
+\end_layout
+
+\begin_layout Standard
+我们从文档[9]总结的CardBoard的ESKF公式就可以发现这点：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\hline\hline \mathbf{A.} & \,\mathbf{Time\:Update(``Predict")}\\
+\hline\hline \mathrm{(1)} & \,\mathrm{Project\:the\:state\:ahead.}\\
+\mu_{k|k-1} & =\mu_{k-1|k-1}\exp\left(\left(\omega_{k-1}\Delta t_{k-1}\right)^{\wedge}\right)\\
+\hline \mathrm{(2)} & \,\mathrm{Project\:the\:error\:covariance\:ahead.}\\
+P_{k|k-1} & =\exp\left(\left(\omega_{k-1}\Delta t_{k-1}\right)^{\wedge}\right)P_{k-1|k-1}\exp\left(\left(\omega_{k-1}\Delta t_{k-1}\right)^{\wedge}\right)^{T}+\Delta t_{k-1}R_{\omega,k-1}\Delta t_{k-1}\\
+\hline \\
+\hline\hline \mathbf{B.} & \mathbf{\,Measurement\:Update(``Correct")}\\
+\hline\hline \mathrm{(1)} & \,\mathrm{Compute\:the\:Kalman\:gain.}\\
+K_{k} & =P_{k|k-1}H_{k}^{T}\left(H_{k}P_{k|k-1}H_{k}^{T}+R_{a}\right)^{-1}\\
+\hline \mathrm{(2)} & \,\mathrm{Update\:estimate\:with\:measurement\:}z_{k}\mathrm{.}\\
+m_{k|k}^{-} & =0+K_{k}\left(m_{z_{k}}-0\right)\\
+\hline \mathrm{(3)} & \,\mathrm{Update\:the\:error\:covariance.}\\
+P_{k|k}^{-} & =\left(I-K_{k}H_{k}\right)P_{k|k-1}\\
+\hline \mathrm{(4)} & \,\mathrm{Project\:the\:state\:ahead\:with\:}m_{k}\mathrm{.}\\
+\mu_{k|k} & =\mu_{k|k-1}\exp\left(\left(m_{k|k}^{-}\right)^{\wedge}\right)\\
+\hline \mathrm{(5)} & \,\mathrm{Project\:the\:error\:covariance\:ahead\:with\:}m_{k}\mathrm{.}\\
+P_{k|k} & =J_{r}\left(m_{k|k}^{-}\right)P_{k|k-1}^{-}J_{r}\left(m_{k|k}^{-}\right)^{T}\\
+\hline 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中公式中各符号含义如下，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mu_{k|k-1}$
+\end_inset
+
+，预测姿态。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mu_{k|k}$
+\end_inset
+
+，校正姿态。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\omega$
+\end_inset
+
+，角速度。对ESKF系统来说，这是控制输入，或称为驱动输入。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\exp\left(\left(\omega_{k-1}\Delta t_{k-1}\right)^{\wedge}\right)$
+\end_inset
+
+，用驱动角度向量
+\begin_inset Formula $\omega\Delta t$
+\end_inset
+
+计算得到的旋转矩阵。也可以用四元数表示。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P_{k|k-1}$
+\end_inset
+
+，先验估计误差协方差。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P_{k|k}$
+\end_inset
+
+，后验估计误差协方差。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{\omega}$
+\end_inset
+
+，陀螺仪测量噪声协方差。在此做为过程激励协方差使用。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{a}$
+\end_inset
+
+，加速计测量噪声协方差。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $K$
+\end_inset
+
+，卡尔曼增益。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $f()$
+\end_inset
+
+，Process nonlinear vector function 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $h()$
+\end_inset
+
+ ，Observation nonlinear vector function
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $H$
+\end_inset
+
+，是
+\begin_inset Formula $h()$
+\end_inset
+
+ 相对于状态向量
+\begin_inset Formula $m$
+\end_inset
+
+的偏导数的Jacobian矩阵。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m_{k|k}^{-}$
+\end_inset
+
+，状态向量。在ESKF系统中，是表示旋转误差的旋转向量。每次迭代都重置为
+\begin_inset Formula $0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $z_{k}$
+\end_inset
+
+，测量向量。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m_{z_{k}}$
+\end_inset
+
+，创新向量，或称为残差向量。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\exp\left(\left(m_{k|k}^{-}\right)^{\wedge}\right)$
+\end_inset
+
+，用误差旋转向量
+\begin_inset Formula $m_{k|k}^{-}$
+\end_inset
+
+计算得到的旋转矩阵。也可以用四元数表示。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $F$
+\end_inset
+
+，是
+\begin_inset Formula $f()$
+\end_inset
+
+相对于状态向量
+\begin_inset Formula $m$
+\end_inset
+
+的偏导数的Jacobian矩阵。
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+对于驱动角度向量
+\begin_inset Formula $\omega\Delta t$
+\end_inset
+
+，
+\begin_inset Formula $F=\exp\left(\left(\omega_{k-1}\Delta t_{k-1}\right)^{\wedge}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+对于误差旋转向量
+\begin_inset Formula $m_{k|k}^{-}$
+\end_inset
+
+，
+\begin_inset Formula $F=J_{r}\left(m_{k|k}^{-}\right)$
+\end_inset
+
+。
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+在这里请注意时间更新的第2条公式，以及测量更新的第1条公式。
+\end_layout
+
+\begin_layout Standard
+在运行EKF系统前，一般会初始化3个矩阵：
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $P_{0}$
+\end_inset
+
+，系统协方差初始化值。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $Q$
+\end_inset
+
+，过程激励噪声协方差矩阵。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $R$
+\end_inset
+
+，测量噪声协方差矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $P_{0}$
+\end_inset
+
+值，会影响估计值的收敛速度。而
+\begin_inset Formula $Q$
+\end_inset
+
+和
+\begin_inset Formula $R$
+\end_inset
+
+矩阵，会对估计值的精度有重大影响。因此如何选择一个好的
+\begin_inset Formula $Q$
+\end_inset
+
+和
+\begin_inset Formula $R$
+\end_inset
+
+的值，是很多工程文档讨论的重点。
+\begin_inset Formula $R$
+\end_inset
+
+的值，可以从传感器中测量得到，一般认为是常数，或随着环境的变化，但变化不大。但
+\begin_inset Formula $Q$
+\end_inset
+
+的值只能靠猜测。所以一般调试EKF系统时，先固定
+\begin_inset Formula $R$
+\end_inset
+
+的值，然后尝试修改
+\begin_inset Formula $Q$
+\end_inset
+
+的值，慢慢摸索出一个合理的
+\begin_inset Formula $Q$
+\end_inset
+
+/
+\begin_inset Formula $R$
+\end_inset
+
+比值。
+\end_layout
+
+\begin_layout Standard
+到了ESKF这里，经过推导，
+\begin_inset Formula $Q$
+\end_inset
+
+的值由陀螺仪测量噪声协方差
+\begin_inset Formula $R_{\omega}$
+\end_inset
+
+填充，系数与离散时间间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+相关
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+各个论文不同的推导在这个系数上有所不同，有的是
+\begin_inset Formula $\Delta t$
+\end_inset
+
+，有的是
+\begin_inset Formula $\Delta t^{2}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+，这就是时间更新的第2条公式。在测量更新，
+\begin_inset Formula $R$
+\end_inset
+
+的值就是当时所用的传感器的测量噪声协方差，例如加速计、磁力计或GPS的测量噪声协方差。参见测量更新的第1条公式。由于
+\begin_inset Formula $Q$
+\end_inset
+
+和
+\begin_inset Formula $R$
+\end_inset
+
+矩阵都是可以通过测量得到，于是EKF的估计值就更加精确和更容易确定。
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+为什么姿态估计要采用间接法？或者说采用ESKF / MEKF？这是数学上的要求，让旋转表示符合EKF的协方差的假设。采用ESKF / MEKF，也有其它额外的好
+处。其中直观的一个就是因为误差一般都很小，变化也慢，所以变化特性中“准线性”的特性很明显。并且由于
+\begin_inset Formula $Q$
+\end_inset
+
+和
+\begin_inset Formula $R$
+\end_inset
+
+矩阵都是可以通过测量得到，所以EKF的估计值就更加精确和更容易确定。
+\end_layout
+
+\begin_layout Standard
+如果有聪明人要挑战难题，要让直接法可行。恭喜你，你骨骼精奇，是万中无一的绝世天才，开山修路全靠你了。有个神奇的数学分支：流形(Manifold)。这里有一本秘籍
+，文档[7]，看了以后说不定可以成为一代开山祖师爷。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Circumventing Dynamic Modeling: Evaluation of the Error-State Kalman Filter applied to Mobile Robot Localization"
+target "https://www.academia.edu/13385785/Circumventing_dynamic_modeling_Evaluation_of_the_error-state_kalman_filter_applied_to_mobile_robot_localization"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude Error Representations for Kalman Filtering"
+target "https://www.researchgate.net/publication/245432681_Attitude_Error_Representations_for_Kalman_Filtering"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude estimation or quaternion estimation?"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20030093641.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination"
+target "https://www.researchgate.net/publication/260347976_Multiplicative_vs_Additive_Filtering_for_Spacecraft_Attitude_Determination"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Indirect Kalman filter for 3D attitude estimation"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory"
+target "https://www.mdpi.com/1424-8220/19/1/149/pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "视觉SLAM十四讲：从理论到实践（第2版）"
+target "https://baike.baidu.com/item/%E8%A7%86%E8%A7%89SLAM%E5%8D%81%E5%9B%9B%E8%AE%B2%EF%BC%9A%E4%BB%8E%E7%90%86%E8%AE%BA%E5%88%B0%E5%AE%9E%E8%B7%B5%EF%BC%88%E7%AC%AC2%E7%89%88%EF%BC%89"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Google Cardboard的九轴融合算法——基于李群的扩展卡尔曼滤波"
+target "https://www.cnblogs.com/ilekoaiq/p/8710812.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "相机IMU融合四部曲（二）：误差状态四元数详细解读"
+target "https://www.cnblogs.com/ilekoaiq/p/9266036.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "MSCKF那些事（一）MSCKF算法简介"
+target "https://zhuanlan.zhihu.com/p/76341809"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
