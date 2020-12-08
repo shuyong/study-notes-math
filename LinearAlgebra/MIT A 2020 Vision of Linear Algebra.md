@@ -9,3 +9,4 @@
 1. [Part 5: Singular Values and Singular Vectors](https://www.youtube.com/watch?v=IHO7_n7Y09s&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=6)
 1. [课件原文](https://ocw.mit.edu/resources/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/videos/MITRES_18_010S20_LA_Slides.pdf)
 1. [课件中文](https://wws.lanzous.com/i4E0iget4ng)
+1. [中文资源](https://cloud.189.cn/t/BjyUnmb2IjYn)
