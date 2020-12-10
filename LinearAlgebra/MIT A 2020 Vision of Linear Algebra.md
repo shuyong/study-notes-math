@@ -10,3 +10,18 @@
 1. [课件原文](https://ocw.mit.edu/resources/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/videos/MITRES_18_010S20_LA_Slides.pdf)
 1. [课件中文](https://wws.lanzous.com/i4E0iget4ng)
 1. [中文资源](https://cloud.189.cn/t/BjyUnmb2IjYn)
+
+# 笔记
+
+## 绪论
+1. 矩阵 A 是一个列矩阵 C 和行矩阵 R 的乘积。
+2. A = LU，用于消元法解方程组。
+3. A = QR，Q 代表正交矩阵。前 3 节内容用于解方程。
+4. S = ，S 是对称矩阵。正交特征向量。后 3 节都是关于特征值的内容。
+5. 特征值。
+6. 奇异值。
+
+## 第 1 节 矩阵的列空间
+1. 线性代数就是关于列与行的关系。
+2. S 是对称矩阵，是线性代数中重要的矩阵之一。
+3. Q 是正交矩阵，它往往代表旋转，旋转矩阵，是线性代数中重要的矩阵之一。
