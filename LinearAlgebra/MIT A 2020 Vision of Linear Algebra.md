@@ -14,12 +14,27 @@
 # 笔记
 
 ## 绪论
+
 1. 矩阵 A 是一个列矩阵 C 和行矩阵 R 的乘积。
-2. A = LU，用于消元法解方程组。
-3. A = QR，Q 代表正交矩阵。前 3 节内容用于解方程。
-4. S = ，S 是对称矩阵。正交特征向量。后 3 节都是关于特征值的内容。
-5. 特征值。
-6. 奇异值。
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=CR=\left[\begin{array}{cc}&space;\:&space;&&space;\:\\&space;\:&space;&&space;\:\\&space;\:&space;&&space;\:\\&space;\:&space;&&space;\:&space;\end{array}\right]\left[\begin{array}{cccc}&space;\:&space;&&space;\:&space;&&space;\:&space;&&space;\:\\&space;\:&space;&&space;\:&space;&&space;\:&space;&&space;\:&space;\end{array}\right]" title="\large A=CR=\left[\begin{array}{cc} \: & \:\\ \: & \:\\ \: & \:\\ \: & \: \end{array}\right]\left[\begin{array}{cccc} \: & \: & \: & \:\\ \: & \: & \: & \: \end{array}\right]" />
+
+2. A = LU，用于消元法解方程组。Triangular matrices L and U.
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=LU=\left[\begin{array}{cc}&space;\ddots&space;&&space;0\\&space;&&space;\ddots&space;\end{array}\right]\left[\begin{array}{cc}&space;\ddots\\&space;0&space;&&space;\ddots&space;\end{array}\right]" title="\large A=LU=\left[\begin{array}{cc} \ddots & 0\\ & \ddots \end{array}\right]\left[\begin{array}{cc} \ddots\\ 0 & \ddots \end{array}\right]" />
+
+3. A = QR，Q 代表正交矩阵。Orthogonal columns in Q.
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=QR=\left[\begin{array}{cc}&space;q_{1}&space;&&space;q_{n}\end{array}\right]\left[\begin{array}{cc}&space;\ddots\\&space;0&space;&&space;\ddots&space;\end{array}\right]" title="\large A=QR=\left[\begin{array}{cc} q_{1} & q_{n}\end{array}\right]\left[\begin{array}{cc} \ddots\\ 0 & \ddots \end{array}\right]" />
+
+* _前 3 节内容用于解方程。_
+* _后 3 节都是关于特征值的内容。_
+
+4. S 是对称矩阵。正交特征向量。Orthogonal eigenvectors.
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;S=Q\Lambda&space;Q^{\mathrm{T}},\;Q^{\mathrm{T}}=Q^{-1}" title="\large S=Q\Lambda Q^{\mathrm{T}},\;Q^{\mathrm{T}}=Q^{-1}" />
+
+5. 特征值。Eigenvalues.
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=X\Lambda&space;X^{-1}" title="\large A=X\Lambda X^{-1}" />
+
+6. 奇异值。Singular values.
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=U\Sigma&space;V^{\mathrm{T}}" title="\large A=U\Sigma V^{\mathrm{T}}" />
 
 ## 第 1 节 矩阵的列空间
 1. 线性代数就是关于列与行的关系。
