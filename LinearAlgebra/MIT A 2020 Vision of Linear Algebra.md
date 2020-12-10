@@ -45,7 +45,8 @@
 
    + 4.1 A 矩阵的线性无关的各列的线性组合。
    + 4.2 Column space of A = C(A) = all vectors Ax = all linear combinations of the columns
-   + 4.3 C(A) = plane
+   + 4.3 C(A) = R^3 | plane | line
+   + 4.4 C(A) = span(v1, v2, ...)
    
 5. 列空间的基 / 行空间的基
    + 5.1 C 矩阵，A 矩阵的线性无关的列的组合
