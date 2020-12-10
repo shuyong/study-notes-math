@@ -40,3 +40,19 @@
 1. 线性代数就是关于列与行的关系。
 2. S 是对称矩阵，是线性代数中重要的矩阵之一。
 3. Q 是正交矩阵，它往往代表旋转，旋转矩阵，是线性代数中重要的矩阵之一。
+4. C(A) 列空间。
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Ax=\left[\begin{array}{ccc}&space;a_{11}&space;&&space;a_{12}&space;&&space;a_{13}\\&space;a_{21}&space;&&space;a_{22}&space;&&space;a_{23}\\&space;a_{31}&space;&&space;a_{32}&space;&&space;a_{33}&space;\end{array}\right]\left[\begin{array}{c}&space;x_{1}\\&space;x_{2}\\&space;x_{3}&space;\end{array}\right]=\left[\begin{array}{c}&space;a_{11}\\&space;a_{21}\\&space;a_{31}&space;\end{array}\right]x_{1}&plus;\left[\begin{array}{c}&space;a_{12}\\&space;a_{22}\\&space;a_{32}&space;\end{array}\right]x_{2}&plus;\left[\begin{array}{c}&space;a_{13}\\&space;a_{23}\\&space;a_{33}&space;\end{array}\right]x_{3}" title="\large Ax=\left[\begin{array}{ccc} a_{11} & a_{12} & a_{13}\\ a_{21} & a_{22} & a_{23}\\ a_{31} & a_{32} & a_{33} \end{array}\right]\left[\begin{array}{c} x_{1}\\ x_{2}\\ x_{3} \end{array}\right]=\left[\begin{array}{c} a_{11}\\ a_{21}\\ a_{31} \end{array}\right]x_{1}+\left[\begin{array}{c} a_{12}\\ a_{22}\\ a_{32} \end{array}\right]x_{2}+\left[\begin{array}{c} a_{13}\\ a_{23}\\ a_{33} \end{array}\right]x_{3}" />
+
+   + 4.1 A 的各列的线性组合。
+   + 4.2 Column space of A = C(A) = all vectors Ax = all linear combinations of the columns
+   + 4.3 C(A) = plane
+   
+5. 列空间的基 / 行空间的基
+   + 5.1 线性无关的列
+   
+6. A = CR 表明 A 的行秩等于列秩
+   + 6.1 C 矩阵线性无关的列向量
+   + 6.2 R 矩阵线性无关的行向量
+   + 6.3 列空间和行空间的维度是一样的
+   
+7. R 矩阵，A 的行化简阶梯形矩阵
