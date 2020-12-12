@@ -8,8 +8,8 @@
 1. [Part 4: Eigenvalues and Eigenvectors](https://www.youtube.com/watch?v=GyC3gl6weYo&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=5)
 1. [Part 5: Singular Values and Singular Vectors](https://www.youtube.com/watch?v=IHO7_n7Y09s&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=6)
 1. [课件原文](https://ocw.mit.edu/resources/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/videos/MITRES_18_010S20_LA_Slides.pdf)
-1. [课件中文](https://wws.lanzous.com/i4E0iget4ng)
 1. [中文资源](https://cloud.189.cn/t/BjyUnmb2IjYn)
+1. [课件中文](https://wws.lanzous.com/i4E0iget4ng)：翻译错误挺多的。经常把‘行’写成‘列’。
 
 # 笔记
 
@@ -74,5 +74,8 @@
 3. 宏观视角
    + 3.1 Ax_row = b => A 矩阵行空间变为列空间，A 是可逆的。
    + 3.2 Ax_null = 0 => A 矩阵零空间变为 0
-   + 3.3 CR，列 × 行，外积。
+   + 3.3 CR，列 × 行，外积，叉乘。更高级地理解矩阵。
+   + 3.4 行 × 列，点乘。= 0，行向量和列向量正交。
+
+4. A = LU，Low(下三角) / Up(上三角)
 
