@@ -95,5 +95,14 @@
 5. 如果矩阵 Q_1 / Q_2 为正交矩阵，则 Q_1 × Q_2 和 Q_2 × Q_1 也是正交矩阵。
 
 6. 最小二乘法: A = QR 最主要、最常见的用途。
+   + 当
+   <img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Ax=b,\;m>n" title="\large Ax=b,\;m>n" />
+   
+   + 求最小化的 e 向量
+   <img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\left\Vert&space;b-Ax\right\Vert&space;^{2}=\left\Vert&space;e\right\Vert&space;^{2}" title="\large \left\Vert b-Ax\right\Vert ^{2}=\left\Vert e\right\Vert ^{2}" />
+   
+   + 几何解释：e = b - p，e 为误差向量，p 向量为 b 向量在 C(A) 平面上的投影。尽可能使 e 向量最小。
+   
+## 第 4 节 实特征值和正交特征向量
 
-
+## 第 5 节 奇异值分解(SVD)
