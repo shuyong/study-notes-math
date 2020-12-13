@@ -87,7 +87,7 @@
 2. 正交归一化矩阵 Q。列自身相乘为 1，与其它列相乘为 0，正交/垂直。
 <img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Q^{\mathrm{T}}Q=I_{n}\quad&space;QQ^{\mathrm{T}}\neq&space;I" title="\large Q^{\mathrm{T}}Q=I_{n}\quad QQ^{\mathrm{T}}\neq I" />
 
-3. 正交矩阵相乘还是正交矩阵。正交矩阵乘以其它矩阵，不会改变长度。旋转。
+3. 正交矩阵相乘还是正交矩阵。正交矩阵乘以其它矩阵，不会改变其长度。旋转。
 
 4. 如果正交矩阵 Q 是方阵，则
 <img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;QQ^{\mathrm{T}}=I\quad&space;Q^{\mathrm{T}}=Q^{-1}" title="\large QQ^{\mathrm{T}}=I\quad Q^{\mathrm{T}}=Q^{-1}" />
