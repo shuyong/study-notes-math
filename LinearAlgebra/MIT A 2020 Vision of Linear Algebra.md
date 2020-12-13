@@ -80,3 +80,20 @@
 4. A = LU，Low(下三角) / Up(上三角)
 
 ## 第 3 节 正交向量
+
+1. 正交向量。因为列向量两两垂直，所以为直角三角形。
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;x^{\mathrm{T}}y=0\quad&space;y^{\mathrm{T}}x=0\quad\left(x&plus;y\right)^{\mathrm{T}}\left(x&plus;y\right)=x^{\mathrm{T}}x&plus;y^{\mathrm{T}}y" title="\large x^{\mathrm{T}}y=0\quad y^{\mathrm{T}}x=0\quad\left(x+y\right)^{\mathrm{T}}\left(x+y\right)=x^{\mathrm{T}}x+y^{\mathrm{T}}y" />
+
+2. 正交归一化矩阵 Q。列自身相乘为 1，与其它列相乘为 0，正交/垂直。
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Q^{\mathrm{T}}Q=I_{n}\quad&space;QQ^{\mathrm{T}}\neq&space;I" title="\large Q^{\mathrm{T}}Q=I_{n}\quad QQ^{\mathrm{T}}\neq I" />
+
+3. 正交矩阵相乘还是正交矩阵。正交矩阵乘以其它矩阵，不会改变长度。旋转。
+
+4. 如果正交矩阵 Q 是方阵，则
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;QQ^{\mathrm{T}}=I\quad&space;Q^{\mathrm{T}}=Q^{-1}" title="\large QQ^{\mathrm{T}}=I\quad Q^{\mathrm{T}}=Q^{-1}" />
+
+5. 如果矩阵 Q_1 / Q_2 为正交矩阵，则 Q_1 × Q_2 和 Q_2 × Q_1 也是正交矩阵。
+
+6. 最小二乘法: A = QR 最主要、最常见的用途。
+
+
