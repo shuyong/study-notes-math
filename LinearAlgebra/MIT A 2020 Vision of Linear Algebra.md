@@ -105,4 +105,33 @@
    
 ## 第 4 节 实特征值和正交特征向量
 
+1. 特征向量：与原有向量在同一方向上。可以简化运算，化简为一维的问题。
+
+2. 正交特征向量
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;S=S^{\mathrm{T}}" title="\large S=S^{\mathrm{T}}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Sx=\lambda&space;x" title="\large Sx=\lambda x" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Sy=\alpha&space;y" title="\large Sy=\alpha y" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\lambda\neq\alpha" title="\large \lambda\neq\alpha" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;x^{\mathrm{T}}y=0" title="\large x^{\mathrm{T}}y=0" />
+
+3. Symmetric Matrix, 对称矩阵。
+
+4. 对称矩阵 S 与其特征向量组成的正交矩阵 Q，特征值 Λ 的关系
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Q=\left[\begin{array}{ccc}&space;\\&space;q_{1}&space;&&space;\cdots&space;&&space;q_{n}\\&space;\\&space;\end{array}\right]" title="\large Q=\left[\begin{array}{ccc} \\ q_{1} & \cdots & q_{n}\\ \\ \end{array}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;SQ=S\left[\begin{array}{ccc}&space;\\&space;q_{1}&space;&&space;\cdots&space;&&space;q_{n}\\&space;\\&space;\end{array}\right]=\left[\begin{array}{ccc}&space;\\&space;\lambda_{1}q_{1}&space;&&space;\cdots&space;&&space;\lambda_{n}q_{n}\\&space;\\&space;\end{array}\right]=\left[\begin{array}{ccc}&space;\\&space;q_{1}&space;&&space;\cdots&space;&&space;q_{n}\\&space;\\&space;\end{array}\right]\left[\begin{array}{ccc}&space;\lambda_{1}\\&space;&&space;\ddots\\&space;&&space;&&space;\lambda_{n}&space;\end{array}\right]" title="\large SQ=S\left[\begin{array}{ccc} \\ q_{1} & \cdots & q_{n}\\ \\ \end{array}\right]=\left[\begin{array}{ccc} \\ \lambda_{1}q_{1} & \cdots & \lambda_{n}q_{n}\\ \\ \end{array}\right]=\left[\begin{array}{ccc} \\ q_{1} & \cdots & q_{n}\\ \\ \end{array}\right]\left[\begin{array}{ccc} \lambda_{1}\\ & \ddots\\ & & \lambda_{n} \end{array}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\Lambda=\left[\begin{array}{ccc}&space;\lambda_{1}\\&space;&&space;\ddots\\&space;&&space;&&space;\lambda_{n}&space;\end{array}\right]" title="\large \Lambda=\left[\begin{array}{ccc} \lambda_{1}\\ & \ddots\\ & & \lambda_{n} \end{array}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;SQ=Q\Lambda" title="\large SQ=Q\Lambda" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;S=Q\Lambda&space;Q^{-1}=Q\Lambda&space;Q^{\mathrm{T}}" title="\large S=Q\Lambda Q^{-1}=Q\Lambda Q^{\mathrm{T}}" />
+
+5. A 的奇异值与奇异向量。奇异值在 Σ 中，奇异向量在 U 和 V 中。
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;S=A^{\mathrm{T}}A" title="\large S=A^{\mathrm{T}}A" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=U\Sigma&space;V^{\mathrm{T}}" title="\large A=U\Sigma V^{\mathrm{T}}" />
+
+6. 非对称的 A 矩阵的特征值和特征向量
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=X\Lambda&space;X^{-1}" title="\large A=X\Lambda X^{-1}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Ax=\lambda&space;x\Rightarrow&space;A^{n}x=\lambda^{n}x" title="\large Ax=\lambda x\Rightarrow A^{n}x=\lambda^{n}x" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=X\Lambda&space;X^{-1}\Rightarrow&space;A^{n}=X\Lambda^{n}X^{-1}" title="\large A=X\Lambda X^{-1}\Rightarrow A^{n}=X\Lambda^{n}X^{-1}" />
+
+7. A^T * A 是方阵,是对称矩阵,是非负的定矩阵
+
 ## 第 5 节 奇异值分解(SVD)
