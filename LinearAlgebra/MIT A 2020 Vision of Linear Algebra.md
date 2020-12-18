@@ -135,3 +135,41 @@
 7. A^T * A 是方阵,是对称矩阵,是非负的定矩阵
 
 ## 第 5 节 奇异值分解(SVD)
+
+1. 奇异值用于表达非方阵的特征
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;U^{\mathrm{T}}U=I" title="\large U^{\mathrm{T}}U=I" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;V^{\mathrm{T}}V=I" title="\large V^{\mathrm{T}}V=I" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A=U\Sigma&space;V^{\mathrm{T}}" title="\large A=U\Sigma V^{\mathrm{T}}" />
+
+2. AV = UΣ 的含义
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A\left[\begin{array}{ccc}&space;\\&space;v_{1}&space;&&space;\cdots&space;&&space;v_{r}\\&space;\\&space;\end{array}\right]=\left[\begin{array}{ccc}&space;\\&space;u_{1}&space;&&space;\cdots&space;&&space;u_{r}\\&space;\\&space;\end{array}\right]\left[\begin{array}{ccc}&space;\sigma_{1}\\&space;&&space;\ddots\\&space;&&space;&&space;\sigma_{r}&space;\end{array}\right]" title="\large A\left[\begin{array}{ccc} \\ v_{1} & \cdots & v_{r}\\ \\ \end{array}\right]=\left[\begin{array}{ccc} \\ u_{1} & \cdots & u_{r}\\ \\ \end{array}\right]\left[\begin{array}{ccc} \sigma_{1}\\ & \ddots\\ & & \sigma_{r} \end{array}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;Av_{i}=\sigma_{i}u_{i}" title="\large Av_{i}=\sigma_{i}u_{i}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\sigma_{i}\geq\sigma_{2}\geq\ldots\geq\sigma_{r}>0,\quad&space;r=\mathrm{rank}(A)" title="\large \sigma_{i}\geq\sigma_{2}\geq\ldots\geq\sigma_{r}>0,\quad r=\mathrm{rank}(A)" />
+
+3. 几何解释：U 和 V 是旋转变换,也可能会有反射效果。Σ 把圆拉伸成椭圆。
+   + 3.1 正交矩阵负责旋转
+   + 3.2 对角矩阵负责拉伸
+   + 3.3 奇异值分解：V^T 旋转，Σ 拉伸，U 旋转
+   
+4. v_i 是 A^T * A 的特征向量，v_i 之间相互正交，所以有 V^T * V = I
+
+5. u_i 之间相互正交，所以有 U^T * U = I
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;u_{i}=\dfrac{Av_{i}}{\sigma_{i}}" title="\large u_{i}=\dfrac{Av_{i}}{\sigma_{i}}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\left(\dfrac{Av_{j}}{\sigma_{j}}\right)^{\mathrm{T}}\left(\dfrac{Av_{i}}{\sigma_{i}}\right)=\dfrac{v_{j}^{\mathrm{T}}A^{\mathrm{T}}Av_{i}}{\sigma_{j}\sigma_{i}}=\dfrac{v_{j}^{\mathrm{T}}\sigma_{i}^{2}v_{i}}{\sigma_{j}\sigma_{i}}=\begin{array}{c}&space;1\quad&space;i=j\\&space;0\quad&space;i\neq&space;j&space;\end{array}" title="\large \left(\dfrac{Av_{j}}{\sigma_{j}}\right)^{\mathrm{T}}\left(\dfrac{Av_{i}}{\sigma_{i}}\right)=\dfrac{v_{j}^{\mathrm{T}}A^{\mathrm{T}}Av_{i}}{\sigma_{j}\sigma_{i}}=\dfrac{v_{j}^{\mathrm{T}}\sigma_{i}^{2}v_{i}}{\sigma_{j}\sigma_{i}}=\begin{array}{c} 1\quad i=j\\ 0\quad i\neq j \end{array}" />
+
+6. 完整尺寸的 SVD
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;A_{m\times&space;n}=U_{m\times&space;m}\Sigma_{m\times&space;n}V_{n\times&space;n}^{\mathrm{T}}" title="\large A_{m\times n}=U_{m\times m}\Sigma_{m\times n}V_{n\times n}^{\mathrm{T}}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\Sigma_{1}=\left[\begin{array}{ccc}&space;\sigma_{1}\\&space;&&space;\ddots\\&space;&&space;&&space;\sigma_{r}&space;\end{array}\right]_{r\times&space;r}" title="\large \Sigma_{1}=\left[\begin{array}{ccc} \sigma_{1}\\ & \ddots\\ & & \sigma_{r} \end{array}\right]_{r\times r}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\Sigma=\left[\begin{array}{cc}&space;\Sigma_{1}&space;&&space;0\\&space;0&space;&&space;0&space;\end{array}\right]_{m\times&space;n}" title="\large \Sigma=\left[\begin{array}{cc} \Sigma_{1} & 0\\ 0 & 0 \end{array}\right]_{m\times n}" />
+<img src="https://latex.codecogs.com/svg.latex?\inline&space;\large&space;\begin{array}{l}&space;u_{r&plus;1}\cdots&space;u_{m}:\mathrm{N\left(A^{\mathrm{T}}\right)}\\&space;v_{r&plus;1}\cdots&space;v_{n}:\mathrm{N\left(A\right)}&space;\end{array}" title="\large \begin{array}{l} u_{r+1}\cdots u_{m}:\mathrm{N\left(A^{\mathrm{T}}\right)}\\ v_{r+1}\cdots v_{n}:\mathrm{N\left(A\right)} \end{array}" />
+
+7. 大型矩阵的低阶近似
+   + 7.1 奇异值是将矩阵分解为各个部分，按照重要性排序。
+   + 7.2 保留前 k 项的 σ，选重要的分析，降低运算量。
+   + 7.3 可以用奇异值计算矩阵的模。
+   
+8. 随机化数值线性代数
+   + 8.1 范数平方抽样
+   + 8.2 抽样方差尽可能小
+   
+9. 微积分是关于函数和连续曲线的学科。线性代数是关于向量的学科。
