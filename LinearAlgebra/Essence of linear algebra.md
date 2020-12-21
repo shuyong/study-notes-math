@@ -70,5 +70,17 @@
 5. 从零空间可知可能的解的集合是什么样子。
 
 ## 点积与对偶性
-
+1. 点积与投影长度。两个向量的相关性。垂直(正交)。
+2. ???投影矩阵???
+3. 当看到一个二维到一维的线性变换，它必定和一个向量相关。
+4. 对偶性：两种数学事物之间自然而又出乎意料的对应关系。
+5. 对于某个固定的向量u，将u与任意向量作点积是整个向量空间上的线性函数（将整个空间映射到1维实数），因为向量空间上的线性函数都可以由一个一行的矩阵来表达，因此任意一个向量都可以看成是一个一行的矩阵，即向量和一行矩阵是同一回事。
+   + 5.1. 假如有两个向量 u / v 做点积，就是一行矩阵的叉乘。
+   <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}=\left[\begin{array}{c}&space;u_{1}\\&space;u_{2}\\&space;u_{3}&space;\end{array}\right]" title="\overrightarrow{u}=\left[\begin{array}{c} u_{1}\\ u_{2}\\ u_{3} \end{array}\right]" />
+   <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{v}=\left[\begin{array}{c}&space;v_{1}\\&space;v_{2}\\&space;v_{3}&space;\end{array}\right]" title="\overrightarrow{v}=\left[\begin{array}{c} v_{1}\\ v_{2}\\ v_{3} \end{array}\right]" />
+   <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}\cdot\overrightarrow{v}=u^{\mathrm{T}}\times&space;v=\begin{array}{c}&space;\begin{array}{c}&space;\begin{array}{ccc}&space;i\;&space;&&space;\;j\;&space;&&space;\;k\end{array}\\&space;\left[\begin{array}{ccc}&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\end{array}\right]&space;\end{array}\left[\begin{array}{c}&space;v_{1}\\&space;v_{2}\\&space;v_{3}&space;\end{array}\right]\end{array}" title="\overrightarrow{u}\cdot\overrightarrow{v}=u^{\mathrm{T}}\times v=\begin{array}{c} \begin{array}{c} \begin{array}{ccc} i\; & \;j\; & \;k\end{array}\\ \left[\begin{array}{ccc} u_{1} & u_{2} & u_{3}\end{array}\right] \end{array}\left[\begin{array}{c} v_{1}\\ v_{2}\\ v_{3} \end{array}\right]\end{array}" />
+   + 5.2. 或者是这样理解，一个空间被压缩为一条直线。
+   <img src="https://latex.codecogs.com/svg.latex?\begin{array}{c}&space;\begin{array}{ccc}&space;i\;&space;&&space;\;j\;&space;&&space;\;k\end{array}\\&space;\left[\begin{array}{ccc}&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\end{array}\right]&space;\end{array}\left[\begin{array}{ccc}&space;i&space;&&space;0&space;&&space;0\\&space;0&space;&&space;j&space;&&space;0\\&space;0&space;&&space;0&space;&&space;k&space;\end{array}\right]" title="\begin{array}{c} \begin{array}{ccc} i\; & \;j\; & \;k\end{array}\\ \left[\begin{array}{ccc} u_{1} & u_{2} & u_{3}\end{array}\right] \end{array}\left[\begin{array}{ccc} i & 0 & 0\\ 0 & j & 0\\ 0 & 0 & k \end{array}\right]" />
+   
+## 叉积
 
