@@ -79,6 +79,7 @@
    <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}=\left[\begin{array}{c}&space;u_{1}\\&space;u_{2}\\&space;u_{3}&space;\end{array}\right]" title="\overrightarrow{u}=\left[\begin{array}{c} u_{1}\\ u_{2}\\ u_{3} \end{array}\right]" />
    <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{v}=\left[\begin{array}{c}&space;v_{1}\\&space;v_{2}\\&space;v_{3}&space;\end{array}\right]" title="\overrightarrow{v}=\left[\begin{array}{c} v_{1}\\ v_{2}\\ v_{3} \end{array}\right]" />
    <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}\cdot\overrightarrow{v}=u^{\mathrm{T}}\times&space;v=\begin{array}{c}&space;\begin{array}{c}&space;\begin{array}{ccc}&space;i\;&space;&&space;\;j\;&space;&&space;\;k\end{array}\\&space;\left[\begin{array}{ccc}&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\end{array}\right]&space;\end{array}\left[\begin{array}{c}&space;v_{1}\\&space;v_{2}\\&space;v_{3}&space;\end{array}\right]\end{array}" title="\overrightarrow{u}\cdot\overrightarrow{v}=u^{\mathrm{T}}\times v=\begin{array}{c} \begin{array}{c} \begin{array}{ccc} i\; & \;j\; & \;k\end{array}\\ \left[\begin{array}{ccc} u_{1} & u_{2} & u_{3}\end{array}\right] \end{array}\left[\begin{array}{c} v_{1}\\ v_{2}\\ v_{3} \end{array}\right]\end{array}" />
+   
    + 5.2. 或者是这样理解，一个空间被压缩为一条直线。
    <img src="https://latex.codecogs.com/svg.latex?\begin{array}{c}&space;\begin{array}{ccc}&space;i\;&space;&&space;\;j\;&space;&&space;\;k\end{array}\\&space;\left[\begin{array}{ccc}&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\end{array}\right]&space;\end{array}\left[\begin{array}{ccc}&space;i&space;&&space;0&space;&&space;0\\&space;0&space;&&space;j&space;&&space;0\\&space;0&space;&&space;0&space;&&space;k&space;\end{array}\right]" title="\begin{array}{c} \begin{array}{ccc} i\; & \;j\; & \;k\end{array}\\ \left[\begin{array}{ccc} u_{1} & u_{2} & u_{3}\end{array}\right] \end{array}\left[\begin{array}{ccc} i & 0 & 0\\ 0 & j & 0\\ 0 & 0 & k \end{array}\right]" />
    
@@ -86,8 +87,8 @@
 1. 向量叉乘与矩阵行列式的关系。基向量/列向量构成的矩阵。
 2. 叉乘最重要的用途是算两个向量张成的平面的【法向量】的方向，而这个法向量的长度是平行四边形面积。
 3. 叉乘的定义由四元数乘法得来。
-   <img src="https://latex.codecogs.com/svg.latex?ijk=-1,\quad&space;ij=k,\quad&space;jk=i,\quad&space;ki=j" title="ijk=-1,\quad ij=k,\quad jk=i,\quad ki=j" />
-   <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}\times\overrightarrow{v}=\left[\begin{array}{ccc}&space;i&space;&&space;j&space;&&space;k\\&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\\&space;v_{1}&space;&&space;v_{2}&space;&&space;v_{3}&space;\end{array}\right]" title="\overrightarrow{u}\times\overrightarrow{v}=\left[\begin{array}{ccc} i & j & k\\ u_{1} & u_{2} & u_{3}\\ v_{1} & v_{2} & v_{3} \end{array}\right]" />
+   + <img src="https://latex.codecogs.com/svg.latex?ijk=-1,\quad&space;ij=k,\quad&space;jk=i,\quad&space;ki=j" title="ijk=-1,\quad ij=k,\quad jk=i,\quad ki=j" />
+   + <img src="https://latex.codecogs.com/svg.latex?\overrightarrow{u}\times\overrightarrow{v}=\left[\begin{array}{ccc}&space;i&space;&&space;j&space;&&space;k\\&space;u_{1}&space;&&space;u_{2}&space;&&space;u_{3}\\&space;v_{1}&space;&&space;v_{2}&space;&&space;v_{3}&space;\end{array}\right]" title="\overrightarrow{u}\times\overrightarrow{v}=\left[\begin{array}{ccc} i & j & k\\ u_{1} & u_{2} & u_{3}\\ v_{1} & v_{2} & v_{3} \end{array}\right]" />
    
 ## 基变换
 
