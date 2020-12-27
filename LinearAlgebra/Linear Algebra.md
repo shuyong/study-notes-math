@@ -166,3 +166,6 @@
 
 ## Linear subspaces
 1. 线性子空间：数乘封闭；加法封闭。
+
+## Proof of the Cauchy-Schwarz inequality
+
