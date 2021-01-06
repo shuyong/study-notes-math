@@ -16,28 +16,39 @@
 # 姿态估计的基本原理
 姿态估计可以采用很多种方法。卡尔曼滤波器也有很多应用领域。这两者并不需要绑定在一起才能工作。但自从阿波罗登月计划的成功起，采用卡尔曼滤波器进行姿态估计，就是最佳的工作模式，同时也一再证明了卡尔曼滤波器的神奇。
 
-## 重力法
+## 重力分解法
 根据中学所学的重力分解法，很容易理解用重力矢量估计机体姿态的原理。根据重力在 3D 坐标轴上的分量，解三角函数就可以求出当前机体的姿态。
 
-这种方法有一个优点，就是重力测量相对稳定，很难被干扰。如果机体选择到在任意位置测量重力矢量，综合得到的是一个圆球。
+当然，因为是 3D 坐标轴，再考虑实际环境情况，处理起来有些麻烦。为此，制造传感器的厂商总结了不少算法资料：
++ [ST集成传感器方案实现电子罗盘功能](http://ic.semi.org.cn/a/technology/mems/26112.html)
++ [ST AN4509 - Tilt measurement using a low-g 3-axis accelerometer](https://www.st.com/resource/en/application_note/dm00119046-tilt-measurement-using-a-lowg-3axis-accelerometer-stmicroelectronics.pdf)
++ [NXP AN4248 - Implementing a Tilt-Compensated eCompass using Accelerometer and Magnetometer Sensors](https://www.nxp.com/assets/documents/data/en/application-notes/AN4248.pdf)
++ [AN005 - Tilt-Sensing with Kionix MEMS Accelerometers](http://kionixfs.kionix.com/en/document/AN005-Tilt-Sensing-with-Kionix-MEMS-Accelerometers.pdf)
++ [AN006 - Handheld Electronic Compass Applications Using a Kionix MEMS Tri-Axis Accelerometer](http://kionixfs.kionix.com/en/document/AN006%20Handheld%20Electronic%20Compass%20Applications%20Using%20a%20Kionix%20MEMS%20Tri-Axis%20Accelerometer.pdf)
+
+这种方法有一个优点，就是因为数据从 IMU 中读出，而惯性是机体的内在禀性，所以重力测量相对稳定，很被干扰。如果机体旋转到在任意位置测量重力矢量，综合得到的是一个圆球。
 
 但是，加速度计测量得到的是重力和线性加速度的叠加。这两者在数值中无法区分。于是这种方法只适用于静态机体或转动很慢的机体。
 
-## 磁力法
+## 磁力分解法
 和分解重力矢量的原理类似，根据测量到的地磁矢量，解三角函数也可以求出当前机体的姿态。
 
 但是地磁测量得到的不是一个圆球，而是一个椭球。而且地磁很弱，不容易测量。因此地磁很容易受到环境的干扰，很不可靠。
 
-地磁测量值也因此很难校准。都是保密算法，或者是有专利的算法。所以使用地磁矢量一般都是最后的方法。
+地磁测量值也因此很难校准。都是保密算法，或者是有专利的算法。下面是 NXP 所使用校准的算法及软件架构：
++ [NXP AN5019 - Magnetic Calibration Algorithms](https://www.nxp.com/docs/en/application-note/AN5019.pdf)
++ [NXP® E-Compass Software](https://www.nxp.com/design/development-boards/freedom-development-boards/sensors/nxp-e-compass-software:E-Compass)
 
-## 角速度法
+因为数据很不可靠，所以使用地磁矢量一般都是最后的方法。
+
+## 角度积分法
 前两个是绝对法，确定机体姿态和上一次测量无关，只和本次测量有关。
 
-角速度法是相对法，确定机体姿态和上一次姿态有关，和本次测量有关。实际上就是确定初始状态后，到现在的所有测量结果的积分。
+角度积分法是相对法，确定机体姿态和上一次姿态有关，和本次测量有关，是两者的叠加。实际上就是确定初始状态后，到现在的所有测量结果的积分。
 
-这是机体姿态估计中最根本的算法。大多数姿态估计的解题思路都从这个公式起步。
+从 IMU 中读出的是角速度数据。角速度乘以采样间隔时间就得到了这段时间内机体姿态角度的变化，再通过算法叠加到机体的当前姿态，就得到了新时刻的机体姿态。因为角速度数据从 IMU 中读出，而惯性是机体的内在禀性，所以读出的角速度就很精确，不会被外界干扰。所以这是机体姿态估计中最根本的算法。大多数姿态估计的解题思路都从这个公式起步。
 
-角速度法短期可信，长期不可信，因为有积累误差，时间越久误差越大。重力法和磁力法短期不可信，长期可信。因为这是绝对法，基于统计学，基于零均值高斯白噪声假设，该估计方法的误差会稳定在一定的数值上。
+因为角速度数据精确，所以角度积分法短期可信，但是该方法长期不可信，因为积分有积累误差，时间越久误差越大。重力法和磁力法短期不可信，长期可信。这是因为采用的是绝对法，基于统计学，基于零均值高斯白噪声假设，该估计方法的误差会稳定在一定的数值上。
 
 # 使用卡尔曼滤波器的姿态估计的解题思路
 
@@ -144,7 +155,7 @@ AEKF(Additive Extended Kalman Filter)是最先设计出来的用于姿态估计�
 
 对此的解决方案是根据延迟时间的数值，提前预测未来相应时刻的姿态。然后是根据未来的姿态绘制图像。当人的头部转到位置的时候，人眼也就看到了代表当前姿态的图像。这个延迟时间，在 cardboard 的 JAVA 代码里是硬编码的偏移量，有些写为 33ms(30Hz)，有些写为 58ms。也就是，如果上层代码想预测后面 ∆t 时刻的姿态，实际上预测的是 ∆t + 33 ~ 58ms 时刻的姿态。
 
-应用系统的不同。异步采样，异步到达事件的处理。
+应用系统的不同。系统驱动时钟的不同。异步采样，异步到达事件的处理。延迟的处理。
 
 ## ecl EKF 的特点
 因为应用的特点，必须预测速度。对于无人机，没有速度预测的估计器是没有意义的。加速度的使用方式，用于时间更新而不是测量更新。
