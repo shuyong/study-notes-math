@@ -52,7 +52,7 @@ subequations
 \pdf_backref false
 \pdf_pdfusetitle true
 \papersize a4paper
-\use_geometry false
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -77,6 +77,10 @@ subequations
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -126,8 +130,11 @@ literal "false"
 \end_layout
 
 \begin_layout Abstract
-四元数具有全局非奇异姿态表示的最低维数。四元数必须服从单位范数约束，这导致了扩展卡尔曼滤波器的发展，该滤波器使用四元数进行全局姿态估计，并对姿态误差进行三分量表
-示。我们考虑了乘法扩展卡尔曼滤波器及其二阶扩展的各种姿态误差表示。
+四元数具有全局非奇异姿态表示的最低维数。四元数必须服从单位范数约束，这导致了扩展卡尔曼滤波器的发展，该滤波器使用四元数进行全局姿态估计，并对姿态误差进行
+\begin_inset Formula $3$
+\end_inset
+
+分量表示。我们考虑了乘法扩展卡尔曼滤波器及其二阶扩展的各种姿态误差表示。
 \end_layout
 
 \begin_layout Section
@@ -136,8 +143,8 @@ literal "false"
 
 \begin_layout Standard
 扩展卡尔曼滤波器(EKF)[1-4]用于航天器姿态估计有着悠久的历史。最早的应用程序[5]使用三个欧拉角来参数化姿态，最近的一个例子使用了旋转向量[6]。这两个
-参数化都需要先验函数的估计，并且都是有许多特定的奇异姿态，因此卡尔曼滤波采用了其它类型的参数化。寻找理想的参数化因旋转群的全局维参数化在拓扑上不可能而受阻[7]
-。
+参数化都需要先验函数的估计，并且都是有许多特定的奇异姿态，因此卡尔曼滤波采用了其它类型的参数化。寻找理想的参数化因旋转群的全局维参数化在拓扑上的不可能而受阻[7
+]。
 \end_layout
 
 \begin_layout Standard
@@ -298,7 +305,21 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-表示航天器姿态的单位四元数有一个三向量部分和一个标量部分，它们与旋转轴和旋转角有关。
+表示航天器姿态的单位四元数有一个
+\begin_inset Formula $3$
+\end_inset
+
+参数向量部分和一个标量部分
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译者注：航天人使用的四元数是JPL约定形式。
+\end_layout
+
+\end_inset
+
+，它们与旋转轴和旋转角有关。
 \end_layout
 
 \begin_layout Standard
@@ -340,9 +361,13 @@ q_{4}
 \begin_inset Formula $q$
 \end_inset
 
-的四个分量是欧拉对称参数或欧拉-罗德里格斯参数(Euler-Rodrigues parameters)，它首先出现在欧拉[21]的一篇论文和高斯未发表的笔记中[
-22]。罗德里格斯1840年的经典论文首先证明了它们的一般用途[23]。汉密尔顿在1844年将四元数作为一个抽象的数学对象引入，但他是否正确理解了四元数与旋转的
-关系还存在一些问题[25]。单位四元数位于嵌入四维欧几里得方程
+的
+\begin_inset Formula $4$
+\end_inset
+
+个分量是欧拉对称参数或欧拉-罗德里格斯参数(Euler-Rodrigues parameters)，它首先出现在欧拉[21]的一篇论文和高斯未发表的笔记中[22
+]。罗德里格斯1840年的经典论文首先证明了它们的一般用途[23]。汉密尔顿在1844年将四元数作为一个抽象的数学对象引入，但他是否正确理解了四元数与旋转的关系
+还存在一些问题[25]。单位四元数位于嵌入四维欧几里得方程
 \begin_inset Formula $E4$
 \end_inset
 
@@ -391,7 +416,7 @@ noprefix "false"
 \begin_inset Formula $S3$
 \end_inset
 
-上随姿态变化而不断变化，避免了某些三维参数化所要求的跳跃。然而，通常将代表姿态误差的四元数限制在
+上随姿态变化而不断平滑变化，避免了某些三维参数化所引起的跳跃。然而，通常将代表姿态误差的四元数限制在
 \begin_inset Formula $q_{4}>0$
 \end_inset
 
@@ -421,7 +446,17 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 \end_layout
 
 \begin_layout Standard
-这与历史乘法约定不同，[18,24]用
+这与历史乘法约定
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译者注：所谓四元数历史约定，就是Hamilton约定形式。
+\end_layout
+
+\end_inset
+
+不同，[18,24]用
 \begin_inset Formula $qp$
 \end_inset
 
@@ -495,10 +530,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathbf{\omega}$
 \end_inset
@@ -548,7 +579,10 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-三个罗德里格斯参数被定义为[23]
+\begin_inset Formula $3$
+\end_inset
+
+分量的罗德里格斯参数被定义为[23]
 \end_layout
 
 \begin_layout Standard
@@ -626,7 +660,11 @@ A(\mathbf{g})=\boldsymbol{I}_{3\times3}-2(1+g^{2})^{-1}\left\{ \left[\mathbf{g}\
 
 \end_inset
 
-其中斜体项用于表示除四元数的向量部分以外的任意three-vector的模数。
+其中斜体项用于表示除四元数的向量部分以外的任意
+\begin_inset Formula $3$
+\end_inset
+
+分量向量的模数。
 \end_layout
 
 \begin_layout Subsection
@@ -876,7 +914,11 @@ q(t)=\delta q(\mathbf{a}(t))\otimes q_{ref}(t)\label{eq:15}
 \begin_inset Formula $q(t)$
 \end_inset
 
-参数化的真实姿态的旋转。我们用航天器机体坐标系中姿态误差的三向量
+参数化的真实姿态的旋转。我们用航天器机体坐标系中姿态误差的
+\begin_inset Formula $3$
+\end_inset
+
+分量向量
 \family roman
 \series medium
 \shape up
@@ -1006,7 +1048,11 @@ noprefix "false"
 \uwave default
 \noun default
 \color inherit
- 显然是多余的。当使用四分量
+ 显然是多余的。当使用
+\begin_inset Formula $4$
+\end_inset
+
+分量
 \family roman
 \series medium
 \shape up
@@ -1036,7 +1082,11 @@ noprefix "false"
 \uwave default
 \noun default
 \color inherit
- 提供全局非奇异姿态表示时，MEKF计算三分量
+ 提供全局非奇异姿态表示时，MEKF计算
+\begin_inset Formula $3$
+\end_inset
+
+分量
 \family roman
 \series medium
 \shape up
@@ -1159,7 +1209,7 @@ noprefix "false"
 \uwave default
 \noun default
 \color inherit
-来消除姿态表示中的冗余，以便在包含所有可用的动态和测量信息时，期望值
+来消除姿态表示中的冗余，以便在包含所有可用的动态测量信息时，期望值
 \begin_inset Formula $\hat{\mathbf{a}}(t)$
 \end_inset
 
@@ -1472,7 +1522,11 @@ status open
 \begin_inset Formula $\delta q$
 \end_inset
 
-的向量部分的两倍，这是参考文献[9]的第11节中使用的参数化，除了两个因子；
+的向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍，这是参考文献[9]的第11节中使用的参数化，除了两个因子；
 \end_layout
 
 \begin_layout Plain Layout
@@ -1490,7 +1544,11 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
-第三种选择是改进型罗德里格斯参数向量的四倍，因此从方程式(
+第三种选择是改进型罗德里格斯参数向量的
+\begin_inset Formula $4$
+\end_inset
+
+倍，因此从方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:13"
@@ -1528,7 +1586,11 @@ noprefix "false"
 
 \end_inset
 
-)倒数的吉布斯向量的两倍。
+)的逆函数的吉布斯向量的
+\begin_inset Formula $2$
+\end_inset
+
+倍。
 \end_layout
 
 \begin_layout Plain Layout
@@ -1796,8 +1858,12 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-现在我们专门研究一组陀螺仪用来获得角速率信息来代替航天器动力学模型的情况。卡尔曼滤波器估计航天器姿态和陀螺漂移偏差的三个向量[9,14]。我们采用了Farren
-kopf的陀螺动力学误差模型[31]，这意味着我们忽略了速率积分陀螺的输出噪声[32]。这是导航级陀螺仪的最佳近似值。根据航天器机体坐标系中陀螺输出向量
+现在我们专门研究一组陀螺仪用来获得角速率信息来代替航天器动力学模型的情况。卡尔曼滤波器估计航天器姿态和陀螺漂移偏差的
+\begin_inset Formula $3$
+\end_inset
+
+分量向量[9,14]。我们采用了Farrenkopf的陀螺动力学误差模型[31]，这意味着我们忽略了速率积分陀螺的输出噪声[32]。这是导航级陀螺仪的最佳近似值
+。根据航天器机体坐标系中陀螺输出向量
 \begin_inset Formula $\tilde{\mathbf{\omega}}(t)$
 \end_inset
 
@@ -1875,10 +1941,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中下标
 \begin_inset Formula $V$
 \end_inset
@@ -1984,7 +2046,11 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-我们要为六分量状态向量构造一个EKF
+我们要为
+\begin_inset Formula $6$
+\end_inset
+
+分量状态向量构造一个EKF
 \end_layout
 
 \begin_layout Standard
@@ -2098,7 +2164,7 @@ E\left\{ \partial\mathbf{f}/\partial\mathbf{\eta}_{1}\right\}  & E\left\{ \parti
 \end_layout
 
 \begin_layout Standard
-这样协方差的时间传播由
+这样协方差的时间传播为
 \end_layout
 
 \begin_layout Standard
@@ -2173,7 +2239,7 @@ noprefix "false"
 
 \end_inset
 
-)，这些关系就独立于为
+)，这些关系就独立于对
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
@@ -2443,7 +2509,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-许多现代的星体跟踪器同时跟踪
+许多现代的恒星跟踪器同时跟踪
 \begin_inset Formula $5$
 \end_inset
 
@@ -2451,11 +2517,11 @@ noprefix "false"
 \begin_inset Formula $50$
 \end_inset
 
-颗恒星，将它们与内部星体目录中的恒星匹配，并将它们的姿态计算为一个惯性参考四元数[33,34]。计算还产生姿态误差角
+颗恒星，将它们与内部恒星目录中的恒星匹配，并将它们的姿态计算为一个惯性参考四元数[33,34]。计算还产生姿态误差角
 \begin_inset Formula $3\times3$
 \end_inset
 
-协方差的估计[35,36]。将这些量从星体跟踪器参考坐标系转换到航天器坐标系是一件简单的事情，以产生四元数“测量”值
+协方差的估计[35,36]。将这些量从恒星跟踪器参考坐标系转换到航天器坐标系是一件简单的事情，以产生四元数“测量”值
 \begin_inset Formula $\tilde{q}$
 \end_inset
 
@@ -2645,7 +2711,11 @@ noprefix "false"
 
 \end_inset
 
-)进行重置。或者，如果测量建模为误差四元数向量部分的两倍，则重置应使用方程式(
+)进行重置。或者，如果测量建模为误差四元数向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍，则重置应使用方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:21b"
@@ -3190,7 +3260,7 @@ noprefix "false"
 \begin_inset Formula $0.573^{\circ}$
 \end_inset
 
-的星体跟踪器初始化误差，对预测测量值的修正为前导项
+的恒星跟踪器初始化误差，对预测测量值的修正为前导项
 \begin_inset Formula $\hat{\mathbf{h}}$
 \end_inset
 
@@ -3229,10 +3299,24 @@ noprefix "false"
 
 \begin_layout Standard
 本文的主要成果是澄清了被广泛使用的乘法扩展卡尔曼滤波器(MEKF)中姿态四元数表示与姿态误差三元表示之间的关系。我们将此滤波器视为基于以参考四元数表示的姿态的明
-显冗余表示和指定姿态与参考偏差的三个向量。通过约束参考四元数，消除了这种明显的冗余，使三个姿态偏差向量的期望值为零。因此，不需要计算相同的零期望值。乘法扩展卡尔
-曼滤波器(MEKF)的基本结构是这样约束参考四元数：参考四元数成为姿态估计，三个向量成为姿态误差向量，三个向量的协方差成为姿态协方差。所有这些结果在以前的实践中
-都是众所周知的，但是使用这种混合姿态表示的理由还不清楚。几种不同的三维参数化在线性扩展卡尔曼滤波器和二阶滤波器中给出了相同的结果，但在重置步骤中，它们在测量更新
-中的三阶不同。二阶传播和测量偏差很容易在这个坐标系中计算出来。
+显冗余表示和指定姿态与参考偏差的
+\begin_inset Formula $3$
+\end_inset
+
+分量向量。通过约束参考四元数，消除了这种明显的冗余，使姿态偏差的
+\begin_inset Formula $3$
+\end_inset
+
+分量向量的期望值为零。因此，不需要计算相同的零期望值。乘法扩展卡尔曼滤波器(MEKF)的基本结构是这样约束参考四元数：参考四元数成为姿态估计，姿态误差向量为
+\begin_inset Formula $3$
+\end_inset
+
+分量向量，其协方差的
+\begin_inset Formula $3$
+\end_inset
+
+分量向量为姿态协方差。所有这些结果在以前的实践中都是众所周知的，但是使用这种混合姿态表示的理由还不清楚。几种不同的三维参数化在线性扩展卡尔曼滤波器和二阶滤波器中
+给出了相同的结果，但在重置步骤中，它们在测量更新中的三阶不同。二阶传播和测量偏差很容易在这个坐标系中计算出来。
 \end_layout
 
 \begin_layout Section
@@ -3596,10 +3680,10 @@ Gauss, C.
 \end_layout
 
 \begin_layout Enumerate
-Rodrigues, O., "Des lois g6om6triques qui r6gissent les d6placements d'un
- syst6me solide dans l'espace, et de la variation des coordonn6es provenant
- de ces d0.placements considfr6s ind6pendamment des causes qui peuvent les
- produire," Journal de Math_matiques, Vol.
+Rodrigues, O., “Des lois géométriques qui régissent les déplacements d’un
+ système solide dans l’espace, et de la variation des coordonnées provenant
+ de ces déplacements considérés indépendamment des causes qui peuvent les
+ produire,” Journal de Mathématiques, Vol.
  5, pp.
  380---440, 1840
 \end_layout
@@ -3701,7 +3785,7 @@ Shuster, M.
 \end_layout
 
 \begin_layout Enumerate
-Mark[ey, F.
+Markley, F.
  L.
  and Mortari, D., "Quaternion Attitude Estimation Using Vector Observations,"
  of the Astronautical Sciences, Vol.
