@@ -10,7 +10,7 @@
 % http://bbs.ctex.org/viewthread.php?tid=60547
 \DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
 \end_preamble
-\options UTF8
+\options UTF8,fontset=founder
 \use_default_options true
 \begin_modules
 subequations
@@ -25,7 +25,7 @@ subequations
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100 100
@@ -39,9 +39,20 @@ subequations
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
+\use_hyperref true
+\pdf_title "航天器姿态确定的乘法与加法滤波器的对比"
+\pdf_author "F. Landis Markley"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -66,6 +77,10 @@ subequations
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -115,9 +130,9 @@ July 2004
 \end_layout
 
 \begin_layout Abstract
-由于没有全局非奇异的旋转三参数表示，迫使姿态卡尔曼滤波器估计出奇异的或冗余的姿态表示。我们使用简化的运动学和测量模型比较了两种滤波策略。我们的偏好策略估计是高维
-非奇异参数化指定的参考姿态的姿态偏差的三参数表示。假设与之参考的偏差足够小，可以避免三维参数化的任何奇异性或不连续性。我们指出了另一种直接估计四参数四元数表示的
-策略的一些缺点。
+由于没有全局非奇异的旋转三参数表示，迫使姿态卡尔曼滤波器估计出奇异的或冗余的姿态表示。我们使用简化的运动学和测量模型比较了两种滤波策略。我们的偏好策略估计是由高
+维非奇异参数化指定的参考姿态的姿态偏差的三参数表示。假设参考姿态的姿态偏差足够小，就可以避免三维参数化的任何奇异性或不连续性。我们指出了另一种直接估计四参数四元
+数表示的策略的一些缺点。
 \end_layout
 
 \begin_layout Section
@@ -149,7 +164,7 @@ July 2004
 \begin_inset Formula $SO(3)$
 \end_inset
 
-的低维参数化，最早使用的是最小三维参数化[3]；但高维参数化可以避免所有三个参数表示中出现的奇点或不连续性[4]。四分量四元数具有全局非奇异表示
+的低维参数化，最早使用的是最小三维参数化[3]；但高维参数化可以避免所有三个参数表示中出现的奇点或不连续性[4]。有四分量的四元数具有全局非奇异表示
 \begin_inset Formula $SO(3)$
 \end_inset
 
@@ -182,10 +197,6 @@ q_{4}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\boldsymbol{I}_{3\times3}$
 \end_inset
@@ -213,7 +224,17 @@ q_{3} & 0 & -q_{1}\\
 \end_layout
 
 \begin_layout Standard
-我们使用参考文献[8]和[13]的四元数积约定，所以
+我们使用参考文献[8]和[13]的四元数积约定
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译者注：航天人使用的四元数是JPL约定形式。
+\end_layout
+
+\end_inset
+
+，所以
 \end_layout
 
 \begin_layout Standard
@@ -257,10 +278,6 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $E\left\{ \cdot\right\} $
 \end_inset
@@ -331,10 +348,6 @@ MEKF用四元数的积表示姿态。
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\bar{q}_{ref}$
 \end_inset
@@ -370,10 +383,6 @@ MEKF用四元数的积表示姿态。
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\bar{1}$
 \end_inset
@@ -454,7 +463,12 @@ noprefix "false"
 \begin_inset Formula $\delta\bar{q}(\mathbf{0})$
 \end_inset
 
-是特征四元数，因此这个选择导致参考四元数是真四元数的估计。将
+是特征四元数
+\begin_inset Formula $\left[\begin{array}{cccc}
+0 & 0 & 0 & 1\end{array}\right]^{T}$
+\end_inset
+
+，因此这个选择导致参考四元数是真四元数的估计。将
 \begin_inset Formula $\bar{q}_{ref}$
 \end_inset
 
@@ -489,10 +503,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \family roman
 \series medium
@@ -538,10 +548,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，参考姿态的角速度
 \family roman
 \series medium
@@ -674,10 +680,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{\mathbf{\omega}}(t)$
 \end_inset
@@ -697,10 +699,6 @@ E\left\{ \mathbf{n}_{\omega}(t)\mathbf{n}_{\omega}^{T}(t')\right\} =\delta(t-t')
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\delta(t-t')$
 \end_inset
@@ -748,10 +746,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -787,10 +781,6 @@ F_{a}\equiv-\dfrac{1}{2}\left[\left(\hat{\mathbf{\omega}}+\mathbf{\omega}_{ref}\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathbf{v}_{I}$
 \end_inset
@@ -879,10 +869,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{\mathbf{v}}_{B}$
 \end_inset
@@ -898,10 +884,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 并且测量灵敏度矩阵为
 \end_layout
 
@@ -946,10 +928,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 式中，
 \begin_inset Formula $P_{a}$
 \end_inset
@@ -1138,10 +1116,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -1259,10 +1233,6 @@ P_{q}\equiv E\left\{ \Delta\bar{q}\Delta\bar{q}^{T}\right\} =\left[\begin{array}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $P_{a}$
 \end_inset
@@ -1380,10 +1350,6 @@ H_{q}\equiv\left.\partial\mathbf{h}/\partial\bar{q}\right|_{\hat{\bar{q}}}=2\lef
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\hat{\mathbf{v}}_{B}$
 \end_inset
@@ -1446,10 +1412,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -1554,7 +1516,7 @@ noprefix "false"
 \begin_inset Formula $\hat{\mathbf{v}}_{B}$
 \end_inset
 
-上产生一个错误，，将
+上产生一个错误，将
 \begin_inset Formula $\hat{\bar{q}}$
 \end_inset
 
@@ -1615,7 +1577,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-经过一些代数，给出
+经过一些代数变换，给出
 \end_layout
 
 \begin_layout Standard
