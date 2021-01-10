@@ -10,7 +10,7 @@
 % http://bbs.ctex.org/viewthread.php?tid=60547
 \DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
 \end_preamble
-\options UTF8
+\options UTF8,fontset=founder
 \use_default_options true
 \begin_modules
 subequations
@@ -25,7 +25,7 @@ subequations
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100 100
@@ -39,9 +39,20 @@ subequations
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
+\use_hyperref true
+\pdf_title "姿态估计或四元数估计？"
+\pdf_author "F. Landis Markley"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -66,6 +77,10 @@ subequations
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -172,15 +187,15 @@ January 2004
 \begin_inset Formula $SO(3)$
 \end_inset
 
-的最低维数，但它仍然有一个多余的自由度。因此，我们面临着使用单一或冗余的姿态表示的替代方案。本文提出并分析了避免或避免这种困境的各种策略[14-18]，本文将考
-虑两种策略。我们的首选策略，我们称之为乘法EKF(Multiplicative EKF, MEKF)，使用非奇异表示作为参考姿态，使用三分量表示作为偏离此参考的
-偏差。参考文献[18]中详细讨论了这种方法，该方法在一些早期EKFs中用于估算航天器姿态[9-11]。我们讨论的第二个策略将四元数的四个分量视为独立的。我们也提
-到了，但我们没有详细分析，估计三自由度约束四分量四元数的方法。这些方法在其他地方得到了广泛的讨论[12-17]。
+的最低维数，但它仍然有一个多余的自由度。因此，我们面临着使用单一或冗余的姿态表示的替代方案。本文提出并分析了避免或者逃避这种困境的各种策略[14-18]，本文将
+考虑两种策略。我们的首选策略，我们称之为乘法EKF(Multiplicative EKF, MEKF)，使用非奇异表示作为参考姿态，使用三分量表示作为偏离此参考
+的偏差。参考文献[18]中详细讨论了这种方法，该方法在一些早期EKFs中用于估算航天器姿态[9-11]。我们讨论的第二个策略将四元数的四个分量视为独立的。我们也
+提到了，但我们没有详细分析，估计三自由度约束四分量四元数的方法。这些方法在其他地方得到了广泛的讨论[12-17]。
 \end_layout
 
 \begin_layout Standard
 我们首先回顾一下我们将使用的姿态参数化[19,20]。然后，在简化的运动学和测量处理的模型中讨论了MEKF，以揭示其本质。下一步我们将讨论四元数概率分布函数的概
-念，它并不像人们所期望的那样简单。然后，对四元数的EKF的三个版本进行分析，四元数具有四个独立分量，使用与MEKF相同的模型，并总结我们的结论。
+念，它并不像人们所期望的那样简单。然后，使用与MEKF相同的模型，对将四元数的四个分量视为独立的EKF的三个版本进行分析，并总结我们的结论。
 \end_layout
 
 \begin_layout Section
@@ -188,7 +203,17 @@ January 2004
 \end_layout
 
 \begin_layout Standard
-四元数是具有三个矢量部分和一个标量部分的四分量对象。
+四元数是具有三个矢量部分和一个标量部分的四分量对象：
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译者注：航天人使用的四元数是JPL约定形式。
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -211,7 +236,7 @@ q_{4}
 
 的四个分量，即欧拉对称参数或欧拉-罗德里格斯参数(Euler-Rodrigues parameters)，首先出现在欧拉[21]的一篇论文和高斯[22]未发表的
 笔记中；但罗德里格斯1840年的经典论文首先证明了它们的一般用途[23]。1844年，汉密尔顿将四元数作为一个抽象的数学对象加以介绍[24]，但他是否正确理解了
-四元数与旋转的关系还存在一些问题[25]。姿态矩阵一般写为四元数各分量的齐次二次函数。
+四元数与旋转的关系还存在一些问题[25]。姿态矩阵一般写为四元数各分量的齐次二次函数：
 \end_layout
 
 \begin_layout Standard
@@ -222,10 +247,6 @@ A(\bar{q})=(q_{4}^{2}-|\mathbf{q}|^{2})\boldsymbol{I}_{3\times3}+2\mathbf{q}\mat
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\boldsymbol{I}_{3\times3}$
 \end_inset
@@ -304,10 +325,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\mathbf{e}$
 \end_inset
@@ -334,7 +351,17 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 \end_layout
 
 \begin_layout Standard
-这与历史乘法惯例[19,24]不同，用
+这与历史乘法惯例[19,24]不同
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译者注：所谓四元数历史惯例，就是Hamilton约定形式。
+\end_layout
+
+\end_inset
+
+，用
 \begin_inset Formula $\bar{p}\bar{q}$
 \end_inset
 
@@ -346,7 +373,7 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 \begin_inset Formula $\bar{p}\otimes\bar{q}=\bar{q}\bar{p}$
 \end_inset
 
-关联。这里采用的公约具有以下有用的性质：
+关联。这里采用的约定具有以下有用的性质：
 \end_layout
 
 \begin_layout Standard
@@ -380,7 +407,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-四元数服从运动方程。
+四元数服从运动方程：
 \end_layout
 
 \begin_layout Standard
@@ -394,10 +421,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathbf{\omega}$
 \end_inset
@@ -445,11 +468,11 @@ MEKF表示作为四元数积的姿态。
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
-参数化。虽然可以选择
+参数化。虽然
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
-的参数化表示[18]，但在本文中，我们选择它是Rodrigues参数矢量的
+的参数化表示有几种选择[18]，但在本论文中，我们选择它是Rodrigues参数矢量的
 \begin_inset Formula $2$
 \end_inset
 
@@ -494,7 +517,7 @@ noprefix "false"
 
 \end_inset
 
-)的倒数是
+)的逆是
 \end_layout
 
 \begin_layout Standard
@@ -512,7 +535,8 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-这三个罗德里格斯参数通常被称为吉布斯矢量，因为它们是由吉布斯在他的“矢量半正切版本”[27]中排列的。它们对于
+这3个罗德里格斯参数(Rodrigues parameters)通常被称为吉布斯矢量(Gibbs vector)，因为它们是由吉布斯在他的“矢量半正切版本”[2
+7]中排列的。它们对于
 \begin_inset Formula $180^{\circ}$
 \end_inset
 
@@ -546,7 +570,11 @@ noprefix "false"
 \begin_inset Formula $180^{\circ}$
 \end_inset
 
-的旋转在E3上的
+的旋转在
+\begin_inset Formula $E3$
+\end_inset
+
+上的
 \begin_inset Formula $1:1$
 \end_inset
 
@@ -657,7 +685,7 @@ noprefix "false"
 \begin_inset Formula $A_{ref}$
 \end_inset
 
-的正交性是不容易的。格雷认为，如果采取合理的计算方法，这个论点是不具有说服力的[28]。
+的正交性是不容易的。Gray认为，如果采取合理的计算方法，这个论点是不具有说服力的[28]。
 \end_layout
 
 \begin_layout Subsection
@@ -688,7 +716,7 @@ noprefix "false"
 \begin_inset Formula $\mathbf{\omega}_{ref}$
 \end_inset
 
-有明显的解释，即参考姿态的角速度。我们现在展示了如何根据
+有明显的解释，即参考姿态的角速度。我们现在展示如何根据
 \begin_inset Formula $\hat{\mathbf{a}}$
 \end_inset
 
@@ -850,10 +878,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{\mathbf{\omega}}(t)$
 \end_inset
@@ -873,10 +897,6 @@ E\left\{ \mathbf{n}_{\omega}(t)\mathbf{n}_{\omega}^{T}(t')\right\} =Q\delta(t-t'
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\delta(t-t')$
 \end_inset
@@ -914,10 +934,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -929,10 +945,6 @@ F\equiv-\dfrac{1}{2}\left[\left(\hat{\mathbf{\omega}}+\mathbf{\omega}_{ref}\righ
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 和
 \end_layout
 
@@ -989,10 +1001,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中下标
 \begin_inset Formula $M$
 \end_inset
@@ -1031,10 +1039,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathbf{v}_{I}$
 \end_inset
@@ -1103,10 +1107,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{\mathbf{v}}_{M}$
 \end_inset
@@ -1141,7 +1141,7 @@ H_{M}\equiv\left.\partial\mathbf{h}_{M}/\partial\mathbf{a}\right|_{\hat{\mathbf{
 \end_layout
 
 \begin_layout Standard
-如果我们假设矢量测量误差是各向同性的，就像对全矢量(如磁场)的测量一样，我们有
+如果我们假设矢量测量误差是各向同性的，就像对完全矢量(如磁场)的测量一样，我们有
 \end_layout
 
 \begin_layout Standard
@@ -1197,7 +1197,7 @@ noprefix "false"
 \begin_inset Formula $\hat{\mathbf{a}}$
 \end_inset
 
-恒等于零指定，因此
+恒等于零的要求指定，因此
 \begin_inset Formula $\mathbf{\omega}_{ref}$
 \end_inset
 
@@ -1407,7 +1407,7 @@ y\\
 \begin_inset Formula $y$
 \end_inset
 
-都有高斯概率分布函数(probability distribution function, pdf)，平均值为零，方差为
+都有高斯概率分布函数(probability distribution function, pdf)，均值为零，方差为
 \begin_inset Formula $\sigma_{z}^{2}$
 \end_inset
 
@@ -1420,7 +1420,7 @@ y\\
 \end_inset
 
 的量值都小于单位值，但如果
-\begin_inset Formula $\sigma_{z}<<l$
+\begin_inset Formula $\sigma_{z}<<1$
 \end_inset
 
 ，这是一个合理的近似值。
@@ -1461,10 +1461,6 @@ x\sqrt{1-x^{2}-y^{2}} & y\sqrt{1-x^{2}-y^{2}} & 1-x^{2}-y^{2}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\mathbf{u}_{0}=\left[\begin{array}{ccc}
 0 & 0 & 1\end{array}\right]^{T}$
@@ -1637,10 +1633,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $\tilde{\rho}(\bar{q}|Z)$
 \end_inset
@@ -1653,7 +1645,7 @@ noprefix "false"
 \begin_inset Formula $\delta$
 \end_inset
 
-函数强制使用单位规范约束。然而，方程式(
+函数强制使用单位范数约束。然而，方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:37"
@@ -1813,10 +1805,6 @@ q_{4}^{2}\boldsymbol{I}_{3\times3}+[\mathbf{q}\times]\\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 服从特征
 \end_layout
 
@@ -1839,10 +1827,6 @@ q_{4}^{2}\boldsymbol{I}_{3\times3}+[\mathbf{q}\times]\\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 和
 \end_layout
 
@@ -2106,10 +2090,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\Xi(\bar{q})$
 \end_inset
@@ -2207,10 +2187,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2222,10 +2198,6 @@ F=\dfrac{1}{2}\Omega(\hat{\mathbf{\omega}})
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 和
 \end_layout
 
@@ -2262,10 +2234,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 并利用参考文献[12]的四元数动力学和方程式(A1)进行一些代数运算，
 \end_layout
 
@@ -2277,10 +2245,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 给出
 \end_layout
 
@@ -2585,10 +2549,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2600,10 +2560,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 四元数估计的范数满足
 \end_layout
 
@@ -2752,10 +2708,6 @@ H_{Q}\equiv\left.\partial\mathbf{h}_{Q}/\partial\bar{q}\right|_{\hat{\bar{q}}}=-
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2767,10 +2719,6 @@ H_{Q}\equiv\left.\partial\mathbf{h}_{Q}/\partial\bar{q}\right|_{\hat{\bar{q}}}=-
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 是机体坐标系中的预测测量值。对于各向同性测量误差，我们有
 \end_layout
 
@@ -2789,10 +2737,6 @@ H_{Q}\equiv\left.\partial\mathbf{h}_{Q}/\partial\bar{q}\right|_{\hat{\bar{q}}}=-
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 从而得出协方差传播方程
 \end_layout
 
@@ -2890,10 +2834,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这给出了
 \end_layout
 
@@ -2912,10 +2852,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这可以写为
 \end_layout
 
@@ -2927,10 +2863,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -3165,10 +3097,6 @@ Choukroun，Bar-Ithack和Oshman建立了一个四元数的线性测量模型[31]
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -3218,10 +3146,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 说明该模型与射线表示EKF密切相关。
 \end_layout
 
@@ -3408,15 +3332,13 @@ noprefix "false"
 REFERENCES
 \end_layout
 
-\begin_layout Standard
-1.
- Gelb, Arthur, ed., Applied Optimal Estimation, Cambridge, MA, the MIT Press,
+\begin_layout Enumerate
+Gelb, Arthur, ed., Applied Optimal Estimation, Cambridge, MA, the MIT Press,
  1974
 \end_layout
 
-\begin_layout Standard
-2.
- Brown, R.
+\begin_layout Enumerate
+Brown, R.
  G., and Hwang, P.
  Y.
  C., Introduction to Random Signals and Applied Kalman Filtering, Third Edition,
@@ -3424,9 +3346,8 @@ REFERENCES
  343-347, 1994
 \end_layout
 
-\begin_layout Standard
-3.
- Bar-Itzhack, I.
+\begin_layout Enumerate
+Bar-Itzhack, I.
  Y ., and Reiner, J.
  “Recursive Attitude Determination from Vector Observations: DCM Identification,
 ” Journal of Guidance, Control, and Dynamics, Vol.
@@ -3435,9 +3356,8 @@ REFERENCES
  51-56, 1984
 \end_layout
 
-\begin_layout Standard
-4.
- Kasdin, N.
+\begin_layout Enumerate
+Kasdin, N.
  J.
  and Weaver, T.
  J.
@@ -3446,17 +3366,15 @@ REFERENCES
  submitted to the Journal of Guidance, Control, and Dynamics,
 \end_layout
 
-\begin_layout Standard
-5.
- Farrell, J.
+\begin_layout Enumerate
+Farrell, J.
  L., “Attitude Determination by Kalman Filtering,” Automatica, Vol.
  6, 1970, pp.
  419-430
 \end_layout
 
-\begin_layout Standard
-6.
- Idan, M.
+\begin_layout Enumerate
+Idan, M.
  “Estimation of Rodrigues Parameters from Vector Observations,” IEEE Transaction
 s on Aerospace and Electronic Systems, Vol.
  AES-32, NO.
@@ -3464,9 +3382,8 @@ s on Aerospace and Electronic Systems, Vol.
  578-586, 1996
 \end_layout
 
-\begin_layout Standard
-7.
- Crassidis, J.
+\begin_layout Enumerate
+Crassidis, J.
  L., and Markley, F.
  L.
  “Attitude Estimation Uskg Modified Rodrigues Parameters,” Flight Mechanics/Esti
@@ -3475,18 +3392,16 @@ mation Theory Symposium 1996, Goddard Space Flight Center, Greenbelt, MD,
  71-83
 \end_layout
 
-\begin_layout Standard
-8.
- Stuelpnagel, John, “On the Parameterization of the Three-Dimensional Rotation
+\begin_layout Enumerate
+Stuelpnagel, John, “On the Parameterization of the Three-Dimensional Rotation
  Group,” SZAM Review, Vol.
  6, NO.
  4, pp.
  422-430, 1964
 \end_layout
 
-\begin_layout Standard
-9.
- Paulson, D.
+\begin_layout Enumerate
+Paulson, D.
  C., Jackson, D.
  B., and Brown, C.
  D., “SPARS Algorithms and Simulation Results,” Proceedings of the Symposium
@@ -3497,9 +3412,8 @@ mation Theory Symposium 1996, Goddard Space Flight Center, Greenbelt, MD,
  1969.
 \end_layout
 
-\begin_layout Standard
-10.
- Toda, N.
+\begin_layout Enumerate
+Toda, N.
  F., Heiss, J.
  L., and Schlee, F.
  H., “SPARS: the System, Algorithm, and Test Results,” Proceedings of the
@@ -3510,16 +3424,14 @@ mation Theory Symposium 1996, Goddard Space Flight Center, Greenbelt, MD,
  1969
 \end_layout
 
-\begin_layout Standard
-11.
- Murrell, James W., “Precision Attitude Determination for Multimission Spacecraft
-,” AIAA Paper 78-1248, AIAA Guidance and Control Conference, Palo Alto,
- CA, August 1978
+\begin_layout Enumerate
+Murrell, James W., “Precision Attitude Determination for Multimission Spacecraft,
+” AIAA Paper 78-1248, AIAA Guidance and Control Conference, Palo Alto, CA,
+ August 1978
 \end_layout
 
-\begin_layout Standard
-12.
- Lefferts, E.
+\begin_layout Enumerate
+Lefferts, E.
  J., Markley, F.
  L., and Shuster, M.
  D., “Kalman Filtering for Spacecraft Attitude Estimation,” Journal of Guidance,
@@ -3529,9 +3441,8 @@ mation Theory Symposium 1996, Goddard Space Flight Center, Greenbelt, MD,
  417429, 1982
 \end_layout
 
-\begin_layout Standard
-13.
- Bar-Itzhack, I.
+\begin_layout Enumerate
+Bar-Itzhack, I.
  Y., and Oshman, Y.
  “Attitude Determination from Vector Observations: Quaternion Estimation,”
  IEEE Transactions on Aerospace and Electronic Systems, Vol.
@@ -3539,43 +3450,38 @@ mation Theory Symposium 1996, Goddard Space Flight Center, Greenbelt, MD,
  128-136, 1985
 \end_layout
 
-\begin_layout Standard
-14.
- Bar-Itzhack, I.
+\begin_layout Enumerate
+Bar-Itzhack, I.
  Y., Deutschmann, J., and Markley, F.
  L., “Quaternion Normalization in Additive EKF for Spacecraft Attitude Determinat
 ion,” AIAA Paper 9 1-2706, AIAA Guidance, Navigation, and Control Conference,
  New Orleans, LA, August 1991
 \end_layout
 
-\begin_layout Standard
-15.
- Deutschmann, J., Markley, F.
+\begin_layout Enumerate
+Deutschmann, J., Markley, F.
  L., and Bar-Itzhack, I., ‘‘Quaternion Normalization in Spacecraft Attitude
  Determination,” Flight Meclzariics/Estir?iatiori Theory Symposium, NASA
  Conference Publication 3186, Goddard Space Flight Center, Greenbelt, MD,
  May 1992
 \end_layout
 
-\begin_layout Standard
-16.
- Shuster, Malcolm D., “The Quaternion in the Kalman Filter,” Advances in
- the Astronautical Sciences, Vol.
+\begin_layout Enumerate
+Shuster, Malcolm D., “The Quaternion in the Kalman Filter,” Advances in the
+ Astronautical Sciences, Vol.
  85, pp.
  25-37, 1993
 \end_layout
 
-\begin_layout Standard
-17.
- Pittelkau, M.
+\begin_layout Enumerate
+Pittelkau, M.
  E., “An Analysis of the Quaternion Attitude Determination Filter,” AAS Paper
  03-194, AASIAIAA Spaceflight Mechanics Meeting, Ponce, Puerto Rico, February
  2003
 \end_layout
 
-\begin_layout Standard
-18.
- Markley, F.
+\begin_layout Enumerate
+Markley, F.
  L., “Attitude Error Representations for Kalman Filtering,” Journal of Guidance,
  Control, and Dynamics, Vol.
  26, No.
@@ -3583,41 +3489,36 @@ ion,” AIAA Paper 9 1-2706, AIAA Guidance, Navigation, and Control Conference,
  311-317, 2003
 \end_layout
 
-\begin_layout Standard
-19.
- Wertz, James R., ed., Spacecrafr Attitude Determination and Control, Dordrecht,
+\begin_layout Enumerate
+Wertz, James R., ed., Spacecrafr Attitude Determination and Control, Dordrecht,
  Holland, D.
  Reidel, 1978
 \end_layout
 
-\begin_layout Standard
-20.
- Shuster, Malcolm D., “A Survey of Attitude Representations,” Journal ofthe
+\begin_layout Enumerate
+Shuster, Malcolm D., “A Survey of Attitude Representations,” Journal ofthe
  Astronautical Sciences, Vol.
  41, NO.
  4, pp.
  439-517, 1993
 \end_layout
 
-\begin_layout Standard
-21.
- Euler, L., “Problema Algebraicum Ob Affectiones Prorsus Singulares Memorabile,”
+\begin_layout Enumerate
+Euler, L., “Problema Algebraicum Ob Affectiones Prorsus Singulares Memorabile,”
  Novi Commentarii Academiae Scientarum Petropolitanae, Vol.
  15, Section 33, p.
  101, 1770
 \end_layout
 
-\begin_layout Standard
-22.
- Gauss, C.
+\begin_layout Enumerate
+Gauss, C.
  F., Werke, Vol.
  VIII, pp.
  357-362, Gottingen, Konigliche Gesellschafr der Wisssenscafren, 1900
 \end_layout
 
-\begin_layout Standard
-23.
- Rodrigues, O., “Des lois gkomktriques qui rkgissent les dkplacements d’un
+\begin_layout Enumerate
+Rodrigues, O., “Des lois gkomktriques qui rkgissent les dkplacements d’un
  systkme solide dans l’espace, et de la variation des coordonnkes provenant
  de ces dkplacements considCrks indkpendamment des causes qui peuvent les
  produire,” Journal de Mathkmatiques, Vol.
@@ -3625,48 +3526,41 @@ ion,” AIAA Paper 9 1-2706, AIAA Guidance, Navigation, and Control Conference,
  380-440, 1840
 \end_layout
 
-\begin_layout Standard
-24.
- Hamilton, W.
+\begin_layout Enumerate
+Hamilton, W.
  R., “On Quaternions; or a New System of Imaginaries in Algebra,” Philosophical
  Magazine, 3rd Series, Vol.
 \end_layout
 
-\begin_layout Standard
-25, pp.
- 489-495, 1844 25.
- Altmann, Simon L., “Hamilton, Rodrigues, and the Quaternion Scandal,” Mathematic
-s Magazine, Vol.
+\begin_layout Enumerate
+Altmann, Simon L., “Hamilton, Rodrigues, and the Quaternion Scandal,” Mathematics
+ Magazine, Vol.
  62, NO.
  5, pp.
  291-308, 1989
 \end_layout
 
-\begin_layout Standard
-26.
- Curtis, Morton L., Matrix Groups, 2’Id ed., New York, NY, Springer-Verlag,
+\begin_layout Enumerate
+Curtis, Morton L., Matrix Groups, 2’Id ed., New York, NY, Springer-Verlag,
  1984, Chapter 5
 \end_layout
 
-\begin_layout Standard
-27.
- Gibbs, J.
+\begin_layout Enumerate
+Gibbs, J.
  W., Scientific Papers, Volume 11, Dover, New York, pp.
  65, 66, 1961
 \end_layout
 
-\begin_layout Standard
-28.
- Gray, C.
+\begin_layout Enumerate
+Gray, C.
  W., “Star TrackedIRU Attitude Determination Filter,” Guidance and Control
  2001, Advances in the Astronautical Sciences, Vol.
  107, Paper AAS 01-039, Univelt, San Diego, pp.
  459-476, 2001
 \end_layout
 
-\begin_layout Standard
-29.
- Psiaki, M.L., Theiler, J., Bloch, J., Ryan, S., Dill, R.W., and Warner, R.E., “ALEXIS
+\begin_layout Enumerate
+Psiaki, M.L., Theiler, J., Bloch, J., Ryan, S., Dill, R.W., and Warner, R.E., “ALEXIS
  Spacecraft Attitude Reconstruction with ThermalElexible Motions Due to
  Launch Damage,” Journal of Guidance, Control, and Dynamics, Vol.
  20, No.
@@ -3674,9 +3568,8 @@ s Magazine, Vol.
  1033-1041, 1997
 \end_layout
 
-\begin_layout Standard
-30.
- Psiaki, M.L., Klatt, E.M., Kintner, P.M.
+\begin_layout Enumerate
+Psiaki, M.L., Klatt, E.M., Kintner, P.M.
  Jr., and Powell, S.P., “Attitude Estimation for a Flexible Spacecraft in an
  Unstable Spin,” Journal of Guidance, Control, and Dynamics, Vol.
  25, No.
@@ -3684,9 +3577,8 @@ s Magazine, Vol.
  88- 95,2002
 \end_layout
 
-\begin_layout Standard
-31.
- Choukroun, D., Bar-Itzhack, I.
+\begin_layout Enumerate
+Choukroun, D., Bar-Itzhack, I.
  Y., and Oshman, Y., “A Novel Quaternion Filter,” AIAA Paper 2002- 4460, AIAA
  Guidance , Navigation, and Control Conference, Monterey, CA, August 2002
 \end_layout
