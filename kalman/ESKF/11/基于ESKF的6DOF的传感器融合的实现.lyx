@@ -1,0 +1,6653 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sensor Fusion"
+\pdf_author "ankur6ue"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "基于ESKF的6DOF的传感器融合的实现"
+target "https://www.telesens.co/category/sensor-fusion/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "ankur6ue"
+target "https://www.telesens.co/author/ankur6ue/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+April 27, 2017
+\end_layout
+
+\begin_layout Abstract
+基于ESKF的陀螺、加速度和摄像机测量传感器融合的实现。
+\end_layout
+
+\begin_layout Section*
+Part 1
+\end_layout
+
+\begin_layout Standard
+在这一系列文章中，我将为[1]中描述的传感器融合算法提供数学推导、实现细节和我自己的见解。本文介绍了一种利用扩展卡尔曼滤波器(EKF)自动确定相机与IMU之间的
+非本征标定的方法。但是，基础数学可用于各种应用，例如在陀螺和加速度计数据之间执行传感器融合，并使用摄像机为陀螺/加速度传感器融合提供测量更新。我不会去研究卡尔曼
+滤波器背后的理论。已经有大量的出版物描述了卡尔曼滤波器的工作原理。以下是一些我认为有用的参考资料。
+\end_layout
+
+\begin_layout Itemize
+python中的kalman和bayesian滤波器[2]。这是一个很好的介绍性参考，包括许多实际示例和代码示例。它还为实现扩展卡尔曼滤波器提供了一个有用的数学
+和代码示例。
+\end_layout
+
+\begin_layout Itemize
+最优状态估计[3]。这本书类似于第一本参考书，但提供了更多的例子和一些新的见解。
+\end_layout
+
+\begin_layout Itemize
+随机模型，估计和控制[4]。这本书是“圣经”级别的估计和控制理论方面的书籍，在该领域的从业人员必须阅读认真。然而，它非常干燥，对于刚开始工作的人来说，可能非常令
+人望而生畏。
+\end_layout
+
+\begin_layout Itemize
+三维姿态估计的间接卡尔曼滤波[5]。本技术报告提供了矩阵和四元数数学的重要介绍，我们将在这里广泛使用。
+\end_layout
+
+\begin_layout Standard
+我遇到的关于卡尔曼滤波器的大多数参考文献要么深入研究数学，而不提供对滤波器功能操作方面的实际动手的见解，要么描述相对简单的例子，例如位置滤波器，其中所有东西都是
+线性的。尤其是对于EKF，很少有例子说明如何计算雅可比矩阵、设置协方差矩阵等等。
+\end_layout
+
+\begin_layout Standard
+在本系列文章中，我们将首先描述如何在加速度计和陀螺仪数据之间执行传感器融合，然后在测量更新步骤中添加摄像机图像测量。从数学和实现的角度来研究这个问题是很有趣的，
+并且在车辆导航、AR/VR系统、目标跟踪和许多其他方面有许多有用的应用。
+\end_layout
+
+\begin_layout Standard
+让我们先简单介绍一下卡尔曼滤波器的工作原理。想象一下，你站在一个房间的入口处，被要求沿着直线进入房间。对大多数人来说，这是一件微不足道的事情；然而，为了使事情变
+得更棘手，在你仔细观察了房间的四周之后，你的眼睛周围会蒙上一层眼罩。我们把与直线的垂直距离称为“状态”。既然你从这条直线的起点开始你的旅程，你的初始状态和它的“
+不确定性”是零。当你向前迈出每一步时，在你意识到这条线在哪里而实际上看不到它的指导下，状态值将以随机方式改变。然而，随着你所采取的每一步，你的状态中的不确定性总
+是增加，你对直线的位置变得越来越不确定。不确定性的增加量取决于人——对于走钢索的人来说是小的，对于醉酒的人来说是大的。卡尔曼滤波器中的预测步骤通过使用一组矩阵来
+模拟从当前状态(从采取步骤前的直线到下一个状态的距离)到下一个状态(采取步骤后的距离)的转换以及在每个步骤中注入的不确定性量，以数学精确的方式模拟采取步骤的行为
+。
+\end_layout
+
+\begin_layout Standard
+现在，在你已经采取了一些步骤，并且对你在直线上的位置相当不确定之后，蒙眼被摘下，你就可以看到你在直线上的位置了。现在你可以立即调整你的状态，并再次确定你的位置。
+这是卡尔曼滤波器中的测量更新步骤。测量提供了状态信息，有助于减少不确定性。测量有其自身的不确定性，不需要提供关于状态的直接信息。例如，你的视力可能并不完美，你对
+自己的位置仍有点不确定，或者你只能在房间周围观看，但不能直接在线路所在的楼层观看。在这种情况下，你必须从你对房间几何的了解中推断出你相对于线条的位置。
+\end_layout
+
+\begin_layout Standard
+现在让我们把这些想法用数学语言表达，使它们更具体。状态
+\begin_inset Formula $k$
+\end_inset
+
+从
+\begin_inset Formula $k-1$
+\end_inset
+
+的状态演变而来，根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf x_{k}={\bf F_{k}{\bf x_{k-1}+{\bf B_{k}{\bf u_{k}+{\bf w_{k}}}}}}}
+\end{equation}
+
+\end_inset
+
+在这里，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf F_{k}}$
+\end_inset
+
+是状态转换矩阵。对于简单的问题，这个矩阵可以是一个常数，但是对于大多数实际应用程序，转换矩阵依赖于状态向量的值并改变每次迭代。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf B_{k}}$
+\end_inset
+
+是应用于控制向量
+\begin_inset Formula ${\bf u}$
+\end_inset
+
+的控制输入模型。这可用于为系统的已知控制输入建模，例如应用于机器人电机的电流、汽车方向盘的位置等。在我们的示例中，我们不假设对控制输入有任何了解，因此
+\begin_inset Formula ${\bf {B}}$
+\end_inset
+
+不会成为我们模型的一部分。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf w_{k}}$
+\end_inset
+
+是过程噪声，假定从零均值多元正态分布
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+中提取，利用协方差矩阵
+\begin_inset Formula ${\bf Q_{k}:{\bf w_{k}\sim\mathcal{N}\left(0,{\bf Q_{k}}\right)}}$
+\end_inset
+
+。为这个矩阵确定一个合适的值是很棘手的，并且在卡尔曼滤波器的文献中经常被忽视。我将描述我对如何为传感器融合问题设置矩阵的观察。
+\end_layout
+
+\begin_layout Standard
+在时间“
+\begin_inset Formula $k$
+\end_inset
+
+”时刻，一个真实状态的观测(或测量)
+\begin_inset Formula $z_{k}$
+\end_inset
+
+根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf z_{k}={\bf H_{k}{\bf x_{k}+{\bf v_{k}}}}}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $H_{k}$
+\end_inset
+
+是将状态空间映射到观测空间的观测模型。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $v_{k}$
+\end_inset
+
+是假设为零均值高斯协方差的观测噪声
+\begin_inset Formula ${\bf R_{k}:{\bf v_{k}\sim\mathcal{N}\left(0,{\bf R_{k}}\right)}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，
+\begin_inset Formula $H_{k}$
+\end_inset
+
+将状态向量映射到观测值，而不是相反。这是因为
+\begin_inset Formula $H_{k}$
+\end_inset
+
+通常是不可逆的，也就是说，它不提供对状态的直接可见性。
+\end_layout
+
+\begin_layout Standard
+滤波器的状态由两个变量表示：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{{\bf x}}_{k\mid k}$
+\end_inset
+
+，时间k的后验状态估计，给出时间
+\begin_inset Formula $k$
+\end_inset
+
+之前(包括该时间)的观测值；
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf P_{k\mid k}}$
+\end_inset
+
+，后验误差协方差矩阵(状态估计精度的度量)。
+\end_layout
+
+\begin_layout Standard
+滤波器分两步工作：
+\end_layout
+
+\begin_layout Itemize
+一个预测步骤，其中状态和协方差矩阵根据我们对系统动力学和误差特征的了解进行更新，这些特征由
+\begin_inset Formula ${\bf F}$
+\end_inset
+
+和
+\begin_inset Formula ${\bf Q}$
+\end_inset
+
+矩阵建模。预测步骤不包括观察结果的影响。这一步类似于在上面描述的例子中蒙上眼罩的一步。
+\end_layout
+
+\begin_layout Itemize
+一个测量更新步骤，其中包括观测的影响，以完善状态估计和协方差矩阵。这一步类似于在我们的示例中去掉眼罩。注意，预测和更新步骤不必在lockstep中发生。在进行测
+量更新之前，可能会出现许多预测步骤，例如，我们示例中的主题可以在移除眼罩之前采取几个步骤。也可能有许多不同的观测源，这些源的测量可以在不同的时间到达。
+\end_layout
+
+\begin_layout Standard
+预测和更新步骤的相应方程式如下：
+\end_layout
+
+\begin_layout Paragraph
+预测
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{{\bf x}}_{k\mid k-1}={\bf F_{k}\hat{{\bf x}}_{k-1\mid k}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)估计协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf P_{k\mid k-1}={\bf F_{k}{\bf P_{k-1\mid k-1}{\bf F_{k}^{T}+{\bf Q_{k}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+更新
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新或测量残差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\tilde{{\bf y}}_{k}={\bf z_{k}-{\bf H_{k}\hat{{\bf x}}_{k\mid k-1}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新(或残差)协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf S_{k}={\bf H_{k}{\bf P_{k\mid k-1}{\bf H_{k}^{{\rm T}}+{\bf R_{k}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+最佳卡尔曼增益
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf K_{k}={\bf P_{k\mid k-1}{\bf H_{k}^{{\rm T}}{\bf S_{k}^{-1}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\mathbf{x}}_{k\mid k}=\hat{\mathbf{x}}_{k\mid k-1}+\mathbf{K}_{k}\tilde{\mathbf{y}}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf P_{k|k}=({\bf I-{\bf K_{k}{\bf H_{k}){\bf P_{k|k-1}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波实现的主要任务是利用系统动力学模型和测量模型，提出状态转换矩阵
+\begin_inset Formula ${\bf F}$
+\end_inset
+
+、测量矩阵
+\begin_inset Formula ${\bf H}$
+\end_inset
+
+和系统噪声特性，设计过程和测量噪声协方差矩阵。
+\end_layout
+
+\begin_layout Standard
+现在我们来考虑一下我们的具体问题。我们的最终目标是在[1]中导出方程式(16)和(19)。为了使数学更容易理解，我们首先要考虑更大问题的一个子集，即如何使用卡尔
+曼滤波器组合陀螺仪和加速度计的输出，然后添加图像测量值。
+\end_layout
+
+\begin_layout Standard
+关于惯性数据的传感器融合，已有大量的文献。我在这里不谈细节。有关陀螺仪和加速度计的相对强度以及如何实现互补滤波器以组合来自这些传感器的数据的详细说明，请参阅
+\begin_inset CommandInset href
+LatexCommand href
+name "DCMDraft2"
+target "http://telesens.co/wp-content/uploads/2017/04/DCMDraft2.pdf"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在[1]中的方程式(16)中的状态向量由21个元素组成。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta P_{I}^{G}$
+\end_inset
+
+ : IMU在全局参考系中的位置误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta V_{I}^{G}$
+\end_inset
+
+ : IMU在全局参考系中的速度误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta\theta_{I}^{G}$
+\end_inset
+
+ : IMU和全局参考系之间的方向误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta P_{C}^{I}$
+\end_inset
+
+ : 摄像头相对于IMU的位置误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta\theta_{C}^{I}$
+\end_inset
+
+ : 摄像头和IMU之间的方向误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta b_{g}$
+\end_inset
+
+ : 陀螺偏差误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta b_{a}$
+\end_inset
+
+ : 加速度偏差误差
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure1.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上面显示了三个坐标系：全局坐标系、IMU坐标系和照相机坐标系。上面也显示了用于描述位置向量和旋转矩阵的符号。让我们首先考虑一个更简单的问题——整合陀螺数据以产生
+方向，并使用加速度计数据作为测量值来估计陀螺偏差并校正漂移。这个问题的状态向量由
+\begin_inset Formula $6$
+\end_inset
+
+个元素组成——IMU相对于全局参考系的方向误差和陀螺偏差误差。注意，我们的状态包括方向误差和陀螺偏差，而不是方向误差和偏差本身。这一选择的原因很快就会清楚。
+\end_layout
+
+\begin_layout Standard
+在接下来的讨论中，我们将反复评估向量相对于位置和方向的导数，因此我们建立一对向量微分方程。
+\end_layout
+
+\begin_layout Itemize
+对于一个向量
+\begin_inset Formula $v=[v_{1}v_{2}v_{3}]$
+\end_inset
+
+，交叉积斜对称矩阵定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+[{\bf v]_{\times}=\begin{bmatrix}0 & -v_{3} & v_{2}\\
+v_{3} & 0 & -v_{1}\\
+-v_{2} & v_{1} & 0
+\end{bmatrix}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个矩阵称为交叉积斜对称矩阵，因为它可以将两个向量的交叉积表示为矩阵乘法。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf a\times{\bf b=[{\bf a]_{\times}{\bf b}}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个矩阵对我们很有用，因为它可以用来表示小旋转的效果。
+\end_layout
+
+\begin_layout Standard
+用DCM 
+\begin_inset Formula $C(t)$
+\end_inset
+
+和(等效地)四元数
+\begin_inset Formula $q(t)$
+\end_inset
+
+来描述旋转帧
+\begin_inset Formula $B$
+\end_inset
+
+在时间
+\begin_inset Formula $t$
+\end_inset
+
+相对于参考帧
+\begin_inset Formula $A$
+\end_inset
+
+的方向。设
+\begin_inset Formula $B$
+\end_inset
+
+的瞬时角速度为
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+。在一个小的时间间隔
+\begin_inset Formula $dt$
+\end_inset
+
+中，假设该速度为常数，帧
+\begin_inset Formula $B$
+\end_inset
+
+会沿着局部坐标系的轴旋转
+\begin_inset Formula $\phi=[\phi_{x},\phi_{y},\phi_{z}]=[\omega_{x}dt,\omega_{y}dt,\omega_{z}dt]$
+\end_inset
+
+，从而在时间
+\begin_inset Formula $t+dt$
+\end_inset
+
+处产生新的方向。让我们考虑使用第一个DCM，然后使用四元数来表示这个新方向。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+C(t+1)=C(t)\exp(\phi_{3})\label{eq:1-5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $\phi_{3}$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+斜对称矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi_{3}=\begin{bmatrix}0 & -\phi_{z} & \phi_{y}\\
+\phi_{z} & 0 & -\phi_{x}\\
+-\phi_{y} & \phi_{x} & 0
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+扩展指数并使用斜对称矩阵的性质可得到众所周知的罗德里格斯(Rodrigues) 公式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+C(t+1)=C(t)(I_{3}+\frac{\sin(\theta)}{\theta}\phi_{3}+\frac{1-\cos(\theta)}{\theta^{2}}\phi_{3}^{2})
+\end{equation}
+
+\end_inset
+
+这里，
+\begin_inset Formula $\theta=\sqrt{\phi_{x}^{2}+\phi_{y}^{2}+\phi_{z}^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于小角度
+\begin_inset Formula $\theta$
+\end_inset
+
+，罗德里格斯(Rodrigues)公式简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+C(t+1)=C(t)(I_{3}+\phi_{3})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，上面方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1-5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)带
+\begin_inset Formula $\exp(\phi_{3})$
+\end_inset
+
+的乘法是后(右)乘法，而不是前(左)乘法。这是因为用
+\begin_inset Formula $\phi$
+\end_inset
+
+表示的小旋转应用于机体轴(应用
+\begin_inset Formula $C(t)$
+\end_inset
+
+后获得的坐标系)。使用预乘将导致应用于静态(非移动)参考帧的小旋转。
+\end_layout
+
+\begin_layout Standard
+现在我们来看看四元数表示。使用小角度表示法，对小旋转
+\begin_inset Formula $\phi$
+\end_inset
+
+的四元数表示法如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta(q)\approx\begin{bmatrix}1\\
+\frac{\phi}{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在时间
+\begin_inset Formula $t+dt$
+\end_inset
+
+时刻，新方向由四元数
+\begin_inset Formula $q(t+dt)$
+\end_inset
+
+给出，其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q(t+dt)=q(t)*\delta q
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般来说，
+\begin_inset Formula $\delta{q}$
+\end_inset
+
+是时间的函数(除非物体以恒定角速度旋转)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{dq}{dt}=\lim_{\delta t\to0}\frac{q(t)*[\delta q-I_{q}]}{\delta t}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $I_{q}$
+\end_inset
+
+是单位四元数。替换
+\begin_inset Formula $\delta q$
+\end_inset
+
+有，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\frac{1}{2}q(t)*\begin{bmatrix}0\\
+\boldsymbol{\omega}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用四元数乘法的性质，该表达式可以写成矩阵积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\frac{1}{2}[\omega_{4}][q]
+\end{equation}
+
+\end_inset
+
+这里，
+\begin_inset Formula $\omega_{4}$
+\end_inset
+
+是一个
+\begin_inset Formula $4\times4$
+\end_inset
+
+斜对称矩阵，定义为(定义提供给
+\begin_inset Formula $\phi_{4}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi_{4}=\begin{bmatrix}0 & -\phi_{x} & -\phi_{y} & -\phi_{z}\\
+\phi_{x} & 0 & \phi_{z} & -\phi_{y}\\
+\phi_{y} & -\phi_{z} & 0 & \phi_{x}\\
+\phi_{z} & \phi_{y} & -\phi_{x} & 0
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+解微分方程，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q(t+dt)=\exp(\frac{1}{2}\phi_{4})q(t)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，此解决方案自动保留新四元数的单位范数属性：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q(t+dt)^{T}q(t+dt)=q(t)^{T}\exp(-\frac{1}{2}\phi_{4})\exp(\frac{1}{2}\phi_{4})q(t)=q(t)^{T}q(t)=1\text{ since }\phi_{4}^{T}=-\phi_{4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，使用
+\begin_inset Formula $4\times4$
+\end_inset
+
+斜对称矩阵的属性，四元数表示可以简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\exp(-\frac{1}{2}\phi_{4})=I\cos(\theta)+\frac{1}{2}\phi_{4}\frac{\sin(\theta)}{\theta}
+\end{equation}
+
+\end_inset
+
+这里，
+\begin_inset Formula $\theta=\frac{\|\phi\|}{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+为了避免与除以
+\begin_inset Formula $0$
+\end_inset
+
+相关的奇点，可以使用
+\begin_inset Formula $\frac{\sin(\theta)}{\theta}$
+\end_inset
+
+的泰勒级数展开。
+\end_layout
+
+\begin_layout Standard
+为了巩固这些想法，让我们来看一些Matlab代码，使用上面描述的三种方法来传播四元数。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function q_est = apply_small_rotation(phi, q_est)
+\end_layout
+
+\begin_layout Plain Layout
+
+s = norm(phi)/2;
+\end_layout
+
+\begin_layout Plain Layout
+
+x = 2*s;
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = make_skew_symmetric_4(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+% approximation for sin(s)/s
+\end_layout
+
+\begin_layout Plain Layout
+
+sin_sbys_approx = 1-s^2/factorial(3) + s^4/factorial(5) - s^6/factorial(7);
+\end_layout
+
+\begin_layout Plain Layout
+
+exp_phi4 = eye(4)*cos(s) + 1/2*phi4*sin_sbys_approx;
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 1
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est1 = exp_phi4*q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+% verify: should be equal to:
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 2 (direct matrix exponential)
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est2 = expm(0.5*(phi4))*q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+% verify should be equal to:
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 3: propagate by quaternion multiplication (doesn't preserve unit
+\end_layout
+
+\begin_layout Plain Layout
+
+% norm)
+\end_layout
+
+\begin_layout Plain Layout
+
+dq = [1 phi(1)/2 phi(2)/2 phi(3)/2];
+\end_layout
+
+\begin_layout Plain Layout
+
+dq_conj = [1 -phi(1)/2 -phi(2)/2 -phi(3)/2]';
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est3 = quatmul(q_est, dq'); 
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est = q_est1;
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function phi4 = make_skew_symmetric_4(phi)
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = [0       -phi(1)      -phi(2)      -phi(3);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(1)     0           phi(3)     -phi(2);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(2)     -phi(3)      0           phi(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(3)     phi(2)     -phi(1)      0];
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些公式中的任何一个都可以用于传播方向。四元数表示是优越的，因为它没有奇点。因此，方向应保持四元数形式，并根据需要提取其他旋转表示。
+\end_layout
+
+\begin_layout Standard
+现在让我们考虑一个由DCM 
+\begin_inset Formula $C$
+\end_inset
+
+旋转的向量对位置和方向的微小变化的导数。在建立EKF状态传播方程时，我们将重复使用这些导数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf v^{\prime}=C{\bf v}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+关于位置的衍生方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf dv_{v}^{\prime}=C({\bf v+dv-{\bf v)=C{\bf dv}}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+关于方向的衍生方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf dv_{\phi}^{\prime}=C(I_{3}+{\bf d\phi_{3}){\bf v-C{\bf v=C{\bf d\phi_{3}{\bf v}}}}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula ${\bf d\phi_{3}}$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+对于小旋转的斜对称矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf d\phi_{3}=\begin{bmatrix}0 & -d\phi_{z} & d\phi_{y}\\
+d\phi_{z} & 0 & -d\phi_{x}\\
+-d\phi_{y} & d\phi_{x} & 0
+\end{bmatrix}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用叉积表示法，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf dv_{\phi}^{\prime}=C[{\bf d\phi]_{\times}{\bf v}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于叉积斜对称矩阵，
+\begin_inset Formula $[{\bf a]_{\times}{\bf b=-[{\bf b]_{\times}{\bf a}}}}$
+\end_inset
+
+。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf dv_{\phi}^{\prime}=-C[{\bf v]_{\times}{\bf d\phi}}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些表达式的好处在于，它们允许我们将导数相对于(wrt)位置和方向表示为矩阵乘法，这是EKF状态更新和测量更新公式所必需的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}{\bf dv_{v}^{\prime},dv_{\phi}^{\prime}}\end{bmatrix}=\begin{bmatrix}C & -C[{\bf v]_{\times}}\end{bmatrix}\begin{bmatrix}{\bf dv}\\
+{\bf d\phi}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+作为一个例子，我们来看一些实现旋转和基于四元数的更新的Matlab代码。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+% Original vector v
+\end_layout
+
+\begin_layout Plain Layout
+
+v = [1 1 1];
+\end_layout
+
+\begin_layout Plain Layout
+
+% Convert to unit vector
+\end_layout
+
+\begin_layout Plain Layout
+
+v = v./norm(v);
+\end_layout
+
+\begin_layout Plain Layout
+
+% Initial rotation (euler angles)
+\end_layout
+
+\begin_layout Plain Layout
+
+eul = [30 30 30]/57.3;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Get quaternion and DCM representation for this rotation
+\end_layout
+
+\begin_layout Plain Layout
+
+q0 = eul2quat(30/57.3, 30/57.3, 30/57.3);
+\end_layout
+
+\begin_layout Plain Layout
+
+C0 = euler2dc(30/57.3, 30/57.3, 30/57.3);
+\end_layout
+
+\begin_layout Plain Layout
+
+% Apply rotation
+\end_layout
+
+\begin_layout Plain Layout
+
+v1 = C0*v';
+\end_layout
+
+\begin_layout Plain Layout
+
+% Small rotation (in radians)
+\end_layout
+
+\begin_layout Plain Layout
+
+phi = [0.01 0 0.01];
+\end_layout
+
+\begin_layout Plain Layout
+
+% Obtain the 3*3 and 4*4 skew symmetric matrices
+\end_layout
+
+\begin_layout Plain Layout
+
+phi3 = make_skew_symmetric_3(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = make_skew_symmetric_4(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+s = norm(phi)/2;
+\end_layout
+
+\begin_layout Plain Layout
+
+x = norm(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+exp_phi4 = eye(4)*cos(s) - 1/2*phi4*sin(s)/s;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Propagage quaternion
+\end_layout
+
+\begin_layout Plain Layout
+
+q1 = exp_phi4*q0';
+\end_layout
+
+\begin_layout Plain Layout
+
+% Propagate DCM (Rodrigues Formula)
+\end_layout
+
+\begin_layout Plain Layout
+
+C1 = C0*(eye(3) + sin(x)/x*phi3 + (1-cos(x))/x^2*phi3*phi3);
+\end_layout
+
+\begin_layout Plain Layout
+
+% Obtain the DCM corresponding to q1 to compare with C1
+\end_layout
+
+\begin_layout Plain Layout
+
+C_q1 = quat2dc(q1);
+\end_layout
+
+\begin_layout Plain Layout
+
+% Verify C_q1 ~ C1
+\end_layout
+
+\begin_layout Plain Layout
+
+% Now verify derivative wrt phi
+\end_layout
+
+\begin_layout Plain Layout
+
+% True value of the derivative
+\end_layout
+
+\begin_layout Plain Layout
+
+d1 = C1*v'-C0*v'
+\end_layout
+
+\begin_layout Plain Layout
+
+d2 = C0*make_skew_symmetric_3(v')*phi'
+\end_layout
+
+\begin_layout Plain Layout
+
+% verify d1 ~ d2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我没有提供实用功能的代码，如DCM到Euler角度转换。任何标准的矩阵代数库都可以用于实现。
+\end_layout
+
+\begin_layout Standard
+这足以消化一篇文章！在下一篇文章中，我们将研究用于执行陀螺加速度传感器融合的EKF框架。
+\end_layout
+
+\begin_layout Paragraph
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+Mirzaei FM, Roumeliotis SI.
+ A Kalman Filter-Based Algorithm for IMU-Camera Calibration: Observability
+ Analysis and Performance Evaluation.
+ IEEE Transactions on Robotics.
+ 2008;24(5):1143-1156.
+ doi: 
+\begin_inset CommandInset href
+LatexCommand href
+name "10.1109/tro.2008.2004486"
+target "https://doi.org/10.1109/tro.2008.2004486"
+literal "false"
+
+\end_inset
+
+ [
+\begin_inset CommandInset href
+LatexCommand href
+name "Source"
+target "http://dx.doi.org/10.1109/TRO.2008.2004486"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\begin_layout Enumerate
+Labbe R.
+ Kalman and Bayesian Filters in Python.
+ Kalman and Bayesian Filters in Python.
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://robotics.itee.uq.edu.au/~elec3004/2015/tutes/Kalman_and_Bayesian_Filters_in_P
+ython.pdf
+\end_layout
+
+\end_inset
+
+.
+ Published April 22, 2017.
+\end_layout
+
+\begin_layout Enumerate
+Simon D.
+ Optimal State Estimation.
+ John Wiley & Sons, Inc.; 2006.
+ doi: 
+\begin_inset CommandInset href
+LatexCommand href
+name "10.1002/0470045345"
+target "https://doi.org/10.1002/0470045345"
+literal "false"
+
+\end_inset
+
+ [
+\begin_inset CommandInset href
+LatexCommand href
+name "Source"
+target "http://dx.doi.org/10.1002/0470045345"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\begin_layout Enumerate
+Maybeck P.
+ Stochastic Models, Estimation and Control.
+ Academic Press; 2012.
+\end_layout
+
+\begin_layout Enumerate
+Indirect Kalman Filter for 3D Attitude Estimation.
+ users.cs.umn.edu.
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www-users.cs.umn.edu/~trawny/Publications/Quaternions_3D.pdf
+\end_layout
+
+\end_inset
+
+.
+ Published March 2005.
+ Accessed April 23, 2017.
+\end_layout
+
+\begin_layout Section*
+Part 2 组合陀螺加速度数据
+\end_layout
+
+\begin_layout Standard
+在前一篇文章中，我们提出了卡尔曼滤波器背后的一些数学基础。在这篇文章中，我们将看到我们的第一个具体例子——在陀螺仪和加速度计之间执行传感器融合。
+\end_layout
+
+\begin_layout Standard
+现实世界中的MEMS陀螺仪和加速度计通常有两个主要误差源——偏差漂移和随机噪声。也有缩放误差和横轴误差(
+\begin_inset Formula $X/Y/Z$
+\end_inset
+
+轴可能不完全垂直)，但是这些误差往往很小，我们的分析中不会考虑这些误差。
+\end_layout
+
+\begin_layout Standard
+在[1]之后，我们使用以下符号：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf \omega}$
+\end_inset
+
+角速度
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf a}$
+\end_inset
+
+用于加速度
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf \omega_{b}}$
+\end_inset
+
+用于陀螺仪偏差
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf a_{b}}$
+\end_inset
+
+用于加速度偏差
+\end_layout
+
+\begin_layout Itemize
+下标
+\begin_inset Formula $m$
+\end_inset
+
+表示测量量，头上帽子
+\begin_inset Formula $\hat{\;}$
+\end_inset
+
+表示估计量
+\end_layout
+
+\begin_layout Itemize
+真值不带注释出现。
+\end_layout
+
+\begin_layout Standard
+陀螺仪的测量值是被陀螺仪偏差和随机噪声破坏的真实值。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf \omega_{m}={\bf \omega+{\bf \omega_{b}+{\bf n_{r}}}}}
+\end{equation}
+
+\end_inset
+
+这里，速率噪声
+\begin_inset Formula ${\bf n_{r}}$
+\end_inset
+
+假设为具有特征的高斯白噪声
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[\boldsymbol{n_{r}}]=0_{3\times1},E[\boldsymbol{n_{r}}(t+\tau)\boldsymbol{n_{r}^{T}}(t)]=\boldsymbol{N_{r}}\delta(\tau)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+陀螺仪偏差是非静态的(否则不需要估计)，建模为随机行走过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[\boldsymbol{n_{b}}]=0_{3\times1},E[\boldsymbol{n_{b}}(t+\tau)\boldsymbol{n_{b}^{T}}(t)]=\boldsymbol{N_{b}}\delta(\tau)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们还假设相关的协方差矩阵是对角的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{N_{r}}=diag(\sigma_{r1}^{2},\sigma_{r2}^{2},\sigma_{r3}^{2})
+\end{equation}
+
+\end_inset
+
+并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{N_{b}}=diag(\sigma_{b1}^{2},\sigma_{b2}^{2},\sigma_{b3}^{2})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下一篇文章中，我们将考虑如何从测量日志中设置这些协方差。
+\end_layout
+
+\begin_layout Standard
+估计角速率是测量速率和我们估计的陀螺偏差之间的差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\hat{{\bf \omega}}={\bf \omega_{m}-\hat{{\bf \omega_{b}}}}\\
+\hat{{\bf \omega}}={\bf \omega+{\bf \omega_{b}+{\bf n_{r}}}}-\hat{{\bf \omega_{b}}}\\
+\hat{{\bf \omega}}={\bf \omega-{\bf \delta\omega_{b}+{\bf n_{r}}}}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里，
+\begin_inset Formula $\delta\omega_{b}=\hat{{\bf \omega_{b}}}-{\bf \omega_{b}}$
+\end_inset
+
+是陀螺偏差误差。
+\end_layout
+
+\begin_layout Standard
+我们的状态矢量包括定向误差和陀螺偏差误差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf x=[\boldsymbol{\delta\theta},\delta{\bf \omega_{b}}]}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向误差被定义为小旋转的矢量，它将估计的旋转与真实的旋转对齐。相应的误差四元数近似为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta q\approx\begin{bmatrix}1\\
+\frac{\boldsymbol{\delta\theta}}{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+误差四元数是将估计方向与真实方向对齐所需的旋转。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\hat{q}*\delta q
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $*$
+\end_inset
+
+表示四元数乘法。
+\end_layout
+
+\begin_layout Standard
+EKF公式中的关键任务是建立状态传播矩阵，描述状态如何从一个步骤变化到下一个步骤。换句话说，我们对矩阵
+\begin_inset Formula $F$
+\end_inset
+
+感兴趣
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x_{t+dt}}=F\boldsymbol{x_{t}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于非线性问题，矩阵
+\begin_inset Formula $F$
+\end_inset
+
+是通过对局部导数进行线性化得到的，即，我们首先得到一个关于
+\begin_inset Formula $\boldsymbol{\dot{x}}=J{\bf x}$
+\end_inset
+
+的表达式。矩阵
+\begin_inset Formula $J$
+\end_inset
+
+称为系统动力学矩阵。详见[2]第7章。
+\end_layout
+
+\begin_layout Standard
+然后状态转换矩阵
+\begin_inset Formula $F$
+\end_inset
+
+等
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+于
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\exp(Jdt)$
+\end_inset
+
+。扩大指数，忽略高阶项，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F=I+Jdt
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，任务简化为找到矩阵
+\begin_inset Formula $J$
+\end_inset
+
+。由于我们的状态向量有两个分量，我们可以将
+\begin_inset Formula $J$
+\end_inset
+
+拆分为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+J=\begin{bmatrix}J_{\delta\boldsymbol{\theta}} & J_{\boldsymbol{\omega_{b}}}\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们首先考虑一下
+\begin_inset Formula $J_{\delta\boldsymbol{\theta}}$
+\end_inset
+
+。这是整个EKF配方中最棘手的一部分，所以请紧紧抓住！我将首先介绍一些四元数代数方程，稍后我们将在推导中使用这些方程。这个代数取自[1]，有一个重要的区别。在[
+1]中，四元数定义为
+\begin_inset Formula $q=[\text{vector}\;\text{scalar}]$
+\end_inset
+
+，而我们将使用更常见的定义：
+\begin_inset Formula $q=[\text{scalar}\;\text{vector}]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+两个四元数
+\begin_inset Formula $q$
+\end_inset
+
+和
+\begin_inset Formula $p$
+\end_inset
+
+的乘积如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p=\begin{bmatrix}q_{1} & -q_{2} & -q_{3} & -q_{4}\\
+q_{2} & q_{1} & -q_{4} & q_{3}\\
+q_{3} & q_{4} & q_{1} & -q_{2}\\
+q_{4} & -q_{3} & q_{2} & q_{1}
+\end{bmatrix}\begin{bmatrix}p_{1}\\
+p_{2}\\
+p_{3}\\
+p_{4}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在本系列的第1部分中，让我们将叉积斜对称矩阵定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+[q]_{\times}=\begin{bmatrix}0 & -q_{4} & q_{3}\\
+q_{4} & 0 & q_{2}\\
+-q_{3} & q_{2} & 0
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数乘法的表达式现在可以写成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p=\begin{bmatrix}q_{1} & -{\bf q}\\
+{\bf q^{T}} & q_{1}\boldsymbol{I}_{3\times3}+[q]_{\times}
+\end{bmatrix}\begin{bmatrix}p_{1}\\
+p_{2}\\
+p_{3}\\
+p_{4}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+这里，
+\begin_inset Formula ${\bf q}$
+\end_inset
+
+是四元数的矢量部分(
+\begin_inset Formula $[q_{2},q_{3},q_{4}]$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+乘法也可以写为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p=\begin{bmatrix}p_{1} & -p_{2} & -p_{3} & -p_{4}\\
+p_{2} & p_{1} & p_{4} & -p_{3}\\
+p_{3} & -p_{4} & p_{1} & p_{2}\\
+p_{4} & p_{3} & -p_{2} & p_{1}
+\end{bmatrix}\begin{bmatrix}q_{1}\\
+q_{2}\\
+q_{3}\\
+q_{4}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用
+\begin_inset Formula $p$
+\end_inset
+
+的叉积矩阵，该表达式可写为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p=\begin{bmatrix}p_{1} & -{\bf p}\\
+{\bf p^{T}} & p_{1}\boldsymbol{I}_{3\times3}+[p]_{\times}
+\end{bmatrix}\begin{bmatrix}q_{1}\\
+q_{2}\\
+q_{3}\\
+q_{4}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑到这两个表达式的不同，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p-p*q=(\begin{bmatrix}q_{1} & -{\bf q}\\
+{\bf q^{T}} & q_{1}\boldsymbol{I}_{3\times3}+[q]_{\times}
+\end{bmatrix}-\begin{bmatrix}q_{1} & -{\bf q}\\
+{\bf q^{T}} & q_{1}\boldsymbol{I}_{3\times3}-[q]_{\times}
+\end{bmatrix})p
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从这个结果可以清楚地看出四元数乘法不是交换的。简化为，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q*p-p*q=\begin{bmatrix}0 & 0\\
+0 & 2[q]_{\times}
+\end{bmatrix}p\label{eq:2-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，在[3]的第1章之后，让
+\begin_inset Formula $q(t)$
+\end_inset
+
+描述框架
+\begin_inset Formula $A$
+\end_inset
+
+相对于(wrt)框架
+\begin_inset Formula $B$
+\end_inset
+
+的相对方向。让
+\begin_inset Formula $A$
+\end_inset
+
+沿方向
+\begin_inset Formula ${\bf s}$
+\end_inset
+
+的瞬时角速度表示为
+\begin_inset Formula ${\bf \omega}$
+\end_inset
+
+。然后用四元数表示时间
+\begin_inset Formula $\delta t$
+\end_inset
+
+增量坐标旋转。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta q(\delta t)\approx\begin{bmatrix}1\\
+\frac{{\bf \omega\delta t}}{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在时间
+\begin_inset Formula $t+\delta t$
+\end_inset
+
+，方向由四元数
+\begin_inset Formula $q(t+\delta t)$
+\end_inset
+
+表示，其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q(t+\delta t)=q(t)*\delta q(\delta t)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此，四元数的时间导数可以得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\frac{1}{2}q*\omega
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $\omega$
+\end_inset
+
+是四元数表示。用它的标量和向量分量写为，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\omega=\begin{bmatrix}0\\
+\boldsymbol{\omega}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了获得误差四元数的系统动力学，我们需要将误差四元数的导数
+\begin_inset Formula $\dot{\delta q}$
+\end_inset
+
+表示为
+\begin_inset Formula $\delta q$
+\end_inset
+
+的函数。
+\end_layout
+
+\begin_layout Standard
+现在从误差四元数的定义来看，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\hat{q}*\delta q
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+取导数，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\dot{\hat{q}}*\delta q+\hat{q}*\dot{\delta q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用前面推导的表达式，用角速度表示时间导数，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{1}{2}q*\omega=\frac{1}{2}\hat{q}*\hat{\omega}*\delta q+\hat{q}*\dot{\delta q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将包含
+\begin_inset Formula $\delta q$
+\end_inset
+
+的项移动到LHS
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{q}*\dot{\delta q}=\frac{1}{2}q*\omega-\frac{1}{2}\hat{q}*\hat{\omega}*\delta q\label{eq:2-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，从误差四元数的定义来看，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\hat{q}*\delta q
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+前乘
+\begin_inset Formula $\hat{q}^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{q}^{-1}*q=\delta q\label{eq:2-3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)乘以
+\begin_inset Formula $\hat{q}^{-1}$
+\end_inset
+
+并使用方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta q}=\frac{1}{2}\delta q*\omega-\frac{1}{2}\hat{\omega}*\delta q
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+收集各项，将四元数展开为其标量和矢量分量，并使用方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta q}=\frac{1}{2}\begin{bmatrix}0 & 0\\
+0 & -2[\hat{\omega}]_{\times}
+\end{bmatrix}\begin{bmatrix}1\\
+\boldsymbol{\delta q}
+\end{bmatrix}-\frac{1}{2}\begin{bmatrix}0 & -(-\delta\omega_{b}+\boldsymbol{n_{r}})\\
+(-\delta\omega_{b}+\boldsymbol{n_{r}}) & -[(-\delta\omega_{b}+\boldsymbol{n_{r}})]_{\times}
+\end{bmatrix}\begin{bmatrix}1\\
+\boldsymbol{\delta q}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，我们已经用矩阵乘法替换了四元数乘法。在上述方程的第二项中，我们可以忽略将陀螺偏差误差和噪声与误差四元数相乘的二阶分量。应用这种简化，我们得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta q}=\begin{bmatrix}0\\
+-[\hat{\omega}]_{\times}\delta q
+\end{bmatrix}-\frac{1}{2}\begin{bmatrix}0\\
+-\delta\omega_{b}+\boldsymbol{n_{r}})
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在回想一下，我们的状态向量实际上是由旋转中的误差组成的，而不是误差四元数。两者之间的关系由以下公式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta q\approx\begin{bmatrix}1\\
+\frac{\boldsymbol{\delta\theta}}{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\delta q$
+\end_inset
+
+替换为
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+，我们最终得到我们寻求的表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\boldsymbol{\theta}}=-\hat{\boldsymbol{\omega}}\times\delta\boldsymbol{\theta}+\delta\boldsymbol{\omega_{b}}-\boldsymbol{n_{r}}\label{eq:2-4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一部分，我们的状态向量，陀螺偏差误差很容易处理。由于偏差变化非常缓慢，我们可以简单地假设误差在迭代时间间隔内是恒定的。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta\boldsymbol{\omega_{b}}}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们终于得到了系统动力学方程！
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}\delta\dot{\boldsymbol{\theta}}\\
+\dot{\delta\boldsymbol{\omega_{b}}}
+\end{bmatrix}=\begin{bmatrix}-[\hat{\omega}]_{\times} & I_{3\times3}\\
+0_{3\times3} & 0_{3\times3}
+\end{bmatrix}\begin{bmatrix}\delta\boldsymbol{\theta}\\
+\delta\boldsymbol{\omega_{b}}
+\end{bmatrix}\label{eq:2-5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如上所述，使用一阶近似，可以从系统动力学矩阵中获得状态转换矩阵，使用
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F=I+Jdt
+\end{equation}
+
+\end_inset
+
+因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F=\begin{bmatrix}-[\hat{\phi}]_{\times} & I_{3\times3}\delta t\\
+0_{3\times3} & 0_{3\times3}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+[\hat{\phi}]_{\times}=[\hat{\omega}]_{\times}\delta t
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们基本上完成了数学上的举重。在下一篇文章中，我们将研究所有这些数学的Matlab实现，希望能够澄清本文中提出的概念。
+\end_layout
+
+\begin_layout Paragraph
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+Trawny N, Roumeliotis S.
+ Indirect Kalman Filter for 3D Attitude Estimation.
+ MARS; 2005:24.
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www-users.cs.umn.edu/~trawny/Publications/Quaternions_3D.pdf
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Labbe R.
+ Kalman and Bayesian Filters in Python.
+ Kalman and Bayesian Filters in Python.
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
+\end_layout
+
+\end_inset
+
+.
+ Published April 22, 2017.
+\end_layout
+
+\begin_layout Enumerate
+Stevens BL, Lewis FL, Johnson EN.
+ Aircraft Control and Simulation: Dynamics, Controls Design, and Autonomous
+ Systems.
+ John Wiley & Sons, Inc; 2015.
+ doi:
+\begin_inset CommandInset href
+LatexCommand href
+name "10.1002/9781119174882"
+target "https://doi.org/10.1002/9781119174882"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Part 3 陀螺加速度传感器融合的实现
+\end_layout
+
+\begin_layout Standard
+在前面的文章中，我们为实现误差状态卡尔曼滤波器奠定了必要的数学基础。在这篇文章中，我们将使用前面开发的数学，提供用于在加速度计和陀螺仪数据之间执行传感器融合的M
+atlab实现。
+\end_layout
+
+\begin_layout Standard
+让我们重述一下前一篇文章中介绍的各种量的符号和定义。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf \omega}$
+\end_inset
+
+角速度
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf a}$
+\end_inset
+
+用于加速度
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf \omega_{b}}$
+\end_inset
+
+用于陀螺仪偏差
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf a_{b}}$
+\end_inset
+
+用于加速度偏差
+\end_layout
+
+\begin_layout Itemize
+下标
+\begin_inset Formula $m$
+\end_inset
+
+表示测量量，头上帽子
+\begin_inset Formula $\hat{\ensuremath{}}$
+\end_inset
+
+表示估计量
+\end_layout
+
+\begin_layout Itemize
+真值不带注释出现。
+\end_layout
+
+\begin_layout Standard
+陀螺仪的测量值是被陀螺仪偏差和随机噪声破坏的真实值。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf \omega_{m}={\bf \omega+{\bf \omega_{b}+{\bf n_{r}}}}}
+\end{equation}
+
+\end_inset
+
+这里，速率噪声
+\begin_inset Formula ${\bf n_{r}}$
+\end_inset
+
+假设为具有特征的高斯白噪声
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[\boldsymbol{n_{r}}]=0_{3\times1},E[\boldsymbol{n_{r}}(t+\tau)\boldsymbol{n_{r}^{T}}(t)]=\boldsymbol{N_{r}}\delta(\tau)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+陀螺仪偏差是非静态的(否则不需要估计)，建模为随机行走过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E[\boldsymbol{n_{b}}]=0_{3\times1},E[\boldsymbol{n_{b}}(t+\tau)\boldsymbol{n_{b}^{T}}(t)]=\boldsymbol{N_{b}}\delta(\tau)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们还假设相关的协方差矩阵是对角的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{N_{r}}=diag(\sigma_{r1}^{2},\sigma_{r2}^{2},\sigma_{r3}^{2})
+\end{equation}
+
+\end_inset
+
+并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{N_{b}}=diag(\sigma_{b1}^{2},\sigma_{b2}^{2},\sigma_{b3}^{2})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下一篇文章中，我们将考虑如何从测量日志中设置这些协方差。
+\end_layout
+
+\begin_layout Standard
+估计角速率是测量速率和我们估计的陀螺偏差之间的差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\hat{{\bf \omega}}={\bf \omega_{m}-\hat{{\bf \omega_{b}}}}\\
+\hat{{\bf \omega}}={\bf \omega+{\bf \omega_{b}+{\bf n_{r}}}}-\hat{{\bf \omega_{b}}}\\
+\hat{{\bf \omega}}={\bf \omega-{\bf \delta\omega_{b}+{\bf n_{r}}}}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里，
+\begin_inset Formula $\delta\omega_{b}=\hat{{\bf \omega_{b}}}-{\bf \omega_{b}}$
+\end_inset
+
+是陀螺偏差误差。
+\end_layout
+
+\begin_layout Standard
+我们的状态矢量包括定向误差和陀螺偏差误差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\bf x=[\boldsymbol{\delta\theta},\delta{\bf \omega_{b}}]}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向误差被定义为小旋转的矢量，它将估计的旋转与真实的旋转对齐。相应的误差四元数近似为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta q\approx\begin{bmatrix}1\\
+\frac{\boldsymbol{\delta\theta}}{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们在上一篇文章中导出了状态转移矩阵
+\begin_inset Formula $F$
+\end_inset
+
+。该矩阵由以下公式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F=\begin{bmatrix}-[\hat{\phi}]_{\times} & I_{3\times3}\delta t\\
+0_{3\times3} & 0_{3\times3}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+[\hat{\phi}]_{\times}=[\hat{\omega}]_{\times}\delta t
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在一个典型的卡尔曼滤波器实现中，状态是每一个时间步更新的。我们的实现使用一种不同的卡尔曼滤波器配置，称为反馈配置。在这种配置中，当误差状态变量因处理测量而更新时
+，更新直接应用于系统状态(在这种情况下，就是方向和陀螺的偏差)。因此，在每个时间步，我们将误差状态设置为
+\begin_inset Formula $0$
+\end_inset
+
+。有关反馈配置的更多信息，请参阅[1]第6章。
+\end_layout
+
+\begin_layout Standard
+我们会在每个时间步更新误差状态协方差。这是以常规方式完成的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P_{k\mid k-1}=F_{k}P_{k-1\mid k-1}F_{k}^{T}+Q_{k}
+\end{equation}
+
+\end_inset
+
+这里
+\begin_inset Formula $k$
+\end_inset
+
+表示时间步索引。
+\end_layout
+
+\begin_layout Standard
+现在让我们来看一下度量更新步骤。我们将首先使用加速度计提供测量更新，然后添加基于图像的测量。加速度计读数可以用作测量源，因为它们提供方向的直接测量，并且不会受到
+漂移的影响(尽管它们可能有偏差，也可以估计)。顾名思义，加速度计测量物体坐标系中的总加速度。对于静止或匀速运动的物体，加速度计将测量对重力的反应。让我们用向量
+\begin_inset Formula $[0,0,g]$
+\end_inset
+
+表示重力对加速度的反应，用
+\begin_inset Formula $C$
+\end_inset
+
+表示机体框架的当前方向，然后加速度计读数如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{a}=C\boldsymbol{g}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在建立测量更新方程时，我们需要将测量残差(用
+\begin_inset Formula $z$
+\end_inset
+
+表示)表示为状态向量的线性函数，即测量的估计值和真实值之间的差。
+\end_layout
+
+\begin_layout Standard
+为了计算残差，我们需要将
+\begin_inset Formula ${\bf {a}}$
+\end_inset
+
+转换回全局参考框架。这可以用后乘以
+\begin_inset Formula $\hat{C}^{T}$
+\end_inset
+
+来完成。注意，这里不知道真实的DCM 
+\begin_inset Formula $C$
+\end_inset
+
+，只知道它的估计值。因此，乘以
+\begin_inset Formula $\hat{C}$
+\end_inset
+
+是我们能做的最好的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\boldsymbol{z}=C\hat{C}^{T}\boldsymbol{g}-\boldsymbol{g}\\
+\boldsymbol{z}=C(\hat{C}^{T}-C^{T})\boldsymbol{g}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在回想一下上一篇文章中的
+\begin_inset Formula $C=\hat{C}+\hat{C}[\delta\theta]_{\times}$
+\end_inset
+
+。另外，由于
+\begin_inset Formula $[\delta\theta]_{\times}$
+\end_inset
+
+是斜对称的，
+\begin_inset Formula $[\delta\theta]_{\times}^{T}=-[\delta\theta]_{\times}$
+\end_inset
+
+。应用这些属性，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}=C[\delta\theta]_{\times}\hat{C}^{T}\boldsymbol{g}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，应用小方向误差的近似值，
+\begin_inset Formula $C\approx\hat{C}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}\approx\hat{C}[\delta\theta]_{\times}\hat{C}^{T}\boldsymbol{g}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据[1]中的方程式(49)，
+\begin_inset Formula $[Ca]_{\times}=C[a]_{\times}C^{T}$
+\end_inset
+
+。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}=[\hat{C}\boldsymbol{\delta\theta}]_{\times}\boldsymbol{g}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据[1]中的方程式(39)，
+\begin_inset Formula $[a]_{\times}\boldsymbol{b}=-[b]_{\times}\boldsymbol{a}$
+\end_inset
+
+。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}=-[g]_{\times}\hat{C}\boldsymbol{\delta\theta}\label{eq:3-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速度计不提供对偏差的直接观测，因此状态向量中的偏差误差部分对应的项为
+\begin_inset Formula $0$
+\end_inset
+
+。完整的
+\begin_inset Formula $H$
+\end_inset
+
+矩阵由以下公式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+H_{accel}=\begin{bmatrix}-[g]_{\times}\hat{C} & 0\end{bmatrix}\label{eq:3-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+设置协方差矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器的一个主要优点是，它不仅执行最理想的状态估计(在其操作假设下)，而且还提供状态协方差矩阵的估计，允许我们在估计的状态变量周围放置一个置信区间。为此，
+滤波器将三个协方差矩阵作为输入：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P_{0}$
+\end_inset
+
+：状态协方差矩阵的初始值。这可以设置为适当的值，反映我们在测量初始状态时的初始不确定度。它只影响滤波器的瞬态特性，而不是协方差矩阵的最终(收敛)值。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{accel}$
+\end_inset
+
+：这是测量不确定度矩阵，反映了由于测量中的各种误差而引起的不确定度。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P_{k}$
+\end_inset
+
+：这是过程噪声协方差，反映了在卡尔曼滤波器更新的每个步骤中添加的不确定性量。这个矩阵通常是最难估计的。
+\end_layout
+
+\begin_layout Standard
+一种常用的量化惯性传感器数据中各种噪声源的方法被称为
+\begin_inset CommandInset href
+LatexCommand href
+name "Allan均方差"
+target "http://telesens.co/wp-content/uploads/2017/05/AllanVariance5087-1.pdf"
+literal "false"
+
+\end_inset
+
+。基本思想是计算具有不同步幅长度的重叠数据簇之间的方差。
+\end_layout
+
+\begin_layout Standard
+其基本思想是，随机行走和量化误差等短期噪声源出现在
+\begin_inset Formula $m$
+\end_inset
+
+的较小值上，平均出现在较大的样本上。在较大的样本上会出现陀螺偏差随机游动等长期误差源。因此，通过检查与步幅长度的方差图的斜率，可以可视化和量化不同的误差源。然而
+，我发现Allan方差图的几个方面很难理解。例如，我不清楚为什么陀螺随机行走噪声出现在图表上，梯度为
+\begin_inset Formula $-0.5$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，我尝试了另一种方法来获得协方差矩阵元素的良好值。我从MPU6050装置(从Invensense集成MEMS陀螺仪+加速度传感器)中收集了静止装置的数据，并
+使用Matlab中的fitdist函数将高斯分布拟合到数据中。代码如下：
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    DEGTORAD = pi/180;
+\end_layout
+
+\begin_layout Plain Layout
+
+    fs = 100;
+\end_layout
+
+\begin_layout Plain Layout
+
+    ts = 1/fs;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Scale raw gyro readings to obtain data in rad/sec
+\end_layout
+
+\begin_layout Plain Layout
+
+    scaled_data_gyro = raw_data(:, 2:4)./GYRO_SCALE_FACTOR;
+\end_layout
+
+\begin_layout Plain Layout
+
+    scaled_data_gyro_rad = scaled_data_gyro(:,:).*DEGTORAD;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Scale raw accel readings to obtain data in units of g
+\end_layout
+
+\begin_layout Plain Layout
+
+    scaled_data_accel = raw_data(:, 5:7)./ACCEL_SCALE_FACTOR;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % calculate accel and gyro bias by averaging the data.
+\end_layout
+
+\begin_layout Plain Layout
+
+    accel_bias = mean(scaled_data_accel);
+\end_layout
+
+\begin_layout Plain Layout
+
+    gyro_bias = mean(scaled_data_gyro_rad);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    scaled_data_gyro_zero_mean = scaled_data_gyro_rad(:,:) - gyro_bias;
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd1 = fitdist(scaled_data_gyro_zero_mean(:,1), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd2 = fitdist(scaled_data_gyro_zero_mean(:,2), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd3 = fitdist(scaled_data_gyro_zero_mean(:,3), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    gx_sigma = pd1.sigma;
+\end_layout
+
+\begin_layout Plain Layout
+
+    gy_sigma = pd2.sigma;
+\end_layout
+
+\begin_layout Plain Layout
+
+    gz_sigma = pd3.sigma;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % accels
+\end_layout
+
+\begin_layout Plain Layout
+
+    scaled_data_accel_zero_mean = scaled_data_accel(:,:) - accel_bias;
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd1 = fitdist(scaled_data_accel_zero_mean(:,1), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd2 = fitdist(scaled_data_accel_zero_mean(:,2), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    pd3 = fitdist(scaled_data_accel_zero_mean(:,3), 'Normal');
+\end_layout
+
+\begin_layout Plain Layout
+
+    ax_sigma = pd1.sigma;
+\end_layout
+
+\begin_layout Plain Layout
+
+    ay_sigma = pd2.sigma;
+\end_layout
+
+\begin_layout Plain Layout
+
+    az_sigma = pd3.sigma; 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+gyro_x和accel_x数据的柱状图如下所示。正态分布确实很适合MEMS传感器数据。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure2.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure3.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+MPU6050陀螺和加速度的三个轴的sigma值如下所示
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="decimal" decimal_point="." valignment="top">
+<column alignment="decimal" decimal_point="." valignment="top">
+<column alignment="decimal" decimal_point="." valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gyro
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5.4732e-04$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6.1791e-04$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6.2090e-04$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2.8e-03$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2.5e-03$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="decimal" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3.8e-03$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据这些数据，测量协方差矩阵
+\begin_inset Formula $R$
+\end_inset
+
+可以直接初始化为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+R_{accel}=\begin{bmatrix}\sigma_{ax}^{2} & 0 & 0\\
+0 & \sigma_{ay}^{2} & 0\\
+0 & 0 & \sigma_{az}^{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+式中，
+\begin_inset Formula $\sigma_{ax}$
+\end_inset
+
+表示加速度计的
+\begin_inset Formula $x$
+\end_inset
+
+轴测量标准偏差的标准偏差，如上表所示。对于过程噪声协方差，我将方向对应的部分设置为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{d}(\delta\theta)=\begin{bmatrix}\sigma_{gx}^{2} & 0 & 0\\
+0 & \sigma_{gy}^{2} & 0\\
+0 & 0 & \sigma_{gz}^{2}
+\end{bmatrix}\delta t
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+乘以
+\begin_inset Formula $\delta t$
+\end_inset
+
+模型在卡尔曼滤波器每次迭代中注入的不确定性，并在实践中很好地工作，稍后我们将看到。当陀螺偏差变化非常缓慢时，对应于陀螺偏差的部分可以设置为非常低的值。
+\end_layout
+
+\begin_layout Paragraph
+传感器模拟器
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在我使用真实传感器和卡尔曼滤波的经验中，要使你的算法工作需要大量的尝试和错误。如果你试图直接使用真实数据，那么bug很难调试，因为有太多事情可能出错。因此，有必
+要建立一个模拟系统，利用选定的传感器参数对传感器进行建模，并生成可作为传感器融合算法输入的模拟测量值。
+\end_layout
+
+\begin_layout Standard
+为了初始化模拟器，我创建了一个由一系列方向航路点组成的“旋转轨迹”。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sim_state.trajectory_rotation = 1*[0 0 0; 20 20 20; 20 0 0; 20 20 0;  30
+ 30 30; 0 0 0]*DEG2RAD;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后我通过在一个路径点和下一个路径点之间插入来创建旋转路径。当从一个航路点过渡到另一个航路点时，这个简单的方案将产生急剧的变化。一个更复杂的系统将尝试做一些样条
+曲线拟合的变化，以创建一个平滑的轨迹而不突然改变。这里有一个很好的参考，描述了这个问题并讨论了各种解决方案：
+\begin_inset CommandInset href
+LatexCommand href
+name "平滑轨迹"
+target "http://telesens.co/wp-content/uploads/2017/05/engn4627-Part07.pdf"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+for i = 1: num_wp-1
+\end_layout
+
+\begin_layout Plain Layout
+
+    % beginning quaternion
+\end_layout
+
+\begin_layout Plain Layout
+
+    qa = eul2quat(sim_state.trajectory_rotation(i,1), sim_state.trajectory_rotatio
+n(i,2), sim_state.trajectory_rotation(i,3));
+\end_layout
+
+\begin_layout Plain Layout
+
+    % ending quaternion
+\end_layout
+
+\begin_layout Plain Layout
+
+    qb = eul2quat(sim_state.trajectory_rotation(i+1,1), sim_state.trajectory_rotat
+ion(i+1,2), sim_state.trajectory_rotation(i+1,3));
+\end_layout
+
+\begin_layout Plain Layout
+
+    ab = sim_state.trajectory_accel(i,:); % sim_state.accel beginning
+\end_layout
+
+\begin_layout Plain Layout
+
+    ae = sim_state.trajectory_accel(i+1,:); % sim_state.accel end
+\end_layout
+
+\begin_layout Plain Layout
+
+    % number of points on each segment of the trajectory
+\end_layout
+
+\begin_layout Plain Layout
+
+    num_points_segment = sim_state.num_sim_samples/num_segments;
+\end_layout
+
+\begin_layout Plain Layout
+
+    for j = 1: num_points_segment
+\end_layout
+
+\begin_layout Plain Layout
+
+        sim_state.orientation(idx,:) = interpolate_quat(qa, qb, j/num_points_segm
+ent);
+\end_layout
+
+\begin_layout Plain Layout
+
+        ap = ap + (ae-ab)/num_points_segment;
+\end_layout
+
+\begin_layout Plain Layout
+
+        sim_state.accel(idx,:) = ap + g';
+\end_layout
+
+\begin_layout Plain Layout
+
+        sim_state.velocity(idx,:) = sim_state.velocity(idx-1,:)+(a_prev+ap)/2*time
+_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+        sim_state.position(idx,:) = sim_state.position(idx-1,:) + (sim_state.veloci
+ty(idx,:)+sim_state.velocity(idx-1,:))/2*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+        a_prev = ap;
+\end_layout
+
+\begin_layout Plain Layout
+
+        idx = idx + 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+    end
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这段代码还试图为位置和速度创建一个轨迹，但现在可以忽略，因为这些量不是我们状态向量的一部分。稍后我们将添加基于图像的测量。
+\end_layout
+
+\begin_layout Standard
+为了生成测量数据，计算了从一个方向转换到另一个方向所需的角速度，并添加了随机噪声和偏差误差。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function [omega_measured, accel_measured, q_prev, dcm_true, q] = sim_imu_tick(si
+m_state, time_step, idx, sensor_model, q_prev)
+\end_layout
+
+\begin_layout Plain Layout
+
+if (idx < sim_state.num_sim_samples)
+\end_layout
+
+\begin_layout Plain Layout
+
+    q = sim_state.orientation(idx,:);
+\end_layout
+
+\begin_layout Plain Layout
+
+    dcm_true = quat2dc(q);
+\end_layout
+
+\begin_layout Plain Layout
+
+    % dcm rotates from IMU to Global frame, dcm' does the opposite
+\end_layout
+
+\begin_layout Plain Layout
+
+    dq = (q - q_prev);
+\end_layout
+
+\begin_layout Plain Layout
+
+    q_prev = q;
+\end_layout
+
+\begin_layout Plain Layout
+
+    q_conj = [q(1) -q(2) -q(3) -q(4)];
+\end_layout
+
+\begin_layout Plain Layout
+
+    % calculate the angular velocity required to go from one orientation
+ to the next 
+\end_layout
+
+\begin_layout Plain Layout
+
+    omega = 2*quatmult(q_conj, dq)/time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % take the vector part
+\end_layout
+
+\begin_layout Plain Layout
+
+    omega = omega(2:4);
+\end_layout
+
+\begin_layout Plain Layout
+
+    % add noise
+\end_layout
+
+\begin_layout Plain Layout
+
+    gyro_bias_noisy = sensor_model.gyro_bias + normrnd(0, sensor_model.gyro_bias_n
+oise_sigma);
+\end_layout
+
+\begin_layout Plain Layout
+
+    omega_measured = omega' + normrnd(0, sensor_model.gyro_random_noise_sigma)+
+ gyro_bias_noisy;
+\end_layout
+
+\begin_layout Plain Layout
+
+    accel_measured = dcm_true'*sim_state.accel(idx,:)' + sensor_model.accel_bias
+ + normrnd(0, sensor_model.accel_noise_sigma);
+\end_layout
+
+\begin_layout Plain Layout
+
+    %   gyro_measurements(end+1,:) = omega_measured';
+\end_layout
+
+\begin_layout Plain Layout
+
+    %   accel_measurements(end+1,:) = accel_measured';
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+传感器模型是根据从MPU6050数据日志收集的统计数据初始化的，如上所述。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+function sensor_model = init_sensor_model(sensor_model, time_step)
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.accel_noise_sigma = [0.003 0.003 0.004]'; % representative values
+ for MPU6050
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.accel_noise_cov = (sensor_model.accel_noise_sigma).^2;
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.accel_bias = [-0.06 0 0]'; % actual MPU6050 bias
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.accel_bias_noise_sigma = [0.001 0.001 0.001];
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.R_accel = diag(sensor_model.accel_noise_cov);
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.Q_accel_bias = diag(sensor_model.accel_bias_noise_sigma.^2);
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_accel_bias = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.gyro_random_noise_sigma = [5.4732e-04 6.1791e-04 6.2090e-04]';
+ %rad/sec, representative values for MPU6050
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.gyro_bias_noise_sigma = 0.00001*ones(3,1); %rad/sec/sec.
+ Any small value appears to work
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.gyro_bias = [0.0127 -0.0177 -0.0067]'; % rad/sec
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.Q_gyro_bias = diag(sensor_model.gyro_bias_noise_sigma.^2);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% position uncertainity 
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.Q_p = diag(sensor_model.accel_noise_cov)*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+% velocity uncertainity
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.Q_v = diag(sensor_model.accel_noise_cov)*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+% quaternion (orientation) uncertainity
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.Q_q = diag(sensor_model.gyro_random_noise_sigma.^2)*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Initial values for various elements of the covariance matrix.
+ Only
+\end_layout
+
+\begin_layout Plain Layout
+
+% effects the transient behaviour of the filter, not the steady state
+\end_layout
+
+\begin_layout Plain Layout
+
+% behaviour.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_p = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_v = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_q = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_gyro_bias = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+sensor_model.P_accel_bias = 0.1*eye(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们来看看滤波器每次迭代期间的计算。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+for i = 2:num_sim_samples
+\end_layout
+
+\begin_layout Plain Layout
+
+	idx = i;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Get current sensor values from the simulator
+\end_layout
+
+\begin_layout Plain Layout
+
+    [omega_measured, accel_measured, q_prev, dcm_true, q_true] = sim_imu_tick(si
+m_state, time_step, idx, sensor_model, q_prev);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Calculate estimated values of omega and accel by subtracting the
+\end_layout
+
+\begin_layout Plain Layout
+
+    % estimated values of the biases
+\end_layout
+
+\begin_layout Plain Layout
+
+    omega_est = omega_measured - sv.gyro_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+    accel_est = accel_measured - sv.accel_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi         = omega_est*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+    delta_vel   = accel_est*time_step; % not necessary for accel-gyro sensor
+ fusion
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi3 = make_skew_symmetric_3(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % update current orientation estimate.
+ We maintain orientation estimate
+\end_layout
+
+\begin_layout Plain Layout
+
+    % as a quaternion and obtain the corresponding DCM whenever needed
+\end_layout
+
+\begin_layout Plain Layout
+
+    sv.q_est = apply_small_rotation(phi, sv.q_est);
+\end_layout
+
+\begin_layout Plain Layout
+
+    sv.dcm_est = quat2dc(sv.q_est);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Integrate accel (after transforming to global frame) to obtain
+\end_layout
+
+\begin_layout Plain Layout
+
+    % velocity and position
+\end_layout
+
+\begin_layout Plain Layout
+
+    orig_velocity = sv.velocity_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+    sv.velocity_est = sv.velocity_est + sv.dcm_est*delta_vel - g*time_step
+ ;
+\end_layout
+
+\begin_layout Plain Layout
+
+    final_velocity = sv.velocity_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+    sv.position_est = sv.position_est + ((orig_velocity + final_velocity)/2)*time_
+step;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % State transition matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+    F = eye(6) +   [-phi3       eye(3)*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+                   zeros(3,6)];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % propagate covariance 
+\end_layout
+
+\begin_layout Plain Layout
+
+    P = F*P*F' + Qd; 
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Apply accelerometer measurements.
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (mod(i, accelUpdateFrequency) == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+        % apply accel measurements.
+ The updated state vector and covariance
+\end_layout
+
+\begin_layout Plain Layout
+
+        % matrix are returned.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+        [sv, P] = process_accel_measurement_update2(sv, accel_est, P, sensor_mod
+el.R_accel, g);
+\end_layout
+
+\begin_layout Plain Layout
+
+        gyro_bias_est 	= sv.gyro_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+		q_est           = sv.q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+        dcm_est         = sv.dcm_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+    end
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function q_est = apply_small_rotation(phi, q_est)
+\end_layout
+
+\begin_layout Plain Layout
+
+s = norm(phi)/2;
+\end_layout
+
+\begin_layout Plain Layout
+
+x = 2*s;
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = make_skew_symmetric_4(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+% approximation for sin(s)/s
+\end_layout
+
+\begin_layout Plain Layout
+
+sin_sbys_approx = 1-s^2/factorial(3) + s^4/factorial(5) - s^6/factorial(7);
+\end_layout
+
+\begin_layout Plain Layout
+
+exp_phi4 = eye(4)*cos(s) + 1/2*phi4*sin_sbys_approx;
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 1
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est1 = exp_phi4*q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+% verify: should be equal to:
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 2 (direct matrix exponential)
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est2 = expm(0.5*(phi4))*q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+% verify should be equal to:
+\end_layout
+
+\begin_layout Plain Layout
+
+% method 3: propagate by quaternion multiplication (doesn't preserve unit
+\end_layout
+
+\begin_layout Plain Layout
+
+% norm)
+\end_layout
+
+\begin_layout Plain Layout
+
+dq = [1 phi(1)/2 phi(2)/2 phi(3)/2];
+\end_layout
+
+\begin_layout Plain Layout
+
+dq_conj = [1 -phi(1)/2 -phi(2)/2 -phi(3)/2]';
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est3 = quatmul(q_est, dq'); 
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est = q_est1;
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function phi4 = make_skew_symmetric_4(phi)
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = [0       -phi(1)      -phi(2)      -phi(3);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(1)     0           phi(3)     -phi(2);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(2)     -phi(3)      0           phi(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi(3)     phi(2)     -phi(1)      0];
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们看看如果在不应用任何加速度计更新的情况下运行此代码会发生什么(我们稍后将讨论这些更新)。我们从零开始计算陀螺偏差的估计值。由于陀螺测量中存在偏差和随机噪声
+，我们期望估计的方位随每次迭代而逐渐偏离真实方位，误差状态的协方差也随之增大。正如下面的两个视频所显示的，这确实是发生了什么。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.telesens.co/wp-content/uploads/2017/05/sf1_sim_rotating_cube-1.mp4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+//www.telesens.co/wp-content/uploads/2017/05/sf1_sim_running_plot-1.mp4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们添加加速度计更新。相关代码如下所示。代码实现了我们之前开发的数学公式。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+% reduced model, applies to accel+gyro only.
+ No camera
+\end_layout
+
+\begin_layout Plain Layout
+
+function [state, P] = process_accel_measurement_update2(state, accel_est,
+ P, R_accel, g)
+\end_layout
+
+\begin_layout Plain Layout
+
+% current estimated states
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est   = state.q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+dcm_est = state.dcm_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+gyro_bias_est = state.gyro_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Calculate residual (in the global reference frame)
+\end_layout
+
+\begin_layout Plain Layout
+
+accel_residual = dcm_est*accel_est - g;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Construct the H matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+H_accel = [-make_skew_symmetric_3(g)*dcm_est zeros(3,3)];
+\end_layout
+
+\begin_layout Plain Layout
+
+% Calculate Kalman Gain
+\end_layout
+
+\begin_layout Plain Layout
+
+K_gain = P*H_accel'*inv([H_accel*P*H_accel' + R_accel]);
+\end_layout
+
+\begin_layout Plain Layout
+
+% Calculate the correction to the error state
+\end_layout
+
+\begin_layout Plain Layout
+
+x_corr = K_gain*accel_residual;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Calculate the new covariance matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+P = P - K_gain*H_accel*P;
+\end_layout
+
+\begin_layout Plain Layout
+
+% Apply the updates to get the new state
+\end_layout
+
+\begin_layout Plain Layout
+
+x_est = apply_accel_update(x_corr, [q_est; gyro_bias_est]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gyro_bias_est(1:3) = x_est(5:7);
+\end_layout
+
+\begin_layout Plain Layout
+
+q_est = x_est(1:4);
+\end_layout
+
+\begin_layout Plain Layout
+
+%ness = [x_corr(1:2) x_corr(4:5)]'*inv(P(1:2, 1:2))*x_corr(1:2);
+\end_layout
+
+\begin_layout Plain Layout
+
+ness = x_corr'*inv(P)*x_corr;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+% Update state vector
+\end_layout
+
+\begin_layout Plain Layout
+
+state.q_est         = q_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+state.dcm_est       = dcm_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+state.gyro_bias_est = gyro_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function x_est = apply_accel_update(x_corr, x_est)
+\end_layout
+
+\begin_layout Plain Layout
+
+% gyro bias
+\end_layout
+
+\begin_layout Plain Layout
+
+x_est(5:7) = x_est(5:7) + x_corr(4:6);
+\end_layout
+
+\begin_layout Plain Layout
+
+% orientation update
+\end_layout
+
+\begin_layout Plain Layout
+
+phi =  -[x_corr(1) x_corr(2) x_corr(3)];
+\end_layout
+
+\begin_layout Plain Layout
+
+phi3 = make_skew_symmetric_3(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+phi4 = make_skew_symmetric_4(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+s = norm(phi)/2;
+\end_layout
+
+\begin_layout Plain Layout
+
+sin_sbys_approx = 1-s^2/factorial(3) + s^4/factorial(5) - s^6/factorial(7);
+\end_layout
+
+\begin_layout Plain Layout
+
+exp_phi4 = eye(4)*cos(s) + 1/2*phi4*sin_sbys_approx;
+\end_layout
+
+\begin_layout Plain Layout
+
+x_est(1:4) = exp_phi4*x_est(1:4);
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+增加加速度计更新，正确估计陀螺偏差，并修正俯仰和横滚的漂移。最后估计的陀螺偏差如下所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Estimated Gyro bias
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0127$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0179$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0069$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如[2]所述，观察卡尔曼滤波器性能是否良好的一个好方法是将残差(真实状态和估计状态之间的差异)的变化范围与协方差矩阵的相应元素进行比较。当滤波器进行优化时，残差
+应在相应的sigma界限内。例如，大约
+\begin_inset Formula $99\%$
+\end_inset
+
+的残差应该在
+\begin_inset Formula $+-3\sigma$
+\end_inset
+
+之间。我们显示了误差沿
+\begin_inset Formula $x$
+\end_inset
+
+轴的变化(横滚角roll误差)，并将其沿
+\begin_inset Formula $+-3\sigma_{x}$
+\end_inset
+
+绘制。
+\begin_inset Formula $\sigma_{x}$
+\end_inset
+
+是通过取协方差矩阵第一个元素的平方根得到的。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure4.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里，加速度计测量更新被应用于迭代的每一步。如果我们不太频繁地应用更新，我们可以在
+\begin_inset Formula $\sigma_{x}$
+\end_inset
+
+的图表中看到锯齿度。锯齿度发生的原因是连续测量更新之间的协方差增加，并且在应用更新时降低。协方差在这两种情况下都会收敛，但是正如人们所预期的，当加速度计更新应用
+的频率较低时，协方差会收敛到较高的值。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure5.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以看出，当旋转轴与当前方向对齐时，即为
+\begin_inset Formula $\hat{C}\delta\boldsymbol{\theta}=k\boldsymbol{g}$
+\end_inset
+
+，其中
+\begin_inset Formula $k$
+\end_inset
+
+是一个标量。因此
+\begin_inset Formula $z=0$
+\end_inset
+
+。因此，沿电流方向(局部垂直)旋转不会改变加速度计的残差值，因此是不可观测的。
+\end_layout
+
+\begin_layout Standard
+再观察几次。协方差矩阵初始值的选择只影响滤波器的暂态特性，不会改变协方差的最终(收敛)值。因此，可以将该矩阵设置为具有适当低值的对角矩阵。过程噪声协方差矩阵对最
+终协方差矩阵有一定的影响，可以作为陀螺和加速度测量的设计参数。我们把这个矩阵设置成一个对角矩阵，其项对应于方向误差等于陀螺测量标准偏差乘以时间步长的平方。直觉是
+，这反映了在每个更新步骤中注入的不确定性。当陀螺偏差变化非常缓慢时，与陀螺偏差误差相对应的项可以设置为非常低的值。
+\end_layout
+
+\begin_layout Standard
+为了评估该滤波器在真实数据上的性能，我将卡尔曼滤波应用于串行端口上传输的IMU数据。通过I2C连接将MPU6050连接至Arduino收集数据，并通过串行端口连
+接将原始数据发送至PC。Matlab通过设置函数回调来提供通过串行端口接收数据的API，这使得将数据源切换为实时数据而不是模拟数据变得容易(请与我联系以获取代码
+)。除了一个差异外，现场数据的传感器融合结果与模拟数据的结果相似。如上所述，加速度计测量不能提供沿旋转轴方向变化的可观测性，因此我禁用了沿局部
+\begin_inset Formula $z$
+\end_inset
+
+轴的陀螺偏差误差更新。启用此更新将导致沿局部
+\begin_inset Formula $z$
+\end_inset
+
+轴的陀螺偏差变得不稳定，从而导致定向误差。
+\end_layout
+
+\begin_layout Standard
+定向误差和陀螺偏差误差图以及相应的
+\begin_inset Formula $3\sigma$
+\end_inset
+
+如下所示。一般来说，如果没有昂贵的校准步骤，我们就不知道实时数据的真实方向。在我的例子中，我把IMU放在一个平面上，通过从加速度计数据中计算角度来测量其中一个轴
+的方向。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure6.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure7.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure8.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速度计更新应用于采样频率的
+\begin_inset Formula $1/3$
+\end_inset
+
+。连续更新之间协方差估计的跳跃很容易看到。
+\end_layout
+
+\begin_layout Standard
+在下一篇文章中，我们将扩展状态向量，包括位置和速度，并添加图像测量。
+\end_layout
+
+\begin_layout Paragraph
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+Trawny N.
+ Indirect Kalman Filter for 3D Attitude Estimation.
+ MARS Lab; 2005:24.
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www-users.cs.umn.edu/~trawny/Publications/Quaternions_3D.pdf
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Labbe R.
+ Kalman and Bayesian Filters in Python.
+ None; 2017.
+\end_layout
+
+\begin_layout Section*
+Part 4
+\end_layout
+
+\begin_layout Standard
+在本文中，我们将添加数学并提供用于添加基于图像的测量的实现。让我们回顾一下本系列第1部分中首先介绍的符号和几何图形。
+\end_layout
+
+\begin_layout Standard
+在[1]中的方程式(16)中的状态向量由21个元素组成。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta P_{I}^{G}$
+\end_inset
+
+ : IMU在全局参考系中的位置误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta V_{I}^{G}$
+\end_inset
+
+ : IMU在全局参考系中的速度误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta\theta_{I}^{G}$
+\end_inset
+
+ : IMU和全局参考系之间的方向误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta P_{C}^{I}$
+\end_inset
+
+ : 摄像头相对于IMU的位置误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta\theta_{C}^{I}$
+\end_inset
+
+ : 摄像头和IMU之间的方向误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta b_{g}$
+\end_inset
+
+ : 陀螺偏差误差
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\delta b_{a}$
+\end_inset
+
+ : 加速度偏差误差
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure1.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一个
+\begin_inset Formula $21$
+\end_inset
+
+元素状态向量，相机-IMU偏移作为其元素之一。我们将首先考虑一个更简单的问题，即IMU与相机对齐。因此，我们的状态向量包括IMU(或摄像机)相对于(wrt)全局
+帧和陀螺仪的位置、速度和方向误差以及加速度偏差误差。图像特征点提供了测量值，这些测量值将用于校正我们对位置、速度、方向、陀螺仪和加速度偏差的估计。
+\end_layout
+
+\begin_layout Standard
+在前面的文章中，我们已经推导出了陀螺偏差和定向误差的状态传播方程。现在我们来推导加速度偏差、位置和速度的传播方程。如前所述，对于变量
+\begin_inset Formula $x$
+\end_inset
+
+，
+\begin_inset Formula $x_{m}$
+\end_inset
+
+表示测量的数量，
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+表示估计的数量，
+\begin_inset Formula $\delta x$
+\end_inset
+
+表示误差。根据运动定律，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{P_{I}^{G}}=V_{I}^{G}
+\end{equation}
+
+\end_inset
+
+并且因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{P_{I}^{G}}=\delta V_{I}^{G}\label{eq:4-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我没有用粗体表示
+\begin_inset Formula $P_{I}^{G}$
+\end_inset
+
+因为从符号中可以明显看出，这些是向量量。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta V_{I}^{G}=\hat{V_{I}^{G}}-V_{I}^{G}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+取导数，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\delta\dot{V_{I}^{G}}=\dot{\hat{V_{I}^{G}}}-\dot{V_{I}^{G}}\\
+\delta\dot{V_{I}^{G}}=\hat{C}_{I}^{'G}\boldsymbol{\hat{a}}-C_{I}^{'G}\boldsymbol{a}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，由于现在有多个DCMs，我将明确地说明给定DCM所作用的坐标系。例如，
+\begin_inset Formula $C_{I}^{G}$
+\end_inset
+
+将矢量从全局转换为IMU-相机坐标系。另外，我用一个基本的来表示转置，所以
+\begin_inset Formula $C^{'}=C^{T}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从本系列文章的第2篇开始，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{V_{I}^{G}}=\hat{C}_{I}^{'G}(\boldsymbol{a_{m}}-\boldsymbol{\hat{a_{b}}})-(\hat{C}_{I}^{'G}+\hat{C}_{I}^{'G}[\delta\theta]_{\times}^{'})\boldsymbol{a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在， 因为
+\begin_inset Formula $\boldsymbol{a_{m}}=\boldsymbol{a}+\boldsymbol{a_{b}}+\boldsymbol{n_{r}}$
+\end_inset
+
+, 
+\begin_inset Formula $\delta\boldsymbol{a_{b}}=\boldsymbol{\hat{a_{b}}}-\boldsymbol{a_{b}}$
+\end_inset
+
+ 和 
+\begin_inset Formula $[\delta\theta]_{\times}^{'}=-[\delta\theta]_{\times}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\delta\dot{V_{I}^{G}}=-\hat{C}_{I}^{'G}(\delta\boldsymbol{a_{b}})+\hat{C}_{I}^{'G}[\delta\theta]_{\times}\boldsymbol{a}\\
+\delta\dot{V_{I}^{G}}=-\hat{C}_{I}^{'G}(\delta\boldsymbol{a_{b}})+\hat{C}_{I}^{'G}[\delta\theta]_{\times}\boldsymbol{a}
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从第1篇文章，我们知道这个
+\begin_inset Formula $[a]_{\times}\boldsymbol{b}=-[b]_{\times}\boldsymbol{a}$
+\end_inset
+
+。因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{V_{I}^{G}}=-\hat{C}_{I}^{'G}\delta\boldsymbol{a_{b}}-\hat{C}_{I}^{'G}[a]_{\times}\boldsymbol{\delta\theta}\label{eq:4-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与陀螺仪偏差相似，加速度偏差变化非常缓慢，因此加速度偏差中的误差可以假定为在时间步长内是恒定的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\delta\boldsymbol{a_{b}}}=0\label{eq:4-3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4-3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)与前几篇文章中提出的方向误差和陀螺偏差误差的状态传播方程相结合，给出了整个
+\begin_inset Formula $15\times15$
+\end_inset
+
+状态转换矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}\dot{\delta P_{I}^{G}}\\
+\dot{\delta V_{I}^{G}}\\
+\dot{\delta\boldsymbol{\theta}}\\
+\dot{\delta\boldsymbol{g_{b}}}\\
+\dot{\delta\boldsymbol{a_{b}}}
+\end{bmatrix}=\begin{bmatrix}0_{3\times3} & I_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & -\hat{C}_{I}^{'G}[a]_{\times} & 0_{3\times3} & -\hat{C}_{I}^{'G}\\
+0_{3\times3} & 0_{3\times3} & [\phi]_{\times} & I_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}
+\end{bmatrix}\begin{bmatrix}\delta P_{I}^{G}\\
+\delta V_{I}^{G}\\
+\delta\boldsymbol{\theta}\\
+\delta\boldsymbol{g_{b}}\\
+\delta\boldsymbol{a_{b}}
+\end{bmatrix}\label{eq:4-4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+J=\begin{bmatrix}0_{3\times3} & I_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & -\hat{C}_{I}^{'G}[a]_{\times} & 0_{3\times3} & -\hat{C}_{I}^{'G}\\
+0_{3\times3} & 0_{3\times3} & [\phi]_{\times} & I_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3}
+\end{bmatrix}\label{eq:4-5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如前所述，状态转换矩阵
+\begin_inset Formula $F$
+\end_inset
+
+由以下公式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F\approx I_{15\times15}+J\delta t\label{eq:4-6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差传播为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P_{k\mid k-1}=F_{k}P_{k-1\mid k-1}F_{k}^{T}+Q_{k}\label{eq:4-7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们来看看测量更新方程。假设IMU和相机重合，简化几何如下所示：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure9.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，在我们的坐标系中，
+\begin_inset Formula $x$
+\end_inset
+
+轴是沿着相机的光轴方向的，
+\begin_inset Formula $z$
+\end_inset
+
+轴是向下的。这符合MPU6050 IMU上使用的惯例。在计算机视觉中，
+\begin_inset Formula $z$
+\end_inset
+
+轴通常是沿着光轴指向的。
+\end_layout
+
+\begin_layout Standard
+让特征点
+\begin_inset Formula $f_{i}$
+\end_inset
+
+的三维位置由全局坐标系中的
+\begin_inset Formula $x_{i}$
+\end_inset
+
+、
+\begin_inset Formula $y_{i}$
+\end_inset
+
+、
+\begin_inset Formula $z_{i}$
+\end_inset
+
+表示。用
+\begin_inset Formula $K$
+\end_inset
+
+表示摄像机校准矩阵，该点的投影，
+\begin_inset Formula $x_{i}^{'},y_{i}^{'},z_{i}^{'}$
+\end_inset
+
+给出为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}x_{i}^{'}\\
+y_{i}^{'}\\
+z_{i}^{'}
+\end{bmatrix}=KC_{I}^{G}(P_{f_{i}}^{G}-P_{I}^{G})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $K$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+K=\begin{bmatrix}f & 0 & u_{0}\\
+0 & f & v_{0}\\
+0 & 0 & 1
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $f$
+\end_inset
+
+表示焦距，
+\begin_inset Formula $u_{0}$
+\end_inset
+
+和
+\begin_inset Formula $v_{0}$
+\end_inset
+
+表示图像中心。我们假设一个正方形像素的直线相机没有径向和切向变形。如果需要，可以很容易地添加这些项。
+\end_layout
+
+\begin_layout Standard
+通过应用透视分割得到最终图像坐标。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}u_{i}\\
+v_{i}
+\end{bmatrix}=\begin{bmatrix}\frac{y_{i}^{'}}{x_{i}^{'}}\\
+\frac{z_{i}^{'}}{x_{i}^{'}}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+雅可比矩阵由图像坐标的偏导数与我们试图估计的参数(即
+\begin_inset Formula $C_{I}^{G}$
+\end_inset
+
+和
+\begin_inset Formula $P_{I}^{G}$
+\end_inset
+
+)组成。为了得到偏导数的表达式，将透视投影和坐标变换看作一个函数组合，然后应用链规则是很有用的。从链式法则来看，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+D(f(g(x))=f^{'}(g(x))g^{'}(x)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+是坐标转换函数，它将矢量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+从全局坐标系映射到相机-IMU坐标系中的矢量
+\begin_inset Formula $\boldsymbol{x^{'}}$
+\end_inset
+
+。
+\begin_inset Formula $f(\boldsymbol{x^{'}})$
+\end_inset
+
+然后在向量上应用透视除法
+\begin_inset Formula $\boldsymbol{x^{'}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从简单的微分方程，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f^{'}(g(\boldsymbol{x}))=f^{'}(\boldsymbol{x}^{'})=\begin{bmatrix}-\frac{y_{i}^{'}}{x_{i}^{'2}} & \frac{1}{x_{i}^{'}} & 0\\
+-\frac{z_{i}^{'}}{x_{i}^{'2}} & 0 & \frac{1}{x_{i}^{'}}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们用
+\begin_inset Formula $M$
+\end_inset
+
+来表示用
+\begin_inset Formula $f^{'}(\boldsymbol{x}^{'})$
+\end_inset
+
+表示的矩阵。
+\end_layout
+
+\begin_layout Standard
+现在让我们考虑一下
+\begin_inset Formula $g^{'}(\boldsymbol{x})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g^{'}(\boldsymbol{x})=\begin{bmatrix}\frac{\partial\boldsymbol{x}}{\partial C_{I}^{G}} & \frac{\partial\boldsymbol{x}}{\partial P_{I}^{G}}\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据第1部分中的向量演算结果，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g^{'}(\boldsymbol{x})=\begin{bmatrix}KC_{G}^{I}[P_{f_{i}}^{G}-P_{I}^{G}]_{\times}\boldsymbol{\delta\theta} & -KC_{G}^{I}\delta P_{I}^{G}\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+状态向量其他元素的导数为
+\begin_inset Formula $0$
+\end_inset
+
+。因此(在将
+\begin_inset Formula $C_{G}^{I}$
+\end_inset
+
+和
+\begin_inset Formula $P_{G}^{I}$
+\end_inset
+
+替换为其估计版本之后)，测量更新矩阵
+\begin_inset Formula $H_{image}$
+\end_inset
+
+给出如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+H_{image}=M\begin{bmatrix}-K\hat{C}_{G}^{I} & 0_{3\times3} & K\hat{C}_{G}^{I}[P_{f_{i}}^{G}-\hat{P}_{I}^{G}]_{\times} & 0_{3\times3} & 0_{3\times3}\end{bmatrix}\label{eq:4-8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+模拟设置
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们的模拟装置包括一个摄像头和IMU，它们彼此重合。在初始位置，相机的光轴沿着正
+\begin_inset Formula $x$
+\end_inset
+
+轴指向。相机在围绕光轴对称地位于几个单位之外的四个特征点上。假设这些特征点在全球坐标系中的位置已知。在模拟过程中，相机+IMU沿预先定义的轨迹平移和旋转。根据我
+们的传感器模型，通过计算增量角速度和加速度，加上偏差和噪声，由此产生模拟传感器测量。通过对特征点进行坐标变换和透视投影，加上高斯像素噪声，生成了模拟图像测量结果
+。
+\end_layout
+
+\begin_layout Standard
+状态估计是通过集成噪声角速度和加速度(在调整了估计的陀螺和加速度偏差后)来获得估计的方向、位置和速度。状态协方差矩阵按方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4-7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)传播。然后将噪声图像测量值用作测量源，以校正状态向量中的误差。
+\end_layout
+
+\begin_layout Standard
+众所周知，将有噪声的加速度计数据进行积分来估计速度，再进行二次积分来获得位置，会导致误差的快速积累。位置和方向上的误差将导致估计的图像测量值偏离真实测量值(两者
+之间的差异作为测量源)。下面的视频显示了这种漂移。视频中的摄像机保持静止，因此特征点的图像投影不应移动(像素噪声引起的小扰动除外)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.telesens.co/wp-content/uploads/2017/05/image_residuals-1.mp4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们也来看看我们的模拟轨迹。我们使用立方体作为道具来显示相机+IMU沿模拟轨迹的移动。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.telesens.co/wp-content/uploads/2017/05/cube_trajectory-1.mp4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们来看一些实现卡尔曼滤波操作一次迭代的Matlab代码。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    % Obtain simulated IMU measurements
+\end_layout
+
+\begin_layout Plain Layout
+
+    [omega_measured, accel_measured, q_prev] = sim_imu_tick(sim_state, time_step
+, idx, sensor_model, q_prev);
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Obtain simulated camera measurements.
+ p_f_in_G contains the feature
+\end_layout
+
+\begin_layout Plain Layout
+
+    % locations and p_C_in_G the camera location in the global coordinate
+ system
+\end_layout
+
+\begin_layout Plain Layout
+
+    % sigma_image is the std.
+ dev of the pixel noise, K the camera
+\end_layout
+
+\begin_layout Plain Layout
+
+    % calibration matrix.
+\end_layout
+
+\begin_layout Plain Layout
+
+    image_measurements = sim_camera_tick(dcm_true, p_f_in_G, p_C_in_G, K,
+ numFeatures, sigma_image);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Obtain estimated values by adjusting for current estimate of the
+\end_layout
+
+\begin_layout Plain Layout
+
+    % biases
+\end_layout
+
+\begin_layout Plain Layout
+
+    omega_est = omega_measured - sv.gyro_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+    accel_est = accel_measured - sv.accel_bias_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Multiply by time_delta to get change in orientation/position
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi = omega_est*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+    vel = accel_est*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+    vel3 = make_skew_symmetric_3(vel);
+\end_layout
+
+\begin_layout Plain Layout
+
+    phi3 = make_skew_symmetric_3(phi);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Generate new estimates for q, position, velocity using equations of
+ motion
+\end_layout
+
+\begin_layout Plain Layout
+
+	sv = update_state(sv, time_step, g, phi, vel);
+\end_layout
+
+\begin_layout Plain Layout
+
+    % State transition matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+    F = eye(15) + [zeros(3,3) eye(3)*time_step zeros(3,3)   zeros(3,3) 
+     zeros(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+                   zeros(3,3) zeros(3,3)       sv.dcm_est*vel3 zeros(3,3)
+      -sv.dcm_est*time_step;
+\end_layout
+
+\begin_layout Plain Layout
+
+                   zeros(3,3) zeros(3,3)        -phi3       eye(3)*time_step
+ zeros(3,3);
+\end_layout
+
+\begin_layout Plain Layout
+
+                   zeros(3,15);
+\end_layout
+
+\begin_layout Plain Layout
+
+                   zeros(3,15)];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Propagate covariance           
+\end_layout
+
+\begin_layout Plain Layout
+
+    P = F*P*F' + Qd;
+\end_layout
+
+\begin_layout Plain Layout
+
+    % Apply image measurement update
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (mod(i, image_update_frequency) == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+        [sv, P] = process_image_measurement_update(sv, p_f_in_G, image_measureme
+nts, ...
+\end_layout
+
+\begin_layout Plain Layout
+
+            numFeatures, P, K, imageW, imageH, sigma_image); 
+\end_layout
+
+\begin_layout Plain Layout
+
+    end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+function image_measurements = sim_camera_tick(dcm_true, p_f_in_G, p_C_in_G,
+ K, numFeatures, sigma_image)
+\end_layout
+
+\begin_layout Plain Layout
+
+for fid = 1: numFeatures
+\end_layout
+
+\begin_layout Plain Layout
+
+    % feature position in camera frame
+\end_layout
+
+\begin_layout Plain Layout
+
+    fic = dcm_true'*(p_f_in_G(fid,:) - p_C_in_G')'; 
+\end_layout
+
+\begin_layout Plain Layout
+
+    % apply perspective projection and add noise
+\end_layout
+
+\begin_layout Plain Layout
+
+    image_measurements(2*fid-1:2*fid) = K*[fic(2)/fic(1) fic(3)/fic(1) 1]'
+ ...
+\end_layout
+
+\begin_layout Plain Layout
+
+        + normrnd(0, [sigma_image sigma_image]');
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\begin_layout Plain Layout
+
+end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们先看看如果不应用图像更新会发生什么。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure10.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以看到，估计位置很快偏离了真实位置。现在我们来看看图像测量更新的代码。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=Matlab,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+% Iterate until the CF < 0.25 or max number of iterations is reached
+\end_layout
+
+\begin_layout Plain Layout
+
+    while(CF > 0.25 && numIter < 10)
+\end_layout
+
+\begin_layout Plain Layout
+
+        numIter = numIter + 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+        estimated_visible = [];
+\end_layout
+
+\begin_layout Plain Layout
+
+        measurements_visible = [];
+\end_layout
+
+\begin_layout Plain Layout
+
+        residual = [];
+\end_layout
+
+\begin_layout Plain Layout
+
+        for indx = 1:numVisible
+\end_layout
+
+\begin_layout Plain Layout
+
+            % index of this feature point
+\end_layout
+
+\begin_layout Plain Layout
+
+            fid = visible(indx);
+\end_layout
+
+\begin_layout Plain Layout
+
+            % estimated position in the camera coordinate system
+\end_layout
+
+\begin_layout Plain Layout
+
+            fi_e = dcm_est'*(p_f_in_G(fid,:)' - p_C_in_G_est); % feature
+ in image, estimated
+\end_layout
+
+\begin_layout Plain Layout
+
+			% focal lengths (recall that the x axis of our coordinate
+\end_layout
+
+\begin_layout Plain Layout
+
+			% system points along the optical axis)
+\end_layout
+
+\begin_layout Plain Layout
+
+            fy = K(1,1); fz = K(2,2);
+\end_layout
+
+\begin_layout Plain Layout
+
+            J = 	[-fy*fi_e(2)/fi_e(1).^2  fy*1/fi_e(1)       0;
+\end_layout
+
+\begin_layout Plain Layout
+
+                    -fz*fi_e(3)/fi_e(1).^2    	0               fz*1/fi_e(1)];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            % Measurement matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+            H_image(2*indx-1: 2*indx,:) = [-J*dcm_est' zeros(2,3) ...
+\end_layout
+
+\begin_layout Plain Layout
+
+                J*dcm_est'*make_skew_symmetric_3((p_f_in_G(fid,:)' - p_C_in_G_es
+t)) zeros(2,3) zeros(2,3)];
+\end_layout
+
+\begin_layout Plain Layout
+
+            % estimated image measurement
+\end_layout
+
+\begin_layout Plain Layout
+
+            estimated_visible(2*indx-1: 2*indx) = K*[fi_e(2)/fi_e(1) fi_e(3)/fi_
+e(1) 1]';
+\end_layout
+
+\begin_layout Plain Layout
+
+            % actual measurement
+\end_layout
+
+\begin_layout Plain Layout
+
+            measurements_visible(2*indx-1: 2*indx) = measurements(2*fid-1:
+ 2*fid)';
+\end_layout
+
+\begin_layout Plain Layout
+
+        end
+\end_layout
+
+\begin_layout Plain Layout
+
+        % vector of residuals
+\end_layout
+
+\begin_layout Plain Layout
+
+        residual = estimated_visible - measurements_visible;
+\end_layout
+
+\begin_layout Plain Layout
+
+        %show_image_residuals(f4, measurements_visible, estimated_visible);
+\end_layout
+
+\begin_layout Plain Layout
+
+        % Kalman gain
+\end_layout
+
+\begin_layout Plain Layout
+
+        K_gain = P*H_image'*inv([H_image*P*H_image' + R_im]);
+\end_layout
+
+\begin_layout Plain Layout
+
+        % Correction vector
+\end_layout
+
+\begin_layout Plain Layout
+
+        x_corr = K_gain*residual';
+\end_layout
+
+\begin_layout Plain Layout
+
+        % Updated covariance
+\end_layout
+
+\begin_layout Plain Layout
+
+        P = P - K_gain*H_image*P;
+\end_layout
+
+\begin_layout Plain Layout
+
+        % Apply image update and correct the current estimates of position,
+\end_layout
+
+\begin_layout Plain Layout
+
+        % velocity, orientation, gyro/accel bias
+\end_layout
+
+\begin_layout Plain Layout
+
+        x_est = apply_image_update(KF_SV_Offset, x_corr, ...
+\end_layout
+
+\begin_layout Plain Layout
+
+            [position_est; velocity_est; q_est; gyro_bias_est; accel_bias_est]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        position_est    = x_est(KF_SV_Offset.pos_index:KF_SV_Offset.pos_index+KF_S
+V_Offset.pos_length-1);
+\end_layout
+
+\begin_layout Plain Layout
+
+        velocity_est    = x_est(KF_SV_Offset.vel_index:KF_SV_Offset.vel_index+KF_S
+V_Offset.vel_length-1);
+\end_layout
+
+\begin_layout Plain Layout
+
+        gyro_bias_est   = x_est(KF_SV_Offset.gyro_bias_index:KF_SV_Offset.gyro_bia
+s_index + KF_SV_Offset.gyro_bias_length-1);
+\end_layout
+
+\begin_layout Plain Layout
+
+        accel_bias_est  = x_est(KF_SV_Offset.accel_bias_index:KF_SV_Offset.accel_b
+ias_index + KF_SV_Offset.accel_bias_length-1);
+\end_layout
+
+\begin_layout Plain Layout
+
+        q_est           = x_est(KF_SV_Offset.orientation_index:KF_SV_Offset.orient
+ation_index+KF_SV_Offset.orientation_length-1);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        dcm_est = quat2dc(q_est);
+\end_layout
+
+\begin_layout Plain Layout
+
+        p_C_in_G_est = position_est;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        % Cost function used to end the iteration
+\end_layout
+
+\begin_layout Plain Layout
+
+        CF = x_corr'*inv(P)*x_corr + residual*R_inv*residual';
+\end_layout
+
+\begin_layout Plain Layout
+
+    end 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该代码遵循先前开发的图像测量更新公式。在上一篇文章中讨论的图像测量更新和加速度计更新之间的一个区别是，我们在一个循环中运行图像测量更新，直到[1]中的方程式(2
+4)中定义的成本函数低于阈值或达到最大迭代次数。
+\end_layout
+
+\begin_layout Standard
+让我们看看轨迹，图像更新应用于
+\begin_inset Formula $1/10$
+\end_inset
+
+的IMU采样频率和两个图像噪声sigma值。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure11.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+image noise sigma = 
+\begin_inset Formula $0.1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure12.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+image noise sigma = 
+\begin_inset Formula $0.5$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如我们所见，添加图像测量更新可防止位置出现任何系统误差，并保持估计位置在真实位置周围徘徊。如预期的那样，图像噪声sigma值越高，漂移量越大。在陀螺和加速度偏差
+估计过程中，由于卡尔曼滤波器的存在，使陀螺和加速度偏差估计收敛到稳态，从而使陀螺在起始点附近产生漂移。一旦对偏差进行了估计，协方差收敛，估计的位置就会紧紧跟踪真
+实位置。
+\end_layout
+
+\begin_layout Standard
+系统还正确估计加速度和陀螺偏差。图像噪声西格玛的两个不同值的真实偏差和估计偏差如下所示。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="7">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="1.5cm">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gyro (x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gyro (y)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gyro (z)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accel (x)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accel (y)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accel (z)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+True
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0127$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0177$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0067$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.06$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Estimated (
+\begin_inset Formula $\sigma=0.1$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0126$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0176$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0067$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0581$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0053$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0010$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Estimated (
+\begin_inset Formula $\sigma=0.5$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0127$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0175$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0071$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0736$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.0031$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $-0.0092$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位置(沿
+\begin_inset Formula $y$
+\end_inset
+
+轴)和方向(横滚角roll)的残差图如下所示。残差大部分位于对应的
+\begin_inset Formula $3\sigma$
+\end_inset
+
+界限之间，因此滤波器似乎运行良好。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure13.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename 基于ESKF的6DOF的传感器融合的实现-figure14.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如[2]所示，保持协方差矩阵为UD因式分解形式，有利于提高数值稳定性和矩阵求逆的有效性。我们还没有实现这个优化。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://github.com/ankur6ue/SensorFusion_KF"
+literal "false"
+
+\end_inset
+
+提供完整的源代码。
+\end_layout
+
+\begin_layout Paragraph
+实现真正的系统
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们的模拟结果看起来很有希望，因此是时候实现一个真正的工作系统了。一个真正的系统将面临许多挑战-
+\end_layout
+
+\begin_layout Itemize
+在环境中选择合适的特征点并计算它们的三维位置并不容易。必须实现基于极线几何的场景几何计算和束调整的一些变体。
+\end_layout
+
+\begin_layout Itemize
+必须设计出某种方法来获得三维特征点与其图像投影之间的对应关系。
+\end_layout
+
+\begin_layout Itemize
+图像处理通常比处理IMU更新慢得多。在实际系统中，图像处理模块的更新很可能在到达时就过时了，因此不能直接应用于更新当前的协方差矩阵。在协方差更新的实现中，必须考
+虑这个时间延迟。
+\end_layout
+
+\begin_layout Paragraph
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+Mirzaei FM, Roumeliotis SI.
+ A Kalman Filter-Based Algorithm for IMU-Camera Calibration: Observability
+ Analysis and Performance Evaluation.
+ IEEE Trans Robot.
+ 2008;24(5):1143-1156.
+ doi:
+\begin_inset CommandInset href
+LatexCommand href
+name "10.1109/tro.2008.2004486"
+target "https://doi.org/10.1109/tro.2008.2004486"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Maybeck P.
+ Stochastic Models: Estimation and Control: Volume 2.
+ Academic Press; 1982.
+\end_layout
+
+\end_body
+\end_document
