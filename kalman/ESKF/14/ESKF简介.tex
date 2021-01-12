@@ -1,0 +1,406 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer Presentation
+% LaTeX Template
+% Version 1.0 (10/11/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+\documentclass{beamer}
+
+\mode<presentation> {
+
+% The Beamer class comes with a number of default slide themes
+% which change the colors and layouts of slides. Below this is a list
+% of all the themes, uncomment each in turn to see what they look like.
+
+%\usetheme{default}
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{Dresden}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+% As well as themes, the Beamer class has a number of color themes
+% for any slide theme. Uncomment each of these in turn to see how it
+% changes the colors of your current slide theme.
+
+%\usecolortheme{albatross}
+%\usecolortheme{beaver}
+%\usecolortheme{beetle}
+%\usecolortheme{crane}
+%\usecolortheme{dolphin}
+%\usecolortheme{dove}
+%\usecolortheme{fly}
+%\usecolortheme{lily}
+%\usecolortheme{orchid}
+%\usecolortheme{rose}
+%\usecolortheme{seagull}
+%\usecolortheme{seahorse}
+%\usecolortheme{whale}
+%\usecolortheme{wolverine}
+
+%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+
+\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+}
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage[UTF8]{ctex}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[ESKF 简介]{误差状态卡尔曼滤波器(ESKF)简介} % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Martin Brandt} % Your name
+\date{January 22, 2020} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{概述} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+\section{动机}
+
+\begin{frame}
+    \frametitle{动机}
+    \begin{figure}
+    \includegraphics[width=0.8\linewidth]{adcs.png}
+    \end{figure}
+    控制器需要知道姿态，以便控制它，但没有办法直接测量它 $\rightarrow$ 我们必须估计它！
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{警告}
+    这些幻灯片总结了\textbf{很多}东西，所以你可能不会理解所有的东西。但希望你能理解什么是卡尔曼滤波器，以及为什么我们使用误差状态卡尔曼滤波器的步骤背后的推理。这也应该是作为一个ADC的新人，希望进入ESKF领域的介绍和参考。 
+\end{frame}
+
+%------------------------------------------------
+
+\section{状态空间模型}
+
+\begin{frame}
+    \frametitle{状态空间模型}
+    我们想用向量的形式来表示一个任意的微分方程组。一般来说： $\dot{x} = f(x, u)$
+
+    \begin{block}{连续LTI状态空间模型}
+        \begin{equation}
+        \begin{aligned}
+            \dot{x} &= A x + B u \\
+            y &=C x + D u
+        \end{aligned}
+        \end{equation}
+    \end{block}
+
+    \begin{block}{离散 LTI 状态空间模型}
+        \begin{equation}
+        \begin{aligned}
+            x[k+1] &= A x[k] + B u[k] \\
+            y[k] &= C x[k] + D u[k]
+        \end{aligned}
+        \end{equation}
+    \end{block}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{质量-弹簧-阻尼器示例}
+
+    \begin{block}{你是如何习惯看它的}
+        \begin{equation}
+            m \ddot{x}+d \dot{x} + kx=u
+        \end{equation}
+    \end{block}
+
+    \begin{block}{状态空间表示}
+        \begin{equation}
+        \left[\begin{array}{c}{{\dot{x_1}}} \\ {\dot{x_2}}\end{array}\right] =\left[\begin{array}{cc}{0} & {1} \\ {-\frac{k}{m}} & {-\frac{d}{m}}\end{array}\right] \left[\begin{array}{c}{{x_1}} \\ {x_2}\end{array}\right] +\left[\begin{array}{c}{0} \\ {\frac{1}{m}}\end{array}\right] u
+        \end{equation}
+    \end{block}
+\end{frame}
+
+%------------------------------------------------
+
+\section{卡尔曼滤波器}
+
+\begin{frame}
+    \frametitle{Luenberger 观测器}
+    假设我们有一个系统的状态空间模型。我们如何估计系统的状态？ 
+
+    \begin{block}{逻辑初试(开环观测器)}
+        \begin{equation}
+            \dot{\hat{x}} = A \hat{x} + B u 
+        \end{equation}
+    \end{block}
+
+    但由于模型的不确定性，我们的估计值将很快偏离实际值 $\rightarrow$ 包括一个基于测量的校正项(闭环回路) $\rightarrow$ Luenberger 观测器
+
+    \begin{block}{Luenberger 观测器}
+        \begin{equation}
+            \dot{\hat{x}} = A \hat{x} + B u + L (y - \hat{y}), \quad \hat{y} = C \hat{x}
+        \end{equation}
+    \end{block}
+    但是我们如何决定增益 $L$？
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{卡尔曼滤波器}
+    首先假设我们的过程模型和测量模型包括\textbf{正态分布}噪声：
+    \begin{block}{随机LTI系统}
+        \begin{equation}
+            \begin{aligned}
+                \dot{x} &= A x + B u + w \\
+                y &=C x + D u + v
+            \end{aligned}
+        \end{equation}
+    \end{block}
+    卡尔曼滤波器是该系统的最优Luenberger观测器，在这个意义上，它使\textbf{均方误差}最小，即 $E\{(x-\hat{x})^2\}$. 
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{卡尔曼滤波器方程式}
+    对于离散情况(这是在微控制器上实现的)，卡尔曼滤波方程式为：
+    \begin{figure}
+        \includegraphics[width=0.8\linewidth]{kf_equations.png}
+    \end{figure}
+    这里的细节并不重要，但请注意 predict + correct 的步骤。 
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{卫星运动学与动力学}
+    让我们尝试将卡尔曼滤波器应用于我们的卫星：
+    \begin{block}{卫星运动学}
+        \begin{equation}
+            \begin{aligned}
+                \dot{\mathbf{q}}=\frac{1}{2} \mathbf{q} \otimes \boldsymbol{\omega}
+            \end{aligned}
+        \end{equation}
+    \end{block}
+    \begin{block}{卫星动力学}
+        \begin{equation}
+            \begin{aligned}
+                \dot{\omega}=J^{-1}\left[\mathbf{L}-\omega \times\left(J \omega\right)\right]
+            \end{aligned}
+        \end{equation}
+    \end{block}
+    问题：该系统是高度非线性的，因此卡尔曼滤波不能直接应用(因为它假设一个线性模型)。
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{扩展卡尔曼滤波}
+    解决这个问题最简单的方法是\textbf{在每个时间步线性化非线性动力学} $\rightarrow$ 扩展卡尔曼滤波 (EKF)。 \\~\\
+
+    问题：建模不确定性---动力学要求我们知道卫星的惯性矩阵，由于动力学高度非线性，EKF可能会发散:( \\~\\
+
+    $\rightarrow$ 放下动力学，只使用运动学： $\dot{\mathbf{q}}=\frac{1}{2} \mathbf{q} \otimes \boldsymbol{\omega}$. \\
+    我们让 $\omega$ 成为“控制输入”，我们使用 IMU 测量得到它。 \\~\\
+\end{frame}
+
+%------------------------------------------------
+
+\section{误差状态卡尔曼滤波器(ESKF)}
+
+\begin{frame}
+    \frametitle{误差状态卡尔曼滤波器}
+    现在我们正接近一个有点实用的算法，但动力学仍然是高度非线性的，这意味着EKF将表现得很差(容易发散)。\\~\\
+
+    解决方法是研究\textbf{误差四元数}： $q=\delta q \otimes \hat{q}$\\~\\
+
+    如果我们估计 $\delta q \approx \left[\begin{array}{c}{\frac{1}{2} \delta \boldsymbol{\theta}} \\ {1}\end{array}\right]$，忽略一些项我们得到：
+        \begin{block}{误差四元数运动学}
+            \begin{equation}
+                \delta \dot{\theta}=-S\left(\omega_{m}\right) \delta \theta-n_r
+            \end{equation}
+        \end{block}
+    这是线性的，所以我们可以离散它，并使用好的老卡尔曼滤波器。这比EKF稳定得多，非常好，非常好。
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{误差状态卡尔曼滤波器}
+    最后一个问题：IMU测量值漂移... $\rightarrow$ 估计速率陀螺偏差 $b$ 以及姿态四元数 $q$。我们假设偏差误差遵循以下动力学(随机游走)：
+    \begin{block}{偏差动力学}
+        \begin{equation}
+            \dot{\delta b}=\dot{b}-\dot{\hat{b}}=n_{w}
+        \end{equation}
+    \end{block}
+    新的带有偏差的误差四元数动力学是：
+    \begin{block}{误差四元数运动学}
+        \begin{equation}
+            \delta \dot{\theta}=-S\left(\omega_{m}-b\right) \delta \theta-\delta b-n_r
+        \end{equation}
+    \end{block}
+    如果我们将KF方程式应用到这些方程中，我们最终(经过大量的数学运算)得到了我们目前使用的ESKF算法。我不想费心去写所有的方程式，如果需要的话你可以查一下。
+\end{frame}
+
+\begin{frame}
+    \frametitle{误差状态卡尔曼滤波器}
+    虽然这一切看起来相当复杂，但它实际上只是带有一些额外技巧的常规卡尔曼滤波器(估计误差而不是真实状态，使用陀螺测量作为输入，还估计偏差)。作为ESKF的用户，你真正需要知道的是：
+    \begin{figure}
+        \includegraphics[width=0.7\linewidth]{ESKF.png}
+    \end{figure}
+\end{frame}
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{ESKF预测方程参考}
+    接下来的几张幻灯片将总结ESKF中的实际方程式，在试图理解代码时，主要应作为参考。我出于懒惰跳过了一些最讨厌的表达式，看提供的源码去找它们。\\~\\
+    从我们非常简单的模型中预测 $\hat{b}_{k+1|k}$ 和 $\hat{\omega}_{k+1|k}$ ：
+    \begin{align}
+        \hat{b}_{k+1|k} &\leftarrow \hat{b}_{k|k} \\
+        \hat{\omega}_{k+1|k} &\leftarrow \omega_m - \hat{b}_{k|k}
+    \end{align}
+    使用一阶四元数积分预测 $\hat{q}_{k+1|k}$ ：
+    \begin{equation}
+        \hat{q}_{k+1|k} \leftarrow \left({q}\{\bar{\omega} \Delta t\}+\frac{\Delta t^{2}}{24}\left[\begin{array}{c}{0} \\ {\omega_{k|k} \times \omega_{k+1|k}}\end{array}\right]\right) \otimes \hat{q}_{k|k}
+    \end{equation}
+    使用状态转移矩阵和过程噪声协方差矩阵预测协方差矩阵：
+\begin{equation}
+    {P}_{k+1 | k} \leftarrow {\Phi} {P}_{k | k} {\Phi}^{\top}+{Q}
+\end{equation}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{ESKF更新方程参考}
+    首先计算当前姿态旋转矩阵 $A(\hat{q}_{k+1|k})$:
+    \begin{equation}
+        A(\hat{q}_{k+1|k}) \leftarrow \begin{bmatrix}
+            1 - 2(q_2^2 + q_3^2) & 2(q_1 q_2 + q_3 q_4) & 2(q_1 q_3 - q_2 q_4) \\
+            2(q_1 q_2 - q_3 q_4) & 1 - 2(q_1^2 + q_3^2) & 2(q_2 q_3 + q_1 q_4) \\
+            2(q_1 q_3 + q_2 q_4) & 2(q_2 q_3 - q_1 q_4) & 1 - 2(q_1^2 + q_2^2)
+        \end{bmatrix}
+    \end{equation}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{ESKF更新方程参考}
+    然后依次对每个测量执行以下步骤： \\
+    使用 $A(\hat{q}_{k+1|k})$ 将 $\hat{z}$ 从地心惯性系(Earth Central Inertial)旋转至机体坐标系：
+    \begin{equation}
+        \hat{z}_b \leftarrow A(\hat{q}_{k+1|k}) \hat{z}_{ECI}
+    \end{equation}
+    计算测量矩阵：
+    \begin{equation}
+        H_k \leftarrow \begin{bmatrix}
+            S(\hat{z}_b) & 0_{3x3}
+        \end{bmatrix}
+    \end{equation}
+    计算卡尔曼增益：
+    \begin{equation}
+        K_k \leftarrow P_{k+1|k} H_k^{\top} S_k^{-1}, \quad S_k \leftarrow H_k P_{k+1|k} H_k^{\top} + R
+    \end{equation}
+    计算校正：
+    \begin{equation}
+        \Delta x \leftarrow \Delta x + K (\varepsilon - H_k \Delta x), \quad \varepsilon \leftarrow z - \hat{z}
+    \end{equation}
+    更新协方差估计：
+    \begin{equation}
+        {P}_{k+1 | k+1} \leftarrow \left({I}_{6}-{K} {H}\right) {P}_{k+1 | k}\left({I}_{6}-{K} {H}\right)^{\top}+{K} {R} {K}^{\top}
+    \end{equation}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{ESKF更新方程参考}
+    更新姿态四元数估计：
+    \begin{equation}
+        \hat{{q}}_{k+1 | k+1} \leftarrow \hat{{q}}_{k+1 | k} \otimes \delta \hat{{q}}, \quad 
+    \delta \hat{{q}}=\left[\begin{array}{c}{\frac{1}{2}\Delta x_{1:3}} \\ {\sqrt{1-\frac{1}{2}\Delta x_{1:3}^{\top} \frac{1}{2}\Delta x_{1:3}}}\end{array}\right]
+    \end{equation}
+    更新偏差估计：
+    \begin{equation}
+        \hat{{b}}_{k+1 | k+1}=\hat{{b}}_{k+1 | k}+\Delta x_{4:6}
+    \end{equation}
+    更新角速度估计：
+    \begin{equation}
+        \hat{\omega}_{k+1 | k+1}=\omega_{m}-\hat{{b}}_{k+1 | k+1}
+    \end{equation}
+    周而复始！
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+    \frametitle{ESKF code}
+    \large{\centerline{Let's have a brief look at the code I guess?}}
+   \begin{center}
+    \small{Code: \url{https://git.orbitntnu.no/adcs/libeskf} \\
+    Tests: \url{https://git.orbitntnu.no/adcs/eskf_test} \\
+    Matlab tests: \url{https://git.orbitntnu.no/Martimos/adcs_simulation/tree/eskf-c-test}}
+   \end{center}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\huge{\centerline{Thank you for coming to my TEDx talk}}
+\begin{center}
+\small{Read more in J. Sola, "Quaternion kinematics for the error-state Kalman filter" and N. Trawny \& S. Roumeliotis, "Indirect Kalman Filter for 3D Attitude Estimation"}
+\end{center}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+
+\end{document} 

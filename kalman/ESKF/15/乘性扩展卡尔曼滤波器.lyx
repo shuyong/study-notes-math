@@ -1,0 +1,2056 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "乘性扩展卡尔曼滤波器"
+target "https://matthewhampsey.github.io/blog/2020/07/18/mekf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "matthewhampsey"
+target "https://github.com/matthewhampsey"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+18 Jul 2020
+\end_layout
+
+\begin_layout Standard
+MEKF是Kalman滤波器的一个重要改进，使其适用于方位估计。不幸的是，当我试图研究多旋翼姿态估计的主题时，我没有找到一个简单的(或最近的！)解释。这就是我试
+图提供的简单总结。
+\end_layout
+
+\begin_layout Standard
+你可以在此处看到使用MPU-9250 IMU在Beagle Bone Black上运行的简短片段：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://youtu.be/61FvgZV2Mls
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+设置场景
+\end_layout
+
+\begin_layout Standard
+让我们想象一下，你正在尝试编写一种多旋翼控制系统以使飞机稳定在空中。或者你正在为你选择的VR系统编写软件，需要估计手持控制器的姿势。或者你正在编写一个软件，根据
+检测到的手机方位，在横向和纵向模式之间切换手机的显示。在所有这些情况下，设备将至少有一个机载IMU(至少有一个陀螺仪和加速度计，还可以选择一个磁力计)，你必须使
+用来自IMU的测量值来精确估计3D空间中的设备方位。不幸的是，陀螺仪和加速计将是大多数消费级硬件的MEMS设备，这意味着它们将相当嘈杂。幸运的是，这些设备提供了
+冗余信息，我们可以使用这些信息来显著提高任何单个设备的航位推算测量。要做到这一点，我们需要一些NASA的工程师在60年代提出的一些想法。
+\end_layout
+
+\begin_layout Standard
+你可能还猜到了Kalman滤波器会在这里有所帮助。让我们考虑一下这种方法。在本文的其余部分，我们将使用四元数的Hamiltonian约定，并使用
+\begin_inset Formula $R_{b}^{i}$
+\end_inset
+
+表示从机体坐标系变换为世界坐标系的旋转，因此
+\begin_inset Formula $R_{b}^{i}v^{b}=v^{i}$
+\end_inset
+
+。
+\begin_inset Formula $R_{i}^{b}$
+\end_inset
+
+将表示世界坐标系到机体坐标系的变换，因此
+\begin_inset Formula $R_{i}^{b}=R_{b}^{i}{}^{T}$
+\end_inset
+
+。我们需要方位，所以我们的状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+将至少部分地由方位参数化形成。对于这个思想实验，我们假设我们使用四元数参数化，并且我们的状态向量只由参数化
+\begin_inset Formula $\boldsymbol{x}=q$
+\end_inset
+
+(为了简单起见)形成。让我们假设我们已经完成了我们的过程和观察模型(或一些等效的线性化)，并遵循了
+\begin_inset CommandInset href
+LatexCommand href
+name "常用的卡尔曼滤波更新步骤"
+target "https://en.wikipedia.org/wiki/Kalman_filter#Details"
+literal "false"
+
+\end_inset
+
+来进行
+\series bold
+\lang english
+后验
+\series default
+\lang chinese-simplified
+状态校正：
+\begin_inset Formula $\boldsymbol{x_{k|k}}=\boldsymbol{x_{k|k-1}}+K_{k}\boldsymbol{y_{k}}$
+\end_inset
+
+。
+\begin_inset Formula $\boldsymbol{x_{k|k}}$
+\end_inset
+
+是什么东西？好吧，
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+是单位四元数，我们在它上面
+\series bold
+\lang english
+加上
+\series default
+\lang chinese-simplified
+了非零值，因此
+\begin_inset Formula $\boldsymbol{x_{k}}+K_{k}\boldsymbol{y_{k}}$
+\end_inset
+
+
+\series bold
+\lang english
+不可能
+\series default
+\lang chinese-simplified
+是单位数。如果它不是单位数，那就
+\series bold
+\lang english
+不可能
+\series default
+\lang chinese-simplified
+是旋转。Kalman打破了我们需要的旋转的一个不变性质。
+\end_layout
+
+\begin_layout Standard
+发生了什么？好吧，我们已经成为经典错误之一的受害者：永远不要假设你的操作数是向量！旋转四元数
+\series bold
+\lang english
+不是
+\series default
+\lang chinese-simplified
+向量。欧拉角也不是(无论你想怎么排列它们。不，实际上，它们
+\series bold
+\lang english
+不是
+\series default
+\lang chinese-simplified
+向量)，旋转矩阵也不是。他们是
+\series bold
+\lang english
+群
+\series default
+\lang chinese-simplified
+。并且群不是有效的Kalman滤波器状态，因为它们仅在各自的群运算下封闭，而在向量加法下不封闭。
+\end_layout
+
+\begin_layout Standard
+“我们不要把孩子和洗澡水一起扔出去。” 你争辩说：“我们可以从中恢复过来。只需重新计算总和即可。”这
+\series bold
+\lang english
+可以
+\series default
+\lang chinese-simplified
+工作(例如，参见 Markeley 的 
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf"
+literal "false"
+
+\end_inset
+
+ 论文)。但是它抛弃了我们的
+\series bold
+\lang english
+后验
+\series default
+\lang chinese-simplified
+误差校正，并且误差协方差 
+\begin_inset Formula $P_{k|k}=cov(\boldsymbol{x}-\boldsymbol{\hat{x_{k|k}}})$
+\end_inset
+
+现在
+\series bold
+\lang english
+意味
+\series default
+\lang chinese-simplified
+着什么？我们可以进行数学计算，但是它变得相当可怕，只是有一些难看的东西堵住了这些漏洞。让我们尝试另一种方法。
+\end_layout
+
+\begin_layout Standard
+幸运的是，NASA在60年代提出了MEKF，从而解决了这一问题。诀窍是我们要假设我们的方向估计不再被状态向量中的一个条目捕获。相反，完整的方位表示
+\begin_inset Formula $q$
+\end_inset
+
+(我们仍将使用四元数)由两个参数捕获：累积的方位估计
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+和单独的小角度误差向量
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+，用于参数化误差四元数，
+\begin_inset Formula $\delta q(\boldsymbol{\alpha})=\begin{pmatrix}1\\
+\frac{\boldsymbol{\alpha}}{2}
+\end{pmatrix}$
+\end_inset
+
+，因此我们的完整估计是
+\begin_inset Formula $q=\hat{q}\delta q(\boldsymbol{\alpha})$
+\end_inset
+
+。请注意，此误差运算与朴素的误差校正相比有所不同：因为我们已经按照群运算公式化了误差，所以我们保持了此旋转表示的不变性。
+\end_layout
+
+\begin_layout Standard
+每次滤波器更新，全状态估计
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+首先根据测得的角速度
+\begin_inset Formula $\boldsymbol{\hat{\omega}}$
+\end_inset
+
+进行更新。然后，根据标准的Kalman滤波实现来更新小角度误差(现在可以正常工作，因为
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+保证
+\series bold
+\lang english
+很小
+\series default
+\lang chinese-simplified
+，因此我们不会遇到任何奇异问题)。最后，我们用误差更新了全状态估计
+\begin_inset Formula $q_{k}=q_{k-1}\delta q_{k}$
+\end_inset
+
+，并将四元数小角度误差重置为单位数：
+\begin_inset Formula $\boldsymbol{\alpha_{k+1}}=\boldsymbol{0}$
+\end_inset
+
+和
+\begin_inset Formula $\delta q_{k+1}=\begin{pmatrix}1\\
+0
+\end{pmatrix}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+乘性扩展卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+因此，完整的步骤(记住状态向量最初值是
+\begin_inset Formula $\boldsymbol{0}$
+\end_inset
+
+) 是：
+\end_layout
+
+\begin_layout Standard
+首先，使用测得的角速度更新方位估计值(这是MEKF独有的
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：这是旋转的运动学方程，基本上每个用角速度估计姿态的KF都有，非MEKF独有。
+\end_layout
+
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{k|k-1}=q_{k-1|k-1}+\dot{q}_{k-1|k-1}\Delta t=q_{k-1|k-1}+\frac{1}{2}q_{k-1|k-1}\begin{pmatrix}0\\
+\boldsymbol{\omega}
+\end{pmatrix}\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，更新过程模型：
+\begin_inset Formula 
+\[
+\Phi_{k}=(I+F\Delta t)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{\boldsymbol{x}}=F\boldsymbol{x}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，更新
+\series bold
+\lang english
+先验
+\series default
+\lang chinese-simplified
+估计协方差和kalman增益(以下与普通KF相同)：
+\begin_inset Formula 
+\[
+P_{k|k-1}=\Phi_{k}P_{k-1|k-1}\Phi_{k}^{T}+Q_{k}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+K_{k}=P_{k|k-1}H_{k}^{T}(H_{k}P_{k|k-1}H_{k}^{T}+R_{k})^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来，更新
+\series bold
+\lang english
+后验
+\series default
+\lang chinese-simplified
+状态估计和协方差：
+\begin_inset Formula 
+\[
+\boldsymbol{x_{k|k}}=K_{k}(\boldsymbol{z_{k}}-R_{i}^{b}(q_{k|k-1})\boldsymbol{f}^{g})
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{k|k}=(I-K_{k}H_{k})P_{k|k-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，更新
+\series bold
+\lang english
+后验
+\series default
+\lang chinese-simplified
+方位估计(同样，MEKF独有的
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：MEKF要求显式重置，而其它KF是隐式要求。
+\end_layout
+
+\end_inset
+
+)：
+\begin_inset Formula 
+\[
+q_{k|k}=q_{k|k-1}\delta q(x_{k|k})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+陀螺仪和加速度计的具体例子
+\end_layout
+
+\begin_layout Standard
+让我们通过一个具体的实现，我们有一个单独的观测器，一个加速度计测量。
+\end_layout
+
+\begin_layout Standard
+我们假设陀螺仪和加速度计的标准高斯噪声漂移模型，因此测量的角速度是真实角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，偏差
+\begin_inset Formula $\boldsymbol{\beta_{\omega}}$
+\end_inset
+
+和白噪音
+\begin_inset Formula $\boldsymbol{\eta_{\omega}}$
+\end_inset
+
+之和：
+\begin_inset Formula $\boldsymbol{\hat{\omega}}=\boldsymbol{\omega}+\boldsymbol{\beta_{\omega}}+\boldsymbol{\eta_{\omega}}$
+\end_inset
+
+。偏差漂移根据
+\begin_inset Formula $\dot{\boldsymbol{\beta_{\omega}}}=\boldsymbol{\nu_{\beta}}$
+\end_inset
+
+，其中
+\begin_inset Formula $\boldsymbol{\eta}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\nu}$
+\end_inset
+
+是白噪声随机过程。
+\end_layout
+
+\begin_layout Standard
+类似地，加速计测量
+\begin_inset Formula $\boldsymbol{\hat{f}}=\boldsymbol{f}+\boldsymbol{\beta_{f}}+\boldsymbol{\eta_{f}}$
+\end_inset
+
+，带有漂移偏差
+\begin_inset Formula $\beta_{f}$
+\end_inset
+
+和白噪声
+\begin_inset Formula $\eta_{f}$
+\end_inset
+
+。真正的加速度计测量值将是来自机体坐标系惯性力
+\begin_inset Formula $\boldsymbol{f}^{b}$
+\end_inset
+
+的加速度和重力加速度的总和：
+\begin_inset Formula $\boldsymbol{f}^{b}=\boldsymbol{a}^{b}+R(q)_{i}^{b}\begin{pmatrix}0\\
+0\\
+-g
+\end{pmatrix}^{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们形成我们的状态向量。我们需要在世界坐标系中的方位误差参数化(
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+)、位置误差(
+\begin_inset Formula $\delta\boldsymbol{r}$
+\end_inset
+
+)和线速度误差(
+\begin_inset Formula $\delta\boldsymbol{v}$
+\end_inset
+
+)，以及陀螺仪和加速度计偏差(
+\begin_inset Formula $\boldsymbol{\beta_{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\beta_{f}}$
+\end_inset
+
+)：
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\begin{pmatrix}\boldsymbol{\alpha}\\
+\delta\boldsymbol{v}\\
+\delta\boldsymbol{r}\\
+\boldsymbol{\beta_{\omega}}\\
+\boldsymbol{\beta_{f}}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了形成Kalman滤波器，我们需要形成我们的离散状态转移模型，该模型由误差状态向量的动力学以明显的形式确定：
+\begin_inset Formula $\Phi=I+F\Delta t$
+\end_inset
+
+，其中
+\begin_inset Formula $\dot{\boldsymbol{x}}=F\boldsymbol{x}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+参见附录对于以下推导。
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\alpha}}=-[\boldsymbol{\hat{\omega}}\times]\boldsymbol{\alpha}-\boldsymbol{\beta_{\omega}}-\boldsymbol{\eta_{\omega}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{\boldsymbol{v}}=-R_{b}^{i}(\hat{q})[\boldsymbol{\hat{f}}^{b}\times]\boldsymbol{\alpha}-R_{b}^{i}(\hat{q})\boldsymbol{\beta_{f}}-R_{b}^{i}(\hat{q})\boldsymbol{\eta_{f}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{\boldsymbol{r}}=\delta\boldsymbol{v}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\beta_{\omega}}}=\boldsymbol{\nu_{\omega}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\beta_{f}}}=\boldsymbol{\nu_{f}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以，
+\begin_inset Formula 
+\[
+F=\begin{pmatrix}-[\boldsymbol{\hat{\omega}}\times] & 0 & 0 & -I & 0\\
+-R_{b}^{i}(\hat{q})[\boldsymbol{\hat{f}}^{b}\times] & 0 & 0 & 0 & -R_{b}^{i}(\hat{q})\\
+0 & I & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+Q_{k}=\int_{0}^{\Delta t}e^{F(\Delta t-\tau)}Q_{c}e^{F^{T}(\Delta t-\tau)}d\tau
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+Q_{c}=\begin{pmatrix}diag(\sigma_{\omega}^{2}) & 0 & 0 & 0 & 0\\
+0 & diag(\sigma_{f}^{2}) & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & diag(\sigma_{\beta_{\omega}}^{2}) & 0\\
+0 & 0 & 0 & 0 & diag(\sigma_{\beta_{f}}^{2})
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以在
+\begin_inset Formula $\hat{\omega}=\hat{f}=0$
+\end_inset
+
+和
+\begin_inset Formula $R_{i}^{b}(\hat{q})=I$
+\end_inset
+
+周围线性化
+\begin_inset Formula $F$
+\end_inset
+
+，以获得：
+\begin_inset Formula 
+\[
+Q_{k}=\begin{pmatrix}\wedge(\sigma_{\omega}^{2})\Delta t+\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{3}}{3} & 0 & 0 & -\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{2}}{2} & 0\\
+0 & \wedge(\sigma_{f}^{2})\Delta t+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{3} & \wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{4}}{8}+\wedge(\sigma_{f}^{2})\frac{\Delta t^{2}}{2} & 0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{2}}{2}\\
+0 & \wedge(\sigma_{f}^{2})\frac{\Delta t^{2}}{2}+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{4}}{8} & \wedge(\sigma_{f}^{2})\frac{\Delta t^{3}}{3}+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{5}}{20} & 0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{6}\\
+-\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{2}}{2} & 0 & 0 & \wedge(\sigma_{\beta_{\omega}}^{2})\Delta t & 0\\
+0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{2}}{2} & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{6} & 0 & \wedge(\sigma_{\beta_{f}}^{2})\Delta t
+\end{pmatrix}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\wedge(\boldsymbol{x})=\begin{pmatrix}x_{0} & 0 & 0\\
+0 & x_{1} & 0\\
+0 & 0 & x_{2}
+\end{pmatrix}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于加速度计观测，
+\begin_inset Formula 
+\[
+\delta\boldsymbol{f}^{b}=-\boldsymbol{\alpha}\times R_{i}^{b}(\hat{q})\begin{pmatrix}0\\
+0\\
+-g
+\end{pmatrix}+\boldsymbol{\beta_{f}}+\boldsymbol{\eta_{f}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula 
+\[
+H=\begin{pmatrix}\begin{bmatrix}R_{i}^{b}(\hat{q})\begin{pmatrix}0\\
+0\\
+-g
+\end{pmatrix}\times\end{bmatrix} & 0 & 0 & 0 & I\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+代码
+\end_layout
+
+\begin_layout Standard
+下面是等效的python代码(你可以在
+\begin_inset CommandInset href
+LatexCommand href
+name "此处"
+target "https://github.com/MatthewHampsey/mekf"
+literal "false"
+
+\end_inset
+
+找到完整的代码)。你会注意到上面没有提到的一些细节，例如从测量值中减去估计的偏差：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset listings
+lstparams "language=Python,basicstyle={\footnotesize},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+class Kalman:
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #state vector:
+\end_layout
+
+\begin_layout Plain Layout
+
+    # [0:3] orientation error
+\end_layout
+
+\begin_layout Plain Layout
+
+    # [3:6] velocity error
+\end_layout
+
+\begin_layout Plain Layout
+
+    # [6:9] position error
+\end_layout
+
+\begin_layout Plain Layout
+
+    # [9:12] gyro bias
+\end_layout
+
+\begin_layout Plain Layout
+
+    # [12:15] accelerometer bias
+\end_layout
+
+\begin_layout Plain Layout
+
+    def __init__(self, initial_est, estimate_covariance, 
+\end_layout
+
+\begin_layout Plain Layout
+
+                       gyro_cov, gyro_bias_cov, accel_proc_cov, 
+\end_layout
+
+\begin_layout Plain Layout
+
+                       accel_bias_cov, accel_obs_cov):
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate = initial_est
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate_covariance = estimate_covariance*np.identity(15, dtype=float
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.observation_covariance = accel_obs_cov*np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.gyro_bias = np.array([0.0, 0.0, 0.0])
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.accelerometer_bias = np.array([0.0, 0.0, 0.0])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G = np.zeros(shape=(15, 15), dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G[0:3, 9:12] = -np.identity(3)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G[6:9, 3:6] =  np.identity(3)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.gyro_cov_mat = gyro_cov*np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.gyro_bias_cov_mat = gyro_bias_cov*np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.accel_cov_mat = accel_proc_cov*np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.accel_bias_cov_mat = accel_bias_cov*np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def process_covariance(self, time_delta):
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q = np.zeros(shape=(15, 15), dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[0:3, 0:3] = self.gyro_cov_mat*time_delta + self.gyro_bias_cov_mat*(time_
+delta**3)/3.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[0:3, 9:12] = -self.gyro_bias_cov_mat*(time_delta**2)/2.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[3:6, 3:6] = self.accel_cov_mat*time_delta + self.accel_bias_cov_mat*(tim
+e_delta**3)/3.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[3:6, 6:9] = self.accel_bias_cov_mat*(time_delta**4)/8.0 + self.accel_cov_
+mat*(time_delta**2)/2.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[3:6, 12:15] = -self.accel_bias_cov_mat*(time_delta**2)/2.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[6:9, 3:6] = self.accel_cov_mat*(time_delta**2)/2.0 + self.accel_bias_cov_
+mat*(time_delta**4)/8.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[6:9, 6:9] = self.accel_cov_mat*(time_delta**3)/3.0 + self.accel_bias_cov_
+mat*(time_delta**5)/20.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[6:9, 12:15] = -self.accel_bias_cov_mat*(time_delta**3)/6.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[9:12, 0:3] = -self.gyro_bias_cov_mat*(time_delta**2)/2.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[9:12, 9:12] = self.gyro_bias_cov_mat*time_delta
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[12:15, 3:6] = -self.accel_bias_cov_mat*(time_delta**2)/2.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[12:15, 6:9] = -self.accel_bias_cov_mat*(time_delta**3)/6.0
+\end_layout
+
+\begin_layout Plain Layout
+
+        Q[12:15, 12:15] = self.accel_bias_cov_mat*time_delta
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        return Q
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def update(self, gyro_meas, acc_meas, time_delta):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        gyro_meas = gyro_meas - self.gyro_bias
+\end_layout
+
+\begin_layout Plain Layout
+
+        acc_meas = acc_meas - self.accelerometer_bias
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Integrate angular velocity through forming quaternion derivative
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+       self.estimate = self.estimate + time_delta*0.5*self.estimate*Quaternion(scala
+r = 0, vector=gyro_meas)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate = self.estimate.normalised
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Form process model
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G[0:3, 0:3] = -skewSymmetric(gyro_meas)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G[3:6, 0:3] = -quatToMatrix(self.estimate).dot(skewSymmetric(acc_meas)
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.G[3:6, 12:15] = -quatToMatrix(self.estimate)
+\end_layout
+
+\begin_layout Plain Layout
+
+        F = np.identity(15, dtype=float) + self.G*time_delta
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Update with a priori covariance
+\end_layout
+
+\begin_layout Plain Layout
+
+       self.estimate_covariance = np.dot(np.dot(F, self.estimate_covariance),
+ F.transpose()) + self.process_covariance(time_delta)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Form Kalman gain
+\end_layout
+
+\begin_layout Plain Layout
+
+        H = np.zeros(shape=(3,15), dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        H[0:3, 0:3] = skewSymmetric(self.estimate.inverse.rotate(np.array([0.0,
+ 0.0, -1.0])))
+\end_layout
+
+\begin_layout Plain Layout
+
+        H[0:3, 12:15] = np.identity(3, dtype=float)
+\end_layout
+
+\begin_layout Plain Layout
+
+        PH_T = np.dot(self.estimate_covariance, H.transpose())
+\end_layout
+
+\begin_layout Plain Layout
+
+        inn_cov = H.dot(PH_T) + self.observation_covariance
+\end_layout
+
+\begin_layout Plain Layout
+
+        K = np.dot(PH_T, np.linalg.inv(inn_cov))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Update with a posteriori covariance
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate_covariance = (np.identity(15) - np.dot(K, H)).dot(self.estimate
+_covariance)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        aposteriori_state = np.dot(K, (acc_meas - self.estimate.inverse.rotate(np.arr
+ay([0.0, 0.0, -1.0]))))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        #Fold filtered error state back into full state estimates
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate = self.estimate * Quaternion(scalar = 1, vector = 0.5*aposter
+iori_state[0:3])
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.estimate = self.estimate.normalised
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.gyro_bias += aposteriori_state[9:12]
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.accelerometer_bias += aposteriori_state[12:15] 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结果
+\end_layout
+
+\begin_layout Standard
+效果如何？让我们模拟一个物体，它从静止开始，没有旋转，然后根据某种随机角速度开始旋转。这样，对象将随机移动，但是轨迹平滑。我们在模拟的陀螺和加速度计测量中加入了
+一些偏差和高斯噪声。以下是与陀螺仪测量的原始航位推算积分相比的结果：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Graphics
+	filename KalmanAcc.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+roll和pitch可以精确预测，但不能预测yaw。这是预期的：加速度计测量重力，重力与初始方位的yaw轴平行。我们可以通过增加一个额外的参考测量值来修正这个问
+题，比如从磁力计上。我们用和加速度计完全相同的方式来做这个，只是现在假设参考方位是
+\begin_inset Formula $\begin{pmatrix}1\\
+0\\
+0
+\end{pmatrix}$
+\end_inset
+
+。 方位并不重要，只要它与机体坐标系
+\begin_inset Formula $z$
+\end_inset
+
+轴线性无关即可。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Graphics
+	filename KalmanAccMag.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这样更好。
+\end_layout
+
+\begin_layout Section
+附录
+\end_layout
+
+\begin_layout Standard
+以下推导来自James M.Maley的优秀论文《Multiplicative Quaternion Extended Kalman Filtering
+ for Nonspinning Guided Projectiles》，我对过程协方差矩阵的推导进行了一些更正。
+\end_layout
+
+\begin_layout Paragraph
+证明
+\begin_inset Formula $\ensuremath{\dot{\boldsymbol{\alpha}}=-[\boldsymbol{\hat{\omega}}\times]\boldsymbol{\alpha}-\boldsymbol{\beta_{\omega}}-\boldsymbol{\eta_{\omega}}}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $\ensuremath{\delta\dot{q}=\hat{q}^{-1}\dot{q}+\dot{\hat{q}}^{-1}q}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $\hat{q}^{-1}\hat{q}=1$
+\end_inset
+
+，所以
+\begin_inset Formula $\frac{d(\hat{q}^{-1}\hat{q})}{dt}=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+另外，根据乘积规则：
+\begin_inset Formula $\ensuremath{\frac{d(\hat{q}^{-1}\hat{q})}{dt}=\dot{\hat{q}}^{-1}\hat{q}+\hat{q}^{-1}\dot{\hat{q}}}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\noindent
+所以
+\begin_inset Formula $\dot{\hat{q}}^{-1}=-\hat{q}^{-1}\dot{\hat{q}}\hat{q}^{-1}=-\hat{q}^{-1}\frac{1}{2}\hat{q}\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}\hat{q}^{-1}=-\frac{1}{2}\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}\hat{q}^{-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+使用此定义于
+\begin_inset Formula $\ensuremath{\delta\dot{q}=\hat{q}^{-1}\dot{q}+\dot{\hat{q}}^{-1}q}$
+\end_inset
+
+中有：
+\begin_inset Formula 
+\[
+\delta\dot{q}=\hat{q}^{-1}\frac{1}{2}q\begin{pmatrix}0\\
+\boldsymbol{\omega}^{b}
+\end{pmatrix}-\frac{1}{2}\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}\hat{q}^{-1}q
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{q}=\frac{1}{2}\delta q\begin{pmatrix}0\\
+\boldsymbol{\omega}^{b}
+\end{pmatrix}-\frac{1}{2}\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}\delta q
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{q}=\frac{1}{2}\delta q\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}-\frac{1}{2}\begin{pmatrix}0\\
+\hat{\boldsymbol{\omega}}^{b}
+\end{pmatrix}\delta q+\frac{1}{2}\delta q\begin{pmatrix}0\\
+\delta\boldsymbol{\omega}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+使用四元数乘法的定义和
+\begin_inset Formula $\delta q_{r}\approx1$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\delta\dot{q}=\frac{1}{2}\begin{pmatrix}-\delta\boldsymbol{q_{v}}\cdot\hat{\boldsymbol{\omega}}\\
+\hat{\boldsymbol{\omega}}^{b}+\delta\boldsymbol{q_{v}}\times\hat{\boldsymbol{\omega}}
+\end{pmatrix}+\frac{1}{2}\begin{pmatrix}\hat{\boldsymbol{\omega}}\cdot\delta\boldsymbol{q_{v}}\\
+-\hat{\boldsymbol{\omega}}^{b}-\hat{\boldsymbol{\omega}}\times\delta\boldsymbol{q_{v}}
+\end{pmatrix}+\frac{1}{2}\begin{pmatrix}-\delta\boldsymbol{q_{v}}\cdot\delta\hat{\boldsymbol{\omega}}\\
+\delta\hat{\boldsymbol{\omega}}+\delta\boldsymbol{q_{v}}\times\delta\hat{\boldsymbol{\omega}}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+简化此四元数的向量分量，并将二阶误差分量设置为
+\begin_inset Formula $0$
+\end_inset
+
+， 我们获得：
+\begin_inset Formula 
+\[
+\delta\boldsymbol{q_{v}}=-\hat{\boldsymbol{\omega}}\times\delta\boldsymbol{q_{v}}+\frac{1}{2}\delta\boldsymbol{\omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+并使用我们定义的
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{\alpha}=2\delta\boldsymbol{q_{v}}$
+\end_inset
+
+，则变为：
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\alpha}}=-[\boldsymbol{\hat{\omega}}\times]\boldsymbol{\alpha}+\delta\boldsymbol{\omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+这就是我们想要的结果。
+\end_layout
+
+\begin_layout Paragraph
+证明
+\begin_inset Formula $\delta\boldsymbol{f}^{b}=-\boldsymbol{\alpha}\times R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}+\boldsymbol{\beta_{f}}+\boldsymbol{\eta_{f}}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+测得的参考将是参考向量，真实方位以及测量偏差和噪声的函数：
+\begin_inset Formula 
+\[
+\boldsymbol{m}=R_{i}^{b}(q)\boldsymbol{m}^{i}+\boldsymbol{\beta_{m}}+\boldsymbol{\eta_{m}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+估计的观测值是参考向量和当前四元数估计值的函数：
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{m}}=R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+我们具有以下等价关系(参见
+\begin_inset CommandInset href
+LatexCommand href
+name "Rodrigues的旋转公式"
+target "https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula"
+literal "false"
+
+\end_inset
+
+)：
+\begin_inset Formula 
+\[
+R_{i}^{b}(q)=2\boldsymbol{q_{v}}\boldsymbol{q_{v}}^{T}+I_{3\times3}(q_{r}^{2}-\boldsymbol{q_{v}}^{T}\boldsymbol{q_{v}})-2q_{r}[\boldsymbol{q_{v}}\times]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+所以(忽略二阶误差项)：
+\begin_inset Formula 
+\[
+R_{i}^{b}(\delta q)=I-[\boldsymbol{\alpha}\times]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+并且
+\begin_inset Formula 
+\[
+R_{i}^{b}(q)=R_{i}^{b}(\delta q)R_{i}^{b}(\hat{q})=(I-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+所以
+\begin_inset Formula 
+\[
+\delta\boldsymbol{m}^{b}=\boldsymbol{m}^{b}-\hat{\boldsymbol{m}}^{b}=(I-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}+\boldsymbol{\beta_{m}}+\boldsymbol{\eta_{m}}-R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+所以
+\begin_inset Formula 
+\[
+\delta\boldsymbol{m}^{b}=-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}+\boldsymbol{\beta_{m}}+\boldsymbol{\eta_{m}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+这是必需的结果。
+\end_layout
+
+\begin_layout Paragraph
+先验协方差传播的证明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+从前面开始，我们有：
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\alpha}}=-[\boldsymbol{\hat{\omega}}\times]\boldsymbol{\alpha}-\boldsymbol{\beta_{\omega}}-\boldsymbol{\eta_{\omega}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{\boldsymbol{v}}=-R_{b}^{i}(\hat{q})[\boldsymbol{\hat{f}}^{b}\times]\boldsymbol{\alpha}-R_{b}^{i}(\hat{q})\boldsymbol{\beta_{f}}-R_{b}^{i}(\hat{q})\boldsymbol{\eta_{f}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\delta\dot{\boldsymbol{r}}=\delta\boldsymbol{v}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\beta_{\omega}}}=\boldsymbol{\nu_{\omega}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{\beta_{f}}}=\boldsymbol{\nu_{f}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+使用之前的定义
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $F$
+\end_inset
+
+，我们可以将其重申为：
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{x}}=F\boldsymbol{x}+G\boldsymbol{w}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+其中
+\begin_inset Formula 
+\[
+G=\begin{pmatrix}diag(-\sigma_{\omega}) & 0 & 0 & 0 & 0\\
+0 & -R_{b}^{i}(\hat{q})diag(\sigma_{f}) & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & diag(\sigma_{\beta_{\omega}}) & 0\\
+0 & 0 & 0 & 0 & diag(\sigma_{\beta_{f}}))
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+并且
+\begin_inset Formula $\boldsymbol{w}$
+\end_inset
+
+为单位方差，零均值白噪声向量。
+\end_layout
+
+\begin_layout Standard
+\noindent
+经检查，
+\begin_inset Formula $G\boldsymbol{w}$
+\end_inset
+
+的互相关为
+\begin_inset Formula 
+\[
+E[(G\boldsymbol{w}(t))(G\boldsymbol{w}(\tau))^{T}]=Q_{c}\delta(t-\tau)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $\dot{\boldsymbol{x}}=F\boldsymbol{x}+G\boldsymbol{w}$
+\end_inset
+
+的解是众所周知的结果：
+\begin_inset Formula 
+\[
+\boldsymbol{x}(t)=e^{F(t-t_{0})}\boldsymbol{x}(t_{0})+\int_{t_{0}}^{t}e^{F(t-\tau)}G\boldsymbol{w}(\tau)d\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+我们感兴趣的是
+\begin_inset Formula $t=t_{k}$
+\end_inset
+
+和
+\begin_inset Formula $t_{0}=t_{k-1}$
+\end_inset
+
+，因此
+\begin_inset Formula $t_{k}-t_{k-1}=\Delta t$
+\end_inset
+
+，并在
+\begin_inset Formula $\tau’=\tau-t_{k-1}$
+\end_inset
+
+的积分中进行替换
+\begin_inset Formula 
+\[
+\boldsymbol{x}(t_{k})=e^{F\Delta t}\boldsymbol{x}(t_{k-1})+\int_{0}^{\Delta t}e^{F(\Delta t-\tau')}G\boldsymbol{w}(\tau'+t_{k-1})d\tau'
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula $\boldsymbol{x}(t_{k})$
+\end_inset
+
+的协方差由以下公式给出：
+\begin_inset Formula 
+\begin{align*}
+P_{k|k-1} & =E[\boldsymbol{x}(t_{k})\boldsymbol{x}(t_{k})^{T}]\\
+ & =E[\begin{pmatrix}e^{F\Delta t}\boldsymbol{x}(t_{k-1})+\int_{0}^{\Delta t}e^{F(\Delta t-\tau')}G\boldsymbol{w}(\tau'+t_{k-1})d\tau'\end{pmatrix}\begin{pmatrix}e^{F\Delta t}\boldsymbol{x}(t_{k-1})+\int_{0}^{\Delta t}e^{F(\Delta t-\tau'')}G\boldsymbol{w}(\tau''+t_{k-1})d\tau''\end{pmatrix}^{T}]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+在此基础上，我们删除了
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{w}$
+\end_inset
+
+的乘积，因为它们是不相关的，并且都有
+\begin_inset Formula $0$
+\end_inset
+
+的期望值：
+\begin_inset Formula 
+\begin{align*}
+E[\boldsymbol{x}(t_{k})\boldsymbol{x}(t_{k})^{T}]= & e^{F\Delta t}E[\boldsymbol{x}(t_{k-1})\boldsymbol{x}(t_{k-1})^{T}]e^{F^{T}\Delta t}\\
+ & +\int_{0}^{\Delta t}\int_{0}^{\Delta t}e^{F(\Delta t-\tau')}E[G\boldsymbol{w}(\tau'+t_{k-1})\boldsymbol{w}(\tau''+t_{k-1})^{T}G^{T}]e^{F^{T}(\Delta t-\tau'')}d\tau'd\tau''
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E[\boldsymbol{x}(t_{k})\boldsymbol{x}(t_{k})^{T}]=e^{F\Delta t}P_{(k-1|k-1)}e^{F^{T}\Delta t}+\int_{0}^{\Delta t}\int_{0}^{\Delta t}e^{F(\Delta t-\tau')}Q_{c}\delta(\tau'-\tau'')e^{F^{T}(\Delta t-\tau'')}d\tau'd\tau''
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+E[\boldsymbol{x}(t_{k})\boldsymbol{x}(t_{k})^{T}]=\Phi P_{(k-1|k-1)}\Phi^{T}+\int_{0}^{\Delta t}e^{F(\Delta t-\tau'')}Q_{c}e^{F^{T}(\Delta t-\tau'')}d\tau''
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+因此，
+\begin_inset Formula $Q_{k}=\int_{0}^{\Delta t}e^{F(\Delta t-\tau)}Q_{c}e^{F^{T}(\Delta t-\tau)}d\tau$
+\end_inset
+
+，这是所需的结果。
+\end_layout
+
+\begin_layout Standard
+\noindent
+我们用
+\begin_inset Formula $I+F(\Delta t-\tau)+\frac{1}{2}F^{2}(\Delta t-\tau)^{2}$
+\end_inset
+
+近似
+\begin_inset Formula $e^{F(\Delta t-\tau)}$
+\end_inset
+
+，并在
+\begin_inset Formula $\hat{\omega}=\hat{f}=0$
+\end_inset
+
+和
+\begin_inset Formula $R_{i}^{b}(\hat{q})=I$
+\end_inset
+
+周围线性化
+\begin_inset Formula $F$
+\end_inset
+
+，以便
+\begin_inset Formula 
+\[
+F\approx\begin{pmatrix}0 & 0 & 0 & -I & 0 & 0\\
+0 & 0 & 0 & 0 & -I & 0\\
+0 & I & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+并且
+\begin_inset Formula 
+\[
+I+F(\Delta t-\tau)+\frac{1}{2}F^{2}(\Delta t-\tau)^{2}=\begin{pmatrix}I & 0 & 0 & -I(\Delta t-\tau) & 0 & 0\\
+0 & I & 0 & 0 & -I(\Delta t-\tau) & 0\\
+0 & I(\Delta t-\tau) & I & 0 & -\frac{I}{2}(\Delta t-\tau)^{2} & 0\\
+0 & 0 & 0 & I & 0 & 0\\
+0 & 0 & 0 & 0 & I & 0\\
+0 & 0 & 0 & 0 & 0 & I
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+在
+\begin_inset Formula $e^{F(\Delta t-\tau)}Q_{c}e^{F^{T}(\Delta t-\tau)}$
+\end_inset
+
+中使用这个近似值可以得到：
+\begin_inset Formula 
+\[
+Q_{k}=\int_{0}^{\Delta t}\begin{pmatrix}\wedge(\sigma_{\omega}^{2})+\wedge(\sigma_{\beta_{\omega}}^{2})(\Delta t-\tau)^{2} & 0 & 0 & -\wedge(\sigma_{\beta_{\omega}}^{2})(\Delta t-\tau) & 0\\
+0 & \wedge(\sigma_{f}^{2})+\wedge(\sigma_{\beta_{f}}^{2})(\Delta t-\tau)^{2} & \wedge(\sigma_{\beta_{f}}^{2})\frac{(\Delta t-\tau)^{3}}{2}+\wedge(\sigma_{f}^{2})(\Delta t-\tau) & 0 & -\wedge(\sigma_{\beta_{f}}^{2})(\Delta t-\tau)\\
+0 & \wedge(\sigma_{f}^{2})(\Delta t-\tau)+\wedge(\sigma_{\beta_{f}}^{2})\frac{(\Delta t-\tau)^{3}}{2} & \wedge(\sigma_{f}^{2})(\Delta t-\tau)^{2}+\wedge(\sigma_{\beta_{f}}^{2})\frac{(\Delta t-\tau)^{4}}{4} & 0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{(\Delta t-\tau)^{2}}{2}\\
+-\wedge(\sigma_{\beta_{\omega}}^{2})(\Delta t-\tau) & 0 & 0 & \wedge(\sigma_{\beta_{\omega}}^{2}) & 0\\
+0 & -\wedge(\sigma_{\beta_{f}}^{2})(\Delta t-\tau) & -\wedge(\sigma_{\beta_{f}}^{2})\frac{(\Delta t-\tau)^{2}}{2} & 0 & \wedge(\sigma_{\beta_{f}}^{2})
+\end{pmatrix}d\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+计算这个积分可以得到
+\begin_inset Formula $Q_{k}$
+\end_inset
+
+过程噪声近似的期望结果。
+\end_layout
+
+\begin_layout Paragraph
+磁力计观测的扩展方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+我们扩展状态向量以包括磁力计偏差：
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\begin{pmatrix}\boldsymbol{\alpha}\\
+\delta\boldsymbol{v}\\
+\delta\boldsymbol{r}\\
+\boldsymbol{\beta_{\omega}}\\
+\boldsymbol{\beta_{f}}\\
+\boldsymbol{\beta_{m}}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+其中
+\begin_inset Formula $\ensuremath{\dot{\boldsymbol{\beta_{m}}}=\boldsymbol{\eta_{m}}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+然后
+\begin_inset Formula $F$
+\end_inset
+
+变成
+\begin_inset Formula 
+\[
+F=\begin{pmatrix}-[\boldsymbol{\hat{\omega}}\times] & 0 & 0 & -I & 0 & 0\\
+-R_{b}^{i}(\hat{q})[\boldsymbol{\hat{f}}^{b}\times] & 0 & 0 & 0 & -R_{b}^{i}(\hat{q}) & 0\\
+0 & I & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+然后
+\begin_inset Formula $Q_{c}$
+\end_inset
+
+和
+\begin_inset Formula $Q_{k}$
+\end_inset
+
+变成
+\begin_inset Formula 
+\[
+Q_{c}=\begin{pmatrix}diag(\sigma_{\omega}^{2}) & 0 & 0 & 0 & 0 & 0\\
+0 & diag(\sigma_{f}^{2}) & 0 & ) & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & diag(\sigma_{\beta_{\omega}}^{2}) & 0 & 0\\
+0 & 0 & 0 & 0 & diag(\sigma_{\beta_{f}}^{2}) & 0\\
+0 & 0 & 0 & 0 & 0 & diag(\sigma_{\beta_{m}}^{2})
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Q_{k}=\begin{pmatrix}\wedge(\sigma_{\omega}^{2})\Delta t+\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{3}}{3} & 0 & 0 & -\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{2}}{2} & 0 & 0\\
+0 & \wedge(\sigma_{f}^{2})\Delta t+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{3} & \wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{4}}{8}+\wedge(\sigma_{f}^{2})\frac{\Delta t^{2}}{2} & 0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{2}}{2} & 0\\
+0 & \wedge(\sigma_{f}^{2})\frac{\Delta t^{2}}{2}+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{4}}{8} & \wedge(\sigma_{f}^{2})\frac{\Delta t^{3}}{3}+\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{5}}{20} & 0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{6} & 0\\
+-\wedge(\sigma_{\beta_{\omega}}^{2})\frac{\Delta t^{2}}{2} & 0 & 0 & \wedge(\sigma_{\beta_{\omega}}^{2})\Delta t & 0 & 0\\
+0 & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{2}}{2} & -\wedge(\sigma_{\beta_{f}}^{2})\frac{\Delta t^{3}}{6} & 0 & \wedge(\sigma_{\beta_{f}}^{2})\Delta t & 0\\
+0 & 0 & 0 & 0 & 0 & \wedge(\sigma_{\beta_{m}}^{2})\Delta t
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+同样，观察矩阵
+\begin_inset Formula $H$
+\end_inset
+
+变成
+\begin_inset Formula 
+\[
+H=\begin{pmatrix}\begin{bmatrix}R_{i}^{b}(\hat{q})\begin{pmatrix}0\\
+0\\
+-g
+\end{pmatrix}\times\end{bmatrix} & 0 & 0 & 0 & I & 0\\
+\begin{bmatrix}R_{i}^{b}(\hat{q})\begin{pmatrix}1\\
+0\\
+0
+\end{pmatrix}\times\end{bmatrix} & 0 & 0 & 0 & 0 & I
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100col%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "email"
+target "matthewjohnhampsey@gmail.com"
+type "mailto:"
+literal "false"
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "github.com/matthewhampsey"
+target "https://github.com/matthewhampsey"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
