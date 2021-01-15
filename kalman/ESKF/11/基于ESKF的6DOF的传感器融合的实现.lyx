@@ -863,7 +863,7 @@ C(t+1)=C(t)(I_{3}+\frac{\sin(\theta)}{\theta}\phi_{3}+\frac{1-\cos(\theta)}{\the
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-C(t+1)=C(t)(I_{3}+\phi_{3})
+C(t+1)=C(t)(I_{3}+\phi_{3})\label{eq:8}
 \end{equation}
 
 \end_inset
@@ -1039,7 +1039,7 @@ q(t+dt)=\exp(\frac{1}{2}\phi_{4})q(t)
 \end_layout
 
 \begin_layout Standard
-请注意，此解决方案自动保留新四元数的单位范数属性：
+请注意，此解自动保留新四元数的单位范数属性：
 \end_layout
 
 \begin_layout Standard
@@ -1058,13 +1058,41 @@ q(t+dt)^{T}q(t+dt)=q(t)^{T}\exp(-\frac{1}{2}\phi_{4})\exp(\frac{1}{2}\phi_{4})q(
 \begin_inset Formula $4\times4$
 \end_inset
 
-斜对称矩阵的属性，四元数表示可以简化为：
+斜对称矩阵的属性，四元数表示可以简化为
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：原文这个指数方程里的符号写错为'-'，但代码里没错。类似的证明见
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation"
+literal "false"
+
+\end_inset
+
+，以及
+\begin_inset CommandInset href
+LatexCommand href
+name "此文"
+target "http://web.cs.iastate.edu/~cs577/handouts/quaternion.pdf"
+literal "false"
+
+\end_inset
+
+的附录A。
+\end_layout
+
+\end_inset
+
+：
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\exp(-\frac{1}{2}\phi_{4})=I\cos(\theta)+\frac{1}{2}\phi_{4}\frac{\sin(\theta)}{\theta}
+\exp(\frac{1}{2}\phi_{4})=I\cos(\theta)+\frac{1}{2}\phi_{4}\frac{\sin(\theta)}{\theta}
 \end{equation}
 
 \end_inset
@@ -1811,7 +1839,7 @@ E[\boldsymbol{n_{b}}]=0_{3\times1},E[\boldsymbol{n_{b}}(t+\tau)\boldsymbol{n_{b}
 \hat{{\bf \omega}}={\bf \omega_{m}-\hat{{\bf \omega_{b}}}}\\
 \hat{{\bf \omega}}={\bf \omega+{\bf \omega_{b}+{\bf n_{r}}}}-\hat{{\bf \omega_{b}}}\\
 \hat{{\bf \omega}}={\bf \omega-{\bf \delta\omega_{b}+{\bf n_{r}}}}
-\end{array}
+\end{array}\label{eq:30}
 \end{equation}
 
 \end_inset
@@ -2418,7 +2446,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-收集各项，将四元数展开为其标量和向量分量，并使用方程式(
+使用方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)收集各项，将四元数展开为其标量和向量分量，并使用方程式(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:2-1"
@@ -2452,13 +2490,27 @@ noprefix "false"
 
 \begin_layout Standard
 注意，我们已经用矩阵乘法替换了四元数乘法。在上述方程的第二项中，我们可以忽略将陀螺偏差误差和噪声与误差四元数相乘的二阶分量。应用这种简化，我们得到
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：原文的方程的格式有点瑕疵，式中等号右边应为向量
+\begin_inset Formula $\boldsymbol{\delta q}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \dot{\delta q}=\begin{bmatrix}0\\
--[\hat{\omega}]_{\times}\delta q
+-[\hat{\omega}]_{\times}\boldsymbol{\delta q}
 \end{bmatrix}-\frac{1}{2}\begin{bmatrix}0\\
 -\delta\omega_{b}+\boldsymbol{n_{r}}
 \end{bmatrix}
@@ -2488,7 +2540,21 @@ noprefix "false"
 
 \begin_layout Standard
 将
-\begin_inset Formula $\delta q$
+\begin_inset Formula $\boldsymbol{\delta q}$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：同上，原文此处的格式有点瑕疵，应为向量
+\begin_inset Formula $\boldsymbol{\delta q}$
+\end_inset
+
+。
+\end_layout
+
 \end_inset
 
 替换为
@@ -2516,7 +2582,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\dot{\delta\boldsymbol{\omega_{b}}}=0
+\dot{\delta\boldsymbol{\omega_{b}}}=0\label{eq:59}
 \end{equation}
 
 \end_inset
@@ -2647,7 +2713,7 @@ literal "false"
 \end_layout
 
 \begin_layout Section*
-Part 3 陀螺加速度传感器融合的实现
+Part 3 陀螺与加速度传感器融合的实现
 \end_layout
 
 \begin_layout Standard
@@ -2977,7 +3043,17 @@ P_{k\mid k-1}=F_{k}P_{k-1\mid k-1}F_{k}^{T}+Q_{k}
 \end_layout
 
 \begin_layout Standard
-现在回想一下上一篇文章中的
+现在回想一下前面文章中的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
 \begin_inset Formula $C=\hat{C}+\hat{C}[\delta\theta]_{\times}$
 \end_inset
 
@@ -3046,13 +3122,27 @@ P_{k\mid k-1}=F_{k}P_{k-1\mid k-1}F_{k}^{T}+Q_{k}
 \begin_inset Formula $[a]_{\times}\boldsymbol{b}=-[b]_{\times}\boldsymbol{a}$
 \end_inset
 
-。因此，
+。因此
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：原文下两式在格式上有点瑕疵，式中应该用粗体
+\begin_inset Formula $\boldsymbol{g}$
+\end_inset
+
+表示向量。
+\end_layout
+
+\end_inset
+
+，
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{z}=-[g]_{\times}\hat{C}\boldsymbol{\delta\theta}\label{eq:3-1}
+\boldsymbol{z}=-[\boldsymbol{g}]_{\times}\hat{C}\boldsymbol{\delta\theta}\label{eq:3-1}
 \end{equation}
 
 \end_inset
@@ -3075,7 +3165,7 @@ P_{k\mid k-1}=F_{k}P_{k-1\mid k-1}F_{k}^{T}+Q_{k}
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-H_{accel}=\begin{bmatrix}-[g]_{\times}\hat{C} & 0\end{bmatrix}\label{eq:3-2}
+H_{accel}=\begin{bmatrix}-[\boldsymbol{g}]_{\times}\hat{C} & 0\end{bmatrix}\label{eq:3-2}
 \end{equation}
 
 \end_inset
@@ -3134,10 +3224,10 @@ status open
 \end_layout
 
 \begin_layout Standard
-一种常用的量化惯性传感器数据中各种噪声源的方法被称为
+一种常用的量化惯性传感器数据中各种噪声源的方法被称为 
 \begin_inset CommandInset href
 LatexCommand href
-name "Allan均方差"
+name "Allan 均方差"
 target "http://telesens.co/wp-content/uploads/2017/05/AllanVariance5087-1.pdf"
 literal "false"
 
@@ -3564,7 +3654,7 @@ Q_{d}(\delta\theta)=\begin{bmatrix}\sigma_{gx}^{2} & 0 & 0\\
 \begin_inset Formula $\delta t$
 \end_inset
 
-模型在卡尔曼滤波器每次迭代中注入的不确定性，并在实践中很好地工作，稍后我们将看到。当陀螺偏差变化非常缓慢时，对应于陀螺偏差的部分可以设置为非常低的值。
+模型在卡尔曼滤波器每次迭代中注入不确定性，并在实践中很好地工作，稍后我们将看到。当陀螺偏差变化非常缓慢时，对应于陀螺偏差的部分可以设置为非常低的值。
 \end_layout
 
 \begin_layout Paragraph
@@ -4978,7 +5068,29 @@ Part 4
 \end_layout
 
 \begin_layout Standard
-在[1]中的方程式(16)中的状态向量由21个元素组成。
+在[1]中的方程式(16)中的状态向量由
+\begin_inset Formula $21$
+\end_inset
+
+个元素组成
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：原文在此定义的两个偏差误差符号和后面公式不一致，
+\begin_inset Formula $\delta b_{g}\rightarrow\delta\boldsymbol{g_{b}}$
+\end_inset
+
+和
+\begin_inset Formula $\delta b_{a}\rightarrow\delta\boldsymbol{a_{b}}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+。
 \end_layout
 
 \begin_layout Enumerate
@@ -5239,6 +5351,26 @@ noprefix "false"
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:4-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:59"
 plural "false"
 caps "false"
 noprefix "false"
