@@ -86,9 +86,8 @@
 这种处理滤波器状态的非矢量分量的做法最近已经有了一些更好的形式化，一些新的符号使其更自然，并清理了语法，[[通过封装流形将通用传感器融合算法与声音状态表示相结合-Hertzberg等人](https://arxiv.org/pdf/1107.1119.pdf)]。这样可以避免使用误差状态变量，并允许你“假装”处理的是向量状态，而不是这些群对象（如四元数）。我链接的文章有一个使用四元数的UKF实现示例，它可以作为你的实现的一个很好的基础。
 
 # 参考代码
-1. [An implementation of an Error State Kalman Filter (ESKF)](https://github.com/je310/ESKF)
-1. [Implementation of error-state kalman filter for attitude determination with MARG sensors](https://github.com/gareth-cross/kr_attitude_eskf)
 1. [Cardboard VR Toolkit Library (Decompiled sources)](https://github.com/raasun/cardboard)
+   + 自己整理的 [Cardboard Sensor Fusion 代码](https://github.com/shuyong/Google-CardBoard-Sensor-Fusion)
 1. [NXP® Sensor Fusion](https://www.nxp.com/support/developer-resources/software-development-tools/sensor-developer-resources/nxp-sensor-fusion:XTRSICSNSTLBOXX)
    + [Sensor Fusion Software with Matlab Models](https://community.nxp.com/thread/346827)
    + [Trajectory & Sensor Simulation Toolkit](https://github.com/memsindustrygroup/TSim)
@@ -98,3 +97,4 @@
 1. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF)
 1. [RT-SLAM stands for Real Time SLAM (Simultaneous Localization And Mapping).](https://www.openrobots.org/wiki/rtslam/)
 1. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - code](http://www.mdpi.com/1424-8220/19/1/149/s1)
+
