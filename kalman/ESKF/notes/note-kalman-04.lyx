@@ -1,0 +1,1866 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—最小化状态
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+以前，在互联网上面没有多少成熟可用的采用ESKF算法进行姿态估计的代码。没有前人的成功经验，初学者就很难学习，也更难写出一个可用的ESKF代码。比如如果只看参考
+文档[1]-[4]，是不能写出一套完整代码的，因为公式都没写全。因为大佬们写论文，只写最有价值的关键突破，而不会啰嗦把所有公式写全，手把手地教初学者怎么样完成一
+次循环迭代。文档[5]做为一份教材，公式写全了。可惜这份教材是针对航天人估计卫星姿态而写的，在测量更新模型这里使用的是星光敏感器，普通人无法接触到，也没有提供示
+例代码。初学者照着教材写代码，也很难验证对错。
+\end_layout
+
+\begin_layout Standard
+这些年来这种状况有所改变。文档[7]是近年来少有的好教材，基本上把ESKF所涉及的各个方面都讲了一遍，并且还公开了他的SLAM软件完整代码。我学习和翻译了一遍，
+收获很大。不过，这份教材是基于李群和李代数写的，对数学基础不好的人是一个挑战。同时，他的ESKF算法嵌入在他的SLAM软件项目里。要想隔离出来单独学习ESKF算
+法，难度有点高。
+\end_layout
+
+\begin_layout Standard
+不过还好，现在这方面的教材越来越多，学习文档[8]和[11]及其代码，再回头细读文档[1]-[5]，基本上就可以理解也能写出可用的ESKF代码了。本文想做另外一
+种尝试，分析CardBoard Sensor Fusion的算法。
+\end_layout
+
+\begin_layout Section
+背景
+\end_layout
+
+\begin_layout Standard
+CardBoard Sensor Fusion的算法，是Google CardBoard VR项目里所使用的姿态估计算法。做为在上市产品中被广泛使用的软件，说明
+该算法是成熟可靠的，是值得学习的。
+\end_layout
+
+\begin_layout Standard
+该算法是基于李群和李代数推导的算法。在文档[12]中有详细的推导和说明。我在学习的过程中也顺带把CardBoard VR项目中的ESKF算法代码挖了出来，可以单
+独学习。代码地址在参考文献的最后条目里。
+\end_layout
+
+\begin_layout Standard
+但是本文不会重复文档[12]的分析方法。因为文档[12]基于李群和李代数进行分析，对于不了解这块数学知识的读者难度较大。本文对读者的假设是了解四元数和旋转矩阵，
+了解矩阵和向量之间的乘法运算。也就是使用文档[1]-[4]这样的早先时候的分析方法，这样的入门门槛会低一些。同时，使用这种方法和使用李群和李代数推导出来的公式有
+细微区别。对同一个问题，不同的方法异途同归又略有差异，这对理解ESKF算法很有帮助。
+\end_layout
+
+\begin_layout Standard
+不过，我建议初学者先学习文档[8]和[11]及其代码，再来学习CardBoard Sensor Fusion的算法。因为这个算法有一个特点，就是最小化状态向量。
+传统的ESKF算法的状态向量至少有2个向量和6个参数，分别是旋转误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+和陀螺偏差
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+，于是很多矩阵是
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵。如果状态向量更多则矩阵更大。而该算法因为项目的特点，为了运算速度，最小化状态向量，只有一个姿态误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+。陀螺偏差
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+另外采用低通滤波进行估计。这样的好处是算法中所有的矩阵都是
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵，运算速度达到了可能的极致。不过就是因为状态最小化，公式也就最简化，于是就和传统的EKF公式有点不一样了。于是就容易让初学者迷惑。
+\end_layout
+
+\begin_layout Standard
+另外，我因为方便，在后面的公式里还是用四元数表示姿态。而实际代码里是用旋转矩阵表示姿态。其实对于现代计算机系统来说，用四元数还是用旋转矩阵，两者不论在运算速度上
+还是在存储上差异极微。选择哪一种更多的是设计者的习惯和喜好。重要的是理解算法思想。
+\end_layout
+
+\begin_layout Section
+卡尔曼滤波器回顾
+\end_layout
+
+\begin_layout Standard
+对于一个在状态空间描述的线性或者准线性系统，状态
+\begin_inset Formula $k$
+\end_inset
+
+从
+\begin_inset Formula $k-1$
+\end_inset
+
+的状态演变而来，根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\bf x_{k}={\bf F_{k}{\bf x_{k-1}+{\bf B_{k}{\bf u_{k}+{\bf w_{k}}}}}}}
+\]
+
+\end_inset
+
+在这里，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf F_{k}}$
+\end_inset
+
+是状态转换矩阵。对于简单的问题，这个矩阵可以是一个常数，但是对于大多数实际应用程序，转换矩阵依赖于状态向量的值并每次迭代改变。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf B_{k}}$
+\end_inset
+
+是应用于控制向量
+\begin_inset Formula ${\bf u}$
+\end_inset
+
+的控制输入模型。这可用于为系统的已知控制输入建模，例如应用于机器人电机的电流、汽车方向盘的位置等。在我们的示例中，我们不假设对控制输入有任何了解，因此
+\begin_inset Formula ${\bf B}$
+\end_inset
+
+不会成为我们模型的一部分。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf w_{k}}$
+\end_inset
+
+是过程噪声，假定从零均值多元正态分布
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+中提取，利用协方差矩阵
+\begin_inset Formula ${\bf Q_{k}:{\bf w_{k}\sim\mathcal{N}\left(0,{\bf Q_{k}}\right)}}$
+\end_inset
+
+。为这个矩阵确定一个合适的值是很棘手的，并且在卡尔曼滤波器的文献中经常被忽视。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在时间“
+\begin_inset Formula $k$
+\end_inset
+
+”时刻，一个真实状态的观测(或测量)
+\begin_inset Formula $z_{k}$
+\end_inset
+
+根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\bf z_{k}={\bf H_{k}{\bf x_{k}+{\bf v_{k}}}}}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $H_{k}$
+\end_inset
+
+是将状态空间映射到观测空间的观测模型。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $v_{k}$
+\end_inset
+
+是假设为零均值高斯协方差的观测噪声
+\begin_inset Formula ${\bf R_{k}:{\bf v_{k}\sim\mathcal{N}\left(0,{\bf R_{k}}\right)}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，
+\begin_inset Formula $H_{k}$
+\end_inset
+
+将状态向量映射到观测值，而不是相反。这是因为
+\begin_inset Formula $H_{k}$
+\end_inset
+
+通常是不可逆的，也就是说，它不提供对状态的直接可见性。
+\end_layout
+
+\begin_layout Standard
+滤波器的状态由两个变量表示：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{{\bf x}}_{k\mid k}$
+\end_inset
+
+，时间k的后验状态估计，给出时间
+\begin_inset Formula $k$
+\end_inset
+
+之前(包括该时间)的观测值；
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula ${\bf P_{k\mid k}}$
+\end_inset
+
+，后验误差协方差矩阵(状态估计精度的度量)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+滤波器分两步工作：
+\end_layout
+
+\begin_layout Itemize
+一个预测步骤，其中状态和协方差矩阵根据我们对系统动力学和误差特征的了解进行更新，这些特征由
+\begin_inset Formula ${\bf F}$
+\end_inset
+
+和
+\begin_inset Formula ${\bf Q}$
+\end_inset
+
+矩阵建模。预测步骤不包括观察结果的影响。
+\end_layout
+
+\begin_layout Itemize
+一个测量更新步骤，其中包括观测的影响，以完善状态估计和协方差矩阵。这一步需要确定测量矩阵
+\begin_inset Formula ${\bf H}$
+\end_inset
+
+和
+\begin_inset Formula ${\bf R}$
+\end_inset
+
+矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+预测和更新步骤的相应方程式如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\lang english
+预测
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{{\bf x}}_{k\mid k-1}={\bf F_{k}\hat{{\bf x}}_{k-1\mid k}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)估计协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf P_{k\mid k-1}={\bf F_{k}{\bf P_{k-1\mid k-1}{\bf F_{k}^{T}+{\bf Q_{k}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\lang english
+更新
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新或测量残差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\tilde{{\bf y}}_{k}={\bf z_{k}-{\bf H_{k}\hat{{\bf x}}_{k\mid k-1}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新(或残差)协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf S_{k}={\bf H_{k}{\bf P_{k\mid k-1}{\bf H_{k}^{{\rm T}}+{\bf R_{k}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+最佳卡尔曼增益
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf K_{k}={\bf P_{k\mid k-1}{\bf H_{k}^{{\rm T}}{\bf S_{k}^{-1}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\mathbf{x}}_{k\mid k}=\hat{\mathbf{x}}_{k\mid k-1}+\mathbf{K}_{k}\tilde{\mathbf{y}}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\bf P_{k|k}=({\bf I-{\bf K_{k}{\bf H_{k}){\bf P_{k|k-1}}}}}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波实现的主要任务是利用系统动力学模型和测量模型，提出状态转换矩阵
+\begin_inset Formula ${\bf F}$
+\end_inset
+
+、测量矩阵
+\begin_inset Formula ${\bf H}$
+\end_inset
+
+和系统噪声特性，设计过程和测量噪声协方差矩阵。
+\end_layout
+
+\begin_layout Section
+ESKF迭代过程
+\end_layout
+
+\begin_layout Subsection
+更新全局姿态估计
+\end_layout
+
+\begin_layout Standard
+解决问题的起点，还是回到角度积分法和四元数微分的概念。
+\end_layout
+
+\begin_layout Standard
+根据四元数微分的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}(t)=\lim\limits _{\Delta t\to0}\dfrac{q(t+\Delta t)-q(t)}{\Delta t}
+\]
+
+\end_inset
+
+以及一个约束
+\begin_inset Formula 
+\[
+q_{0}^{2}(t)+q_{1}^{2}(t)+q_{2}^{2}(t)+q_{3}^{2}(t)=1
+\]
+
+\end_inset
+
+推导出四元数的微分方程，也称四元数的运动方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\dfrac{1}{2}q\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $q$
+\end_inset
+
+为机体当前真实姿态，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为机体当前真实角速度。因为我们进行的是估计，所以有
+\begin_inset Formula 
+\begin{equation}
+\dot{\hat{q}}=\dfrac{1}{2}\hat{q}\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中，帽子符号
+\begin_inset Formula $\hat{\:}$
+\end_inset
+
+代表估计。估计角速度
+\begin_inset Formula $\hat{\boldsymbol{\omega}}$
+\end_inset
+
+和真实角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+之间的关系为
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}=\boldsymbol{\omega}+\hat{\boldsymbol{b}}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\hat{\boldsymbol{b}}$
+\end_inset
+
+为估计陀螺偏差。
+\end_layout
+
+\begin_layout Standard
+根据微分方程得到的一阶近似方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dfrac{q(t+\Delta t)-q(t)}{\Delta t}=\Delta q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+做积分：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)-q(t)=\Delta q\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)=\Delta q\Delta t+q(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时刻的新姿态
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+近似为
+\begin_inset Formula $t$
+\end_inset
+
+时刻的旧姿态
+\begin_inset Formula $q(t)$
+\end_inset
+
+与姿态变化量
+\begin_inset Formula $\Delta q\Delta t$
+\end_inset
+
+的叠加。这只是一阶近似方程，更高阶的近似方程还有龙格-库塔方程。但不管怎么样，经过一段时间的积分，因为误差积累，估计值会越来越偏离真实值。但是，该全局姿态，不论
+是四元数还是旋转矩阵，都不能直接用卡尔曼滤波器进行最优估计。不过我们有一个解决方案，可以对误差做最优估计。
+\end_layout
+
+\begin_layout Subsection
+预测方程
+\end_layout
+
+\begin_layout Standard
+假设机体当前真实姿态为
+\begin_inset Formula $q$
+\end_inset
+
+，用上面近似方程估计得出的姿态为
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+。这两者之间的误差为
+\begin_inset Formula $\delta q$
+\end_inset
+
+。它们之间的关系是
+\begin_inset Formula 
+\begin{equation}
+q=\hat{q}*\delta q
+\end{equation}
+
+\end_inset
+
+这里
+\begin_inset Formula $*$
+\end_inset
+
+表示四元数乘法。
+\end_layout
+
+\begin_layout Standard
+因为误差四元数
+\begin_inset Formula $\delta q$
+\end_inset
+
+很小，远离奇点，所以可以转换为3D向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+表示，也称旋转误差向量。一般选择吉布斯向量 (Gibbs Vector)表示，用
+\begin_inset Formula $\mathbf{a}_{g}$
+\end_inset
+
+符号表示。两者之间的关系是：
+\begin_inset Formula 
+\[
+\delta q(\mathbf{a}_{g})=\dfrac{1}{\sqrt{4+a_{g}^{2}}}\left[\begin{array}{c}
+2\\
+\mathbf{a}_{g}
+\end{array}\right]
+\]
+
+\end_inset
+
+因为误差很小，范数
+\begin_inset Formula $a_{g}^{2}\approx0$
+\end_inset
+
+，所以为简化运算，可以近似为
+\begin_inset Formula 
+\begin{equation}
+\delta q(\mathbf{a})\approx\left[\begin{array}{c}
+1\\
+\dfrac{\mathbf{a}}{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在问题的关键就是要研究这个旋转误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的变化规律。我们有状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\left[\mathbf{a}\right]
+\]
+
+\end_inset
+
+需要用卡尔曼滤波器进行估计。应用卡尔曼滤波器的关键任务是建立状态传播矩阵，描述状态如何从一个步骤变化到下一个步骤。换句话说，我们对矩阵
+\begin_inset Formula $F$
+\end_inset
+
+感兴趣
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x_{t+\mathrm{d}t}}=F\boldsymbol{x_{t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于非线性问题，矩阵
+\begin_inset Formula $F$
+\end_inset
+
+是通过对局部导数进行线性化得到的，即，我们首先得到一个关于
+\begin_inset Formula $\boldsymbol{\dot{x}}=J{\bf x}$
+\end_inset
+
+的表达式。矩阵
+\begin_inset Formula $J$
+\end_inset
+
+称为系统动力学矩阵。然后状态转换矩阵
+\begin_inset Formula $F$
+\end_inset
+
+等
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+于
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\exp(J\mathrm{d}t)$
+\end_inset
+
+。展开指数，忽略高阶项，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F=I+J\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，任务简化为找到矩阵
+\begin_inset Formula $J$
+\end_inset
+
+。要获得旋转误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的动力学矩阵，需要对其求微分方程。对方程式(4)求微分，代入方程式(1)、(2)、(3)和(5)，我们有
+\begin_inset Formula 
+\begin{align*}
+\dfrac{1}{2}q\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}
+\end{array}\right] & =\dfrac{1}{2}\hat{q}\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]*\delta q+\hat{q}*\dot{\delta q}\\
+\dfrac{1}{2}\hat{q}*\delta q\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}
+\end{array}\right] & =\dfrac{1}{2}\hat{q}\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]*\delta q+\hat{q}*\dot{\delta q}\\
+2\dot{\delta q} & =\delta q\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]-\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]*\delta q\\
+2\dot{\delta q} & =\delta q\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}-\hat{\boldsymbol{b}}
+\end{array}\right]-\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]*\delta q\\
+2\dot{\delta q} & =\delta q\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]-\delta q\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{b}}
+\end{array}\right]-\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]*\delta q\\
+2\dot{\delta q} & =\left[\begin{array}{c}
+1\\
+\dfrac{\mathbf{a}}{2}
+\end{array}\right]\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]-\left[\begin{array}{c}
+1\\
+\dfrac{\mathbf{a}}{2}
+\end{array}\right]\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{b}}
+\end{array}\right]-\left[\begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right]\left[\begin{array}{c}
+1\\
+\dfrac{\mathbf{a}}{2}
+\end{array}\right]\\
+2\dot{\delta q} & =\left[\begin{array}{c}
+-\dfrac{\mathbf{a}}{2}\cdot\hat{\boldsymbol{\omega}}\\
+\hat{\boldsymbol{\omega}}+\dfrac{\mathbf{a}}{2}\times\hat{\boldsymbol{\omega}}
+\end{array}\right]-\left[\begin{array}{c}
+-\dfrac{\mathbf{a}}{2}\cdot\hat{\boldsymbol{b}}\\
+\hat{\boldsymbol{b}}+\dfrac{\mathbf{a}}{2}\times\hat{\boldsymbol{b}}
+\end{array}\right]-\left[\begin{array}{c}
+-\hat{\boldsymbol{\omega}}\cdot\dfrac{\mathbf{a}}{2}\\
+\hat{\boldsymbol{\omega}}+\hat{\boldsymbol{\omega}}\times\dfrac{\mathbf{a}}{2}
+\end{array}\right]\\
+2\left[\begin{array}{c}
+\dot{1}\\
+\dfrac{\dot{\mathbf{a}}}{2}
+\end{array}\right] & =\left[\begin{array}{c}
+-\dfrac{\mathbf{a}}{2}\cdot\hat{\boldsymbol{\omega}}\\
+\hat{\boldsymbol{\omega}}-\hat{\boldsymbol{\omega}}\times\dfrac{\mathbf{a}}{2}
+\end{array}\right]-\left[\begin{array}{c}
+-\dfrac{\mathbf{a}}{2}\cdot\hat{\boldsymbol{b}}\\
+\hat{\boldsymbol{b}}+\dfrac{\mathbf{a}}{2}\times\hat{\boldsymbol{b}}
+\end{array}\right]-\left[\begin{array}{c}
+-\hat{\boldsymbol{\omega}}\cdot\dfrac{\mathbf{a}}{2}\\
+\hat{\boldsymbol{\omega}}+\hat{\boldsymbol{\omega}}\times\dfrac{\mathbf{a}}{2}
+\end{array}\right]\\
+\left[\begin{array}{c}
+\dot{2}\\
+\dot{\mathbf{a}}
+\end{array}\right] & \approx\left[\begin{array}{c}
+-\dfrac{\mathbf{a}}{2}\cdot\hat{\boldsymbol{b}}\\
+-\hat{\boldsymbol{\omega}}\times\mathbf{a}-\hat{\boldsymbol{b}}-\dfrac{\mathbf{a}}{2}\times\hat{\boldsymbol{b}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将上式的四元数乘法展开，将二阶误差分量设置为
+\begin_inset Formula $0$
+\end_inset
+
+，整理各项我们得到
+\begin_inset Formula 
+\[
+\dot{\mathbf{a}}=-\hat{\boldsymbol{\omega}}\times\mathbf{a}-\hat{\boldsymbol{b}}
+\]
+
+\end_inset
+
+因为陀螺偏差
+\begin_inset Formula $\hat{\boldsymbol{b}}$
+\end_inset
+
+不在卡尔曼滤波器中估计，所以我们有
+\begin_inset Formula 
+\[
+J=-\left[\hat{\boldsymbol{\omega}}\right]_{\times}
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $\left[\hat{\omega}\right]_{\times}$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+斜对称矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\hat{\boldsymbol{\omega}}\right]_{\times}=\begin{bmatrix}0 & -\hat{\omega}_{z} & \hat{\omega}_{y}\\
+\hat{\omega}_{z} & 0 & -\hat{\omega}_{x}\\
+-\hat{\omega}_{y} & \hat{\omega}_{x} & 0
+\end{bmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为ESKF要求每次循环迭代前，都要重置，也就是执行完
+\begin_inset Formula $\hat{q}=\hat{q}*\delta q(\hat{\boldsymbol{a}})$
+\end_inset
+
+之后，
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+已经是
+\begin_inset Formula $q$
+\end_inset
+
+的最优估计，这时
+\begin_inset Formula $\hat{\boldsymbol{a}}=0$
+\end_inset
+
+。所以在下次开始迭代的时候
+\begin_inset Formula 
+\begin{align*}
+\hat{\boldsymbol{a}}_{k} & =\hat{\boldsymbol{a}}_{k-1}+J\mathrm{d}t\\
+ & =J\mathrm{d}t
+\end{align*}
+
+\end_inset
+
+所以只含有旋转误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的状态传播矩阵可简化为
+\begin_inset Formula 
+\begin{align*}
+F & =J\mathrm{d}t\\
+ & =-\left[\hat{\boldsymbol{\omega}}\right]_{\times}\mathrm{d}t
+\end{align*}
+
+\end_inset
+
+于是就可以求出先验的协方差矩阵
+\begin_inset Formula $P$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+计算先验估计协方差矩阵
+\begin_inset Formula $P$
+\end_inset
+
+所需要的过程噪声协方差
+\begin_inset Formula $Q$
+\end_inset
+
+矩阵，为离散时间系统噪声协方差矩阵
+\begin_inset Formula $Q_{d}$
+\end_inset
+
+，在文档[2]和[5]有详细说明。首先给出连续时间系统噪声协方差矩阵
+\begin_inset Formula 
+\[
+Q_{c}=\sigma_{\omega}^{2}\boldsymbol{I}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\sigma_{\omega}^{2}$
+\end_inset
+
+为陀螺仪方差。则离散时间系统噪声协方差矩阵
+\begin_inset Formula $Q_{d}$
+\end_inset
+
+用下式计算
+\begin_inset Formula 
+\[
+Q_{d}=\int_{0}^{\Delta t}e^{F(\Delta t-\tau)}Q_{c}e^{F^{T}(\Delta t-\tau)}d\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可在
+\begin_inset Formula $0$
+\end_inset
+
+点周围线性化
+\begin_inset Formula $F$
+\end_inset
+
+，可获得
+\begin_inset Formula 
+\[
+Q_{d}=\sigma_{\omega}^{2}\Delta t\boldsymbol{I}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+至此，完成卡尔曼滤波器的预测方程已经没有问题。
+\end_layout
+
+\begin_layout Subsection
+更新方程
+\end_layout
+
+\begin_layout Standard
+接下来，在测量更新阶段，目标就是要找到系统的观测矩阵
+\begin_inset Formula $H$
+\end_inset
+
+。思路和以前没有什么区别，就是把世界坐标系中的重力向量
+\begin_inset Formula $\boldsymbol{g}=\left[\begin{array}{ccc}
+0 & 0 & g\end{array}\right]$
+\end_inset
+
+当成固定向量观测。我们使用
+\begin_inset Formula $R_{b}^{i}$
+\end_inset
+
+表示从机体坐标系变换为世界坐标系的旋转，因此
+\begin_inset Formula $R_{b}^{i}v^{b}=v^{i}$
+\end_inset
+
+。
+\begin_inset Formula $R_{i}^{b}$
+\end_inset
+
+将表示世界坐标系到机体坐标系的变换，因此
+\begin_inset Formula $R_{i}^{b}=R_{b}^{i}{}^{T}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在已经旋转了的机体坐标系里，用加速计测量到的测量向量
+\begin_inset Formula $\boldsymbol{g}_{\mathrm{meas}}$
+\end_inset
+
+，包含了外力引起的线性加速度。不用管它，假设外力是多变的，在一段时间内是零均值的。用全局姿态四元数
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+的逆
+\begin_inset Formula $R_{i}^{b}(\hat{q})$
+\end_inset
+
+，将惯性坐标系中的重力向量
+\begin_inset Formula $\boldsymbol{g}$
+\end_inset
+
+旋转到和机体坐标系重合的姿态，然后和测量向量
+\begin_inset Formula $\boldsymbol{g}_{\mathrm{meas}}$
+\end_inset
+
+相减就得到残差，
+\begin_inset Formula 
+\[
+\tilde{y}=\boldsymbol{g}_{\mathrm{meas}}-R_{i}^{b}(\hat{q})\left(\begin{array}{c}
+0\\
+0\\
+g
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\hat{\boldsymbol{a}}=0$
+\end_inset
+
+，表示为旋转矩阵就是
+\begin_inset Formula $R_{i}^{b}(0)=\boldsymbol{I}$
+\end_inset
+
+，因此从上式得到的加速计测量的
+\begin_inset Formula $H$
+\end_inset
+
+矩阵为
+\begin_inset Formula 
+\[
+H=\left[R_{i}^{b}(\hat{q})\left(\begin{array}{c}
+0\\
+0\\
+g
+\end{array}\right)\right]_{\times}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外，测量噪声协方差矩阵
+\begin_inset Formula $R$
+\end_inset
+
+很容易确定
+\begin_inset Formula 
+\[
+R=\sigma_{a}^{2}\boldsymbol{I}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\sigma_{a}^{2}$
+\end_inset
+
+是加速计的测量方差。
+\end_layout
+
+\begin_layout Standard
+于是就可以求出卡尔曼增益
+\begin_inset Formula $K$
+\end_inset
+
+，就得到了新的误差向量
+\begin_inset Formula $\hat{\boldsymbol{a}}=K*\tilde{y}$
+\end_inset
+
+，进而用方程
+\begin_inset Formula $\hat{q}=\hat{q}*\delta q(\hat{\boldsymbol{a}})$
+\end_inset
+
+校正了全局姿态四元数
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+的部分数据，就是校正了欧拉角中的 Roll & Pitch。最后系统重置，完成一次迭代。
+\end_layout
+
+\begin_layout Subsection
+其它算法
+\end_layout
+
+\begin_layout Standard
+在传统的ESKF算法中，陀螺偏差
+\begin_inset Formula $\hat{\boldsymbol{b}}$
+\end_inset
+
+由EKF进行估计，参见文档[1]-[5]。CardBoard Sensor Fusion的算法为了最小化状态向量，陀螺偏差
+\begin_inset Formula $\hat{\boldsymbol{b}}$
+\end_inset
+
+不再由EKF进行估计，而是在EKF外面用低通滤波算法进行估计。这也是很成熟的解决方案了，所以这种算法的结果也是可以接受的。
+\end_layout
+
+\begin_layout Standard
+另外，在CardBoard Sensor Fusion的系统里，还有一个处理细节值得学习。在该系统里，是固定住过程噪声协方差
+\begin_inset Formula $Q$
+\end_inset
+
+矩阵，然后动态调整测量噪声协方差矩阵
+\begin_inset Formula $R$
+\end_inset
+
+。算法是依据加速度向量的模长差进行判断。算模长差也就是简单地估算加速度的导数，也就是机动度。也就是这个算法根据系统的机动度判断，确定最后的测量噪声协方差矩阵为
+\begin_inset Formula $R=k\sigma_{a}^{2}\boldsymbol{I}$
+\end_inset
+
+，其中
+\begin_inset Formula $k$
+\end_inset
+
+是一个系数，如果机动度越大，或者加速度越大，则系数越大，就代表着测量结果越不可信，EKF算法要偏向预测结果。反之，在静止状态或移动缓慢状态，系数越小，则可以更相
+信测量结果。
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+对比文档[12]的卡尔曼滤波器的5个公式，可以看到一处细微差异，就是预测方程的第2条方程，计算先验估计协方差
+\begin_inset Formula $P$
+\end_inset
+
+所用的过程噪声协方差
+\begin_inset Formula $Q$
+\end_inset
+
+矩阵。文档[12]用李群公式推导出的是
+\begin_inset Formula $Q=\sigma_{\omega}^{2}\Delta t^{2}\boldsymbol{I}$
+\end_inset
+
+，而在文档[5]推导出的是
+\begin_inset Formula $Q=\sigma_{\omega}^{2}\Delta t\boldsymbol{I}$
+\end_inset
+
+，少一个
+\begin_inset Formula $\Delta t$
+\end_inset
+
+。实际上很难说谁对谁错，因为在推导过程中各自都使用了各种假设和近似，多次使用了
+\begin_inset Formula $\approx$
+\end_inset
+
+符号，于是就各自得到不同结果。而且在卡尔曼滤波器中，关键的在于
+\begin_inset Formula $Q/R$
+\end_inset
+
+的比值，谁更小就偏向相信谁，具体数值反倒不重要。而在实际项目中
+\begin_inset Formula $Q/R$
+\end_inset
+
+的比值也需要根据实验情况进行调整。一般经验而言，机动度越大则倾向选取大的方差，因为数据更不可信了。然后固定一个矩阵调整另外一个矩阵。CardBoard
+ Sensor Fusion的算法就给了一个很好的动态调整例子。
+\end_layout
+
+\begin_layout Standard
+另外，在实际代码中，对于观测矩阵
+\begin_inset Formula $H$
+\end_inset
+
+，该算法采用Jacobian矩阵数值计算方式进行确定，而非上面公式推导的方式确定。Matlab软件中也是采用这种方法计算Jacobian矩阵。在这里有简单说明：
+\begin_inset CommandInset href
+LatexCommand href
+name "lecture7 --- The Jacobian"
+target "http://www.maths.lth.se/na/courses/FMN081/FMN081-06/lecture7.pdf"
+literal "false"
+
+\end_inset
+
+。这种数值计算方法又称为牛顿法 / 有限差分法 / Modified Secant Method，在这个的视频有讲解：
+\begin_inset CommandInset href
+LatexCommand href
+name "Evaluation of the Jacobian through Finite Differences"
+target "https://www.youtube.com/watch?v=sh8pWbNQIak"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+另外，从实际代码看出，就算是最小化之后，代码还是相当复杂。几个问题交织，不易理解设计者的意图。后面可以再写一个文档，分析CardBoard项目特点和需求对算法的
+影响。由此可见，就算是最简化后的姿态估计问题，都不适合初学者由此路径学习EKF算法。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Circumventing Dynamic Modeling: Evaluation of the Error-State Kalman Filter applied to Mobile Robot Localization - 1999"
+target "https://www.academia.edu/13385785/Circumventing_dynamic_modeling_Evaluation_of_the_error-state_kalman_filter_applied_to_mobile_robot_localization"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude Error Representations for Kalman Filtering - 2002"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20020060647.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude Error Representations for Kalman Filtering - 2003"
+target "https://www.researchgate.net/publication/245432681_Attitude_Error_Representations_for_Kalman_Filtering"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+卡尔曼滤波的姿态误差表示
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude estimation or quaternion estimation? - 2003"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20030093641.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+姿态估计或四元数估计
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination - 2004"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination"
+target "https://www.researchgate.net/publication/260347976_Multiplicative_vs_Additive_Filtering_for_Spacecraft_Attitude_Determination"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+航天器姿态确定的乘法与加法滤波器的对比
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Indirect Kalman filter for 3D attitude estimation - 2007"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+三维姿态估计的间接卡尔曼滤波
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lessons Learned - F. Landis Markley - The Complexity of Constraints - 2009"
+target "https://www.researchgate.net/publication/257288674_Lessons_Learned"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+经验总结 - F.
+ Landis Markley - 约束的复杂性 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF - 2017"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+误差状态卡尔曼滤波器的四元数动力学 
+\end_layout
+
+\begin_layout Itemize
+潦草注释: https://github.com/TurtleZhong/msckf_mono/ 
+\end_layout
+
+\begin_layout Itemize
+同一个人: http://www.xinliang-zhong.vip/msckf_notes/
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Sensor Fusion Implementation - 2017"
+target "http://www.telesens.co/category/sensor-fusion/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+用Matlab code实现一个21个状态的CAMERA姿态的ESKF。 
+\end_layout
+
+\begin_layout Itemize
+[
+\begin_inset CommandInset href
+LatexCommand href
+name "code"
+target "https://github.com/ankur6ue/SensorFusion_KF"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF"
+target "https://github.com/PX4/ecl/tree/master/EKF/documentation"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+PX4项目里24个状态的EKF。 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Using the ECL EKF"
+target "https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "ESKF-tutorial - 2020"
+target "https://github.com/martiabr/ESKF-tutorial"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+[
+\begin_inset CommandInset href
+LatexCommand href
+name "libeskf"
+target "https://git.orbitntnu.no/archive/adcs/libeskf"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "The Multiplicative Extended Kalman Filter - 2020"
+target "https://matthewhampsey.github.io/blog/2020/07/18/mekf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Google Cardboard的九轴融合算法 — 基于李群的扩展卡尔曼滤波"
+target "https://www.cnblogs.com/ilekoaiq/p/8710812.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+整理好的代码在这里 : https://github.com/shuyong/Google-CardBoard-Sensor-Fusion
+\end_layout
+
+\end_body
+\end_document

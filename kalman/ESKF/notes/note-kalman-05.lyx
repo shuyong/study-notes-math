@@ -1,0 +1,595 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—项目的约束
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+本文继续分析CardBoard Sensor Fusion的算法。主要分析CardBoard VR项目特点和需求对算法的影响。因此不怎么会有数学公式，主要是讨论
+工程问题，项目问题对算法的影响。
+\end_layout
+
+\begin_layout Section
+项目问题的影响
+\end_layout
+
+\begin_layout Standard
+CardBoard VR项目特点对Sensor Fusion的算法最大的影响，就在于选择了卡尔曼滤波器的预测应用。
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器有三种应用方向： 
+\end_layout
+
+\begin_layout Enumerate
+平滑 
+\end_layout
+
+\begin_layout Enumerate
+估计 
+\end_layout
+
+\begin_layout Enumerate
+预测
+\end_layout
+
+\begin_layout Standard
+分别代表着对过去、现在和将来时间的事件处理。 
+\end_layout
+
+\begin_layout Enumerate
+飞控系统对当前姿态的估计和控制，应用的是估计功能。 
+\end_layout
+
+\begin_layout Enumerate
+事后分析，应用的是平滑功能。 
+\end_layout
+
+\begin_layout Enumerate
+Cardboard 应用的是预测功能。这是因为 VR 应用的特点。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于EKF应用来说，无人机飞控系统和Cardboard VR系统两者最根本的不同在于系统驱动时钟的不同。飞控系统围绕采样时钟而设计，周期性的实时采样、实时估计姿
+态，实时控制姿态。Cardboard VR系统最根本是一种图形显示系统，于是为了图形显示流畅顺滑，整个系统围绕着VSYNC时钟进行设计。这里就有一个问题，显示系
+统收到最新的显示图像后，并不能在任意时间更新显示，而必须等待下一个VSYNC信号到达，体现在未来时刻。而飞控系统不一样，实时估计姿态后，就要实时下达控制指令，体
+现在当前时刻。
+\end_layout
+
+\begin_layout Standard
+其次，戴着 VR 头盔，从人的头部移动到视网膜上看见相应的图像，有一个延迟时间。在这期间，事件经过传感器采样，状态估计，GPU 根据姿态绘图，然后按照
+ VSYNC 信号周期显示图像，根据[
+\begin_inset CommandInset href
+LatexCommand href
+name "Head Tracking for the Oculus Rift"
+target "http://msl.cs.uiuc.edu/~lavalle/papers/LavYerKatAnt14.pdf"
+literal "false"
+
+\end_inset
+
+]一文的研究，这个延迟时间大约是 30 ~ 50ms。
+\end_layout
+
+\begin_layout Standard
+于是，如果按照当前估计姿态绘图，人眼看到的图像表现的是 50ms 前的状态。于是延迟响应就让人的感觉发生问题。因为动物的眼-脑系统是很精密很智能的系统，不好的系
+统早就在亿万年的进化中淘汰了，因此这个眼-脑系统极难糊弄。因此头部先运动，过一段时间眼前景色才变化，就会让人脑感到困惑，这就是玩VR游戏的人容易感到头晕恶心的原
+因之一。
+\end_layout
+
+\begin_layout Standard
+对此的解决方案是根据延迟时间的数值，提前预测未来相应时刻的姿态。然后是根据未来的姿态绘制图像。当人的头部转到预测位置的时候，人眼也就看到了代表当前姿态的图像。这
+个延迟时间，在 Cardboard 的 JAVA 代码里是硬编码的偏移量，有些写为 33ms(30Hz)，有些写为 58ms。也就是，如果上层代码想预测后面
+\begin_inset Formula $\Delta t$
+\end_inset
+
+时刻的姿态，实际上预测的是
+\begin_inset Formula $\Delta t+33\:\sim\:58\mathrm{ms}$
+\end_inset
+
+时刻的姿态。
+\end_layout
+
+\begin_layout Standard
+另外，VR游戏对于 VR 头盔的显示屏有很高的刷新率要求。60Hz 不及格，75Hz 才入门，90Hz 还不差，120Hz 算优秀。但是，头盔戴在头顶上，又对功
+耗和重量又严格要求，所以所用的移动式GPU的性能不会太好，生成一个复杂的场景可能要20 ~ 30ms。于是就有生产率不足的问题，刷新图像变化不够顺滑，人还是会头
+晕恶心。
+\end_layout
+
+\begin_layout Standard
+对此的解决方案就是所谓的时间扭曲算法。算法思路大致是这样：假如GPU生产率是30Hz，屏幕刷新率是90Hz，传统情况下屏幕图像3次刷新用的是同一帧图像，于是运动
+中的眼-脑系统感觉到外界景象变化不符合预期。但是有聪明人想到了一个糊弄人眼的tricks。因为刷新时间间隔已经足够小，实际上每帧的变化量是很小的，只是GPU要从
+头开始绘制来不及而已。但是我们可以对正在显示的图像做处理，虽然只是2D图像，但是根据预测姿态，稍微做一点线性变换，使之和未来的本该画但又来不及画的3D场景光栅化
+后的图像差不多，然后显示出去，填补变化空白时区，直到新一帧的3D场景光栅化后的图像到来。
+\end_layout
+
+\begin_layout Standard
+综合上述算法，ESKF算法在VR系统的用途就是预测未来姿态，供VR系统为未来的姿态绘制场景。当未来到来时，场景已经绘制完成并准时显示到屏幕上，人眼当前看到图像就
+是他预期的图像，于是人脑就不会困惑，也就不再头晕恶心。
+\end_layout
+
+\begin_layout Standard
+举一个简单的例子，假如GPU生产率是30Hz，屏幕刷新率是90Hz。当前显示的图像为0#帧，是GPU根据3D场景光栅化的图像。根据生产率，GPU只能为后面的3#
+帧提供图像。这时VR软件依靠姿态估计模块预测未来1#/2#/3#帧显示时的姿态。根据3#帧未来的姿态委托GPU绘制场景。委托2D绘图模块根据1#/2#的未来姿态
+，将0#帧分别做不同的2D变形。因为计算量较小，在1#/2#时刻可以及时显示出去。当3#时刻到来，GPU绘制场景已完成并被准时显示出去。如此周而复始。
+\end_layout
+
+\begin_layout Standard
+从这里可以看到，传感器采样和姿态估计的时钟周期和 VSYNC 信号周期是独立的，不同步的。姿态估计模块根据传感器异步上报的数据不停地维持着系统的当前姿态，然后又
+实时地应答上层应用对未来姿态的随机查询。这种多线程异步系统相当复杂，将在下一章讨论。
+\end_layout
+
+\begin_layout Standard
+另外，VR项目特殊需求也会对算法实现有影响。在CardBoard VR的姿态估计算法中，有一种颈部模式，就是将全局坐标系向前倾斜一个小角度。这是因为人的颈部是自
+然向前倾斜一个小角度的。如果人的颈部一直保持着与重力向量重合的姿态，时间久了就容易感到疲劳。于是需要全局坐标系向前倾斜一个小角度，让人感觉舒服一些。具体参见参考
+文献和代码。
+\end_layout
+
+\begin_layout Section
+工程问题的影响
+\end_layout
+
+\begin_layout Subsection
+采样问题的处理
+\end_layout
+
+\begin_layout Standard
+工程问题对算法的实现也有很大的影响。
+\end_layout
+
+\begin_layout Standard
+在传统的姿态估计的应用场景中，为简化计算并提高估计精度，有一个并行采样的假设。也就是所有的传感器数据都是同时采样，也就是用角速度驱动当前姿态变化后，用同一时刻的
+加速度和地磁数据进行校正姿态。于是常见的软件API都是同时输入3个向量9个参数。
+\end_layout
+
+\begin_layout Standard
+在高端设备上，并行采样是通过设计硬件电路来保证的。在低成本的方案里，实际上执行的是串行采样，陀螺仪/加速计/地磁计这3者串行采样，有可能前后采样的时间差有1ms
+左右。如果对估计精度不讲究，把它们当成并行采样处理也是可以的。那些低成本的无人机的姿态估计模块也都是这么做的。
+\end_layout
+
+\begin_layout Standard
+此外，还有一个数据采样周期不一致的问题会影响估计精度。在低成本方案里，陀螺仪/加速计可以达到100 ~ 200 Hz的采样率，而地磁计的采样率可能只有10Hz，
+而GPS可能只有1Hz。但是嵌入式软件系统为了简化设计，往往只围绕一种采样率进行设计。如果陀螺仪/加速计/地磁计这3者都以100Hz进行采样，因地磁计来不及锁定
+数据，可能连续10次上报同一个数据，直到寄存器锁定后才上报新的数据。这样的数据组合，是会影响估计精度的。当然，低成本方案也不会很在乎这个。
+\end_layout
+
+\begin_layout Standard
+还有上一章讨论的，飞控系统围绕采样时钟而设计，周期性的实时采样、实时估计姿态，实时控制姿态，这是靠实时OS保证的。对于以前传统的姿态估计模块，这也是一个隐式的假
+设。
+\end_layout
+
+\begin_layout Standard
+到了CardBoard VR项目这里，应用环境发生了巨大的变化，同时设计者对估计速度和精度都有高要求，于是对姿态估计模块的设计产生了重大影响。为提高估计速度，采
+取的是最小化状态向量，这是上一篇文档讨论的问题。对于估计精度问题，设计者也做了处理。
+\end_layout
+
+\begin_layout Standard
+我们首先看应用环境变化带来的挑战。首先要理解，Android OS本质上是一个分时系统，同时为了高效运作，也是一个多进程多线程并发协作的系统。并且应用也是多目标
+的应用，不可能像实时OS系统那样只围绕着估计-控制这个单一目标进行设计。这给数据采样引来了更复杂的问题。
+\end_layout
+
+\begin_layout Standard
+在理想状态下，陀螺仪(符号
+\begin_inset Formula $G$
+\end_inset
+
+)/加速计(符号
+\begin_inset Formula $Y$
+\end_inset
+
+)/地磁计(符号
+\begin_inset Formula $M$
+\end_inset
+
+)串行采样，数据到达顺序是这样的：
+\begin_inset Formula 
+\[
+|G_{1}Y_{1}M_{1}|\Delta t|G_{2}Y_{2}M_{2}|\Delta t|G_{3}Y_{3}M_{3}|\Delta t|\cdots
+\]
+
+\end_inset
+
+这是实时OS系统保证的事情。到了Android OS系统，数据到达是乱序的，有可能是这样：
+\begin_inset Formula 
+\[
+|Y_{1}Y_{2}|\Delta t_{1}|G_{1}G_{2}|\Delta t_{2}|M_{1}M_{2}|\Delta t_{3}|G_{3}Y_{3}M_{3}|\Delta t_{4}|\cdots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+有可能加速计(符号
+\begin_inset Formula $Y$
+\end_inset
+
+)后采样而先到达，陀螺仪(符号
+\begin_inset Formula $G$
+\end_inset
+
+)先采样而后到达。有可能是一次性到达2~3个同一类数据。有可能是不同批次数据之间的时间间隔不稳定。同时，有可能每种传感器的采样周期不一样，比如陀螺仪/加速计用
+ 200 Hz的采样率，而地磁计用 10Hz 的采样率，而GPS用 1Hz 的采样率。此外，每种传感器是在不同的线程里采样，之间的采样时间点是不同步的，比如陀螺
+仪/加速计都是 200 Hz的采样率，但起始时间点不一样，两者并不同时发生。再有，因为Android OS系统的复杂性，都不能保证同一种传感器的采样周期是稳定不
+变的，可能时间间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+会发生抖动，一切以上报数据所带的时间戳为准。总结下来就是，传感器以不同的采样周期进行采样，异步采样，数据异步到达。还好，有一件事情可以保证，就是同一类传感器的数
+据，保证旧数据先到达而新数据后到达。因为同一类数据是放到同一个数据管道，所以时间顺序有保证。但是不同的数据管道被调度到顺序就无法保证。于是被调度到的时候，可能数
+据管道里已经积累了2~3个数据就被一同释放出去。
+\end_layout
+
+\begin_layout Standard
+于是姿态估计模块外围需要做预处理，剔除过时数据，使得估计算法最后见到的数据按照采样时间排序，大概是这样：
+\begin_inset Formula 
+\[
+|G_{1}|\Delta t_{1}|Y_{1}|\Delta t_{2}|M_{1}|\Delta t_{3}|G_{2}|\Delta t_{4}|Y_{2}|\Delta t_{5}|M_{2}|\Delta t_{6}|\cdots
+\]
+
+\end_inset
+
+同时，因为
+\begin_inset Formula $G_{1}$
+\end_inset
+
+和
+\begin_inset Formula $Y_{1}$
+\end_inset
+
+的采样时间之间相差
+\begin_inset Formula $\Delta t_{1}$
+\end_inset
+
+。为了估计精度，这个
+\begin_inset Formula $\Delta t_{1}$
+\end_inset
+
+时间不能忽略。于是自上次
+\begin_inset Formula $G_{1}$
+\end_inset
+
+事件驱动得到全局估计姿态
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+后，假设在这个
+\begin_inset Formula $\Delta t_{1}$
+\end_inset
+
+时间里，机体维持以估计的角速度
+\begin_inset Formula $\hat{\boldsymbol{\omega}}$
+\end_inset
+
+继续往前旋转，于是新的全局估计姿态需要迭加
+\begin_inset Formula $\Delta\theta=\hat{\boldsymbol{\omega}}\Delta t_{1}$
+\end_inset
+
+这个变化量。
+\begin_inset Formula $Y_{1}$
+\end_inset
+
+数据是对
+\begin_inset Formula $\Delta t_{1}$
+\end_inset
+
+时间后新的全局估计姿态进行校正。这样处理，估计精度更高。
+\end_layout
+
+\begin_layout Subsection
+软件架构的设计
+\end_layout
+
+\begin_layout Standard
+前面说过，Android OS是一个多进程多线程并发协作的系统。传感器采样和姿态估计的时钟周期和 VSYNC 信号周期都是独立的，不同步的。姿态估计模块根据传感
+器异步上报的数据不停地维持着系统的当前姿态，然后又实时地应答上层应用对未来姿态的随机查询。这样的异步并发形式对软件架构的设计提出了新的要求。
+\end_layout
+
+\begin_layout Standard
+最终的软件架构的设计是这样的：核心数据类 SensorFusionEkf实现了ESKF算法，围绕该类的单例实例，有3个能与之访问的活动对象(Active
+ Object)
+\end_layout
+
+\begin_layout Enumerate
+HeadTracker
+\end_layout
+
+\begin_layout Enumerate
+SensorEventProducer<GyroscopeData>
+\end_layout
+
+\begin_layout Enumerate
+SensorEventProducer<AccelerometerData>
+\end_layout
+
+\begin_layout Standard
+核心数据类 SensorFusionEkf的组合图见下图：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename SensorFusionEkf Component Diagram.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+每个活动对象(Active Object)都绑定在一个线程(Thread)上，用生产-消费模式(传感器是生产者，ESKF算法是消费者)，异步运行，功能是这样的：
+\end_layout
+
+\begin_layout Enumerate
+HeadTracker : 为上层应用提供
+\begin_inset Formula $\Delta t\geq0$
+\end_inset
+
+时间之后的预测姿态。上层应用可以随时访问该接口，快速得到预测姿态。同步锁的处理在类的内部完成。
+\end_layout
+
+\begin_layout Enumerate
+SensorEventProducer<GyroscopeData> : 异步生产陀螺仪数据，驱动 SensorFusionEkf 的单例实例中维护的当前全局姿
+态向前变化。
+\end_layout
+
+\begin_layout Enumerate
+SensorEventProducer<AccelerometerData> : 异步生产加速计数据，校正 SensorFusionEkf 的单例实例中维护的当
+前全局姿态。
+\end_layout
+
+\begin_layout Enumerate
+如果再增加新的传感器数据，可以用SensorEventProducer<xxxData>形式增加新的活动对象，绑定在一个新的线程上。同样是异步处理，影响
+ SensorFusionEkf 的单例实例中维护的当前全局姿态。
+\end_layout
+
+\begin_layout Enumerate
+也是因为异步处理，使得每次都只处理一个3D向量，于是每个协方差矩阵都保持着
+\begin_inset Formula $3\times3$
+\end_inset
+
+的大小，保证了运算速度。
+\end_layout
+
+\begin_layout Standard
+下图是3个活动对象的组合图：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename HeadTracker Component Diagram.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过这样的并发设计，就可以使得当前全局姿态的维护与访问可以异步进行。这样就极大地提高了系统的运行效率，并且ESKF的实现算法对异步情况进行处理后，也提高了估计精
+度。
+\end_layout
+
+\begin_layout Subsection
+需要改进的地方
+\end_layout
+
+\begin_layout Standard
+以上是CardBoard Sensor Fusion的实现算法处理得细致漂亮的地方。但是该算法实现上也有值得改进的地方。例如，计算后验的协方差矩阵采用的公式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\bf P_{k|k}=({\bf I-{\bf K_{k}{\bf H_{k}){\bf P_{k|k-1}}}}}}
+\]
+
+\end_inset
+
+这一看就不是玩嵌入式的、做姿态估计和控制的工业界老手所为。这是教科书上的公式，简短优雅，越短越容易记忆。但是那些老手喜欢用的是下面这个公式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{P_{k|k}}=(\mathbf{I}-\mathbf{K_{k}H_{k}})\mathbf{P_{k|k-1}}(\mathbf{I}-\mathbf{K_{k}H})^{\mathsf{\mathrm{T}}}+\mathbf{K_{k}RK_{k}^{\mathrm{T}}}
+\]
+
+\end_inset
+
+这种公式形式叫作约瑟夫形式。这两个公式在数学上完全等价，但是在计算机数值计算中效果不一样。教科书的公式计算数值不稳定，假如计算过程中因某种原因造成了
+\begin_inset Formula ${\bf P_{k|k-1}}$
+\end_inset
+
+矩阵不对称，则算法中的数值会迅速发散。而约瑟夫形式计算数值稳定，假如
+\begin_inset Formula ${\bf P_{k|k-1}}$
+\end_inset
+
+矩阵不对称，经过约瑟夫形式计算，则
+\begin_inset Formula ${\bf P_{k}}$
+\end_inset
+
+矩阵恢复对称。下面这几个网址对这个问题进行了说明：
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "COVARIANCE UPDATE EQUATION"
+target "https://www.kalmanfilter.net/covUpdate.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "SIMPLIFIED COVARIANCE UPDATE EQUATION"
+target "https://www.kalmanfilter.net/simpCovUpdate.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Stable Compution of the Posterior Covariance"
+target "https://render.githubusercontent.com/view/ipynb?color_mode=light&commit=24b9fb3cf756b3c765579decd624132efe7be374&enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f726c616262652f4b616c6d616e2d616e642d426179657369616e2d46696c746572732d696e2d507974686f6e2f323462396662336366373536623363373635353739646563643632343133326566653762653337342f30372d4b616c6d616e2d46696c7465722d4d6174682e6970796e62&nwo=rlabbe%2FKalman-and-Bayesian-Filters-in-Python&path=07-Kalman-Filter-Math.ipynb&repository_id=19868085&repository_type=Repository#Stable-Compution-of-the-Posterior-Covariance"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+台上10分钟，台下10年功。就这几百行代码，既要熟悉数学和物理问题，又要熟悉工程问题，还要理解项目意图，方才能写出一套可用的姿态估计软件。 这活还真不是普通人能
+干的。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Standard
+[
+\begin_inset CommandInset href
+LatexCommand href
+name "Head Tracking for the Oculus Rift"
+target "http://msl.cs.uiuc.edu/~lavalle/papers/LavYerKatAnt14.pdf"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,460 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—入门即入坑
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+— 题记：无数的人耗费了无数的墨水和口水。我也假装我懂了。
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+从数学到物理，从理论到工程，从物理世界的模型到测量噪声假设，从姿态估计的原理到卡尔曼滤波器的设计，从卡尔曼滤波器的原理到验证，迷魂阵一样，还缺一不可。耗时有年，
+就是为了看懂几百行代码，太难为人了。比起那些月产出万行代码的高手，实在是惭愧。
+\end_layout
+
+\begin_layout Standard
+也许那些大神说得对，我们就是这样认识世界的：睁眼瞧瞧这个世界，再闭眼猜猜这个世界，然后按照自己的感觉调整调整 Q & R 矩阵，如此循环往复。只闭眼瞎猜的，那是
+傻子，只睁眼盯着的，那是呆子。能把 Q & R 矩阵调整得既能猜得准，又能灵敏反应变化的，那就是大神了。
+\end_layout
+
+\begin_layout Standard
+从某种哲学意义上来说，这就是我们的现状：人类自以为聪明，掌握了一些这个世界的运行规律，称之为科学原理，又掌握了一些感知这个世界的能力(make
+ sense)，称之为测量方法。其实两者都有问题，总结规律有谬误，测量数据有误差。于是大神找到了应付现状的最佳方法： 
+\end_layout
+
+\begin_layout Itemize
+闭着眼睛用瞎凑的公式猜测这个世界从上一个状态运行到新的状态，这就是预测(Predict)，这是这段时间内这世界按照某种规律运行的变化结果，所以又叫时间更新(Ti
+me Update)； 
+\end_layout
+
+\begin_layout Itemize
+公式有问题，于是就睁开眼睛看看有多大的差异，这就是修正(Correct)，这是测量得到的世界的变化，所以又叫测量更新(Measurement Update)；
+ 
+\end_layout
+
+\begin_layout Itemize
+两者都有误差。于是假设误差按照正态分布，再按照最小二乘法进行优化，最佳估计值是公式值和测量值各乘上各自的信任系数后相加而来，这就是卡尔曼滤波器。
+ 
+\end_layout
+
+\begin_layout Section
+姿态估计的基本原理
+\end_layout
+
+\begin_layout Standard
+姿态估计可以采用很多种方法。卡尔曼滤波器也有很多应用领域。这两者并不需要绑定在一起才能工作。但自从在阿波罗登月计划中成功应用开始，采用卡尔曼滤波器进行姿态估计，
+就是最佳的工作模式，同时也一再证明了卡尔曼滤波器的神奇。
+\end_layout
+
+\begin_layout Standard
+以低成本的9轴传感器方案为例，应用软件可以从中获得如下数据：
+\end_layout
+
+\begin_layout Itemize
+加速度
+\end_layout
+
+\begin_layout Itemize
+角速度
+\end_layout
+
+\begin_layout Itemize
+磁力
+\end_layout
+
+\begin_layout Standard
+应用软件就使用这3类数据，通过某种算法确定近地表的机体的姿态。
+\end_layout
+
+\begin_layout Subsection
+重力分解法
+\end_layout
+
+\begin_layout Standard
+根据中学所学的重力分解法，很容易理解用重力矢量估计机体姿态的原理。根据重力在 3D 坐标轴上的分量，解三角函数就可以求出当前机体的姿态。
+\end_layout
+
+\begin_layout Standard
+当然，因为是 3D 空间，计算相对复杂，再考虑实际环境情况，处理起来有些麻烦。为此，制造传感器的厂商总结了不少经典算法： 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "ST集成传感器方案实现电子罗盘功能"
+target "http://ic.semi.org.cn/a/technology/mems/26112.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "ST AN4509 - Tilt measurement using a low-g 3-axis accelerometer"
+target "https://www.st.com/resource/en/application_note/dm00119046-tilt-measurement-using-a-lowg-3axis-accelerometer-stmicroelectronics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP AN4248 - Implementing a Tilt-Compensated eCompass using Accelerometer and Magnetometer Sensors"
+target "https://www.nxp.com/assets/documents/data/en/application-notes/AN4248.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "AN005 - Tilt-Sensing with Kionix MEMS Accelerometers"
+target "http://kionixfs.kionix.com/en/document/AN005-Tilt-Sensing-with-Kionix-MEMS-Accelerometers.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "AN006 - Handheld Electronic Compass Applications Using a Kionix MEMS Tri-Axis Accelerometer"
+target "http://kionixfs.kionix.com/en/document/AN006%20Handheld%20Electronic%20Compass%20Applications%20Using%20a%20Kionix%20MEMS%20Tri-Axis%20Accelerometer.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种方法有一个优点，就是因为数据从 IMU 中读出，而惯性是机体的内在禀性，所以重力测量相对稳定，很难被干扰。如果机体旋转到在任意位置测量重力矢量，综合得到的是
+一个圆球。
+\end_layout
+
+\begin_layout Standard
+用以上总结出的算法，可以方便快捷地算出机体的姿态。但是，加速度计测量得到的是重力和线性加速度的叠加值。这两者在数值中无法区分。于是这种方法只适用于静态机体或转动
+很慢的机体。 
+\end_layout
+
+\begin_layout Subsection
+磁力分解法
+\end_layout
+
+\begin_layout Standard
+和分解重力矢量的原理类似，根据测量到的地磁矢量，解三角函数也可以求出当前机体的姿态。
+\end_layout
+
+\begin_layout Standard
+但是地磁测量得到的不是一个圆球，而是一个椭球。而且地磁很弱，不容易测量。因此地磁很容易受到环境的干扰，很不可靠。
+\end_layout
+
+\begin_layout Standard
+地磁测量值也因此很难校准。都是保密算法，或者是有专利的算法。下面是 NXP 所使用校准的算法及软件架构： 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP AN5019 - Magnetic Calibration Algorithms"
+target "https://www.nxp.com/docs/en/application-note/AN5019.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP® E-Compass Software"
+target "https://www.nxp.com/design/development-boards/freedom-development-boards/sensors/nxp-e-compass-software:E-Compass"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为数据很不可靠，所以使用地磁矢量一般都是最后的方法。
+\end_layout
+
+\begin_layout Subsection
+角度积分法
+\end_layout
+
+\begin_layout Standard
+前两个是绝对法，确定机体姿态和上一次测量无关，只和本次测量有关。
+\end_layout
+
+\begin_layout Standard
+角度积分法是相对法，确定机体姿态和上一次姿态有关，和本次测量有关，是两者的叠加。实际上就是确定初始状态后，到现在的所有测量结果的积分。
+\end_layout
+
+\begin_layout Standard
+从 IMU 中读出的是角速度数据。角速度乘以采样间隔时间就得到了这段时间内机体姿态角度的变化，再通过算法叠加到机体的当前姿态，就得到了新时刻的机体姿态。因为角速
+度数据从 IMU 中读出，而惯性是机体的内在禀性，所以读出的角速度就很精确，不会被外界干扰。所以这是机体姿态估计中最根本的算法。大多数姿态估计的解题思路都从这个
+公式起步。
+\end_layout
+
+\begin_layout Standard
+因为角速度数据精确，所以角度积分法短期可信，但是该方法长期不可信，因为积分有累积误差，时间越久误差越大。重力法和磁力法短期不可信，长期可信。这是因为采用的是绝对
+法，基于统计学，基于零均值高斯白噪声假设，该估计方法的误差会稳定在一定的数值上。从而可以校正累积误差无上限的角度积分法。
+\end_layout
+
+\begin_layout Subsection
+数据融合方法
+\end_layout
+
+\begin_layout Standard
+上述求解姿态的方法都有缺点，所以需要数据融合方法。数据融合是一个大词，让人看了不明觉厉。其实就是利用统计信息，让数据之间相互校准。常用于姿态估计的数据融合方法有
+：
+\end_layout
+
+\begin_layout Itemize
+方向余弦矩阵法
+\end_layout
+
+\begin_layout Itemize
+卡尔曼滤波
+\end_layout
+
+\begin_layout Itemize
+梯度下降法
+\end_layout
+
+\begin_layout Standard
+本系列主要讨论卡尔曼滤波器在姿态估计中的应用。主要讨论非线性的卡尔曼滤波的一个分支：扩展卡尔曼滤波，这是因为姿态变化是一种非线性系统。再细分就是扩展卡尔曼滤波对
+于姿态估计中的具体应用：误差状态卡尔曼滤波。
+\end_layout
+
+\begin_layout Section
+使用卡尔曼滤波器的姿态估计的解题思路
+\end_layout
+
+\begin_layout Standard
+对于机体坐标系来说，姿态的变化量，可以从角速度推算而来。于是角速度对于 KF 系统，就是系统驱动力。绝大多数姿态估计的系统，都是由角速度进行驱动。重力数据和地磁
+数据用于校正。卡尔曼滤波器用于姿态估计，一个通用的离散算法流程大约是：
+\end_layout
+
+\begin_layout Enumerate
+从陀螺仪获得角速度，应用姿态变化的微分方程(动力学方程)，积分得到当前姿态。这一步，在 KF 里就是时间传播，就是预估步骤。计算得到的就是姿态的估计值，短期有效
+，长时间有较大累积误差，所以需要校正。 
+\end_layout
+
+\begin_layout Enumerate
+从加速计获得包含了重力的加速度，对姿态的估计值做校正。 
+\end_layout
+
+\begin_layout Enumerate
+从磁力计获得地磁数据，可以对姿态的估计值做校正。
+\end_layout
+
+\begin_layout Enumerate
+从其它和姿态有关的传感器获得数据，对姿态的估计值做校正。
+\end_layout
+
+\begin_layout Enumerate
+回到步骤 1，周而复始地估计物体的姿态。
+\end_layout
+
+\begin_layout Standard
+用重力数据和地磁数据校正，最常用的方法就是固定矢量观测。从重力矢量计算，可以得到以重力矢量为法向量的当地水平面，从而校正了欧拉角中的 Roll
+ & Pitch。结合已知的水平面，从地磁矢量分离出水平面上指向磁极的矢量，从而校正了欧拉角中的 Yaw。
+\end_layout
+
+\begin_layout Standard
+把重力矢量做为一个固定矢量观测，原理是这样的：当地水平面的法向量是重力矢量。我们已经猜测机体坐标系已经旋转一个角度，我们反方向旋转回来，机体坐标系的
+ Z 轴应该与观测到的重力矢量重合。如果有差异，就要相互校正。
+\end_layout
+
+\begin_layout Standard
+但是，从加速计获得的是叠加了重力矢量的加速度矢量。所以这里有一个重要假设，就是把外力当成是零均值高斯白噪声的一部分，短期内各个方向各种大小的外力随机分布，均值为
+零。于是这种算法最怕机体长时间只受一个恒定的力的情况，例如自由落体、或抛物线运动。
+\end_layout
+
+\begin_layout Standard
+在微重力环境，例如在太空船中，使用星光或太阳传感器做为参考固定矢量。这比观测重力矢量更准确。但是成本不知几何，不是民用设备能用得起的。
+\end_layout
+
+\begin_layout Standard
+把地磁矢量做为一个固定矢量观测，原理和上面类似：地磁矢量分离出水平面上的矢量指向磁极。我们反方向旋转回来，机体坐标系的 Y 轴应该与观测到的地磁水平矢量重合。如
+果有差异，就要相互校正。这种方法使用的是地磁矢量在水平面上的分量。在高维度地区，地磁矢量差不多指向地心，在水平面上的分量很小。因此该算法在高维度地区会不可用。此
+外，地磁很弱，不容易测量，测量得到的不是一个圆球，而是一个椭球。同时地磁容易受到环境的干扰，不可靠。所以，如果有其它方法得到 Yaw 值，应该优先采用其它方法。
+参考地磁矢量是最后的方法。 
+\end_layout
+
+\begin_layout Section
+问题初现
+\end_layout
+
+\begin_layout Standard
+使用卡尔曼滤波器估计机体姿态，自从在阿波罗登月计划中第一次成功应用，然后在飞行器的导航系统中广泛应用，是应用时间最久、研究得最成熟的方案了。但是，有一个奇怪的问
+题，在卡尔曼滤波器的教材中，从来就没有哪个老师用姿态估计问题举例，让初学者通过这个时间最久最成熟的案例了解卡尔曼滤波器。老师举的卡尔曼滤波器的例子，大部分是估计
+单变量的例子，也有估计多变量的例子，最复杂的有：从一个机体的加速度估算出速度进而估算出位移，但就没有简单示例说明对旋转是如何估算的。在失败中长大后才明白，如果从
+基础讲起，将用于姿态估计的卡尔曼滤波器讲完，没有十个课时是讲不完的。
+\end_layout
+
+\begin_layout Standard
+凡涉及旋转的资料都会很复杂，不论是教材还是论文。这让初学者学起来感到迷惑不已，为什么估计系统要这样设计，为什么要这么复杂，为什么不直接用卡尔曼滤波器估算姿态值，
+而是要绕一个弯子间接估算？
+\end_layout
+
+\begin_layout Standard
+入门即入坑。在踩过无数的坑以后才知道：使用卡尔曼滤波器估计机体姿态，是一个牵扯从理论到工程的复杂问题，是一个深埋很多巨坑的实际问题。卡尔曼、卡尔曼，卡着你慢慢玩
+。入坑者若不脱层皮恐怕是出不来的。
+\end_layout
+
+\begin_layout Standard
+正所谓难者不会，会者不难。那些出书写论文的大佬们，心里面知道很多重要的问题和假设，然后也假设你是知道这些问题和假设的，然后写文章给你看，你看不懂就是你的问题而不
+是他的问题了。
+\end_layout
+
+\begin_layout Standard
+写本系列文章的目的，就是回顾当初学习时踩过的坑，还原大佬们不谈或略略带过的问题和假设，使得后来的初学者对照教材学习时容易理解一点，少跌跟头。
+\end_layout
+
+\begin_layout Standard
+下图是劝退警告。苦海无边，回头是岸！
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 姿态估计问题-00.svg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename 姿态估计问题-01.svg
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

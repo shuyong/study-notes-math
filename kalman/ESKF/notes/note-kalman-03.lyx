@@ -1,0 +1,865 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—间接因数学
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+四元数具有全局非奇异姿态表示3D旋转的最低维数。为表示3D旋转，四元数必须服从单位范数约束。所以，表示姿态的四元数不是向量，而是旋转群，只对乘法封闭。而卡尔曼滤
+波器的核心概念是协方差，所用的算子是加减法。这就造成了用卡尔曼滤波器直接估计姿态四元数的冲突。最终，NASA的一群聪明人想出了一个解决方案，间接法，就是扩展卡尔
+曼滤波器一个变种，该滤波器使用四元数进行全局姿态估计,并对姿态误差进行 3 分量表示。
+\end_layout
+
+\begin_layout Section
+解决思路
+\end_layout
+
+\begin_layout Standard
+前一篇文档介绍了姿态四元数和旋转矩阵，因为是旋转群，从而与使用加减法算子处理向量的卡尔曼滤波器有数学概念上的冲突。因此，卡尔曼滤波器无法直接估计姿态四元数和旋转
+矩阵。那么，换另外一种思路，用3参数向量表示旋转，然后用卡尔曼滤波器直接估计这种向量的最优值，不就解决问题了吗？
+\end_layout
+
+\begin_layout Standard
+很不幸，数学上已经证明了，要想全局非奇异姿态表示3D旋转，最低维数是
+\begin_inset Formula $4$
+\end_inset
+
+。所有三维姿态表示对于某些姿态而言都是奇异的或不连续的，不论是欧拉角还是角轴表示。四元数是4参数，旋转矩阵是9参数，可以全局无奇异表示3D旋转，但是要施加约束。
+这还是无解。
+\end_layout
+
+\begin_layout Standard
+但是，在这个世界上聪明人还是很多的。NASA的一群聪明人想出了一个解决方案，间接法。卡尔曼滤波器处理的是状态向量，而用3D向量表示3D旋转存在奇点和不连续的问题
+。那就换一个思路，使用四元数进行全局姿态估计，该估计值和真实值有误差。使用卡尔曼滤波器对该姿态误差进行最优估计。只要采样时间足够短，该姿态误差就会很小，这时这个
+姿态误差就可以用3D向量表示，因为远离奇点，所以可以用卡尔曼滤波器估计而没有数学冲突。并且因为误差在0点附近抖动，该误差的变化也有足够的线性度，也很适合用卡尔曼
+滤波器。这就是扩展卡尔曼滤波器一个变种，误差状态卡尔曼滤波器(Error-State Kalman Filter)，也称乘性扩展卡尔曼滤波器(Multiplic
+ative Kalman Filter)，或称间接卡尔曼滤波器(Indirect Kalman Filter)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+解决问题的起点，还是回到角度积分法和四元数微分的概念。
+\end_layout
+
+\begin_layout Standard
+根据四元数微分的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}(t)=\lim\limits _{\Delta t\to0}\dfrac{q(t+\Delta t)-q(t)}{\Delta t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导出四元数的微分方程，也称四元数的运动方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}=\dfrac{1}{2}q(t)\overrightarrow{\omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据微分方程得到的一阶近似方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dfrac{q(t+\Delta t)-q(t)}{\Delta t}=\Delta q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+做积分：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)-q(t)=\Delta q\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)=\Delta q\Delta t+q(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时刻的新姿态
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+近似为
+\begin_inset Formula $t$
+\end_inset
+
+时刻的旧姿态
+\begin_inset Formula $q(t)$
+\end_inset
+
+与姿态变化量
+\begin_inset Formula $\Delta q\Delta t$
+\end_inset
+
+的叠加。这只是一阶近似方程，更高阶的近似方程还有龙格-库塔方程。但不管怎么样，经过一段时间的积分，因为误差积累，估计值会越来越偏离真实值。但是，该姿态四元数又不
+能直接用卡尔曼滤波器进行最优估计。不过，有解决方案。
+\end_layout
+
+\begin_layout Standard
+假设机体当前真实姿态为
+\begin_inset Formula $q$
+\end_inset
+
+，用上面近似方程估计得出的姿态为
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+。这两者之间的误差为
+\begin_inset Formula $\delta q$
+\end_inset
+
+。它们之间的关系是
+\begin_inset Formula 
+\[
+q=\hat{q}*\delta q
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $*$
+\end_inset
+
+表示四元数乘法。
+\end_layout
+
+\begin_layout Standard
+因为误差四元数
+\begin_inset Formula $\delta q$
+\end_inset
+
+很小，远离奇点，所以可以转换为3D向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+表示，也称旋转误差向量。一般选择吉布斯向量 (Gibbs Vector)表示，用
+\begin_inset Formula $\mathbf{a}_{g}$
+\end_inset
+
+符号表示。两者之间的关系是：
+\begin_inset Formula 
+\[
+\delta q(\mathbf{a}_{g})=\dfrac{1}{\sqrt{4+a_{g}^{2}}}\left[\begin{array}{c}
+2\\
+\mathbf{a}_{g}
+\end{array}\right]
+\]
+
+\end_inset
+
+因为误差很小，范数
+\begin_inset Formula $a_{g}^{2}\approx0$
+\end_inset
+
+，所以为简化运算，可以近似为
+\begin_inset Formula 
+\[
+\delta q(\mathbf{a})\approx\left[\begin{array}{c}
+1\\
+\dfrac{\mathbf{a}}{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在问题的关键就是要研究这个旋转误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的变化规律。应用卡尔曼滤波器的关键任务是建立状态传播矩阵，描述状态如何从一个步骤变化到下一个步骤。换句话说，我们对矩阵
+\begin_inset Formula $F$
+\end_inset
+
+感兴趣
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x_{t+\mathrm{d}t}}=F\boldsymbol{x_{t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于非线性问题，矩阵
+\begin_inset Formula $F$
+\end_inset
+
+是通过对局部导数进行线性化得到的，即，我们首先得到一个关于
+\begin_inset Formula $\boldsymbol{\dot{x}}=J{\bf x}$
+\end_inset
+
+的表达式。矩阵
+\begin_inset Formula $J$
+\end_inset
+
+称为系统动力学矩阵。然后状态转换矩阵
+\begin_inset Formula $F$
+\end_inset
+
+等
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+于
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\exp(J\mathrm{d}t)$
+\end_inset
+
+。展开指数，忽略高阶项，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F=I+J\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，任务简化为找到矩阵
+\begin_inset Formula $J$
+\end_inset
+
+。对于误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的动力学矩阵，经过一番数学上的魔术变换，得到
+\begin_inset Formula 
+\[
+J=-\left[\hat{\boldsymbol{\omega}}\right]_{\times}
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $\left[\hat{\omega}\right]_{\times}$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+斜对称矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\hat{\boldsymbol{\omega}}\right]_{\times}=\begin{bmatrix}0 & -\hat{\omega}_{z} & \hat{\omega}_{y}\\
+\hat{\omega}_{z} & 0 & -\hat{\omega}_{x}\\
+-\hat{\omega}_{y} & \hat{\omega}_{x} & 0
+\end{bmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为ESKF要求每次循环迭代前，都要重置，也就是执行完
+\begin_inset Formula $\hat{q}=\hat{q}*\delta q(\hat{\boldsymbol{a}})$
+\end_inset
+
+之后，
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+已经是
+\begin_inset Formula $q$
+\end_inset
+
+的最优估计，这时
+\begin_inset Formula $\hat{\boldsymbol{a}}=0$
+\end_inset
+
+。所以在下次开始迭代的时候
+\begin_inset Formula 
+\begin{align*}
+\hat{\boldsymbol{a}}_{k} & =\hat{\boldsymbol{a}}_{k-1}+J\mathrm{d}t\\
+ & =J\mathrm{d}t
+\end{align*}
+
+\end_inset
+
+所以误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的状态传播矩阵可简化为
+\begin_inset Formula 
+\begin{align*}
+F & =J\mathrm{d}t\\
+ & =-\left[\hat{\boldsymbol{\omega}}\right]_{\times}\mathrm{d}t
+\end{align*}
+
+\end_inset
+
+于是就可以求出先验的协方差矩阵
+\begin_inset Formula $P$
+\end_inset
+
+。至此，完成卡尔曼滤波器的预测方程已经没有问题。
+\end_layout
+
+\begin_layout Standard
+接下来，在测量更新阶段，目标就是要找到系统的观测矩阵
+\begin_inset Formula $H$
+\end_inset
+
+。思路和以前没有什么区别，就是把世界坐标系中的重力向量
+\begin_inset Formula $\boldsymbol{g}=\left[\begin{array}{ccc}
+0 & 0 & g\end{array}\right]$
+\end_inset
+
+当成固定向量观测。在已经旋转了的机体坐标系里，用加速计测量到的测量向量
+\begin_inset Formula $\boldsymbol{g}_{\mathrm{meas}}$
+\end_inset
+
+，包含了外力引起的线性加速度。不用管它，假设外力是多变的，在一段时间内是零均值的。用全局姿态四元数
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+的逆，将惯性坐标系中的重力向量
+\begin_inset Formula $\boldsymbol{g}$
+\end_inset
+
+旋转到和机体坐标系重合的姿态，然后和测量向量
+\begin_inset Formula $\boldsymbol{g}_{\mathrm{meas}}$
+\end_inset
+
+比一比有什么差异，然后将残差放入卡尔曼滤波器这个搅拌机里搅一搅，就得到了新的误差向量
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+，进而用方程
+\begin_inset Formula $\hat{q}=\hat{q}*\delta q(\hat{\boldsymbol{a}})$
+\end_inset
+
+校正了全局姿态四元数
+\begin_inset Formula $\hat{q}$
+\end_inset
+
+的部分数据，就是校正了欧拉角中的 Roll & Pitch。因此对于加速计测量的
+\begin_inset Formula $H$
+\end_inset
+
+矩阵为
+\begin_inset Formula 
+\[
+H=\left[R_{i}^{b}(\hat{q})\left(\begin{array}{c}
+0\\
+0\\
+g
+\end{array}\right)\right]_{\times}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $R_{i}^{b}(\hat{q})$
+\end_inset
+
+表示世界坐标系到机体坐标系的变换。至此也为完成卡尔曼滤波器的更新方程扫清了障碍。剩下的就是在编程上的细致苦力活了。
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+误差状态卡尔曼滤波器，或者说间接卡尔曼滤波器，难以理解的地方就是为了规避数学问题而绕了一个弯子。因此要理解这种滤波器，先要理解直接估计为什么不行，然后要理解为什
+么要寻找系统动力矩阵
+\begin_inset Formula $J$
+\end_inset
+
+，最后要理解固定向量观测方法会带来什么样的观测矩阵
+\begin_inset Formula $H$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+本文只是做了一些不严谨的感性描述，如同大话西游一般。要想了解数学上严谨描述，可以看后面的参考文献列表。另外，我在
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://github.com/shuyong/study-notes-math/tree/master/kalman/ESKF"
+literal "false"
+
+\end_inset
+
+对其中我认为重要的文档进行了整理和翻译。请专家指正。
+\end_layout
+
+\begin_layout Standard
+另外，误差状态卡尔曼滤波器，是一种标准的EKF，处理的都是标准的向量。从KF家族的角度看，并没有带来新的算法。EKF估计向量，都要找状态传播方程，进而要找系统动
+力矩阵。只是在这里估计出的误差向量，需要作用到一个标称的全局姿态四元数，而这个姿态四元数不能用EKF直接估计，然后在下一次迭代前这个误差向量还要清零重置。因此，
+包含姿态误差向量的状态向量可以按照EKF的要求扩展。在PX4项目中的EKF的状态向量有24个参数，姿态误差向量只占其中的3个参数而已。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Circumventing Dynamic Modeling: Evaluation of the Error-State Kalman Filter applied to Mobile Robot Localization - 1999"
+target "https://www.academia.edu/13385785/Circumventing_dynamic_modeling_Evaluation_of_the_error-state_kalman_filter_applied_to_mobile_robot_localization"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude Error Representations for Kalman Filtering - 2002"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20020060647.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude Error Representations for Kalman Filtering - 2003"
+target "https://www.researchgate.net/publication/245432681_Attitude_Error_Representations_for_Kalman_Filtering"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+卡尔曼滤波的姿态误差表示
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Attitude estimation or quaternion estimation? - 2003"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20030093641.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+姿态估计或四元数估计
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination - 2004"
+target "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20040037784.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative vs. Additive Filtering for Spacecraft Attitude Determination"
+target "https://www.researchgate.net/publication/260347976_Multiplicative_vs_Additive_Filtering_for_Spacecraft_Attitude_Determination"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+航天器姿态确定的乘法与加法滤波器的对比
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Indirect Kalman filter for 3D attitude estimation - 2007"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+三维姿态估计的间接卡尔曼滤波
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lessons Learned - F. Landis Markley - The Complexity of Constraints - 2009"
+target "https://www.researchgate.net/publication/257288674_Lessons_Learned"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+经验总结 - F.
+ Landis Markley - 约束的复杂性 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF - 2017"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+误差状态卡尔曼滤波器的四元数动力学 
+\end_layout
+
+\begin_layout Itemize
+潦草注释: https://github.com/TurtleZhong/msckf_mono/ 
+\end_layout
+
+\begin_layout Itemize
+同一个人: http://www.xinliang-zhong.vip/msckf_notes/
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Sensor Fusion Implementation - 2017"
+target "http://www.telesens.co/category/sensor-fusion/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+用Matlab code实现一个21个状态的CAMERA姿态的ESKF。 
+\end_layout
+
+\begin_layout Itemize
+[
+\begin_inset CommandInset href
+LatexCommand href
+name "code"
+target "https://github.com/ankur6ue/SensorFusion_KF"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF"
+target "https://github.com/PX4/ecl/tree/master/EKF/documentation"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+PX4项目里24个状态的EKF。 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Using the ECL EKF"
+target "https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "ESKF-tutorial - 2020"
+target "https://github.com/martiabr/ESKF-tutorial"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+[
+\begin_inset CommandInset href
+LatexCommand href
+name "libeskf"
+target "https://git.orbitntnu.no/archive/adcs/libeskf"
+literal "false"
+
+\end_inset
+
+]
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "The Multiplicative Extended Kalman Filter - 2020"
+target "https://matthewhampsey.github.io/blog/2020/07/18/mekf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

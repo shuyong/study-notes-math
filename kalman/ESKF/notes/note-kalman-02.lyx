@@ -1,0 +1,972 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—直接就撞墙
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器不容易理解也不容易推导，但是很容易应用，毕竟就 5 条公式。表达姿态，或者说表达旋转，常用的有 4 种表示方式：欧拉角表示、轴角表示、四元数和旋转矩
+阵表示。欧拉角有 3 参数；轴角表示，典型的有吉布斯向量 (Gibbs Vector) 或罗德里格斯参数 (Rodrigues Parameters)，有
+ 3 参数；四元数有 4 参数；旋转矩阵有 9 参数。姿态系统的运动学模型，还是经典的牛顿力学模型，这些知识在大学本科的物理和高数中都摆弄过。这些数字都不大，似
+乎凭直觉都可以弄好，没有多大的难度。似乎没有必要研究了这么多年，这么多人出了这么多的论文，如今还有人继续灌水不休。
+\end_layout
+
+\begin_layout Standard
+但是，凭着直觉建模，有时候会忽略一些理论细节。卡尔曼滤波器与姿态估计的最初冲突就在于此。
+\end_layout
+
+\begin_layout Section
+系统驱动与微分方程
+\end_layout
+
+\begin_layout Standard
+对于机体坐标系来说，姿态的变化量，可以从角速度推算而来。于是角速度对于 KF 系统，就是系统驱动力。这是因为角速度数据从 IMU 中读出，而惯性是机体的内在禀性
+，所以读出的角速度就很精确，不会被外界干扰。于是绝大多数姿态估计的系统，都是由角速度进行驱动。
+\end_layout
+
+\begin_layout Standard
+于是姿态系统的运动学建模，第一步就要从采样时间内的角度增量
+\begin_inset Formula $\Delta\theta$
+\end_inset
+
+计算出该时段内姿态的变化量，本系列选用四元数表达机体姿态，所以该变化量表示为
+\begin_inset Formula $\Delta q$
+\end_inset
+
+。既然是研究单位时间内的变化量，就需要了解四元数的微分方程。同样的，在表达旋转方面，四元数和旋转矩阵几乎完全相同，所以后续的讨论对旋转矩阵同样有效。
+\end_layout
+
+\begin_layout Subsection
+四元数微分方程概念性推导
+\end_layout
+
+\begin_layout Standard
+实际上，四元数数值函数的积分或微分都没有什么特别之处。如果有一个四元数数值函数的一个变量
+\begin_inset Formula $q(t)$
+\end_inset
+
+，那么
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}(t)=q'(t)=\dfrac{\mathrm{d}q}{\mathrm{d}t}=\lim\limits _{\Delta t\to0}\dfrac{q(t+\Delta t)-q(t)}{\Delta t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这与任何实数或复数函数相同。
+\end_layout
+
+\begin_layout Standard
+那么，推导需要关注的重点是什么呢？简单的说：单位四元数通常用于表示旋转(或刚体的方向)，而刚体动力学需要计算方向和时间的积分。两个单位四元数
+\begin_inset Formula $q_{1}q_{0}$
+\end_inset
+
+相乘得到一个单位四元数，表示两个旋转的组合。现在假设要描述一个以恒定角速度旋转的刚体的方向
+\begin_inset Formula $q(t)$
+\end_inset
+
+。然后可以写
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+q(0) & =q_{0}\\
+q(1) & =q_{\omega}q_{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+式中
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $q_{\omega}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+表示刚体在一个时间步内的旋转。因为我们有恒定的角速度，我们将有
+\begin_inset Formula $q(2)=q_{\omega}q_{\omega}q_{0}=q_{\omega}^{2}q_{0}$
+\end_inset
+
+，更普遍地说，通过归纳，对于所有的非负整数
+\begin_inset Formula $k$
+\end_inset
+
+，
+\begin_inset Formula $q(k)=q_{\omega}^{k}q_{0}$
+\end_inset
+
+。所以对于更一般情况的来说，我们希望有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t)=q_{\omega}^{t}q_{0}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $q_{\omega}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是一个单位四元数，这意味着它可以写成极性形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{\omega}=\cos(\theta/2)+\sin(\theta/2)(n_{x}\mathbf{i}+n_{y}\mathbf{j}+n_{z}\mathbf{k})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转某个角度，
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+是表示旋转轴的单位向量。这一部分通常在每个四元数教程中提到。3D实数向量作为对应的纯虚数四元数，表示向量
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+为四元数为
+\begin_inset Formula $n_{x}\mathbf{i}+n_{y}\mathbf{j}+n_{z}\mathbf{k}$
+\end_inset
+
+。实际上，四元数的极性形式实际上只是欧拉公式的四元数版本：任何单位复数 
+\begin_inset Formula $z$
+\end_inset
+
+ 都可以写成纯虚数的复指数
+\begin_inset Formula $z=\exp(it)=\cos(t)+i\sin(t)$
+\end_inset
+
+ ，同样任何单位长度的四元数(尤其是
+\begin_inset Formula $q_{\omega}$
+\end_inset
+
+)都可以写成纯虚四元数的指数(
+\begin_inset Formula $\dfrac{\theta}{2}$
+\end_inset
+
+是因为使用
+\begin_inset Formula $q\overrightarrow{n}q^{*}$
+\end_inset
+
+公式的原因)
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\[
+q_{\omega}=\exp\left(\dfrac{\theta}{2}\overrightarrow{n}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就给了我们一个自然的定义
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\[
+q_{\omega}^{t}=\exp\left(t\dfrac{\theta}{2}\overrightarrow{n}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，如果我们想写一个关于
+\begin_inset Formula $q(t)$
+\end_inset
+
+随时间变化的微分方程的行为怎么办？只需计算
+\begin_inset Formula $q(t)$
+\end_inset
+
+的导数，就像计算
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $t$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的任何其他函数一样。使用一系列推导和乘积规则，我们得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}(t)=\dfrac{\mathrm{d}}{\mathrm{d}t}(q_{\omega}^{t}q_{0})=\dfrac{\theta}{2}\overrightarrow{n}\exp(t\dfrac{\theta}{2}\overrightarrow{n})q_{0}=\dfrac{\theta}{2}\overrightarrow{n}q(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\theta$
+\end_inset
+
+是在一个时间步内的旋转角度，所以这里它的单位是[radian/s]，所以矢量
+\begin_inset Formula $\theta\overrightarrow{n}$
+\end_inset
+
+实际上就是三维角速度矢量
+\begin_inset Formula $\overrightarrow{\omega}$
+\end_inset
+
+，所以就推导出如下方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}=\dfrac{\mathrm{d}q}{\mathrm{d}t}=\dfrac{1}{2}\overrightarrow{\omega}q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就是有名的四元数的运动学方程。理解上述公式要点，就是要理解，
+\begin_inset Formula $q(t)$
+\end_inset
+
+描述的是在角速度恒定的情况下刚体的运动方向。同时也要了解四元数的指数函数与欧拉公式的关系。
+\end_layout
+
+\begin_layout Standard
+值得注意的是，上述微分方程推导只是一种概念性的推导。我在
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://github.com/shuyong/study-notes-math/blob/master/quaternion/%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E5%BE%AE%E5%88%86%E5%92%8C%E7%A7%AF%E5%88%86.pdf"
+literal "false"
+
+\end_inset
+
+收集和整理了老师们严格的推导过程。
+\end_layout
+
+\begin_layout Standard
+值得注意的是，角速度矢量
+\begin_inset Formula $\overrightarrow{\omega}$
+\end_inset
+
+是在全局坐标系上的投影表示。如果我们采用同一角速度矢量在机体坐标系上的投影
+\begin_inset Formula $\overrightarrow{\omega'}$
+\end_inset
+
+，明显地有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\overrightarrow{\omega}=q\overrightarrow{\omega'}q^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}=\dfrac{\mathrm{d}q}{\mathrm{d}t}=\dfrac{1}{2}\overrightarrow{\omega}q=\dfrac{1}{2}q\overrightarrow{\omega'}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为从 IMU 测量得到的角速度矢量是机体坐标系中的
+\begin_inset Formula $\overrightarrow{\omega'}$
+\end_inset
+
+，所以上述运动方程在工程中更常使用。
+\end_layout
+
+\begin_layout Subsection
+工程应用
+\end_layout
+
+\begin_layout Standard
+假设我们已知刚体在时间
+\begin_inset Formula $t$
+\end_inset
+
+时的姿态为单位四元数
+\begin_inset Formula $q(t)=[q_{0},q_{1},q_{2},q_{3}]$
+\end_inset
+
+。经过时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+，刚体的姿态发生了变化，用
+\begin_inset Formula $q(t+\Delta t)=[q'_{0},q'_{1},q'_{2},q'_{3}]$
+\end_inset
+
+表示时间
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时的姿态。因为
+\begin_inset Formula $\Delta t$
+\end_inset
+
+很小，我们假定这段时间里刚体的角速度恒定，根据四元数微分的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{q}(t)=\lim\limits _{\Delta t\to0}\dfrac{q(t+\Delta t)-q(t)}{\Delta t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据微分方程得到的一阶近似方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dfrac{q(t+\Delta t)-q(t)}{\Delta t}=\Delta q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+做积分：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)-q(t)=\Delta q\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)=\Delta q\Delta t+q(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时刻的新姿态
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+近似为
+\begin_inset Formula $t$
+\end_inset
+
+时刻的旧姿态
+\begin_inset Formula $q(t)$
+\end_inset
+
+与姿态变化量
+\begin_inset Formula $\Delta q\Delta t$
+\end_inset
+
+的叠加。
+\end_layout
+
+\begin_layout Standard
+对上式形象的理解，我们可以假设，我们观测一个刚体的姿态，原先我们知道它的姿态
+\begin_inset Formula $q_{0}$
+\end_inset
+
+，这很容易用水平仪或铅垂线测量得到。然后在一段时间内，我们测量它转动了一个
+\begin_inset Formula $\theta$
+\end_inset
+
+角度，我们就可以计算出它的姿态变化量
+\begin_inset Formula $\Delta q$
+\end_inset
+
+。将其叠加到原来的姿态上，就可以得到新的姿态
+\begin_inset Formula $q_{1}$
+\end_inset
+
+。再过一段时间又测量得到新的角度增量，再计算姿态变化量，再叠加得到新姿态，往复循环。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据前面得到的微分方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta q=\dfrac{1}{2}q(t)\overrightarrow{\omega'}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们把在
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时刻测量到的角速度矢量
+\begin_inset Formula $\overrightarrow{\omega'}$
+\end_inset
+
+，表示为一个纯四元数：
+\begin_inset Formula $\omega=(0,\omega_{x},\omega_{y},\omega_{z})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+根据四元数乘法定义
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+q\omega & =(q_{0}+q_{1}\mathbf{i}+q_{2}\mathbf{j}+q_{3}\mathbf{k})(\omega_{0}+\omega_{x}\mathbf{i}+\omega_{y}\mathbf{j}+\omega_{z}\mathbf{k})\\
+ & =\left[\begin{array}{c}
+q_{0}\omega_{0}-q_{1}\omega_{x}-q_{2}\omega_{y}-q_{3}\omega_{z}\\
+q_{0}\omega_{x}+q_{1}\omega_{0}+q_{2}\omega_{z}-q_{3}\omega_{y}\\
+q_{0}\omega_{y}-q_{1}\omega_{z}+q_{2}\omega_{0}+q_{3}\omega_{x}\\
+q_{0}\omega_{z}+q_{1}\omega_{y}-q_{2}\omega_{x}+q_{3}\omega_{0}
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\omega_{0} & -\omega_{x} & -\omega_{y} & -\omega_{z}\\
+\omega_{x} & \omega_{0} & \omega_{z} & -\omega_{y}\\
+\omega_{y} & -\omega_{z} & \omega_{0} & \omega_{x}\\
+\omega_{z} & \omega_{y} & -\omega_{x} & \omega_{0}
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\omega_{0}=0$
+\end_inset
+
+，所以
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta q=\dfrac{1}{2}\left[\begin{array}{cccc}
+0 & -\omega_{x} & -\omega_{y} & -\omega_{z}\\
+\omega_{x} & 0 & \omega_{z} & -\omega_{y}\\
+\omega_{y} & -\omega_{z} & 0 & \omega_{x}\\
+\omega_{z} & \omega_{y} & -\omega_{x} & 0
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+的一阶近似值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left[\begin{array}{c}
+q'_{0}\\
+q'_{1}\\
+q'_{2}\\
+q'_{3}
+\end{array}\right] & =\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]+\dfrac{1}{2}\Delta t\left[\begin{array}{cccc}
+0 & -\omega_{x} & -\omega_{y} & -\omega_{z}\\
+\omega_{x} & 0 & \omega_{z} & -\omega_{y}\\
+\omega_{y} & -\omega_{z} & 0 & \omega_{x}\\
+\omega_{z} & \omega_{y} & -\omega_{x} & 0
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]\\
+ & =q(t)+\dfrac{\Delta t}{2}Mq(t)
+\end{align*}
+
+\end_inset
+
+其中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+M=\left[\begin{array}{cccc}
+0 & -\omega_{x} & -\omega_{y} & -\omega_{z}\\
+\omega_{x} & 0 & \omega_{z} & -\omega_{y}\\
+\omega_{y} & -\omega_{z} & 0 & \omega_{x}\\
+\omega_{z} & \omega_{y} & -\omega_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+被称为四元数的旋转矩阵
+\begin_inset Formula $M$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+自此，我们就已经计算出了刚体新时刻的新姿态。如果我们生活在完美的世界里，刚体任意时刻的姿态都可以用上述公式确定，根本不需要其它物理量(加速度、地磁、GPS坐标等
+等)加入进来。但是，因为物理模型有缺陷，测量有误差，计算有精度舍入，等等问题累加，使得角度积分法在短期内有效，而长期无效。最典型的例子就是，如果一个安装陀螺仪的
+板子静止放在桌面上，不停读取数据并用上式计算姿态，时间久了就会发现那个板子在虚假地慢慢朝一个方向旋转。
+\end_layout
+
+\begin_layout Standard
+于是加速度、地磁这些数据，还有卡尔曼滤波算法就有了用武之地，就用来校正角度积分法带来的长期误差。直觉思路就是把用角度积分法计算得到的姿态四元数认为是一个4参数向
+量，和真实的姿态四元数相比有误差，就直接将其放入卡尔曼滤波算法中，用加速度、地磁这些数据去校正，去寻找姿态四元数的最优估计值。这方面的公式和代码已经很多，这里不
+再赘述。
+\end_layout
+
+\begin_layout Standard
+最终由于是增量计算，
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+不一定是单位四元数，所以需要规范化为单位四元数以便下一个周期使用：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)\leftarrow\dfrac{q(t+\Delta t)}{|q(t+\Delta t)|}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+周而复始，就可以估计刚体的下一个时刻的姿态了。
+\end_layout
+
+\begin_layout Standard
+问题就这样解决了？以后怎么灌水呢？
+\end_layout
+
+\begin_layout Section
+隐藏的问题
+\end_layout
+
+\begin_layout Standard
+但是，魔鬼总是藏在细节里。
+\end_layout
+
+\begin_layout Standard
+在3D空间的旋转是3个自由度(3-DOF)，而四元数是4D参数。于是用4D参数描述3D空间的旋转，就需要对四元数施加一个约束：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q_{0}^{2}(t)+q_{1}^{2}(t)+q_{2}^{2}(t)+q_{3}^{2}(t)=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也就是只有单位四元数才能表示旋转。运算前后的四元数
+\begin_inset Formula $q(t)$
+\end_inset
+
+的范数要一直保持为单位范数。用数学的话来说：代表旋转的单位四元数是群，只有乘法是封闭的。
+\end_layout
+
+\begin_layout Standard
+但是，卡尔曼滤波器有一个重要的假设。卡尔曼滤波器假定所有的状态变量都是向量，同时，它的核心概念，协方差矩阵，其所使用的算子是减法'-'，这就打破了上述约束。例如
+，想想如何形成四元数的协方差矩阵。协方差矩阵定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E\left[\left(x-\hat{x}\right)\left(x-\hat{x}\right)^{\mathrm{T}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是，在四元数表述旋转的情况下，
+\begin_inset Formula $\left(q-\hat{q}\right)$
+\end_inset
+
+是什么意思？它不再是一个单位四元数。旋转矩阵也是同样的问题。旋转矩阵是9参数，所以需要施加6个约束，3个行向量正交，并且3个列向量也正交。但经过协方差的减法运算
+，矩阵向量不再保证正交。
+\end_layout
+
+\begin_layout Standard
+总结下来就是：代表旋转的单位四元数和旋转矩阵是群，不是向量，只有乘法是封闭的。它们之间不能进行加减运算。所以，上一章表述的将表示姿态估计的四元数或旋转矩阵直接丢
+进卡尔曼滤波器以求得一个最优估计值的算法在数学上是有问题的！
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+代表旋转的单位四元数和旋转矩阵是群，不是向量，只有乘法是封闭的。它们之间不能进行加减运算。而对于姿态四元数的估计，前面所述的卡尔曼滤波算法就是所谓的直接法，就是
+把四元数看做4D向量，估计的是四元数，而不是姿态，从而打破了单位范数的约束。所以，前面所述的将卡尔曼滤波器与姿态四元数或旋转矩阵直接关联的算法在数学上是有问题的
+。
+\end_layout
+
+\begin_layout Standard
+但是，前面所述的算法在工业界很早就出现了，并且使用了很长时间。人们感觉到这种算法可能有问题，但似乎得到的姿态估计值的精度也可以接受。卡尔曼滤波器真是很神奇！直到
+ 2000 年后，
+\begin_inset CommandInset href
+LatexCommand href
+name "Dr. F. Landis Markley"
+target "http://www.acsu.buffalo.edu/~johnc/markley/"
+literal "false"
+
+\end_inset
+
+ 这位白胡子老爷爷的几篇论文明确地揭示了问题所在。
+\end_layout
+
+\end_body
+\end_document
