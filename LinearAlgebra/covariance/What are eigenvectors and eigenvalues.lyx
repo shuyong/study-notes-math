@@ -1,0 +1,849 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "什么是特征向量和特征值？"
+\pdf_author "Vincent Spruyt"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+什么是特征向量和特征值？
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Vincent Spruyt"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014/03
+\end_layout
+
+\begin_layout Abstract
+本文以直观的方式解释了什么是特征向量和特征值。此外，我们以一个简单的
+\begin_inset Formula $2\times2$
+\end_inset
+
+矩阵为例，手动进行特征分解。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+序言
+\end_layout
+
+\begin_layout Standard
+特征向量和特征值在计算机视觉和机器学习中有着广泛的应用。众所周知的例子是用于降维的主成分分析(
+\begin_inset CommandInset href
+LatexCommand href
+name "Principal Component Analysis, PCA"
+target "https://www.visiondummy.com/2014/05/feature-extraction-using-pca/"
+literal "false"
+
+\end_inset
+
+)或用于人脸识别的特征脸(
+\begin_inset CommandInset href
+LatexCommand href
+name "EigenFaces"
+target "https://www.visiondummy.com/2014/05/feature-extraction-using-pca/#A_practical_PCA_application_Eigenfaces"
+literal "false"
+
+\end_inset
+
+)。特征向量和特征值的一个有趣的用法也在我关于误差椭圆(
+\begin_inset CommandInset href
+LatexCommand href
+name "error ellipses"
+target "https://www.visiondummy.com/2014/04/draw-error-ellipse-representing-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+)的文章中说明。此外，特征分解形成协方差矩阵的几何解释的基础，在
+\begin_inset CommandInset href
+LatexCommand href
+name "最近的一篇文章"
+target "https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+中讨论。在本文中，我将温和地介绍这个数学概念，并将展示如何手动获得二维方阵的特征分解。
+\end_layout
+
+\begin_layout Standard
+特征向量是当对其应用线性变换时其方向保持不变的向量。考虑下面的图像，其中显示了三个向量。绿色正方形仅用于说明应用于这三个向量中的每个向量的线性变换。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename eigenvectors-1.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 1：当对特征向量应用线性变换(例如缩放)时，特征向量(红色)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset space \enskip{}
+\end_inset
+
+ 不会改变方向。其他向量(黄色)则会。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种情况下的变换是一个简单的缩放，在水平方向上因子
+\begin_inset Formula $2$
+\end_inset
+
+，在垂直方向上因子
+\begin_inset Formula $0.5$
+\end_inset
+
+，这样变换矩阵
+\begin_inset Formula $A$
+\end_inset
+
+被定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A=\begin{bmatrix}2 & 0\\
+0 & 0.5
+\end{bmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后通过将此变换应用为
+\begin_inset Formula $\vec{v}\prime=A\vec{v}$
+\end_inset
+
+，对向量
+\begin_inset Formula $\vec{v}=(x,y)$
+\end_inset
+
+进行缩放。上图显示一些向量的方向(以红色显示)不受此线性变换的影响。这些向量被称为变换的特征向量，并且唯一地定义了方阵
+\begin_inset Formula $A$
+\end_inset
+
+。这种唯一的、确定的关系正是这些向量被称为“特征向量”的原因(特征(eigen)在德语中的意思是“特定(specific)”)。
+\end_layout
+
+\begin_layout Standard
+一般来说，矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的特征向量
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+是下列向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A\vec{v}=\lambda\vec{v}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\lambda$
+\end_inset
+
+是称为“特征值(eigenvalue)”的标量值。这意味着向量
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+上的线性变换完全由
+\begin_inset Formula $\lambda$
+\end_inset
+
+定义。
+\end_layout
+
+\begin_layout Standard
+我们可以将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)改写如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A\vec{v}-\lambda\vec{v}=0\Rightarrow\vec{v}(A-\lambda I)=0,\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $I$
+\end_inset
+
+是与
+\begin_inset Formula $A$
+\end_inset
+
+相同维度的单位矩阵。
+\end_layout
+
+\begin_layout Standard
+但是，假设
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+不是空向量，只有当
+\begin_inset Formula $(A-\lambda I)$
+\end_inset
+
+不可逆时，才能定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。如果一个方阵是不可逆的，那就意味着它的行列式(
+\begin_inset CommandInset href
+LatexCommand href
+name "determinant"
+target "https://nl.wikipedia.org/wiki/Determinant"
+literal "false"
+
+\end_inset
+
+)必须等于零。因此，要找到
+\begin_inset Formula $A$
+\end_inset
+
+的特征向量，我们只需求解以下方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\det(A-\lambda I)=0.\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下面的章节中，我们将通过求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来确定矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的特征向量和特征值。在本例中，矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A=\begin{bmatrix}2 & 3\\
+2 & 1
+\end{bmatrix}.\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+计算特征值
+\end_layout
+
+\begin_layout Standard
+为了确定本例的特征值，我们用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代替方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $A$
+\end_inset
+
+，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\det\begin{pmatrix}2-\lambda & 3\\
+2 & 1-\lambda
+\end{pmatrix}=0.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算行列式得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(2-\lambda)(1-\lambda)-6=0\Rightarrow2-2\lambda-\lambda-\lambda^{2}-6=0\Rightarrow\lambda^{2}-3\lambda-4=0.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了在
+\begin_inset Formula $\lambda$
+\end_inset
+
+中求解这个二次方程，我们找到了判别式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D=b^{2}-4ac=(-3)^{2}-4*1*(-4)=9+16=25.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于判别式是严格正的，这意味着
+\begin_inset Formula $\lambda$
+\end_inset
+
+存在两个不同的值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c}
+\lambda_{1}=\frac{-b-\sqrt{D}}{2a}=\frac{3-5}{2}=-1,\\
+\lambda_{2}=\frac{-b+\sqrt{D}}{2a}=\frac{3+5}{2}=\enskip\,4.
+\end{array}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们已经确定了两个特征值
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\lambda_{2}$
+\end_inset
+
+。请注意，大小为
+\begin_inset Formula $N\times N$
+\end_inset
+
+的方阵总是正好有
+\begin_inset Formula $N$
+\end_inset
+
+个特征值，每个特征值都有相应的特征向量。特征值指定特征向量的大小。
+\end_layout
+
+\begin_layout Section
+计算第一特征向量
+\end_layout
+
+\begin_layout Standard
+我们现在可以通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的特征值插入最初定义问题的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来确定特征向量。然后通过求解这个方程组找到特征向量。
+\end_layout
+
+\begin_layout Standard
+我们首先对特征值
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+进行此操作，以便找到相应的第一特征向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{bmatrix}2 & 3\\
+2 & 1
+\end{bmatrix}\begin{bmatrix}x_{11}\\
+x_{12}
+\end{bmatrix}=-1\begin{bmatrix}x_{11}\\
+x_{12}
+\end{bmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为这只是方程组的矩阵表示法，我们可以用它的等价形式来写：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{lr}
+2x_{11}+3x_{12}=-x_{11}\\
+2x_{11}+x_{12}=-x_{12}
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+并且作为
+\begin_inset Formula $x_{12}$
+\end_inset
+
+的函数求解第一个方程，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{11}=-x_{12}.\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于特征向量只是表示一个方向(对应的特征值表示幅度)，所以特征向量的所有标量倍数都是与该特征向量平行的向量，因此是等价的(如果我们将向量归一化，它们都是相等的)
+。因此，不必进一步求解上述方程组，我们可以自由地为
+\begin_inset Formula $x_{11}$
+\end_inset
+
+或
+\begin_inset Formula $x_{12}$
+\end_inset
+
+选择一个实值，并使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)确定另一个实值。
+\end_layout
+
+\begin_layout Standard
+对于这个例子，我们任意选择
+\begin_inset Formula $x_{12}=1$
+\end_inset
+
+，这样
+\begin_inset Formula $x_{11}=-1$
+\end_inset
+
+。因此，对应于特征值
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+的特征向量为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{v}_{1}=\begin{bmatrix}-1\\
+1
+\end{bmatrix}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+计算第二特征向量
+\end_layout
+
+\begin_layout Standard
+第二特征向量的计算类似于第一特征向量所需的计算；我们现在将特征值
+\begin_inset Formula $\lambda_{2}=4$
+\end_inset
+
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}2 & 3\\
+2 & 1
+\end{bmatrix}\begin{bmatrix}x_{21}\\
+x_{22}
+\end{bmatrix}=4*\begin{bmatrix}x_{21}\\
+x_{22}
+\end{bmatrix}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+写为方程组，相当于：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{lr}
+2x_{21}+3x_{22}=4x_{21}\\
+2x_{21}+x_{22}=4x_{22}
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将第一个方程作为
+\begin_inset Formula $x_{21}$
+\end_inset
+
+的函数求解，结果如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{22}=\frac{3}{2}x_{21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后我们任意选择
+\begin_inset Formula $x_{21}=2$
+\end_inset
+
+，并找到
+\begin_inset Formula $x_{22}=3$
+\end_inset
+
+。因此，对应于特征值
+\begin_inset Formula $\lambda_{2}=4$
+\end_inset
+
+的特征向量为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{v}_{2}=\begin{bmatrix}3\\
+2
+\end{bmatrix}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+本文综述了特征向量和特征值的理论概念。这些概念在计算机视觉和机器学习中有着重要的应用，如PCA降维，特征人脸识别等。
+\end_layout
+
+\begin_layout Standard
+If you’re new to this blog, don’t forget to subscribe, or 
+\begin_inset CommandInset href
+LatexCommand href
+name "follow me on twitter"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+!
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,1477 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "协方差矩阵的几何解释"
+\pdf_author "Vincent Spruyt"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵的几何解释"
+target "https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Vincent Spruyt"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014/04
+\end_layout
+
+\begin_layout Abstract
+在这篇文章中，我们提供了一个直观的，几何解释的协方差矩阵，通过探索线性变换之间的关系和由此产生的数据协方差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+序言
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我们提供了一个直观的，几何解释的协方差矩阵，通过探索线性变换之间的关系和由此产生的数据协方差。大多数教科书根据协方差矩阵的概念来解释数据的形状。相
+反，我们采取了一种向后的方法，并解释了基于数据形状的协方差矩阵的概念。
+\end_layout
+
+\begin_layout Standard
+在上一篇文章中，我们讨论了
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://www.visiondummy.com/2014/03/divide-variance-n-1/"
+literal "false"
+
+\end_inset
+
+的概念，并给出了估计样本方差的著名公式的推导和证明。本文使用图1来说明标准差(方差的平方根)提供了数据在特征空间中分布的度量。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename gaussiandensity.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 1：高斯密度函数。对于正态分布的数据，
+\begin_inset Formula $68\%$
+\end_inset
+
+的样本落在均值
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset space \enskip{}
+\end_inset
+
+ 加上和减去标准差定义的区间内。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们证明了样本方差的无偏估计可以通过以下方法获得：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\sigma_{x}^{2} & =\frac{1}{N-1}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\\
+ & =\mathbb{E}[(x-\mathbb{E}(x))(x-\mathbb{E}(x))]\\
+ & =\sigma(x,x)
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，方差只能用来解释数据在平行于特征空间轴的方向上的传播。考虑图2所示的2D特征空间：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename transformeddata.png
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 2：数据的对角线扩散由协方差捕获。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于这些数据，我们可以计算
+\begin_inset Formula $x$
+\end_inset
+
+方向上的方差
+\begin_inset Formula $\sigma(x,x)$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+方向上的方差
+\begin_inset Formula $\sigma(y,y)$
+\end_inset
+
+。然而，数据的水平扩展和垂直扩展并不能解释明显的对角线相关性。图2清楚地表明，平均而言，如果数据点的
+\begin_inset Formula $x$
+\end_inset
+
+值增加，那么
+\begin_inset Formula $y$
+\end_inset
+
+值也会增加，从而产生正相关。这种相关性可以通过将方差的概念扩展到数据的“协方差”来捕捉：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma(x,y)=\mathbb{E}[(x-\mathbb{E}(x))(y-\mathbb{E}(y))]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，对于二维数据，我们得到
+\begin_inset Formula $\sigma(x,x)$
+\end_inset
+
+，
+\begin_inset Formula $\sigma(y,y)$
+\end_inset
+
+，
+\begin_inset Formula $\sigma(x,y)$
+\end_inset
+
+和
+\begin_inset Formula $\sigma(y,x)$
+\end_inset
+
+。这四个值可以总结为一个矩阵，称为协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma=\begin{bmatrix}\sigma(x,x) & \sigma(x,y)\\[0.3em]
+\sigma(y,x) & \sigma(y,y)\\[0.3em]
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $x$
+\end_inset
+
+与
+\begin_inset Formula $y$
+\end_inset
+
+正相关，
+\begin_inset Formula $y$
+\end_inset
+
+也与
+\begin_inset Formula $x$
+\end_inset
+
+正相关。换句话说，我们可以说
+\begin_inset Formula $\sigma(x,y)=\sigma(y,x)$
+\end_inset
+
+。因此，协方差矩阵总是一个对称矩阵，方差在其对角线上，协方差不在对角线上。二维正态分布数据完全由其均值和
+\begin_inset Formula $2\times2$
+\end_inset
+
+协方差矩阵来解释。类似地，
+\begin_inset Formula $3\times3$
+\end_inset
+
+协方差矩阵用于捕获三维数据的扩散，而
+\begin_inset Formula $N\times N$
+\end_inset
+
+协方差矩阵用于捕获
+\begin_inset Formula $N$
+\end_inset
+
+维数据的扩散。
+\end_layout
+
+\begin_layout Standard
+图3说明了数据的整体形状如何定义协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename covariances.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 3：协方差矩阵定义了数据的形状。对角线扩散由协方差捕获，而轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset space \enskip{}
+\end_inset
+
+ 对齐扩散由方差捕获。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+协方差矩阵的特征分解
+\end_layout
+
+\begin_layout Standard
+在下一节中，我们将讨论如何将协方差矩阵解释为将白色数据转换为我们观察到的数据的线性运算符。然而，在深入研究技术细节之前，必须对特征向量和特征值如何唯一地定义协方
+差矩阵以及数据的形状有一个直观的理解。
+\end_layout
+
+\begin_layout Standard
+如图3所示，协方差矩阵定义了数据的扩散(方差)和方向(协方差)。所以，如果我们想用一个向量和它的大小来表示协方差矩阵，我们应该简单地找到指向数据最大扩散方向的向
+量，它的大小等于这个方向上的扩散(方差)。
+\end_layout
+
+\begin_layout Standard
+如果我们将这个向量定义为
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+，那么数据
+\begin_inset Formula $D$
+\end_inset
+
+在这个向量上的投影就是
+\begin_inset Formula $\vec{v}^{\intercal}D$
+\end_inset
+
+，投影数据的方差是
+\begin_inset Formula $\vec{v}^{\intercal}\Sigma\vec{v}$
+\end_inset
+
+。因为我们在寻找指向最大方差方向的向量
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+，所以我们应该选择它的分量
+\begin_inset Formula $\vec{v}^{\intercal}\Sigma\vec{v}$
+\end_inset
+
+，使投影数据的协方差矩阵尽可能大。最大化任何形式的函数
+\begin_inset Formula $\vec{v}^{\intercal}\Sigma\vec{v}$
+\end_inset
+
+相对于
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+，其中
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+是标准化单位向量，可以表示为所谓的Rayleigh商(
+\begin_inset CommandInset href
+LatexCommand href
+name "Rayleigh Quotient"
+target "https://en.wikipedia.org/wiki/Rayleigh_quotient"
+literal "false"
+
+\end_inset
+
+)。这种Rayleigh商的最大值是通过将
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+设置为矩阵
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的最大特征向量来获得的。
+\end_layout
+
+\begin_layout Standard
+换句话说，协方差矩阵的最大的特征向量总是指向数据的最大的方差方向，并且这个向量的大小等于相应的特征值。第二大的特征向量始终与最大的特征向量正交，并指向数据的第二
+大扩散方向。
+\end_layout
+
+\begin_layout Standard
+现在我们来看一些例子。在前面的一篇文章中，我们看到线性变换矩阵
+\begin_inset Formula $T$
+\end_inset
+
+完全由其
+\begin_inset CommandInset href
+LatexCommand href
+name "特征向量和特征值"
+target "https://www.visiondummy.com/2014/03/eigenvalues-eigenvectors/"
+literal "false"
+
+\end_inset
+
+定义。应用于协方差矩阵，这意味着：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma\vec{v}=\lambda\vec{v}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+是
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的特征向量，
+\begin_inset Formula $\lambda$
+\end_inset
+
+是相应的特征值。
+\end_layout
+
+\begin_layout Standard
+如果我们数据的协方差矩阵是对角矩阵，协方差为零，那么这意味着方差必须等于特征值
+\begin_inset Formula $\lambda$
+\end_inset
+
+。如图4所示，特征向量以绿色和洋红色显示，特征值明显等于协方差矩阵的方差分量。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename eigenvectors.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 4：协方差矩阵的特征向量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，如果协方差矩阵不是对角的，使得协方差不是零，那么情况就稍微复杂一些。特征值仍然表示数据最大扩散方向上的方差幅度，协方差矩阵的方差分量仍然表示
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴方向上的方差幅度。但是由于数据不是轴对齐的，这些值不再与图5所示相同。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename eigenvectors_covariance.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 5：特征值与方差
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过比较图5和图4，可以清楚地看出，特征值表示沿特征向量方向的数据方差，而协方差矩阵的方差分量表示沿轴的扩展。如果没有协方差，则两个值相等。
+\end_layout
+
+\begin_layout Section
+协方差矩阵作为线性变换
+\end_layout
+
+\begin_layout Standard
+现在让我们暂时忘掉协方差矩阵。图3中的每个示例都可以简单地视为图6的线性变换实例：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename whiteneddata.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 6：具有单位协方差矩阵的数据称为白数据。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将图6所示的数据设为
+\begin_inset Formula $D$
+\end_inset
+
+，则图3所示的每个示例可通过线性变换
+\begin_inset Formula $D$
+\end_inset
+
+获得：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+D'=T\,D
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $T$
+\end_inset
+
+是由旋转矩阵
+\begin_inset Formula $R$
+\end_inset
+
+和缩放矩阵
+\begin_inset Formula $S$
+\end_inset
+
+组成的变换矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+T=R\,S.\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些矩阵定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+R=\begin{bmatrix}\cos(\theta) & -\sin(\theta)\\[0.3em]
+\sin(\theta) & \cos(\theta)
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+式中，
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转角度，并且：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+S=\begin{bmatrix}s_{x} & 0\\[0.3em]
+0 & s_{y}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $s_{x}$
+\end_inset
+
+和
+\begin_inset Formula $s_{y}$
+\end_inset
+
+分别是
+\begin_inset Formula $x$
+\end_inset
+
+方向和
+\begin_inset Formula $y$
+\end_inset
+
+方向上的比例因子。
+\end_layout
+
+\begin_layout Standard
+在下面的段落中，我们将讨论协方差矩阵
+\begin_inset Formula $\Sigma$
+\end_inset
+
+和线性变换矩阵
+\begin_inset Formula $T=R\,S$
+\end_inset
+
+之间的关系。
+\end_layout
+
+\begin_layout Standard
+让我们从未缩放(比例等于1)和未旋转的数据开始。在统计学中，这通常被称为“白色数据”，因为其样本来自标准正态分布，因此对应于白色(不相关)噪声：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename whiteneddata.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 7：白数据是具有单位协方差矩阵的数据。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些“白色”数据的协方差矩阵等于单位矩阵，因此方差和标准偏差等于1，协方差等于零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma=\begin{bmatrix}\sigma_{x}^{2} & 0\\[0.3em]
+0 & \sigma_{y}^{2}
+\end{bmatrix}=\begin{bmatrix}1 & 0\\[0.3em]
+0 & 1
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们用因子
+\begin_inset Formula $4$
+\end_inset
+
+在
+\begin_inset Formula $x$
+\end_inset
+
+方向缩放数据：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+D'=\begin{bmatrix}4 & 0\\[0.3em]
+0 & 1
+\end{bmatrix}\,D
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+数据
+\begin_inset Formula $D'$
+\end_inset
+
+现在如下所示：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename stretcheddata.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 8：
+\begin_inset Formula $x$
+\end_inset
+
+方向的变化导致水平缩放。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $D'$
+\end_inset
+
+的协方差矩阵
+\begin_inset Formula $\Sigma'$
+\end_inset
+
+现在是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma'=\begin{bmatrix}\sigma_{x}^{2} & 0\\[0.3em]
+0 & \sigma_{y}^{2}
+\end{bmatrix}=\begin{bmatrix}16 & 0\\[0.3em]
+0 & 1
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，所得数据
+\begin_inset Formula $D'$
+\end_inset
+
+的协方差矩阵
+\begin_inset Formula $\Sigma'$
+\end_inset
+
+与应用于原始数据的线性变换T相关，如下所示：
+\begin_inset Formula $D'=T\,D$
+\end_inset
+
+，其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+T=\sqrt{\Sigma'}=\begin{bmatrix}4 & 0\\[0.3em]
+0 & 1
+\end{bmatrix}.\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，尽管当数据在
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+方向上缩放时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)成立，但是当应用旋转时，如果方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)也成立，问题就出现了。为了研究一般情况下线性变换矩阵
+\begin_inset Formula $T$
+\end_inset
+
+和协方差矩阵
+\begin_inset Formula $\Sigma'$
+\end_inset
+
+之间的关系，我们将尝试将协方差矩阵分解为旋转矩阵和缩放矩阵的乘积。
+\end_layout
+
+\begin_layout Standard
+如前所述，我们可以通过特征向量和特征值来表示协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma\vec{v}=\lambda\vec{v}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\vec{v}$
+\end_inset
+
+是
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的特征向量，
+\begin_inset Formula $\lambda$
+\end_inset
+
+是相应的特征值。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)适用于矩阵
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的每个特征向量特征值对。在二维情况下，我们得到了两个特征向量和两个特征值。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义的两个方程组可用矩阵表示法有效地表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma\,V=V\,L
+\end{equation}
+
+\end_inset
+
+式中，
+\begin_inset Formula $V$
+\end_inset
+
+是矩阵，其列是
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的特征向量，
+\begin_inset Formula $L$
+\end_inset
+
+是对角线矩阵，其非零元素是相应的特征值。
+\end_layout
+
+\begin_layout Standard
+这意味着我们可以将协方差矩阵表示为其特征向量和特征值的函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma=V\,L\,V^{-1}\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)称为协方差矩阵的特征分解，可以使用
+\begin_inset CommandInset href
+LatexCommand href
+name "奇异值分解"
+target "https://en.wikipedia.org/wiki/Singular_value_decomposition"
+literal "false"
+
+\end_inset
+
+算法获得。特征向量表示数据方差最大的方向，而特征值表示这些方向上方差的大小。换句话说，
+\begin_inset Formula $V$
+\end_inset
+
+表示旋转矩阵，而
+\begin_inset Formula $\sqrt{L}$
+\end_inset
+
+表示缩放矩阵。因此，协方差矩阵可以进一步分解为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma=R\,S\,S\,R^{-1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $R=V$
+\end_inset
+
+是旋转矩阵，
+\begin_inset Formula $S=\sqrt{L}$
+\end_inset
+
+是缩放矩阵。
+\end_layout
+
+\begin_layout Standard
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，我们定义了一个线性变换
+\begin_inset Formula $T=R\,S$
+\end_inset
+
+。因为
+\begin_inset Formula $S$
+\end_inset
+
+ 是对角标度矩阵，
+\begin_inset Formula $S=S^{\intercal}$
+\end_inset
+
+。此外，因为
+\begin_inset Formula $R$
+\end_inset
+
+是正交矩阵，所以
+\begin_inset Formula $R^{-1}=R^{\intercal}$
+\end_inset
+
+。因此，
+\begin_inset Formula $T^{\intercal}=(R\,S)^{\intercal}=S^{\intercal}\,R^{\intercal}=S\,R^{-1}$
+\end_inset
+
+。因此，协方差矩阵可以写成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma=R\,S\,S\,R^{-1}=T\,T^{\intercal},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+换言之，如果我们将
+\begin_inset Formula $T=R\,S$
+\end_inset
+
+定义的线性变换应用于图7所示的原始白色数据
+\begin_inset Formula $D$
+\end_inset
+
+，我们将用协方差矩阵
+\begin_inset Formula $T\,T^{\intercal}=\Sigma'=R\,S\,S\,R^{-1}$
+\end_inset
+
+获得旋转和缩放的数据
+\begin_inset Formula $D'$
+\end_inset
+
+。如图9所示：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lineartrans.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 9：协方差矩阵表示原始数据的线性变换。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图9中的彩色箭头表示特征向量。最大的特征向量，即具有最大的对应特征值的特征向量，总是指向数据的最大的方差的方向，并由此定义其方向。由于旋转矩阵的正交性，后续特征
+向量总是与最大的特征向量正交。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我们证明了观测数据的协方差矩阵与白色不相关数据的线性变换直接相关。这种线性变换完全由数据的特征向量和特征值来定义。当特征向量表示旋转矩阵时，特征值
+对应于每个维度中比例因子的平方。
+\end_layout
+
+\begin_layout Standard
+If you’re new to this blog, don’t forget to subscribe, or 
+\begin_inset CommandInset href
+LatexCommand href
+name "follow me on twitter"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+!
+\end_layout
+
+\end_body
+\end_document

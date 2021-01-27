@@ -1,0 +1,1789 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "为什么要将样本方差除以 N-1?"
+\pdf_author "Vincent Spruyt"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "为什么要将样本方差除以N-1？"
+target "https://www.visiondummy.com/2014/03/divide-variance-n-1/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Vincent Spruyt"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2014/03
+\end_layout
+
+\begin_layout Abstract
+在本文中，我们解释了在计算正态分布数据的样本方差时，为什么以及何时被
+\begin_inset Formula $N$
+\end_inset
+
+或被
+\begin_inset Formula $N-1$
+\end_inset
+
+除。我们推导了用极大似然参数估计法计算平均值和方差的公式。
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+\lang english
+TL;DR
+\end_layout
+
+\begin_layout Standard
+在本文中，我们将导出计算正态分布数据的均值和方差的著名公式，以回答文章标题中的问题。然而，对于那些对这个问题的“为什么”不感兴趣而只对“何时”感兴趣的读者来说，
+答案很简单：
+\end_layout
+
+\begin_layout Standard
+如果必须同时估计数据的平均值和方差(通常是这种情况)，则除以
+\begin_inset Formula $N-1$
+\end_inset
+
+，得到的方差为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma^{2}=\frac{1}{N-1}\sum_{i=1}^{N}(x_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，如果已知真实总体的平均值，因此只需要估计方差，则除以
+\begin_inset Formula $N$
+\end_inset
+
+，从而得到方差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma^{2}=\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+前者是你通常需要的，后者的一个例子是高斯白噪声的传播估计。由于已知高斯白噪声的均值为零，在这种情况下只需估计方差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+序言
+\end_layout
+
+\begin_layout Standard
+如果数据是正态分布的，我们可以用它的均值
+\begin_inset Formula $\mu$
+\end_inset
+
+和方差
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+来完全描述它。方差是表示每个数据点与平均值的平均偏差的标准偏差的平方。换句话说，方差表示数据的扩散。对于正态分布数据，
+\begin_inset Formula $68.3\%$
+\end_inset
+
+的观测值将在
+\begin_inset Formula $\mu-\sigma$
+\end_inset
+
+和
+\begin_inset Formula $\mu+\sigma$
+\end_inset
+
+之间。下图说明了这一点，它显示了平均值
+\begin_inset Formula $\mu=10$
+\end_inset
+
+和方差
+\begin_inset Formula $\sigma^{2}=3^{2}=9$
+\end_inset
+
+的高斯密度函数：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename gaussiandensity.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 1：高斯密度函数。对于正态分布的数据，
+\begin_inset Formula $68\%$
+\end_inset
+
+的样本落在均值
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset space \enskip{}
+\end_inset
+
+ 加上和减去标准差定义的区间内。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常我们无法访问完整的数据。在上面的例子中，我们通常会有一些观察结果可供我们使用，但我们无法访问定义图的x轴的所有可能的观察结果。例如，我们可能有以下一组观察结
+果：
+\end_layout
+
+\begin_layout Standard
+Table 1 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observed Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation 1 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation 2 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation 3 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation 4 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Observation 5 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们现在计算经验平均值，将所有值相加，除以观察值的数量，我们得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu=\frac{10+12+7+5+11}{5}=9.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常我们假设经验平均值接近分布的实际未知平均值，因此假设观测数据是从平均值为
+\begin_inset Formula $\mu=9$
+\end_inset
+
+的高斯分布中取样的。在这个例子中，分布的实际平均值是
+\begin_inset Formula $10$
+\end_inset
+
+，所以经验平均值确实接近实际平均值。
+\end_layout
+
+\begin_layout Standard
+数据方差计算如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma^{2}=\frac{1}{N-1}\sum_{i=1}^{N}(x_{i}-\mu)^{2}=\frac{(10-9)^{2}+(12-9)^{2}+(7-9)^{2}+(5-9)^{2}+(11-9)^{2}}{4})=8.5\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样，我们通常假设这个经验方差接近于潜在分布的真实和未知方差。在这个例子中，实际方差是
+\begin_inset Formula $9$
+\end_inset
+
+，所以实际上经验方差接近实际方差。
+\end_layout
+
+\begin_layout Standard
+现在的问题是，为什么用来计算经验平均数和经验方差的公式是正确的。实际上，另一个常用的计算方差的公式定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma^{2}=\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}=\frac{(10-9)^{2}+(12-9)^{2}+(7-9)^{2}+(5-9)^{2}+(11-9)^{2}}{5})=6.8\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的唯一区别是前者除以
+\begin_inset Formula $N-1$
+\end_inset
+
+，而后者除以
+\begin_inset Formula $N$
+\end_inset
+
+。两个公式实际上都是正确的，但何时使用哪一个取决于具体情况。
+\end_layout
+
+\begin_layout Standard
+在下面几节中，我们将完全推导出最佳逼近正态分布的未知方差和均值的公式，并给出该分布的几个样本。我们将展示在哪些情况下将方差除以
+\begin_inset Formula $N$
+\end_inset
+
+，在哪些情况下将方差归一化为
+\begin_inset Formula $N-1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+近似一个参数(均值或方差)的公式称为估计值。在下面，我们将用
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\sigma}^{2}$
+\end_inset
+
+表示分布的实参数和未知参数。估计值，例如经验平均值和经验方差，用
+\begin_inset Formula $\mu$
+\end_inset
+
+和
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+表示。
+\end_layout
+
+\begin_layout Standard
+为了找到最优估计值，我们首先需要一个观察特定数据点
+\begin_inset Formula $x_{i}$
+\end_inset
+
+的可能性的解析表达式，假设总体是正态分布的，具有给定的平均值
+\begin_inset Formula $\mu$
+\end_inset
+
+和标准偏差
+\begin_inset Formula $\sigma$
+\end_inset
+
+。具有已知参数的正态分布通常表示为
+\begin_inset Formula $N(\mu,\sigma^{2})$
+\end_inset
+
+。似然函数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x_{i}\sim N(\mu,\sigma^{2})\Rightarrow P(x_{i};\mu,\sigma)=\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{1}{2\sigma^{2}}(x_{i}-\mu)^{2}}.\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了计算均值和方差，我们显然需要从这个分布中提取多个样本。在下面，让向量
+\begin_inset Formula $\vec{x}=(x_{1},x_{2},...x_{N})$
+\end_inset
+
+是包含所有可用样本的向量(例如，表1中示例中的所有值)。如果所有这些样本在统计上是独立的，我们可以把它们的联合似然函数写为所有个体可能性的总和：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+P(\vec{x};\mu,\sigma^{2}) & =P(x_{1},x_{2},...,x_{N};\mu,\sigma^{2})\\
+ & =P(x_{1};\mu,\sigma^{2})P(x_{2};\mu,\sigma^{2})...P(x_{N};\mu,\sigma^{2})\\
+ & =\prod_{i=1}^{N}P(x_{i};\mu,\sigma^{2})
+\end{array}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，然后得出该联合概率密度函数的解析表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+P(\vec{x};\mu,\sigma^{2}) & =\prod_{i=1}^{N}\frac{1}{\sqrt{2\pi\sigma^{2}}}e^{-\frac{1}{2\sigma^{2}}(x_{i}-\mu)^{2}}\\
+ & =\frac{1}{(2\pi\sigma^{2})^{\frac{N}{2}}}e^{-\frac{1}{2\sigma^{2}}\sum_{i=1}^{N}(x_{i}-\mu)^{2}}
+\end{array}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在下一节中将很重要，并将用于导出高斯分布的均值和方差的估计值的众所周知的表达式。
+\end_layout
+
+\begin_layout Section
+最小方差，无偏估计
+\end_layout
+
+\begin_layout Standard
+为了确定一个估计值是否是一个“好”估计值，我们首先需要定义什么是“好”估计值。估计值的优度取决于两个度量，即其偏差和方差(是的，我们将讨论均值估计值的方差和方差
+估计值的方差)。这两项措施将在本节中简要讨论。
+\end_layout
+
+\begin_layout Subsection
+参数偏差
+\end_layout
+
+\begin_layout Standard
+想象一下，我们可以得到不同的(不相交的)子集的完整人口。与前面的例子类似，想象一下，除了表1中的数据，我们还有一个表2和一个表3，其中有不同的观测值。那么一个好
+的均值估计值，就是一个平均值等于实际均值的估计值。尽管我们可以接受这样一种观点，即一个子集数据的经验平均值不等于我们示例中的实际平均值，但一个好的估计员应该确保
+所有子集中估计平均值的平均值等于实际平均值。这个约束在数学上表示为估计值的期望值应等于实际参数值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+E[\mu] & =\hat{\mu}\\
+E[\sigma^{2}] & =\hat{\sigma^{2}}
+\end{array}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果上述条件成立，则估计值称为“无偏估计值”。如果条件不成立，估计被称为“有偏”，因为平均而言，他们要么低估或高估了参数的真实值。
+\end_layout
+
+\begin_layout Subsection
+参数方差
+\end_layout
+
+\begin_layout Standard
+无偏估计保证了它们平均得到的估计值等于实参数。然而，这并不意味着每一个估计都是一个好的估计。例如，如果实际均值是
+\begin_inset Formula $10$
+\end_inset
+
+，则无偏估计值可以估计一个总体子集的均值为
+\begin_inset Formula $50$
+\end_inset
+
+，另一个子集的均值为
+\begin_inset Formula $-30$
+\end_inset
+
+。估计值的期望值实际上是
+\begin_inset Formula $10$
+\end_inset
+
+，这等于实际参数，但估计值的质量显然也取决于每个估计值的分布。一个对
+\begin_inset Formula $5$
+\end_inset
+
+个不同的人口子集产生估计
+\begin_inset Formula $(10，15，5，12，8)$
+\end_inset
+
+的估计值是无偏的，就像一个产生估计
+\begin_inset Formula $(50，-30，100，-90，10)$
+\end_inset
+
+的估计值一样。然而，第一个估计值的所有估计都比第二个估计值的估计更接近真值。
+\end_layout
+
+\begin_layout Standard
+因此，一个好的估计值不仅有一个低偏差，而且产生一个低方差。该方差表示为估计值的均方误差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+Var(\mu) & =E[(\hat{\mu}-\mu)^{2}]\\
+Var(\sigma^{2}) & =E[(\hat{\sigma}-\sigma)^{2}]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，一个好的估计是一个低偏差，低方差估计。最优估计值，如果存在这样的估计值，则是一个没有偏差和方差低于任何其他可能的估计值。这种估计称为最小方差无偏(mini
+mum variance, unbiased, MVU)估计。在下一节中，我们将导出高斯分布的均值和方差估计的解析表达式。我们将证明正态分布方差的MVU估计要求
+我们在某些假设下将方差除以
+\begin_inset Formula $N$
+\end_inset
+
+，如果这些假设不成立，则要求我们除以
+\begin_inset Formula $N-1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+最大似然估计
+\end_layout
+
+\begin_layout Standard
+尽管可以使用许多技术来获得基于总体数据子集的参数估计值，但最简单的方法可能是最大似然(
+\begin_inset CommandInset href
+LatexCommand href
+name "maximum likelihood"
+target "https://en.wikipedia.org/wiki/Maximum_likelihood"
+literal "false"
+
+\end_inset
+
+)法。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)将
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+的观测概率定义为
+\begin_inset Formula $P(\vec{x};\mu,\sigma^{2})$
+\end_inset
+
+。如果我们在这个函数中固定
+\begin_inset Formula $\mu$
+\end_inset
+
+和
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+，同时让
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+变化，我们就得到了如图1所示的高斯分布。但是，我们也可以选择一个固定的
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+，让
+\begin_inset Formula $\mu$
+\end_inset
+
+和/或
+\begin_inset Formula $\sigma$
+\end_inset
+
+变化。例如，我们可以选择
+\begin_inset Formula $\vec{x}=(10,12,7,5,11)$
+\end_inset
+
+，就像前面的例子一样。我们也选择一个固定的
+\begin_inset Formula $\mu=10$
+\end_inset
+
+，让
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+变化。图2显示了使用建议的固定的向量
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+和
+\begin_inset Formula $\mu$
+\end_inset
+
+，
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+的每个不同值的分布的曲线图：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename likelihood.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+图 2：此图显示了观察固定数据
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+的可能性，如果数据是正态分布的，
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset space \enskip{}
+\end_inset
+
+ 选择固定的
+\begin_inset Formula $\mu=10$
+\end_inset
+
+，与变化的
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+的各种值作图。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在上图中，我们通过改变固定的
+\begin_inset Formula $\mu=10$
+\end_inset
+
+的
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+来计算可能性
+\begin_inset Formula $P(\vec{x};\sigma^{2})$
+\end_inset
+
+。结果曲线中的每个点表示观测
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+是参数为
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+的高斯分布样本的可能性。对应于最高可能性的参数值很可能就是定义数据来源的分布的参数。因此，我们可以通过在这个似然曲线中找到最大值来确定最佳的
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+。在本例中，最大值为
+\begin_inset Formula $\sigma^{2}=7.8$
+\end_inset
+
+，因此标准偏差为
+\begin_inset Formula $\sqrt{(\sigma^{2})}=2.8$
+\end_inset
+
+。实际上，如果我们用传统的方法计算方差，给定的
+\begin_inset Formula $\mu=10$
+\end_inset
+
+，我们会发现它等于
+\begin_inset Formula $7.8$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{(10-10)^{2}+(12-10)^{2}+(7-10)^{2}+(5-10)^{2}+(11-10)^{2}}{5}=7.8
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，通过求最大似然函数的峰值，简单地导出了基于样本数据的方差计算公式。此外，我们不固定
+\begin_inset Formula $\mu$
+\end_inset
+
+，而是让
+\begin_inset Formula $\mu$
+\end_inset
+
+和
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+同时变化。找到这两个估计值对应于在二维似然函数中找到最大值。
+\end_layout
+
+\begin_layout Standard
+为了求函数的最大值，我们只需把它的导数设为零。如果我们想求一个有两个变量的函数的最大值，我们计算对每个变量的偏导数，并把它们都设为零。在下面，让
+\begin_inset Formula $\hat{\mu}_{ML}$
+\end_inset
+
+作为使用最大似然方法获得的总体平均数的最优估计值，并且让
+\begin_inset Formula $\hat{\sigma}_{ML}^{2}$
+\end_inset
+
+作为方差的最优估计值。为了使似然函数最大化，我们只需计算其(偏)导数并将其设置为零，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mu}_{ML}=\arg\max_{\mu}P(\vec{x};\mu,\sigma^{2})\Rightarrow\frac{\partial P(\vec{x};\mu,\sigma^{2})}{\partial\mu}=0
+\]
+
+\end_inset
+
+并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\sigma}_{ML}^{2}=\arg\max_{\sigma^{2}}P(\vec{x};\mu,\sigma^{2})\Rightarrow\frac{\partial P(\vec{x};\mu,\sigma^{2})}{\partial\sigma^{2}}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下面的段落中，我们将使用这种技术来获得
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\sigma}$
+\end_inset
+
+的MVU估计值。我们考虑两种情况：
+\end_layout
+
+\begin_layout Standard
+第一种情况假设分布的真实平均值是已知的。因此，我们只需要估计方差，然后问题就对应于在一维似然函数中求最大值，用
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+参数化。虽然这种情况在实践中并不经常发生，但它确实有实际应用价值。例如，如果我们知道一个信号(例如图像中像素的颜色值)应该有一个特定的值，但是该信号已经被白噪声
+(均值为零的高斯噪声)污染，那么分布的均值是已知的，我们只需要估计方差。
+\end_layout
+
+\begin_layout Standard
+第二种情况涉及真实均值和真实方差都未知的情况。这是您遇到最多的情况，您将根据样本数据获得均值和方差的估计值。
+\end_layout
+
+\begin_layout Standard
+在接下来的段落中，我们将说明每种情况都会产生不同的MVU估计值。更具体地说，第一种情况要求方差估计值被
+\begin_inset Formula $N$
+\end_inset
+
+归一化为MVU，而第二种情况要求被
+\begin_inset Formula $N-1$
+\end_inset
+
+除为MVU。
+\end_layout
+
+\begin_layout Section
+如果均值已知求估计方差
+\end_layout
+
+\begin_layout Subsection
+参数估计
+\end_layout
+
+\begin_layout Standard
+如果分布的真实平均值已知，则似然函数仅在
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+上参数化。然后，获得最大似然估计值对应于求解：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\sigma}_{ML}^{2}=\arg\max_{\sigma^{2}}P(\vec{x};\sigma^{2})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，由于函数中的指数，计算由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义的
+\begin_inset Formula $P(\vec{x};\sigma^{2})$
+\end_inset
+
+的导数相当复杂。实际上，最大化对数似然函数要比最大化似然函数本身容易得多。因为对数是单调函数，所以最大值是相同的。因此，我们解决以下问题代替：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\sigma}_{ML}^{2}=\arg\max_{\sigma^{2}}\log(P(\vec{x};\sigma^{2})).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下面我们设置
+\begin_inset Formula $s=\sigma^{2}$
+\end_inset
+
+以获得一个更简单的表示法。为了求对数似然函数的最大值，我们只需计算方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对数的导数并将其设为零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+ & \frac{\partial\log(P(\vec{x};\sigma^{2}))}{\partial\sigma^{2}}=0\\
+ & \Leftrightarrow\frac{\partial\log(P(\vec{x};s))}{\partial s}=0\\
+ & \Leftrightarrow\frac{\partial}{\partial s}\log\left(\frac{1}{(2\pi s)^{\frac{N}{2}}}e^{-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}}\right)=0\\
+ & \Leftrightarrow\frac{\partial}{\partial s}\log\left(\frac{1}{(2\pi)^{\frac{N}{2}}}\right)+\frac{\partial}{\partial s}\log\left(\frac{1}{\sqrt{(s})^{\frac{N}{2}}}\right)+\frac{\partial}{\partial s}\log\left(e^{-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}}\right)=0\\
+ & \Leftrightarrow\frac{\partial}{\partial s}\log\left((s)^{-\frac{N}{2}}\right)+\frac{\partial}{\partial s}\left(-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\right)=0\\
+ & \Leftrightarrow-\frac{N}{2}\frac{\partial}{\partial s}\log\left(s\right)-\frac{1}{2}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\frac{\partial}{\partial s}\left(\frac{1}{s}\right)=0\\
+ & \Leftrightarrow-\frac{N}{2s}+\frac{1}{2}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\left(\frac{1}{s^{2}}\right)=0\\
+ & \Leftrightarrow\frac{N}{2s^{2}}\left(-s+\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\right)=0\\
+ & \Leftrightarrow\frac{N}{2s^{2}}\left(\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}-s\right)=0\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+很明显，如果
+\begin_inset Formula $N>0$
+\end_inset
+
+，则上述问题的唯一可能解决方案是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s=\sigma^{2}=\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}.\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，这个
+\begin_inset Formula $\hat{\sigma}$
+\end_inset
+
+的最大似然估计确实是计算正态数据方差的传统公式。规范化因子是
+\begin_inset Formula $\frac{1}{N}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+然而，最大似然法不能保证提供无偏估计。另一方面，如果得到的估计值是无偏的，那么最大似然方法确实保证了估计值也是最小方差，因此MVU。因此，我们需要检查方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的估计值是否无偏。
+\end_layout
+
+\begin_layout Subsection
+效果评估
+\end_layout
+
+\begin_layout Standard
+为了检验方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义的估计值是否无偏，我们需要检验方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的条件是否成立，从而
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E[s]=\hat{s}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为此，我们将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)插入
+\begin_inset Formula $E[s]$
+\end_inset
+
+，并写为：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Formula 
+\begin{align*}
+E[s] & =E\left[\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\right]=\frac{1}{N}\sum_{i=1}^{N}E\left[(x_{i}-\mu)^{2}\right]=\frac{1}{N}\sum_{i=1}^{N}E\left[x_{i}^{2}-2x_{i}\mu+\mu^{2}\right]\\
+ & =\frac{1}{N}\left(NE[x_{i}^{2}]-2N\mu E[x_{i}]+N\mu^{2}\right)\\
+ & =\frac{1}{N}\left(NE[x_{i}^{2}]-2N\mu^{2}+N\mu^{2}\right)\\
+ & =\frac{1}{N}\left(NE[x_{i}^{2}]-N\mu^{2}\right)\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，方差的一个
+\begin_inset CommandInset href
+LatexCommand href
+name "重要性质"
+target "https://en.wikipedia.org/wiki/Variance#Definition"
+literal "false"
+
+\end_inset
+
+是，真实的方差
+\begin_inset Formula $\hat{s}$
+\end_inset
+
+可以写为
+\begin_inset Formula $\hat{s}=E[x_{i}^{2}]-E[x_{i}]^{2}$
+\end_inset
+
+使得满足
+\begin_inset Formula $E[x_{i}^{2}]=\hat{s}+E[x_{i}]^{2}=\hat{s}+\mu^{2}$
+\end_inset
+
+的条件。在上述公式中使用此属性可得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[s] & =\frac{1}{N}\left(NE[x_{i}^{2}]-N\mu^{2}\right)\\
+ & =\frac{1}{N}\left(N\hat{s}+N\mu^{2}-N\mu^{2}\right)\\
+ & =\frac{1}{N}\left(N\hat{s}\right)\\
+ & =\hat{s}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $E[s]=\hat{s}$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示的条件成立，因此所获得的数据方差
+\begin_inset Formula $\hat{s}$
+\end_inset
+
+的估计值是无偏的。此外，由于最大似然方法保证了无偏估计也是最小方差(MVU)，这意味着没有其它估计值比这里得到的更好。
+\end_layout
+
+\begin_layout Standard
+因此，在计算正态分布数据的方差时，如果已知基础分布的真实平均值，则必须除以
+\begin_inset Formula $N$
+\end_inset
+
+而不是
+\begin_inset Formula $N-1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+如果均值未知求估计方差
+\end_layout
+
+\begin_layout Subsection
+参数估计
+\end_layout
+
+\begin_layout Standard
+在上一节中，分布的真实平均值是已知的，因此我们只需找到数据方差的估计值。然而，如果真平均数未知，则也必须找到平均数的估计值。此外，方差估计使用这个均值估计。因此
+，我们将证明先前得到的方差估计不再是无偏的。此外，我们将证明，在这种情况下，我们可以通过除以
+\begin_inset Formula $N-1$
+\end_inset
+
+而不是除以
+\begin_inset Formula $N$
+\end_inset
+
+来“无偏”估计值，这稍微增加了估计值的方差。
+\end_layout
+
+\begin_layout Standard
+和以前一样，我们使用极大似然方法来获得基于对数似然函数的估计值。我们首先找到
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+的ML估计值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+ & \frac{\partial\log(P(\vec{x};s,\mu))}{\partial\mu}=0\\
+ & \Leftrightarrow\frac{\partial}{\partial\mu}\log\left(\frac{1}{(2\pi s)^{\frac{N}{2}}}e^{-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}}\right)=0\\
+ & \Leftrightarrow\frac{\partial}{\partial\mu}\log\left(\frac{1}{(2\pi)^{\frac{N}{2}}}\right)+\frac{\partial}{\partial\mu}\log\left(e^{-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}}\right)=0\\
+ & \Leftrightarrow\frac{\partial}{\partial\mu}\left(-\frac{1}{2s}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\right)=0\\
+ & \Leftrightarrow-\frac{1}{2s}\frac{\partial}{\partial\mu}\left(\sum_{i=1}^{N}(x_{i}-\mu)^{2}\right)=0\\
+ & \Leftrightarrow-\frac{1}{2s}\left(\sum_{i=1}^{N}-2(x_{i}-\mu)\right)=0\\
+ & \Leftrightarrow\frac{1}{s}\left(\sum_{i=1}^{N}(x_{i}-\mu)\right)=0\\
+ & \Leftrightarrow\frac{N}{s}\left(\frac{1}{N}\sum_{i=1}^{N}(x_{i})-\mu\right)=0\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $N>0$
+\end_inset
+
+，那么很明显，上述方程只有在以下情况下才有解：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu=\frac{1}{N}\sum_{i=1}^{N}(x_{i}).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，这确实是计算分布平均值的众所周知的公式。虽然我们都知道这个公式，但现在我们证明了它是正态分布的真均值和未知均值
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+的极大似然估计。现在，我们只假设我们在前面找到的由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义的方差
+\begin_inset Formula $\hat{s}$
+\end_inset
+
+的估计值仍然是MVU方差估计值。然而，在下一节中，我们将证明这个估计现在不再是无偏的。
+\end_layout
+
+\begin_layout Subsection
+效果评估
+\end_layout
+
+\begin_layout Standard
+为了检查
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+的真均值的估计值
+\begin_inset Formula $\mu$
+\end_inset
+
+是否无偏，我们必须确保方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的条件成立：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+E[\mu]=E\left[\frac{1}{N}\sum_{i=1}^{N}(x_{i})\right]=\frac{1}{N}\sum_{i=1}^{N}E[x_{i}]=\frac{1}{N}NE[x_{i}]=\frac{1}{N}N\hat{\mu}=\hat{\mu}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $E[\mu]=\hat{\mu}$
+\end_inset
+
+，这意味着所得到的分布均值的估计是无偏的。由于极大似然方法保证了在估计值无偏的情况下给出最小方差估计值，我们证明了
+\begin_inset Formula $\mu$
+\end_inset
+
+是均值的MVU估计值。
+\end_layout
+
+\begin_layout Standard
+为了检查方差
+\begin_inset Formula $\hat{s}$
+\end_inset
+
+的早期发现的估计值
+\begin_inset Formula $s$
+\end_inset
+
+是否仍然是无偏的，如果它是基于经验平均值
+\begin_inset Formula $\mu$
+\end_inset
+
+而不是真实平均值
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+，我们只需将获得的估计值
+\begin_inset Formula $\mu$
+\end_inset
+
+插入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的早期导出估计值
+\begin_inset Formula $s$
+\end_inset
+
+中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+s & =\sigma^{2}=\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\\
+ & =\frac{1}{N}\sum_{i=1}^{N}\left(x_{i}-\frac{1}{N}\sum_{i=1}^{N}(x_{i})\right)^{2}\\
+ & =\frac{1}{N}\sum_{i=1}^{N}\left[x_{i}^{2}-2x_{i}\frac{1}{N}\sum_{i=1}^{N}(x_{i})+\left(\frac{1}{N}\sum_{i=1}^{N}(x_{i})\right)^{2}\right]\\
+ & =\frac{\sum_{i=1}^{N}x_{i}^{2}}{N}-\frac{2\sum_{i=1}^{N}x_{i}\sum_{i=1}^{N}x_{i}}{N^{2}}+\left(\frac{\sum_{i=1}^{N}x_{i}}{N}\right)^{2}\\
+ & =\frac{\sum_{i=1}^{N}x_{i}^{2}}{N}-\frac{2\sum_{i=1}^{N}x_{i}\sum_{i=1}^{N}x_{i}}{N^{2}}+\left(\frac{\sum_{i=1}^{N}x_{i}}{N}\right)^{2}\\
+ & =\frac{\sum_{i=1}^{N}x_{i}^{2}}{N}-\left(\frac{\sum_{i=1}^{N}x_{i}}{N}\right)^{2}\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了检查估计值是否仍然无偏，我们现在需要再次检查方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的条件是否成立：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[s] & =E\left[\frac{\sum_{i=1}^{N}x_{i}^{2}}{N}-\left(\frac{\sum_{i=1}^{N}x_{i}}{N}\right)^{2}\right]\\
+ & =\frac{\sum_{i=1}^{N}E[x_{i}^{2}]}{N}-\frac{E[(\sum_{i=1}^{N}x_{i})^{2}]}{N^{2}}\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如前一节所述，方差的一个重要性质是真实的方差
+\begin_inset Formula $\hat{s}$
+\end_inset
+
+可以写成
+\begin_inset Formula $\hat{s}=E[x_{i}^{2}]-E[x_{i}]^{2}$
+\end_inset
+
+以满足
+\begin_inset Formula $E[x_{i}^{2}]=\hat{s}+E[x_{i}]^{2}=\hat{s}+\mu^{2}$
+\end_inset
+
+的条件。在上述公式中使用此性质可得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+E[s] & =\frac{\sum_{i=1}^{N}E[x_{i}^{2}]}{N}-\frac{E[(\sum_{i=1}^{N}x_{i})^{2}]}{N^{2}}\\
+ & =s+\mu^{2}-\frac{E[(\sum_{i=1}^{N}x_{i})^{2}]}{N^{2}}\\
+ & =s+\mu^{2}-\frac{E[\sum_{i=1}^{N}x_{i}^{2}+\sum_{i}^{N}\sum_{j\neq i}^{N}x_{i}x_{j}]}{N^{2}}\\
+ & =s+\mu^{2}-\frac{E[N(s+\mu^{2})+\sum_{i}^{N}\sum_{j\neq i}^{N}x_{i}x_{j}]}{N^{2}}\\
+ & =s+\mu^{2}-\frac{N(s+\mu^{2})+\sum_{i}^{N}\sum_{j\neq i}^{N}E[x_{i}]E[x_{j}]}{N^{2}}\\
+ & =s+\mu^{2}-\frac{N(s+\mu^{2})+N(N-1)\mu^{2}}{N^{2}}\\
+ & =s+\mu^{2}-\frac{N(s+\mu^{2})+N^{2}\mu^{2}-N\mu^{2}}{N^{2}}\\
+ & =s+\mu^{2}-\frac{s+\mu^{2}+N\mu^{2}-\mu^{2}}{N}\\
+ & =s+\mu^{2}-\frac{s}{N}-\frac{\mu^{2}}{N}-\mu^{2}+\frac{\mu^{2}}{N}\\
+ & =s-\frac{s}{N}\\
+ & =s\left(1-\frac{1}{N}\right)\\
+ & =s\left(\frac{N-1}{N}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于明显的
+\begin_inset Formula $E[s]\neq\hat{s}$
+\end_inset
+
+，这表明分布方差的估计不再是无偏的。事实上，这个估计值平均低估了因子
+\begin_inset Formula $\frac{N-1}{N}$
+\end_inset
+
+的真实方差。当采样数接近无穷大(
+\begin_inset Formula $N\rightarrow\infty$
+\end_inset
+
+)时，该偏差收敛为零。然而，对于小样本集，偏差是有意义的，应该消除。
+\end_layout
+
+\begin_layout Subsection
+固定偏差
+\end_layout
+
+\begin_layout Standard
+由于偏差只是一个因素，我们可以通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的偏差估计值
+\begin_inset Formula $s$
+\end_inset
+
+按偏差的倒数缩放来消除偏差。因此，我们定义一个新的无偏估计
+\begin_inset Formula $s\prime$
+\end_inset
+
+如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+s\prime & =\left(\frac{N-1}{N}\right)^{-1}s\\
+s\prime & =\left(\frac{N-1}{N}\right)^{-1}\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\\
+s\prime & =\left(\frac{N}{N-1}\right)\frac{1}{N}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\\
+s\prime & =\frac{1}{N-1}\sum_{i=1}^{N}(x_{i}-\mu)^{2}\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个估计值现在是无偏的，确实类似于传统的计算方差的公式，在这里我们除以
+\begin_inset Formula $N-1$
+\end_inset
+
+而不是
+\begin_inset Formula $N$
+\end_inset
+
+。但是，请注意，得到的估计值不再是最小方差估计值，而是所有无偏估计值中方差最小的估计值。如果除以
+\begin_inset Formula $N$
+\end_inset
+
+，则估计值是有偏的，如果除以
+\begin_inset Formula $N-1$
+\end_inset
+
+，则估计值不是最小方差估计值。然而，一般来说，有偏估计要比有略高的方差估计差得多。因此，如果总体平均数未知，则应使用
+\begin_inset Formula $N-1$
+\end_inset
+
+除法，而不是
+\begin_inset Formula $N$
+\end_inset
+
+除法。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在本文中，我们展示了计算正态分布数据的均值和方差的常用公式的来源。此外，我们还证明了方差估计公式中的归一化因子在总体的真实均值已知的情况下应该是
+\begin_inset Formula $\frac{1}{N}$
+\end_inset
+
+，而在均值本身也需要估计的情况下应该是
+\begin_inset Formula $\frac{1}{N-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+If you’re new to this blog, don’t forget to subscribe, or 
+\begin_inset CommandInset href
+LatexCommand href
+name "follow me on twitter"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+!
+\end_layout
+
+\end_body
+\end_document
