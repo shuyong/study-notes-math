@@ -1,0 +1,1182 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "形象理解协方差矩阵"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+形象理解协方差矩阵
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+概率论中的定义
+\end_layout
+
+\begin_layout Paragraph
+随机变量：
+\end_layout
+
+\begin_layout Standard
+随机变量(Random Variable)
+\begin_inset Formula $X$
+\end_inset
+
+是一个映射，把随机试验的结果与实数建立起了一一对应的关系。而期望与方差是随机变量的两个重要的数字特征。
+\end_layout
+
+\begin_layout Paragraph
+数学期望：
+\end_layout
+
+\begin_layout Standard
+在概率论和统计学中，数学期望(mean)(或均值，亦简称期望(Expectation, or expected value))是试验中每次可能结果的概率乘以其结
+果的总和，是最基本的数学特征之一。它反映随机变量平均取值的大小。 期望值是该变量输出值的平均数。期望值并不一定包含于变量的输出值集合里。
+\end_layout
+
+\begin_layout Standard
+大数定律规定，随着重复次数接近无穷大，数值的算术平均值几乎肯定地收敛于期望值。
+\end_layout
+
+\begin_layout Paragraph
+方差：
+\end_layout
+
+\begin_layout Standard
+方差(Variance)是在概率论和统计方差衡量随机变量或一组数据时离散程度的度量。概率论中方差用来度量随机变量和其数学期望(即均值)之间的偏离程度。统计中的方
+差(样本方差)是每个样本值与全体样本值的平均数之差的平方值的平均数。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $X$
+\end_inset
+
+为随机变量， 如果
+\begin_inset Formula $\mathrm{E}[X]$
+\end_inset
+
+是随机变量
+\begin_inset Formula $X$
+\end_inset
+
+的期望值(平均数
+\begin_inset Formula $\mu=\mathrm{E}[X]$
+\end_inset
+
+)，则随机变量
+\begin_inset Formula $X$
+\end_inset
+
+的方差为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Var}\left(X\right)=\mathrm{E}\left[\left(X-\mu\right)^{2}\right]
+\]
+
+\end_inset
+
+方差也记为
+\begin_inset Formula $\sigma_{X}^{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+样本方差计算公式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+S^{2}=\Sigma\left(X-\overline{X}\right)^{2}/\left(n-1\right)
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $S^{2}$
+\end_inset
+
+为样本方差，
+\begin_inset Formula $X$
+\end_inset
+
+为变量，
+\begin_inset Formula $\overline{X}$
+\end_inset
+
+为样本均值，
+\begin_inset Formula $n$
+\end_inset
+
+为样本例数。如果要了解为什么要除以
+\begin_inset Formula $n-1$
+\end_inset
+
+，请看
+\begin_inset CommandInset href
+LatexCommand href
+name "这篇文章"
+target "https://www.visiondummy.com/2014/03/divide-variance-n-1/"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+标准差：
+\end_layout
+
+\begin_layout Standard
+标准差(Standard Deviation)是离均差平方的算术平均数(即：方差)的算术平方根，用
+\begin_inset Formula $\sigma$
+\end_inset
+
+表示。标准差也被称为标准偏差，或者实验标准差，在概率统计中最常使用作为统计分布程度上的测量依据。 见下图：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename gaussiandensity.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+标准差是方差的算术平方根。标准差能反映一个数据集的离散程度。平均数相同的两组数据，标准差未必相同。
+\end_layout
+
+\begin_layout Paragraph
+协方差：
+\end_layout
+
+\begin_layout Standard
+协方差(Covariance)在概率论和统计学中用于衡量两个变量的总体误差。而方差是协方差的一种特殊情况，即当两个变量是相同的情况。 
+\end_layout
+
+\begin_layout Standard
+期望值分别为
+\begin_inset Formula $E[X]$
+\end_inset
+
+与
+\begin_inset Formula $E[Y]$
+\end_inset
+
+的两个实随机变量
+\begin_inset Formula $X$
+\end_inset
+
+与
+\begin_inset Formula $Y$
+\end_inset
+
+之间的协方差
+\begin_inset Formula $\mathrm{Cov}(X,Y)$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Cov}(X,Y) & =\mathrm{E}\left[\left(X-\mathrm{E}\left[X\right]\right)\left(Y-\mathrm{E}\left[Y\right]\right)\right]\\
+ & =\mathrm{E}\left[XY\right]-2\mathrm{E}\left[Y\right]\mathrm{E}\left[X\right]+\mathrm{E}\left[X\right]\mathrm{E}\left[Y\right]\\
+ & =\mathrm{E}\left[XY\right]-\mathrm{E}\left[X\right]\mathrm{E}\left[Y\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差表示的是两个变量总体误差的期望。 如果两个变量的变化趋势一致，也就是说如果其中一个大于自身的期望值，另外一个也大于自身的期望值，那么两个变量之间的协方差就
+是正值。 如果两个变量的变化趋势相反，即其中一个大于自身的期望值，另外一个却小于自身的期望值，那么两个变量之间的协方差就是负值。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $X$
+\end_inset
+
+与
+\begin_inset Formula $Y$
+\end_inset
+
+是统计独立的，那么二者之间的协方差就是
+\begin_inset Formula $0$
+\end_inset
+
+，因为两个独立的随机变量满足
+\begin_inset Formula $\mathrm{E}[XY]=\mathrm{E}[X]\mathrm{E}[Y]$
+\end_inset
+
+。但是，反过来并不成立。即如果
+\begin_inset Formula $X$
+\end_inset
+
+与
+\begin_inset Formula $Y$
+\end_inset
+
+的协方差为
+\begin_inset Formula $0$
+\end_inset
+
+，二者并不一定是统计独立的。
+\end_layout
+
+\begin_layout Standard
+协方差为
+\begin_inset Formula $0$
+\end_inset
+
+的两个随机变量称为是不相关的。
+\end_layout
+
+\begin_layout Paragraph
+协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+在统计学与概率论中，协方差矩阵(Covariance matrix)的每个元素是各个向量元素之间的协方差，是从标量随机变量到高维度随机向量的自然推广。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $X=\left(X_{1},X_{2},\ldots,X_{n}\right)^{\mathrm{T}}$
+\end_inset
+
+为
+\begin_inset Formula $n$
+\end_inset
+
+维随机变量，称矩阵
+\begin_inset Formula 
+\[
+C=\left(c_{ij}\right)_{n\times n}=\left(\begin{array}{cccc}
+c_{11} & c_{12} & \cdots & c_{1n}\\
+c_{21} & c_{22} & \cdots & c_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+c_{n1} & c_{n2} & \cdots & c_{nn}
+\end{array}\right)
+\]
+
+\end_inset
+
+为
+\begin_inset Formula $n$
+\end_inset
+
+维随机变量
+\begin_inset Formula $X$
+\end_inset
+
+的协方差矩阵，也记为
+\begin_inset Formula $D\left(X\right)$
+\end_inset
+
+，其中
+\begin_inset Formula 
+\[
+c_{ij}=\mathrm{Cov}(X_{i},X_{j}),\quad i,j=1,2,\ldots,n
+\]
+
+\end_inset
+
+为
+\begin_inset Formula $X$
+\end_inset
+
+的分量
+\begin_inset Formula $X_{i}$
+\end_inset
+
+和
+\begin_inset Formula $X_{j}$
+\end_inset
+
+的协方差。并且对角线上的元素为各个随机变量的方差：
+\begin_inset Formula 
+\[
+c_{ii}=\mathrm{Cov}(X_{i},X_{i}),\quad i=1,2,\ldots,n
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差矩阵是对称半正定矩阵。协方差矩阵的对称性，可从定义得知。对于半正定特性，证明如下：
+\end_layout
+
+\begin_layout Standard
+现给定任意一个向量
+\begin_inset Formula $x$
+\end_inset
+
+，则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+x^{\mathrm{T}}Cx & =x^{\mathrm{T}}\mathrm{E}\left[\left(X-\mu\right)\left(X-\mu\right)^{\mathrm{T}}\right]x\\
+ & =\mathrm{E}\left[x^{\mathrm{T}}\left(X-\mu\right)\left(X-\mu\right)^{\mathrm{T}}x\right]\\
+ & =\mathrm{E}\left[\left(\left(X-\mu\right)^{\mathrm{T}}x\right)^{\mathrm{T}}\left(\left(X-\mu\right)^{\mathrm{T}}x\right)\right]\\
+ & =\mathrm{E}\left(\left\Vert \left(X-\mu\right)^{\mathrm{T}}x\right\Vert ^{2}\right)\\
+ & =\sigma_{X}^{2}
+\end{align*}
+
+\end_inset
+
+其中，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma_{X}=\left(X-\mu\right)^{\mathrm{T}}x
+\]
+
+\end_inset
+
+由于
+\begin_inset Formula $\sigma_{X}^{2}\geq0$
+\end_inset
+
+，因此
+\begin_inset Formula $x^{\mathrm{T}}Cx\geq0$
+\end_inset
+
+，因此协方差矩阵
+\begin_inset Formula $C$
+\end_inset
+
+是半正定矩阵。
+\end_layout
+
+\begin_layout Section
+Gramian矩阵特性
+\end_layout
+
+\begin_layout Standard
+\noindent
+矩阵
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+(
+\begin_inset CommandInset href
+LatexCommand href
+name "Gramian矩阵"
+target "https://en.wikipedia.org/wiki/Gramian_matrix"
+literal "false"
+
+\end_inset
+
+)具有以下性质：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+是一个关键的矩阵结构，因为它在正交投影中起着重要的作用。协方差矩阵只是特例。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+是协方差矩阵—你可以定义多元正态分布，其中
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+是协方差矩阵，参见
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "http://math.stackexchange.com/a/1896633/152225"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+这相当于讨论对称半正定矩阵(
+\begin_inset CommandInset href
+LatexCommand href
+name "symmetric positive semidefinite matrices"
+target "https://en.wikipedia.org/wiki/Positive-definite_matrix"
+literal "false"
+
+\end_inset
+
+, s.p.s.d.)—对于某些矩阵A，每个对称半正定矩阵都可以写成
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+特性列表：
+\end_layout
+
+\begin_layout Enumerate
+对称性
+\end_layout
+
+\begin_layout Enumerate
+半正定性(可为
+\begin_inset CommandInset href
+LatexCommand href
+name "零"
+target "http://stats.stackexchange.com/a/56833/67822"
+literal "false"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+实特征值和正特征值
+\end_layout
+
+\begin_layout Enumerate
+矩阵迹(trace)为正(矩阵迹为特征值之和)
+\end_layout
+
+\begin_layout Enumerate
+行列式是正的(行列式是特征值的乘积)
+\end_layout
+
+\begin_layout Enumerate
+对角线条目都是正数
+\end_layout
+
+\begin_layout Enumerate
+正交特征向量
+\end_layout
+
+\begin_layout Enumerate
+可对角化为
+\begin_inset Formula $Q\Lambda Q^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "可以得到Cholesky分解"
+target "http://mathoverflow.net/q/155147/74150"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+的秩与
+\begin_inset Formula $A$
+\end_inset
+
+的秩相同。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\text{ker}(A^{\top}A)=\text{ker}(A)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+协方差矩阵分解
+\end_layout
+
+\begin_layout Standard
+如果列向量的条目：
+\begin_inset Formula 
+\[
+\mathbf{X}=\begin{bmatrix}X_{1}\\
+\vdots\\
+X_{n}
+\end{bmatrix}
+\]
+
+\end_inset
+
+是具有有限方差的随机变量，则协方差矩阵
+\begin_inset Formula $\Sigma$
+\end_inset
+
+是其
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为协方差的矩阵
+\begin_inset Formula 
+\[
+\Sigma_{ij}=\mathrm{Cov}\left(X_{i},X_{j}\right)=E\left[\left(X_{i}-\mu_{i}\right)\left(X_{j}-\mu_{j}\right)\right]=E\left[X_{i},X_{j}\right]-E\left[X\right]E\left[Y\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mu_{i}=E(X_{i})$
+\end_inset
+
+是向量
+\begin_inset Formula $X$
+\end_inset
+
+中第
+\begin_inset Formula $i$
+\end_inset
+
+项的期望值。换句话说，
+\begin_inset Formula 
+\[
+\Sigma=\left[\begin{array}{cccc}
+E\left[\left(X_{1}-\mu_{1}\right)\left(X_{1}-\mu_{1}\right)\right] & E\left[\left(X_{1}-\mu_{1}\right)\left(X_{2}-\mu_{2}\right)\right] & \cdots & E\left[\left(X_{1}-\mu_{1}\right)\left(X_{n}-\mu_{n}\right)\right]\\
+E\left[\left(X_{2}-\mu_{2}\right)\left(X_{1}-\mu_{1}\right)\right] & E\left[\left(X_{2}-\mu_{2}\right)\left(X_{2}-\mu_{2}\right)\right] & \cdots & E\left[\left(X_{2}-\mu_{2}\right)\left(X_{n}-\mu_{n}\right)\right]\\
+\vdots & \vdots & \ddots & \vdots\\
+E\left[\left(X_{n}-\mu_{n}\right)\left(X_{1}-\mu_{1}\right)\right] & E\left[\left(X_{n}-\mu_{n}\right)\left(X_{2}-\mu_{2}\right)\right] & \cdots & E\left[\left(X_{n}-\mu_{n}\right)\left(X_{n}-\mu_{n}\right)\right]
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于具有均值向量
+\begin_inset Formula $\mu$
+\end_inset
+
+的随机向量
+\begin_inset Formula $\mathbf{X}\in\mathbb{R}^{n}$
+\end_inset
+
+，
+\begin_inset CommandInset href
+LatexCommand href
+name "更简洁的定义"
+target "http://math.stackexchange.com/a/257250/152225"
+literal "false"
+
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{E}\left(\left(\mathbf{X}-\mu\right)\left(\mathbf{X}-\mu\right)^{\top}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+这与
+\begin_inset CommandInset href
+LatexCommand href
+name "维基百科的另一个定义"
+target "https://en.wikipedia.org/wiki/Covariance_matrix#Generalization_of_the_variance"
+literal "false"
+
+\end_inset
+
+是一致的：
+\begin_inset Formula 
+\[
+\Sigma=E\left[\left(X-E\left[X\right]\right)\left(X-E\left[X\right]\right)^{\top}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从
+\begin_inset CommandInset href
+LatexCommand href
+name "这篇文章"
+target "http://math.stackexchange.com/a/3871/152225"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "另一篇文章"
+target "http://stats.stackexchange.com/questions/50389/a-measure-of-overall-variance-from-multivariate-gaussian/51117#51117"
+literal "false"
+
+\end_inset
+
+可知：当数据居中(零均值)时，协方差矩阵为
+\begin_inset Formula $\frac{1}{n-1}\mathbf{X}\mathbf{X}^{\top}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因为协方差矩阵是对称的，所以矩阵是可对角化的，并且特征向量可以归一化，使得它们是正交的：
+\begin_inset Formula 
+\[
+\mathbf{X}\mathbf{X}^{\top}=\mathbf{W}\mathbf{D}\mathbf{W}^{\top}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，对数据矩阵
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+应用SVD如下：
+\begin_inset Formula 
+\[
+\mathbf{X}=\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^{\top}
+\]
+
+\end_inset
+
+同时尝试从这个分解构造协方差矩阵得到
+\begin_inset Formula 
+\begin{align*}
+\mathbf{X}\mathbf{X}^{\top} & =\left(\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^{\top}\right)\left(\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^{\top}\right)^{\top}\\
+\mathbf{X}\mathbf{X}^{\top} & =\left(\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^{\top}\right)\left(\mathbf{V}\boldsymbol{\Sigma}\mathbf{U}^{\top}\right)
+\end{align*}
+
+\end_inset
+
+并且因为
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+是一个正交矩阵(
+\begin_inset Formula $\mathbf{V}^{\top}\mathbf{V}=\mathbf{I}$
+\end_inset
+
+)，
+\begin_inset Formula 
+\[
+\mathbf{X}\mathbf{X}^{\top}=\mathbf{U}\boldsymbol{\Sigma}^{2}\mathbf{U}^{\top}
+\]
+
+\end_inset
+
+并且相关对应很容易看出(
+\begin_inset Formula $\mathbf{X}\mathbf{X}^{\top}$
+\end_inset
+
+的特征值的平方根是
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的奇异值，等等)。
+\end_layout
+
+\begin_layout Section
+几何解释
+\end_layout
+
+\begin_layout Standard
+根据前面章节的推导，一个
+\begin_inset Formula $\mathbf{X}\mathbf{X}^{\top}$
+\end_inset
+
+构成的协方差矩阵可表示为
+\begin_inset Formula 
+\[
+\mathbf{X}\mathbf{X}^{\top}=\mathbf{U}\boldsymbol{\Sigma}^{2}\mathbf{U}^{\top}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{U}$
+\end_inset
+
+为
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的特征向量构成的正交矩阵，
+\begin_inset Formula $\boldsymbol{\Sigma}^{2}$
+\end_inset
+
+为
+\begin_inset Formula $\mathbf{X}\mathbf{X}^{\top}$
+\end_inset
+
+的特征值(方差)构成的对角线矩阵，
+\begin_inset Formula 
+\[
+\boldsymbol{\Sigma}^{2}=\left[\begin{array}{cccc}
+\sigma_{1}^{2}\\
+ & \sigma_{2}^{2}\\
+ &  & \ddots\\
+ &  &  & \sigma_{n}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如
+\begin_inset CommandInset href
+LatexCommand href
+name "这篇文章"
+target "https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+所示，如果将这个协方差矩阵看成一个变换矩阵，对符合标准正态分布的“白色数据”进行变换，则
+\begin_inset Formula $\boldsymbol{\Sigma}^{2}$
+\end_inset
+
+为缩放矩阵，沿着“白色数据”相互正交的各个坐标轴的方向按照方差进行缩放，
+\begin_inset Formula $\mathbf{U}$
+\end_inset
+
+为旋转矩阵，将缩放后的数据旋转。总结起来就是：最大的特征向量，即具有最大的对应特征值的特征向量，总是指向数据的最大的方差的方向，并由此定义其方向。由于旋转矩阵的
+正交性，后续特征向量总是与最大的特征向量正交。
+\end_layout
+
+\begin_layout Standard
+如果我们要对经过协方差矩阵变换后数据的总体扩散程度做一个度量，则需要计算矩阵的范数。我们知道，度量向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的大小用的是向量的欧几里德范数：
+\begin_inset Formula 
+\[
+\left\Vert \boldsymbol{x}\right\Vert =\sqrt{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}}
+\]
+
+\end_inset
+
+如果用类似的思路将矩阵看成是一个可以展开的折叠向量，则矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的范数可以表示为
+\begin_inset Formula 
+\[
+{\displaystyle \|A\|_{\text{F}}=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}|a_{ij}|^{2}}}
+\]
+
+\end_inset
+
+这种范数称为Frobenius范数(
+\begin_inset CommandInset href
+LatexCommand href
+name "Frobenius norm"
+target "https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm"
+literal "false"
+
+\end_inset
+
+)，也称为Hilbert–Schmidt范数，后者在(可能无限维)Hilbert空间上的算子上下文中使用得更频繁。经过一系列的变换和证明，Frobenius范数
+可表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\displaystyle \|A\|_{\text{F}}=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}|a_{ij}|^{2}}=\sqrt{\mathrm{trace}\left(A^{*}A\right)}=\sqrt{\sum_{i=1}^{\min\{m,n\}}\sigma_{i}^{2}(A)}}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\sigma_{i}(A)$
+\end_inset
+
+是矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的奇异值。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $n\times n$
+\end_inset
+
+的矩阵
+\begin_inset Formula $A$
+\end_inset
+
+，它的特征值和矩阵的行列式和矩阵的迹有下面的关系：
+\begin_inset Formula 
+\begin{align*}
+\prod_{i=1}^{n}\lambda_{i} & =\det\left(A\right)\\
+\sum_{i=1}^{n}\lambda_{i} & =\mathrm{trace}\left(A\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由上可知，矩阵的迹表示的是该矩阵所有特征值之和。因为特征值的几何意义是在特征向量方向上的缩放的程度，所以矩阵的迹(特征值之和)的几何意义就是所有线性无关的特征向
+量的缩放程度之和。所以，如果我们要度量协方差矩阵的总体扩散程度，只需要简单地计算
+\begin_inset Formula $\mathrm{trace}(\boldsymbol{\Sigma}^{\mathrm{T}}\boldsymbol{\Sigma})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+另一方面，从另外一个方面理解，把
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+的对角线元素看成是标准差向量，则
+\begin_inset Formula $\mathrm{trace}(\boldsymbol{\Sigma}^{\mathrm{T}}\boldsymbol{\Sigma})$
+\end_inset
+
+计算的是方差向量的范数。最小化矩阵的迹，就是从总体上最小化方差向量的范数。
+\end_layout
+
+\begin_layout Standard
+在证明卡尔曼滤波器过程中要使得协方差矩阵的总体扩散程度最小，就要最小化协方差矩阵，使用的算法是最小化该矩阵的迹，所以，卡尔曼滤波器也被称为计算状态向量在Hilb
+ert空间上的正交投影。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+正如单变量方差是平均值的平均平方距离一样，
+\begin_inset Formula $\text{trace}(\hat{\boldsymbol{\Sigma}})$
+\end_inset
+
+是到质心的平均平方距离：以
+\begin_inset Formula $\dot{{\bf X}}$
+\end_inset
+
+做为中心变量的矩阵，则
+\begin_inset Formula $\hat{\boldsymbol{\Sigma}}=\frac{1}{n}\dot{{\bf X}}^{\top}\dot{{\bf X}}$
+\end_inset
+
+，其中
+\begin_inset Formula $\dot{{\bf X}}^{\top}\dot{{\bf X}}$
+\end_inset
+
+是
+\begin_inset Formula $\dot{{\bf X}}$
+\end_inset
+
+列的点积矩阵。其对角线元素为
+\begin_inset Formula $\dot{{\bf X}}_{\cdot i}^{\top}\dot{{\bf X}}_{\cdot i}=({\bf X_{\cdot i}-\overline{X}_{\cdot i})^{\top}({\bf X_{\cdot i}-\overline{X}_{\cdot i})}}$
+\end_inset
+
+，即变量
+\begin_inset Formula $i$
+\end_inset
+
+与其平均值的平方距离。因此，
+\begin_inset Formula $\text{trace}(\hat{\boldsymbol{\Sigma}})$
+\end_inset
+
+是单变量方差的自然推广。
+\end_layout
+
+\begin_layout Standard
+第二个推广是
+\begin_inset Formula $\det(\hat{\boldsymbol{\Sigma}})$
+\end_inset
+
+：这是描述分布的椭球体体积的度量。更准确地说，
+\begin_inset Formula $|\det(\hat{\boldsymbol{\Sigma}})|$
+\end_inset
+
+是应用线性变换
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\boldsymbol{\Sigma}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+后单位立方体体积变化的因子，(见此
+\begin_inset CommandInset href
+LatexCommand href
+name "解释"
+target "http://math.stackexchange.com/a/669"
+literal "false"
+
+\end_inset
+
+)。以下是行列式为
+\begin_inset Formula $0.75$
+\end_inset
+
+的矩阵
+\begin_inset Formula $\left(\begin{smallmatrix}1 & -.5\\
+.5 & .5
+\end{smallmatrix}\right)$
+\end_inset
+
+的图示(左：变换前，右：变换后)：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename determinant.jpeg
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+参考资料
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "如何直观地理解「协方差矩阵」？"
+target "https://zhuanlan.zhihu.com/p/37609917"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "A geometric interpretation of the covariance matrix"
+target "https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Properties of the Covariance Matrix"
+target "https://www.robots.ox.ac.uk/~davidc/pubs/tt2015_dac1.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "The matrix A^T A (Gramian matrix) has the following properties"
+target "http://rinterested.github.io/statistics/covariance.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
