@@ -8664,15 +8664,12 @@ q(t+\Delta t)\leftarrow\dfrac{q(t+\Delta t)}{|q(t+\Delta t)|}
 \end_layout
 
 \begin_layout Standard
-另外，四元数不是向量。所谓三维向量，指的是所代表的3参数
-\begin_inset Formula $x,y,z$
+另外，表示旋转的单位四元数不是向量，而是群，因为只有乘法是封闭的。因为对4维的四元数附加
+\begin_inset Formula $i^{2}+j^{2}+k^{2}=1$
 \end_inset
 
-两两正交。四元数的虚部3个参数是两两正交，属于三维空间。但是实部和虚部单个参数的关系，不是正交，而是服从
-\begin_inset Formula $i^{2}=j^{2}=k^{2}=-1$
-\end_inset
-
-这个约束。
+这个约束，使得4维的四元数可以表示3维旋转。但也是因为这个约束，单位四元数不是向量，因此也就不能直接被卡尔曼滤波器估计，所有直接用卡尔曼滤波器估计姿态四元数和旋
+转矩阵的，在数学上都有问题。
 \end_layout
 
 \begin_layout Standard
@@ -9868,7 +9865,8 @@ EKF中旋转的最大问题就是没有合理的方法来定义向量空间中�
 status open
 
 \begin_layout Plain Layout
-其实就是状态变量之间两两正交。改变其中一个变量，对其它变量没有任何影响。而姿态的改变，对姿态四元数或旋转矩阵，改变的不只是一个参数。
+其实就是状态变量之间两两正交。改变其中一个变量，对其它变量没有任何影响。而姿态的改变，对表示姿态的单位四元数或旋转矩阵，因为约束的存在，改变的不只是一个参数。也
+就是单位四元数或旋转矩阵，是群而不是向量。
 \end_layout
 
 \end_inset
@@ -10483,10 +10481,10 @@ Hamilton
 
 \begin_layout Plain Layout
 \begin_inset Formula $\mathbf{R}=\left[\begin{array}{cccc}
-1 & 0 & 0 & 0\\
-0 & 1-2q_{2}^{2}-2q_{3}^{2} & 2q_{1}q_{2}-2q_{0}q_{3} & 2q_{1}q_{3}+2q_{0}q_{2}\\
-0 & 2q_{1}q_{2}+2q_{0}q_{3} & 1-2q_{1}^{2}-2q_{3}^{2} & 2q_{2}q_{3}-2q_{0}q_{1}\\
-0 & 2q_{1}q_{3}-2q_{0}q_{2} & 2q_{2}q_{3}+2q_{0}q_{1} & 1-2q_{1}^{2}-2q_{2}^{2}
+1-2q_{2}^{2}-2q_{3}^{2} & 2q_{1}q_{2}-2q_{0}q_{3} & 2q_{1}q_{3}+2q_{0}q_{2} & 0\\
+2q_{1}q_{2}+2q_{0}q_{3} & 1-2q_{1}^{2}-2q_{3}^{2} & 2q_{2}q_{3}-2q_{0}q_{1} & 0\\
+2q_{1}q_{3}-2q_{0}q_{2} & 2q_{2}q_{3}+2q_{0}q_{1} & 1-2q_{1}^{2}-2q_{2}^{2} & 0\\
+0 & 0 & 0 & 1
 \end{array}\right]$
 \end_inset
 
@@ -10610,10 +10608,6 @@ A(q)=(q_{4}^{2}-|\mathbf{q}|^{2})\boldsymbol{I}_{3\times3}-2q_{4}[\mathbf{q}\tim
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -10647,10 +10641,6 @@ p_{4}q_{4}-\mathbf{p}\cdot\mathbf{q}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这与历史上的乘法惯例
 \begin_inset Formula $qp$
 \end_inset
@@ -10691,6 +10681,50 @@ A(p)A(q)=A(p\otimes q)
 \end_inset
 
 方程式表示旋转群和四元数群几乎是同构的[7]。
+\end_layout
+
+\begin_layout Standard
+为区分JPL形式乘法符号，通常也用点积符号
+\begin_inset Formula $\odot$
+\end_inset
+
+表示Hamilton乘法，因此
+\begin_inset Formula 
+\[
+p\odot q\equiv\left[\begin{array}{c}
+p_{1}\mathbf{q}+q_{1}\mathbf{p}+\mathbf{p}\times\mathbf{q}\\
+p_{1}q_{1}-\mathbf{p}\cdot\mathbf{q}
+\end{array}\right]
+\]
+
+\end_inset
+
+因此两者的关系为
+\begin_inset Formula 
+\[
+p\odot q\equiv q\otimes p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在文档[14]有更深入的讨论。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10881,6 +10915,18 @@ literal "false"
 LatexCommand href
 name "四元数的表示形式Hamilton & JPL定义及影响"
 target "https://www.zybuluo.com/snuffles/note/1484888"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Why and How to Avoid the Flipped Quaternion Multiplication"
+target "https://arxiv.org/abs/1801.07478"
 literal "false"
 
 \end_inset
