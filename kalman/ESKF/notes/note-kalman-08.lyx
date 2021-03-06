@@ -1,0 +1,694 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+卡尔曼滤波器与姿态估计问题的碰撞—小问题扯出大问题
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本文只是杂记，并无多少有用知识。
+\end_layout
+
+\begin_layout Section
+问题还是问题
+\end_layout
+
+\begin_layout Standard
+前面的文章在讨论姿态表示和旋转运算时重点强调过，四元数是
+\begin_inset Formula $4$
+\end_inset
+
+个参数，表达旋转时需要增加一个约束：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{0}^{2}(t)+q_{1}^{2}(t)+q_{2}^{2}(t)+q_{3}^{2}(t)=1
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样的，旋转矩阵是
+\begin_inset Formula $9$
+\end_inset
+
+个参数，所以需要增加
+\begin_inset Formula $6$
+\end_inset
+
+个约束，
+\begin_inset Formula $3$
+\end_inset
+
+个列向量正交，
+\begin_inset Formula $3$
+\end_inset
+
+个行向量也正交。正是这种约束，使得问题复杂化。单位四元数和旋转矩阵不是向量而是群，只有乘法封闭。因此它们无法直接用卡尔曼滤波器进行最优估计。
+\end_layout
+
+\begin_layout Standard
+根据这种思想外推，实际上前面所用的四元数的微分方程也是有问题的。当然，也是因为有问题才能灌水不休了。
+\end_layout
+
+\begin_layout Standard
+根据四元数微分的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}(t)=\lim\limits _{\Delta t\to0}\dfrac{q(t+\Delta t)-q(t)}{\Delta t}
+\end{equation}
+
+\end_inset
+
+我在
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://github.com/shuyong/study-notes-math/blob/master/quaternion/%E5%9B%9B%E5%85%83%E6%95%B0%E7%9A%84%E5%BE%AE%E5%88%86%E5%92%8C%E7%A7%AF%E5%88%86.pdf"
+literal "false"
+
+\end_inset
+
+收集和整理了老师们严格的推导过程。在推导过程中，实际上使用了方程(1)的约束，最后推导出四元数的微分方程，也称四元数的运动方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{q}=\dfrac{1}{2}q\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $q$
+\end_inset
+
+为机体当前姿态，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为机体当前角速度。
+\end_layout
+
+\begin_layout Standard
+根据微分方程得到的一阶近似方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dfrac{q(t+\Delta t)-q(t)}{\Delta t}=\Delta q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+做积分：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q(t+\Delta t)-q(t)=\Delta q\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q(t+\Delta t)=\Delta q\Delta t+q(t)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+时刻的新姿态
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+近似为
+\begin_inset Formula $t$
+\end_inset
+
+时刻的旧姿态
+\begin_inset Formula $q(t)$
+\end_inset
+
+与姿态变化量
+\begin_inset Formula $\Delta q\Delta t$
+\end_inset
+
+的叠加。这只是一阶近似方程，更高阶的近似方程还有龙格-库塔方程。
+\end_layout
+
+\begin_layout Standard
+但是，方程(2)有一个大问题，
+\begin_inset Formula $q(t+\Delta t)-q(t)$
+\end_inset
+
+，这个算式在数学上有什么意义？这个算式的结果绝大多数情况下都不是单位四元数，所以就违反了方程(1)的约束。
+\end_layout
+
+\begin_layout Standard
+根据前面的讨论，新姿态
+\begin_inset Formula $q(t+\Delta t)$
+\end_inset
+
+，旧姿态
+\begin_inset Formula $q(t)$
+\end_inset
+
+与由
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+驱动的姿态变化量
+\begin_inset Formula $\delta q(\boldsymbol{\omega}\Delta t)$
+\end_inset
+
+之间的关系应该用乘法表达：
+\begin_inset Formula 
+\begin{equation}
+q(t+\Delta t)=q(t)*\delta q(\boldsymbol{\omega}\Delta t)
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $*$
+\end_inset
+
+表示四元数乘法。
+\end_layout
+
+\begin_layout Standard
+这里的
+\begin_inset Formula $\boldsymbol{\omega}\Delta t$
+\end_inset
+
+也称旋转向量。一般选择吉布斯向量 (Gibbs Vector)表示与
+\begin_inset Formula $\delta q$
+\end_inset
+
+之间的关系：
+\begin_inset Formula 
+\[
+\delta q(\boldsymbol{\omega}\Delta t)=\dfrac{1}{\sqrt{4+\left|\boldsymbol{\omega}\Delta t\right|^{2}}}\left[\begin{array}{c}
+2\\
+\boldsymbol{\omega}\Delta t
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为简化运算，可以二阶近似为
+\begin_inset Formula 
+\begin{equation}
+\delta q(\boldsymbol{\omega}\Delta t)\approx\left[\begin{array}{c}
+1-\left|\boldsymbol{\omega}\Delta t\right|^{2}/8\\
+\dfrac{\boldsymbol{\omega}\Delta t}{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为采样时间很短，
+\begin_inset Formula $\boldsymbol{\omega}\Delta t$
+\end_inset
+
+很小，范数
+\begin_inset Formula $\left|\boldsymbol{\omega}\Delta t\right|^{2}\approx0$
+\end_inset
+
+，所以上式还可以进一步简化近似为
+\begin_inset Formula 
+\begin{equation}
+\delta q(\boldsymbol{\omega}\Delta t)\approx\left[\begin{array}{c}
+1\\
+\dfrac{\boldsymbol{\omega}\Delta t}{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(7)代入方程(5)计算
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+q(t+\Delta t) & =q(t)*\delta q(\boldsymbol{\omega}\Delta t)\\
+ & =q(t)\left[\begin{array}{c}
+1\\
+\dfrac{\boldsymbol{\omega}\Delta t}{2}
+\end{array}\right]\\
+ & =q(t)\left(\left[\begin{array}{c}
+0\\
+\dfrac{\boldsymbol{\omega}\Delta t}{2}
+\end{array}\right]+\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\right)\\
+ & =q(t)\left[\begin{array}{c}
+0\\
+\dfrac{\boldsymbol{\omega}\Delta t}{2}
+\end{array}\right]+q(t)
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个方程(8)的结果就是方程(4)。与方程(6)代入方程(5)的结果相比，就是少了一个二阶项。辛苦推导大半天，只为多一个二阶项。如果低成本的传感器噪声很大，而M
+CU的性能又低，则方程(4)这样的一阶近似也是可以接受的。在这里，方程(2)涉及到微分方程中一个有趣的争论，“无穷小”到底要多小，突然之间，量变到质变，微分方程
+推导的结果，方程(3)居然成立了。
+\end_layout
+
+\begin_layout Standard
+另外，还有一个有趣的问题，在方程(3)中，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+向量变成四元数，就是简单地扩展为实部为
+\begin_inset Formula $0$
+\end_inset
+
+的纯虚四元数。现在我们知道这种扩展是有问题的，因为
+\begin_inset Formula $\Delta q\Delta t$
+\end_inset
+
+的结果在绝大多数情况下都不是单位四元数，还是违反了方程(1)的约束。这种扩展实际上来源于下面这个著名的向量旋转方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p^{\prime}=qpq^{*}
+\end{equation}
+
+\end_inset
+
+其中，四元数
+\begin_inset Formula $p$
+\end_inset
+
+是要被旋转的向量
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+扩展成的纯虚四元数
+\begin_inset Formula 
+\begin{equation}
+p=\left[\begin{array}{c}
+0\\
+\boldsymbol{p}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+四元数
+\begin_inset Formula $p^{\prime}$
+\end_inset
+
+是旋转后的向量
+\begin_inset Formula $\boldsymbol{p}^{\prime}$
+\end_inset
+
+扩展成的纯虚四元数
+\begin_inset Formula 
+\begin{equation}
+p^{\prime}=\left[\begin{array}{c}
+0\\
+\boldsymbol{p}^{\prime}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(9)是向量旋转的方程，基本上每个学习四元数与旋转的入门教材都会讲解这个方程。但是，在姿态旋转的问题中，这个方程从来就没有出现过。这是因为姿态旋转是坐标系旋
+转而不是坐标系内的向量旋转。现在从方程(1)的约束看，方程(10)是违反约束的。难道方程(9)这个公式有问题么？
+\end_layout
+
+\begin_layout Standard
+如果遵守方程(1)的约束的要求，四元数
+\begin_inset Formula $p$
+\end_inset
+
+与要被旋转的向量
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+之间的关系是
+\begin_inset Formula 
+\begin{equation}
+p=\left[\begin{array}{c}
+1-\left|\boldsymbol{p}\right|^{2}\\
+\boldsymbol{p}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是为什么四元数教材从来就没有纠正为方程(12)呢？这就是方程(9)神奇的地方！
+\end_layout
+
+\begin_layout Standard
+假如四元数
+\begin_inset Formula $p$
+\end_inset
+
+与要被旋转的向量
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+之间的扩展关系是
+\begin_inset Formula 
+\begin{equation}
+p=\left[\begin{array}{c}
+x\\
+\boldsymbol{p}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $x$
+\end_inset
+
+是任意实数，则方程(9)的运算结果为
+\begin_inset Formula 
+\begin{equation}
+qpq^{*}=q\left[\begin{array}{c}
+x\\
+\boldsymbol{p}
+\end{array}\right]q^{*}=\left[\begin{array}{c}
+x\\
+\boldsymbol{p}^{\prime}
+\end{array}\right]=p^{\prime}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也就是旋转前的四元数
+\begin_inset Formula $p$
+\end_inset
+
+与旋转后的四元数
+\begin_inset Formula $p^{\prime}$
+\end_inset
+
+在实部上没有任何变化！不论你是写
+\begin_inset Formula $0$
+\end_inset
+
+还是写其它实数。这点读者可以自行验证。这时就没有必要修改教材使用方程(12)。因此，到现在的教材里还是使用方程(9-11)，运算结果没有问题。实部写
+\begin_inset Formula $0$
+\end_inset
+
+运算速度快一些，也利于初学者理解。不过要形象解释方程(9)这种三明治公式可就费劲了。
+\end_layout
+
+\begin_layout Section
+进一步的发展
+\end_layout
+
+\begin_layout Standard
+如果要时时考虑方程(1)的约束，则有一个数学分支可以处理这种情况，就是李群。应用李群到姿态估计问题中，是文档[1]和[2]所要讨论的事情。在那里，则主要是用欧拉
+方程和指数映射方式重新推导基于误差的扩展卡尔曼滤波器。同一个问题用不同的方法解决，就好像从不同的角度登一座山一样，对锻炼大脑思维很有好处。
+\end_layout
+
+\begin_layout Standard
+自从阿波罗登月计划开始，姿态估计和卡尔曼滤波器已经相伴了50年。而且是每过几年都会有新的卡尔曼滤波器的变种应用于姿态估计中。正所谓：问题不决，灌水不止。
+\end_layout
+
+\begin_layout Standard
+现在最新的成果是用流形理论(Manifold Theory)封装四元数，使得四元数好像是向量一样，然后可以用卡尔曼滤波器直接估计。这种方法，在文档[1]中已经略
+略提到，主要是文档[3]和[4]讨论的问题。
+\end_layout
+
+\begin_layout Standard
+姿态估计，用四元数表达不过是
+\begin_inset Formula $4$
+\end_inset
+
+个参数，卡尔曼滤波器不过
+\begin_inset Formula $5$
+\end_inset
+
+个公式，传感器输入不过
+\begin_inset Formula $9$
+\end_inset
+
+个参数，但是50年来似乎就摆弄不完了。从李群到流形，越往前走人越稀少，前途茫茫，坚涩重重，似乎没个尽头。曾有诗为证：随机过程随机过，微分方程分常微。旋转矩阵心旋
+转，李家有群你离群。故智者常云：学海无边，回头是岸。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF - 2017"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+误差状态卡尔曼滤波器的四元数动力学 
+\end_layout
+
+\begin_layout Itemize
+潦草注释: https://github.com/TurtleZhong/msckf_mono/ 
+\end_layout
+
+\begin_layout Itemize
+同一个人: http://www.xinliang-zhong.vip/msckf_notes/
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Google Cardboard的九轴融合算法 — 基于李群的扩展卡尔曼滤波"
+target "https://www.cnblogs.com/ilekoaiq/p/8710812.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011"
+target "https://arxiv.org/pdf/1107.1119.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+通过封装流形将通用传感器融合算法与声音状态表示相结合
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019"
+target "https://www.mdpi.com/1424-8220/19/1/149/pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+四元数姿态估计的卡尔曼滤波及流形理论的概念 
+\end_layout
+
+\begin_layout Itemize
+[code](http://www.mdpi.com/1424-8220/19/1/149/s1)
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
