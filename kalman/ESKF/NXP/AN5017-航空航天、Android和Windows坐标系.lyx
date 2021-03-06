@@ -1,0 +1,5039 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "航空航天、Android和Windows坐标系"
+\pdf_author "NXP"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+航空航天、Android和Windows坐标系
+\end_layout
+
+\begin_layout Author
+NXP
+\end_layout
+
+\begin_layout Date
+21 June 2016
+\end_layout
+
+\begin_layout Abstract
+本应用说明记录了NXP传感器融合库中支持的
+\begin_inset Formula $3$
+\end_inset
+
+个坐标系(航空航天、Windows和Android)。
+\end_layout
+
+\begin_layout Section
+介绍
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:介绍"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+概要
+\end_layout
+
+\begin_layout Standard
+本应用说明记录了
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP传感器融合库"
+target "http://www.nxp.com/sensorfusion"
+literal "false"
+
+\end_inset
+
+中支持的三个坐标系：
+\end_layout
+
+\begin_layout Itemize
+航空航天(
+\begin_inset Formula $x=\textrm{North},y=\textrm{East},z=\textrm{Down}$
+\end_inset
+
+ / NED 标准)
+\end_layout
+
+\begin_layout Itemize
+Android (
+\begin_inset Formula $x=\textrm{East},y=\textrm{North},z=\textrm{Up}$
+\end_inset
+
+ / ENU 标准)
+\end_layout
+
+\begin_layout Itemize
+Windows 8 (
+\begin_inset Formula $x=\textrm{East},y=\textrm{North},z=\textrm{Up}$
+\end_inset
+
+ / ENU 标准)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在为Android或windows8系统开发时，用户应该使用相应的坐标系。否则，航空航天坐标系可能是最佳选择，因为它的旋转顺序和欧拉角的范围导致偏航角/罗盘航向
+角估计比使用其他两个坐标系计算的航向估计更方便用户。
+\end_layout
+
+\begin_layout Standard
+具体而言，航空航天坐标系中的
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+横滚角不会改变偏航角/罗盘航向角，而
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+俯仰角旋转会改变偏航角/罗盘航向角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。这与飞机的行为相匹配，其中
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+横滚角仅意味着飞机处于同一罗盘航向角但反向，而
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+俯仰角变化意味着飞机处于反向罗盘航向角并反向。在Android和windows 8坐标系中，相反的行为是强制性的，在这些坐标系中，
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的横滚角会导致罗盘航向角发生
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的变化，而
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的俯仰角旋转对罗盘航向角没有影响。
+\end_layout
+
+\begin_layout Subsection
+软件功能
+\end_layout
+
+\begin_layout Standard
+表 1.
+ 传感器融合软件功能
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="8cm">
+<column alignment="left" valignment="top" width="4cm">
+<column alignment="center" valignment="top" width="30mm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+功能
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+描述
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+参考
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void
+\end_layout
+
+\begin_layout Plain Layout
+
+fNEDAnglesDegFromRotationMatrix
+\end_layout
+
+\begin_layout Plain Layout
+
+(float R[][3], float *pfPhiDeg,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfTheDeg, float *pfPsiDeg,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfRhoDeg, float *pfChiDeg);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void
+\end_layout
+
+\begin_layout Plain Layout
+
+fAndroidAnglesDegFromRotationMatrix
+\end_layout
+
+\begin_layout Plain Layout
+
+(float R[][3], float *pfPhiDeg, 
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfTheDeg, float *pfPsiDeg, 
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfRhoDeg, float *pfChiDeg);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void
+\end_layout
+
+\begin_layout Plain Layout
+
+fWin8AnglesDegFromRotationMatrix
+\end_layout
+
+\begin_layout Plain Layout
+
+(float R[][3], float *pfPhiDeg,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfTheDeg, float *pfPsiDeg,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfRhoDeg, float *pfChiDeg);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+从航空航天/NED、Android和Windows 8方向矩阵计算欧拉角(横滚、俯仰、偏航)加上罗盘航向和倾角。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+2 (NED)
+\end_layout
+
+\begin_layout Plain Layout
+
+3 (Android)
+\end_layout
+
+\begin_layout Plain Layout
+
+4 (Windows 8)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+术语
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="14" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="4cm">
+<column alignment="left" valignment="top" width="6cm">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+定义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+一般四元数
+\begin_inset Formula $q=\left(q_{0},q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{NED}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+航空航天(NED)的旋转矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{Android}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android的旋转矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{Win8}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 的旋转矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转矩阵的
+\begin_inset Formula $x$
+\end_inset
+
+轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{y}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转矩阵的
+\begin_inset Formula $y$
+\end_inset
+
+轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{z}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转矩阵的
+\begin_inset Formula $z$
+\end_inset
+
+轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+罗盘航向角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+横滚角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\chi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+倾斜角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+偏航角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+重力与加速度的等效性
+\end_layout
+
+\begin_layout Standard
+加速计测量直线加速度减去每个轴上的重力分量。这是基础物理学的一个结果，它指出了在重力场中静止时所受的力与在与重力相反的方向上加速时所受的力之间的等价性。
+\end_layout
+
+\begin_layout Standard
+例如，一个坐在椅子上休息的观测者在地球上有一个
+\begin_inset Formula $1g$
+\end_inset
+
+的向下指向的重力场，他所感受到的力与坐在远离任何重力场的宇宙飞船上以
+\begin_inset Formula $1g$
+\end_inset
+
+的速度向相反方向加速时所感受到的力完全相同。
+\end_layout
+
+\begin_layout Subsection
+坐标系的差异
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系将零旋转方向的轴方向定义为
+\begin_inset Formula $x=\textrm{North},y=\textrm{East},z=\textrm{Down}$
+\end_inset
+
+(NED)。Android和Windows 8坐标系将同一零旋转方向的轴的方向定义为
+\begin_inset Formula $x=\textrm{East},y=\textrm{North},z=\textrm{Up}$
+\end_inset
+
+(ENU)。
+\end_layout
+
+\begin_layout Standard
+另一个复杂的情况是，尽管所有加速度计的输出都是本机正加速度，但航空航天和Windows 8坐标系中的轴被指定为重力正，这意味着当轴向下并与重力对齐时，测量值为
+\begin_inset Formula $+1g$
+\end_inset
+
+。Android坐标系是加速度正数，这意味着当一个轴指向上并与重力相反方向上的等效
+\begin_inset Formula $1g$
+\end_inset
+
+加速度对齐时，它的测量值为
+\begin_inset Formula $+1g$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+航空航天和Windows 8坐标系定义了通常的数学意义上的旋转，即顺时针方向观察时，旋转为正。Android坐标系中的旋转具有相反的符号。
+\end_layout
+
+\begin_layout Standard
+表2 总结了这些差异。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+表 2.
+ 坐标系比较
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="3.7cm">
+<column alignment="center" valignment="top" width="3.7cm">
+<column alignment="center" valignment="top" width="3.7cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+项
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+航空航天(NED)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android (ENU)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 (ENU)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+坐标轴对齐
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XYZ = NED
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XYZ = ENU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XYZ = ENU
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+加速计符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+重力-加速度
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+加速度-重力
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+重力-加速度
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向下时为
+\begin_inset Formula $+1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向上时为
+\begin_inset Formula $+1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向下时为
+\begin_inset Formula $+1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向上时为
+\begin_inset Formula $-1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向下时为
+\begin_inset Formula $-1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+轴向上时为
+\begin_inset Formula $-1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+水平时加速计读数
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G\left[Z\right]=+1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G\left[Z\right]=+1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $G\left[Z\right]=-1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+正旋转方向
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+顺时针
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+逆时针
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+顺时针
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+罗盘航向
+\begin_inset Formula $\rho$
+\end_inset
+
+/偏航
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho=\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho=\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho=360^{\circ}-\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+参考第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.1坐标轴定义"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节、第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.1坐标轴定义"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节和第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:4.1坐标轴定义"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节，了解轴的定义、加速计的符号标准以及航空航天、Android和Windows 8坐标系中绕任何轴正旋转的定义。
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向矩阵
+\end_layout
+
+\begin_layout Standard
+与旋转矩阵和四元数相比，欧拉角(横滚角、俯仰角和偏航角)的数学特性非常差，应该避免。欧拉角仅用于NXP的传感器融合库软件中，作为供人使用的输出，因为它们直观易懂
+。
+\end_layout
+
+\begin_layout Standard
+欧拉角的一个数学问题是旋转矩阵不可交换，这意味着单个欧拉角旋转的顺序很重要。相同的三个欧拉角在不同的顺序下会给出不同的旋转矩阵。简单地指定横滚、俯仰和偏航的欧拉
+角而不指定它们的顺序是没有意义的。
+\end_layout
+
+\begin_layout Standard
+另一个问题是，欧拉角在某些方向上具有不连续性，而旋转矩阵或旋转四元数总是连续的，并且随着旋转而平滑变化。最后，在称为“万向节锁”的方向上，欧拉角变得模糊和振荡，
+即使旋转矩阵和四元数是稳定的。
+\end_layout
+
+\begin_layout Standard
+由于三个坐标标准要求计算欧拉角，下表3列出了方向矩阵分解为三个欧拉角旋转。
+\end_layout
+
+\begin_layout Standard
+表 3.
+ 欧拉角旋转序列
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+项
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+航空航天(NED)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android (ENU)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 (ENU)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+欧拉角旋转序列
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}=\boldsymbol{R}_{x}\left(\phi\right)\boldsymbol{R}_{y}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}=\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}=\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+万向节锁
+\end_layout
+
+\begin_layout Standard
+当第二次旋转(在航空航天和Windows 8系统中为俯仰，在Android有系统中为横滚)与第一次和第三次欧拉角旋转的轴对齐时，所有三个坐标系中都会发生万向节锁
+定。定义方向所需的自由度从三个欧拉角减少到两个。第一个欧拉旋转角的任何变化都可以通过第三个欧拉旋转角的抵消变化来抵消，从而导致两个值一起不稳定地振荡。
+\end_layout
+
+\begin_layout Standard
+因此，捷联导航系统中的万向节锁定是一种数学不稳定性，它是由方向矩阵或四元数分解为三个单独的欧拉角旋转而产生的，并且通过使用在万向节锁定方向上完全稳定的方向矩阵或
+四元数表示可以很容易地避免。
+\end_layout
+
+\begin_layout Standard
+NXP传感器融合库始终使用方向矩阵和四元数代数，并计算供人类使用的欧拉角作为算法的输出。因此，计算的方向在万向节锁定方向上与在其它方向上一样稳定。任何软件基本上
+基于欧拉角旋转优先于旋转矩阵或四元数将遭受万向节锁定不稳定性和数学不连续性。
+\end_layout
+
+\begin_layout Standard
+表 4.
+ 坐标系定义的万向节锁
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="2cm">
+<column alignment="center" valignment="top" width="4cm">
+<column alignment="center" valignment="top" width="4cm">
+<column alignment="center" valignment="top" width="4cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+项
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+航空航天(NED)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android (ENU)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 (ENU)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+万向节锁
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰角(
+\begin_inset Formula $y$
+\end_inset
+
+轴)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+横滚角(
+\begin_inset Formula $y$
+\end_inset
+
+轴)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰角(
+\begin_inset Formula $x$
+\end_inset
+
+轴)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角不连续性
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:欧拉角不连续性"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向的欧拉角表示的另一个问题是，除了在万向节锁方向上有无限多个欧拉角解外，通常每个方向都有两个欧拉角解。这将强制其中一个欧拉角在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+的缩小范围内受到约束，以消除两个解中的一个。
+\end_layout
+
+\begin_layout Standard
+通过将装置的起始位置平放在工作台上，然后应用这两种旋转顺序，很容易证明存在两种解：
+\end_layout
+
+\begin_layout Itemize
+俯仰旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+偏航旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+，俯仰旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两个旋转序列产生相同的物理方向和相同的方向矩阵和四元数。
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系将俯仰角的范围限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间，Android和Windows 8坐标系将横滚角的范围限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间。尽管这种限制只会导致除万向节锁以外的所有方向上的一个欧拉角解，但它会产生不幸的数学副作用，即在欧拉角中引入不连续性。
+\end_layout
+
+\begin_layout Standard
+下表总结了每个坐标系中的欧拉角不连续性。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:航空航天(NED)坐标系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节到第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Windows-8坐标系"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节提供了有关各种表条目含义的更多信息。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="4">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="1.9cm">
+<column alignment="left" valignment="top" width="4.3cm">
+<column alignment="left" valignment="top" width="4.3cm">
+<column alignment="left" valignment="top" width="4.3cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+项
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+航空航天(NED)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android (ENU)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 (ENU)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+欧拉角范围
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+{\scriptscriptstyle \begin{array}{c}
+0^{\circ}\leq\text{Yaw}\psi\left(z\right)<360^{\circ}\\
+-90^{\circ}\leq\text{Pitch}\theta\left(y\right)<90^{\circ}\\
+-180^{\circ}\leq\text{Roll}\phi\left(x\right)<180^{\circ}
+\end{array}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+{\scriptscriptstyle \begin{array}{c}
+0^{\circ}\leq\text{Yaw}\psi\left(z\right)<360^{\circ}\\
+-90^{\circ}\leq\text{Roll}\phi\left(y\right)<90^{\circ}\\
+-180^{\circ}\leq\text{Pitch}\theta\left(x\right)<180^{\circ}
+\end{array}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+{\scriptscriptstyle \begin{array}{c}
+0^{\circ}\leq\text{Yaw}\psi\left(z\right)<360^{\circ}\\
+-180^{\circ}\leq\text{Pitch}\theta\left(x\right)<180^{\circ}\\
+-90^{\circ}\leq\text{Roll}\phi\left(y\right)<90^{\circ}
+\end{array}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+等效矩阵
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\scriptstyle \boldsymbol{R}_{x}\left(\phi+\pi\right)\boldsymbol{R}_{y}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\scriptstyle \boldsymbol{R}_{x}\left(\theta+\pi\right)\boldsymbol{R}_{y}\left(\pi-\phi\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\scriptstyle \boldsymbol{R}_{y}\left(\phi-\pi\right)\boldsymbol{R}_{x}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在
+\begin_inset Formula $\pm180^{\circ}$
+\end_inset
+
+横滚角旋转时的行为
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+横滚角在
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的范围内是连续的。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+横滚角是连续的，增大到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，然后减小到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+，然后再增大。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+当横滚角超过
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+时，横滚角、俯仰角、偏航角和罗盘角发生
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+跳跃。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+偏航角或罗盘角没有变化。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角和偏航角在
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+横滚角时有
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在
+\begin_inset Formula $\pm180^{\circ}$
+\end_inset
+
+俯仰角旋转时的行为
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角是连续的，增大到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，然后减小到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+，然后再增大。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角平滑变化。横滚角、偏航角或罗盘角无变化。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角平滑变化。横滚角、偏航角或罗盘角无变化。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+横滚角和偏航角在
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰角时有
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+航空航天(NED)坐标系
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:航空航天(NED)坐标系"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+坐标轴定义
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.1坐标轴定义"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系如图1所示。它是一个
+\begin_inset Formula $x=\textrm{North},y=\textrm{East},z=\textrm{Down}$
+\end_inset
+
+(称为NED)坐标系，这意味着当产品以其默认方向放置时，平放在工作台上并指向北，
+\begin_inset Formula $x$
+\end_inset
+
+轴指向北，
+\begin_inset Formula $y$
+\end_inset
+
+轴指向东，
+\begin_inset Formula $z$
+\end_inset
+
+轴指向下。
+\end_layout
+
+\begin_layout Standard
+关于
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴的旋转符号在正常惯例中定义为顺时针旋转，并且当沿着轴的增加方向看时被认为是正的。横滚、俯仰和偏航旋转具有其正常意义，并分别对应于围绕
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴的旋转。偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+等于罗盘角
+\begin_inset Formula $\rho$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系为重力(非加速度)正，这意味着任何加速度计通道的输出在指向下方并与重力对齐时为正。因此，当设备水平时，加速计
+\begin_inset Formula $z$
+\end_inset
+
+轴读数为
+\begin_inset Formula $+1g$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig1.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向矩阵
+\end_layout
+
+\begin_layout Standard
+在航空航天坐标系中，欧拉角的旋转顺序是偏航，然后是俯仰，最后是横滚。横滚旋转
+\begin_inset Formula $\phi$
+\end_inset
+
+绕
+\begin_inset Formula $x$
+\end_inset
+
+轴旋转，俯仰旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+绕
+\begin_inset Formula $y$
+\end_inset
+
+轴旋转，偏航旋转
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+绕
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转。单个旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{x}\left(\phi\right) & =\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\phi & \sin\phi\\
+0 & -\sin\phi & \cos\phi
+\end{array}\right)\\
+\boldsymbol{R}_{y}\left(\theta\right) & =\left(\begin{array}{ccc}
+\cos\theta & 0 & -\sin\theta\\
+0 & 1 & 0\\
+\sin\theta & 0 & \cos\theta
+\end{array}\right)\\
+\boldsymbol{R}_{z}\left(\psi\right) & =\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用指定旋转顺序的复合航空航天旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\boldsymbol{R}_{NED} & =\boldsymbol{R}_{x}\left(\phi\right)\boldsymbol{R}_{y}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)\\
+ & =\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\phi & \sin\phi\\
+0 & -\sin\phi & \cos\phi
+\end{array}\right)\left(\begin{array}{ccc}
+\cos\theta & 0 & -\sin\theta\\
+0 & 1 & 0\\
+\sin\theta & 0 & \cos\theta
+\end{array}\right)\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\boldsymbol{R}_{NED}=\left(\begin{array}{ccc}
+\cos\theta\cos\psi & \cos\theta\sin\psi & -\sin\theta\\
+\cos\psi\sin\theta\sin\phi-\cos\phi\sin\psi & \cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi & \cos\theta\sin\phi\\
+\cos\phi\cos\psi\sin\theta+\sin\phi\sin\psi & \cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi & \cos\theta\cos\phi
+\end{array}\right)\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向四元数
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系中的欧拉角旋转四元数是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{x}\left(\phi\right) & =\cos\left(\dfrac{\phi}{2}\right)+\boldsymbol{i}\sin\left(\dfrac{\phi}{2}\right)\\
+q_{y}\left(\theta\right) & =\cos\left(\dfrac{\theta}{2}\right)+\boldsymbol{j}\sin\left(\dfrac{\theta}{2}\right)\\
+q_{z}\left(\psi\right) & =\cos\left(\dfrac{\psi}{2}\right)+\boldsymbol{k}\sin\left(\dfrac{\psi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航空航天旋转四元数
+\begin_inset Formula $q_{zyx}=q_{z}\left(\psi\right)q_{y}\left(\theta\right)q_{x}\left(\phi\right)$
+\end_inset
+
+计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{zyx} & =q_{z}\left(\psi\right)q_{y}\left(\theta\right)q_{x}\left(\phi\right)=\left\{ \cos\left(\dfrac{\psi}{2}\right)+\boldsymbol{k}\sin\left(\dfrac{\psi}{2}\right)\right\} \left\{ \cos\left(\dfrac{\theta}{2}\right)+\boldsymbol{j}\sin\left(\dfrac{\theta}{2}\right)\right\} \left\{ \cos\left(\dfrac{\phi}{2}\right)+\boldsymbol{i}\sin\left(\dfrac{\phi}{2}\right)\right\} \\
+ & \begin{array}{l}
+=\;\left\{ \cos\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)+\sin\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)\right\} \\
+\;+\left\{ \cos\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)-\sin\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)\right\} \boldsymbol{i}\\
+\;+\left\{ \cos\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)+\sin\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)\right\} \boldsymbol{j}\\
+\;+\left\{ \sin\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)-\cos\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)\right\} \boldsymbol{k}
+\end{array}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，航空航天四元数的元素是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{0} & =\cos\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)+\sin\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)\\
+q_{1} & =\cos\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)-\sin\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)\\
+q_{2} & =\cos\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)+\sin\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)\\
+q_{3} & =\sin\left(\dfrac{\psi}{2}\right)\cos\left(\dfrac{\theta}{2}\right)\cos\left(\dfrac{\phi}{2}\right)-\cos\left(\dfrac{\psi}{2}\right)\sin\left(\dfrac{\theta}{2}\right)\sin\left(\dfrac{\phi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+万向节锁
+\end_layout
+
+\begin_layout Standard
+当第二个俯仰旋转对准第一个偏航和第三个横滚旋转时，在航空航天坐标系中发生万向节锁定。这发生在
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+俯仰向上和
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+俯仰向下。方向的欧拉角描述中的自由度从三个减少到两个，横滚角和偏航角仅在定义了它们的和与差的情况下振荡。
+\end_layout
+
+\begin_layout Standard
+在万向节锁
+\begin_inset Formula $\theta=90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $\theta=-90^{\circ}$
+\end_inset
+
+时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{NED} & =\left(\begin{array}{ccc}
+0 & 0 & -1\\
+-\sin(\psi-\phi) & \cos(\psi-\phi) & 0\\
+\cos(\psi-\phi) & \sin(\psi-\phi) & 0
+\end{array}\right)\text{ for }\theta=90^{\circ}\label{eq:15}\\
+\boldsymbol{R}_{NED} & =\left(\begin{array}{ccc}
+0 & 0 & 1\\
+-\sin(\psi+\phi) & \cos(\psi+\phi) & 0\\
+-\cos(\psi+\phi) & -\sin(\psi+\phi) & 0
+\end{array}\right)\text{ for }\theta=-90^{\circ}\label{eq:16}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵和四元数是稳定的，但在两个万向节锁方向上只能确定差分角
+\begin_inset Formula $\psi-\phi$
+\end_inset
+
+或求和角
+\begin_inset Formula $\psi+\phi$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+欧拉角不连续性
+\end_layout
+
+\begin_layout Standard
+航空航天旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\phi\right)\boldsymbol{R}_{y}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+等于矩阵
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\phi+\pi\right)\boldsymbol{R}_{y}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $\pi$
+\end_inset
+
+弧度对应于
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。通过直接计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\boldsymbol{R}_{x}\left(\phi+\pi\right)\boldsymbol{R}_{y}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)\\
+=\left(\begin{array}{ccc}
+-\cos(\pi-\theta)\cos\psi & -\cos(\pi-\theta)\sin\psi & -\sin(\pi-\theta)\\
+\cos\psi\sin(\pi-\theta)\sin\phi-\cos\phi\sin\psi & \cos\phi\cos\psi+\sin(\pi-\theta)\sin\phi\sin\psi & -\cos(\pi-\theta)\sin\phi\\
+\cos\phi\cos\psi\sin(\pi-\theta)+\sin\phi\sin\psi & \cos\phi\sin(\pi-\theta)\sin\psi-\cos\psi\sin\phi & -\cos(\pi-\theta)\cos\phi
+\end{array}\right)
+\end{array}\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\left(\begin{array}{ccc}
+\cos\theta\cos\psi & \cos\theta\sin\psi & -\sin\theta\\
+\cos\psi\sin\theta\sin\phi-\cos\phi\sin\psi & \cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi & \cos\theta\sin\phi\\
+\cos\phi\cos\psi\sin\theta+\sin\phi\sin\psi & \cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi & \cos\theta\cos\phi
+\end{array}\right)=\boldsymbol{R}_{x}\left(\phi\right)\boldsymbol{R}_{y}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是数学恒等式，相当于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:欧拉角不连续性"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的陈述，即每个方向有两个欧拉角解。这句话可以改写为：除了在偏航时旋转
+\begin_inset Formula $\psi$
+\end_inset
+
+，然后在俯仰时旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+，最后在横滚时旋转
+\begin_inset Formula $\phi$
+\end_inset
+
+之外，在偏航时旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\psi$
+\end_inset
+
+，然后在俯仰时旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+减去
+\begin_inset Formula $\theta$
+\end_inset
+
+，最后在横滚时旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\phi$
+\end_inset
+
+，可以达到相同的方向。
+\end_layout
+
+\begin_layout Standard
+航空航天坐标系通过将俯仰角
+\begin_inset Formula $\theta$
+\end_inset
+
+限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+的范围内，删除了两种解中的一种。方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)规定，当俯仰角大于
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+或小于
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+时，横滚角应增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\phi+\pi\right)$
+\end_inset
+
+项)，俯仰角应取反并增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{y}\left(\pi-\theta\right)$
+\end_inset
+
+项)，偏航/罗盘航向增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+项)。这些不连续性如图2至图4所示。
+\end_layout
+
+\begin_layout Standard
+图2显示了当设备从默认的开始位置(水平并指向北方)横滚旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。俯仰角和偏航角都没有变化，从
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+180^{\circ}$
+\end_inset
+
+的横滚不连续性是取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+算法的结果，是完全可以接受的。电子罗盘的普通用户会同意，如果智能手机指向北方，然后给出
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的横滚旋转，那么它仍然指向北方。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig2.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图3显示了PCB从同一起始位置俯仰旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。俯仰角达到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，然后开始平稳减小，没有间断，直到达到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+，然后开始平稳增大。偏航/罗盘角度在
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+俯仰角时翻转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+，但这是合理的人体工程学行为。出于上述相同的原因，一般智能手机用户会考虑
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+俯仰旋转，以将偏航/罗盘航向翻转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig3.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图4显示了当PCB在偏航时旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+而保持水平时偏航/罗盘角度的行为。偏航/罗盘航向平稳增加，当指向北方时，具有可接受的取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig4.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图4所示的行为是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:介绍"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中所作评论的理由，即航空航天坐标系在人体工程学上最合理，应优先使用，除非专门针对Android和Windows 8标准开发。
+\end_layout
+
+\begin_layout Subsection
+由旋转矩阵计算欧拉角
+\end_layout
+
+\begin_layout Standard
+本节记录了从旋转矩阵计算欧拉角的函数
+\family typewriter
+fNEDAnglesDegFromRotationMatrix
+\family default
+，该函数根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的航空航天旋转矩阵计算欧拉角。三个航空航天欧拉角的解为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi & =\tan^{-1}\left(\frac{R_{yz}}{R_{zz}}\right),-180^{\circ}\leq\phi<180^{\circ}\\
+\theta & =\sin^{-1}\left(-R_{xz}\right),-90^{\circ}\leq\theta\leq90^{\circ}\\
+\psi & =\tan^{-1}\left(\frac{R_{xy}}{R_{xx}}\right),0^{\circ}\leq\psi<360^{\circ}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航空航天罗盘航向角
+\begin_inset Formula $\rho$
+\end_inset
+
+始终等于偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho=\psi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在万向节锁处，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan(\psi-\phi) & =\left(\frac{R_{zy}}{R_{yy}}\right)\text{ for }\theta=90^{\circ}\\
+\tan(\psi+\phi) & =\left(\frac{-R_{zy}}{R_{yy}}\right)\text{ for }\theta=-90^{\circ}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+垂直方向的倾斜角
+\begin_inset Formula $\chi$
+\end_inset
+
+可由旋转重力向量与向下
+\begin_inset Formula $z$
+\end_inset
+
+轴的标量积确定，给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\cos\chi=\left\{ \boldsymbol{R}_{NED}\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)\right\} \cdot\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{l}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\cdot\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=R_{zz}=\cos\theta\cos\phi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Android坐标系
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Android坐标系"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+坐标轴定义
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.1坐标轴定义"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节参考Android规范，网址：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://developer.android.com/reference/android/hardware/SensorEvent.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Android：“坐标空间是相对于手机屏幕的默认方向定义的。当设备的屏幕方向改变时，不会交换轴。采用OpenGL ES坐标系。原点位于屏幕的左下角，
+\begin_inset Formula $x$
+\end_inset
+
+轴水平并指向右侧，
+\begin_inset Formula $y$
+\end_inset
+
+轴垂直并指向上方，
+\begin_inset Formula $z$
+\end_inset
+
+轴指向屏幕正面之外。在此系统中，屏幕后面的坐标具有负
+\begin_inset Formula $z$
+\end_inset
+
+值。”
+\end_layout
+
+\begin_layout Standard
+Android传感器坐标系如图5所示。它是一个
+\begin_inset Formula $x=\textrm{East},y=\textrm{North},z=\textrm{Up}$
+\end_inset
+
+(称为ENU)坐标系，这意味着当产品处于其默认方向(平放在工作台上并指向北方)时，
+\begin_inset Formula $x$
+\end_inset
+
+轴指向东，
+\begin_inset Formula $y$
+\end_inset
+
+轴指向北，
+\begin_inset Formula $z$
+\end_inset
+
+轴指向上。
+\end_layout
+
+\begin_layout Standard
+绕
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转的符号定义为与正常数学意义相反。当沿着轴的增加方向看时，逆时针旋转被认为是正的。横滚、俯仰和偏航旋转具有其正常意义，因此，分别对应于围绕
+\begin_inset Formula $y$
+\end_inset
+
+、
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴的旋转。偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+等于罗盘角
+\begin_inset Formula $\rho$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+Android坐标系是加速度(不是重力)正的，这意味着任何加速度计通道的输出在指向上并与重力对齐时都是正的。因此，当产品平直时，加速计
+\begin_inset Formula $z$
+\end_inset
+
+轴读数为
+\begin_inset Formula $+1g$
+\end_inset
+
+。这与航空航天坐标系相同，因为有两个消除符号更改： i) 
+\begin_inset Formula $z$
+\end_inset
+
+轴指向相反方向， ii) 航空航天为重力正，而Android为加速度正。
+\end_layout
+
+\begin_layout Standard
+Android：“当设备平躺在桌子上时，加速度值为
+\begin_inset Formula $+9.81$
+\end_inset
+
+，相当于设备的加速度(
+\begin_inset Formula $0\:m/s^{2}$
+\end_inset
+
+)减去重力。”
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig5.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向矩阵
+\end_layout
+
+\begin_layout Standard
+在Android坐标系中，欧拉角旋转的顺序似乎没有记录在标准中。对Android平板电脑和手机行为的调查表明，大多数使用 i) 第一偏航 ii)
+ 第二横滚和 iii) 最后俯仰。横滚旋转
+\begin_inset Formula $\phi$
+\end_inset
+
+是关于
+\begin_inset Formula $y$
+\end_inset
+
+轴的，俯仰旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+是关于
+\begin_inset Formula $x$
+\end_inset
+
+轴的，偏航旋转
+\begin_inset Formula $\psi$
+\end_inset
+
+是关于
+\begin_inset Formula $z$
+\end_inset
+
+轴的。单个旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{x}(\theta) & =\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & -\sin\theta\\
+0 & \sin\theta & \cos\theta
+\end{array}\right)\\
+\boldsymbol{R}_{y}(\phi) & =\left(\begin{array}{ccc}
+\cos\phi & 0 & \sin\phi\\
+0 & 1 & 0\\
+-\sin\phi & 0 & \cos\phi
+\end{array}\right)\\
+\boldsymbol{R}_{z}(\psi) & =\left(\begin{array}{ccc}
+\cos\psi & -\sin\psi & 0\\
+\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用指定旋转顺序的组合Android旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{Android} & =\boldsymbol{R}_{x}(\theta)\boldsymbol{R}_{y}(\phi)\boldsymbol{R}_{z}(\psi)=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & -\sin\theta\\
+0 & \sin\theta & \cos\theta
+\end{array}\right)\left(\begin{array}{ccc}
+\cos\phi & 0 & \sin\phi\\
+0 & 1 & 0\\
+-\sin\phi & 0 & \cos\phi
+\end{array}\right)\left(\begin{array}{ccc}
+\cos\psi & -\sin\psi & 0\\
+\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)\\
+ & =\left(\begin{array}{ccc}
+\cos\phi\cos\psi & -\cos\phi\sin\psi & \sin\phi\\
+\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta & \cos\psi\cos\theta-\sin\phi\sin\psi\sin\theta & -\cos\phi\sin\theta\\
+-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta & \cos\theta\sin\phi\sin\psi+\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:30}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向四元数
+\end_layout
+
+\begin_layout Standard
+Android坐标系中的单个欧拉角度旋转四元数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{x}(\theta) & =\cos\left(\frac{\theta}{2}\right)-\boldsymbol{i}\sin\left(\frac{\theta}{2}\right)\\
+q_{y}(\phi) & =\cos\left(\frac{\phi}{2}\right)-\boldsymbol{j}\sin\left(\frac{\phi}{2}\right)\\
+q_{z}(\psi) & =\cos\left(\frac{\psi}{2}\right)-\boldsymbol{k}\sin\left(\frac{\psi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Android旋转四元数
+\begin_inset Formula $q_{zyx}=q_{z}(\psi)q_{y}(\phi)q_{x}(\theta)$
+\end_inset
+
+计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{zyx} & =q_{z}(\psi)q_{y}(\phi)q_{x}(\theta)=\left\{ \cos\left(\frac{\psi}{2}\right)-\boldsymbol{k}\sin\left(\frac{\psi}{2}\right)\right\} \left\{ \cos\left(\frac{\phi}{2}\right)-\boldsymbol{j}\sin\left(\frac{\phi}{2}\right)\right\} \left\{ \cos\left(\frac{\theta}{2}\right)-\boldsymbol{i}\sin\left(\frac{\theta}{2}\right)\right\} \\
+ & \begin{array}{l}
+=\:\left\{ \cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \\
+\;-\left\{ \cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)+\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \boldsymbol{i}\\
+\;-\left\{ \cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)\right\} \boldsymbol{j}\\
+\;-\left\{ \sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)+\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \boldsymbol{k}
+\end{array}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，Android四元数
+\begin_inset Formula $q_{zyx}$
+\end_inset
+
+的元素是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{0} & =\cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\\
+q_{1} & =-\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\\
+q_{2} & =-\cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)+\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)\\
+q_{3} & =-\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+万向节锁
+\end_layout
+
+\begin_layout Standard
+当第二个横滚旋转与第一个偏航和第三个俯仰旋转对齐时，在Android坐标系中发生万向节锁定。这发生在
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+横滚和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+横滚时。因此，方向的欧拉角描述中的自由度从三个减少到两个，俯仰角和偏航角仅在定义了它们的和与差的情况下振荡。
+\end_layout
+
+\begin_layout Standard
+在万向节锁
+\begin_inset Formula $\phi=90^{\circ}$
+\end_inset
+
+时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+\sin(\psi+\theta) & \cos(\psi+\theta) & 0\\
+-\cos(\psi+\theta) & \sin(\psi+\theta) & 0
+\end{array}\right)\text{ for }\phi=90^{\circ}\label{eq:40}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在万向节锁
+\begin_inset Formula $\phi=-90^{\circ}$
+\end_inset
+
+时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}=\left(\begin{array}{ccc}
+0 & 0 & -1\\
+\sin(\psi-\theta) & \cos(\psi-\theta) & 0\\
+\cos(\psi-\theta) & -\sin(\psi-\theta) & 0
+\end{array}\right)\text{ for }\phi=-90^{\circ}\label{eq:41}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵和四元数是稳定的，但是在两个万向节锁方向上只能确定求和角
+\begin_inset Formula $\psi+\theta$
+\end_inset
+
+或差分角
+\begin_inset Formula $\psi-\theta$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+欧拉角不连续性
+\end_layout
+
+\begin_layout Standard
+Android旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+等于矩阵
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\theta+\pi\right)\boldsymbol{R}_{y}\left(\pi-\phi\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+。通过直接计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\boldsymbol{R}_{x}\left(\theta+\pi\right)\boldsymbol{R}_{y}\left(\pi-\phi\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)\\
+=\left(\begin{array}{ccc}
+-\cos(\pi-\phi)\cos\psi & \cos(\pi-\phi)\sin\psi & \sin(\pi-\phi)\\
+\cos\theta\sin\psi+\cos\psi\sin(\pi-\phi)\sin\theta & \cos\psi\cos\theta-\sin(\pi-\phi)\sin\psi\sin\theta & \cos(\pi-\phi)\sin\theta\\
+-\cos\psi\cos\theta\sin(\pi-\phi)+\sin\psi\sin\theta & \cos\theta\sin(\pi-\phi)\sin\psi+\cos\psi\sin\theta & -\cos(\pi-\phi)\cos\theta
+\end{array}\right)
+\end{array}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\left(\begin{array}{ccc}
+\cos\phi\cos\psi & -\cos\phi\sin\psi & \sin\phi\\
+\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta & \cos\psi\cos\theta-\sin\phi\sin\psi\sin\theta & -\cos\phi\sin\theta\\
+-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta & \cos\theta\sin\phi\sin\psi+\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)=\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{z}\left(\psi\right)\label{eq:43}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，对于给定的旋转矩阵，Android的欧拉角有两个解。如果给定方向矩阵的横滚角、俯仰角和偏航角的一个解是
+\begin_inset Formula $\phi$
+\end_inset
+
+、
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\psi$
+\end_inset
+
+，则横滚角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+减去
+\begin_inset Formula $\phi$
+\end_inset
+
+、俯仰角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\theta$
+\end_inset
+
+和偏航角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\psi$
+\end_inset
+
+的解也是一样。
+\end_layout
+
+\begin_layout Standard
+Android规范通过将横滚角
+\begin_inset Formula $\theta$
+\end_inset
+
+限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+的范围内，删除了两种解情况。根据Android规范，所有值都是角度(
+\begin_inset Formula $^{\circ}$
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+Android:“
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+values[0]
+\family default
+：方位角，磁北方向和
+\begin_inset Formula $y$
+\end_inset
+
+轴之间的角度，围绕
+\begin_inset Formula $z$
+\end_inset
+
+轴(
+\begin_inset Formula $0$
+\end_inset
+
+到
+\begin_inset Formula $359$
+\end_inset
+
+)。
+\begin_inset Formula $0=\text{North}$
+\end_inset
+
+，
+\begin_inset Formula $90=\text{East}$
+\end_inset
+
+，
+\begin_inset Formula $180=\text{South}$
+\end_inset
+
+，
+\begin_inset Formula $270=\text{West}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+values[1]
+\family default
+：俯仰，绕
+\begin_inset Formula $x$
+\end_inset
+
+轴旋转(
+\begin_inset Formula $–180^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+)，
+\begin_inset Formula $z$
+\end_inset
+
+轴向
+\begin_inset Formula $y$
+\end_inset
+
+轴移动时为正值。
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+values[2]
+\family default
+：横滚，绕
+\begin_inset Formula $y$
+\end_inset
+
+轴旋转(
+\begin_inset Formula $–90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+)，当
+\begin_inset Formula $x$
+\end_inset
+
+轴向
+\begin_inset Formula $z$
+\end_inset
+
+轴移动时为正值。”
+\end_layout
+
+\begin_layout Standard
+方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)指出，每当横滚角大于
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+或小于
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+时，俯仰角应增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\theta+\pi\right)$
+\end_inset
+
+项)，横滚角应取反并增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{y}\left(\pi-\phi\right)$
+\end_inset
+
+项)，偏航/罗盘航向应增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+项)。这些不连续性如图6至图8所示。
+\end_layout
+
+\begin_layout Standard
+图6显示了当PCB从默认的开始位置(水平并指向北方)旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。横滚角达到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，然后开始平稳地减小，没有间断，直到达到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+，然后开始平稳地增大。偏航角/罗盘角在
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+横滚角时翻转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig6.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图7显示了PCB从同一起始位置俯仰旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。俯仰角平稳增加，等效角度为
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $+180^{\circ}$
+\end_inset
+
+之间可接受的取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig7.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图8显示了当PCB在偏航时旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+而保持水平时偏航/罗盘角度的行为。偏航/罗盘航向平稳增加，当指向北方时，具有可接受的取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig8.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从人体工程学的角度来看，当安卓侧倾角度通过
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+或
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+时，
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+罗盘航向的改变可能并不理想。
+\end_layout
+
+\begin_layout Subsection
+由旋转矩阵计算欧拉角
+\end_layout
+
+\begin_layout Standard
+本节介绍了函数
+\family typewriter
+fAndroidAnglesDegFromRotationMatrix
+\family default
+，它根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的Android旋转矩阵计算欧拉角。
+\end_layout
+
+\begin_layout Standard
+三个Android欧拉角的解是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi & =\sin^{-1}\left(R_{xz}\right),-90^{\circ}\leq\phi<90^{\circ}\\
+\theta & =\tan^{-1}\left(\frac{-R_{yz}}{R_{zz}}\right),-180^{\circ}\leq\theta<180^{\circ}\\
+\psi & =\tan^{-1}\left(\frac{-R_{xy}}{R_{xx}}\right),0^{\circ}\leq\psi<360^{\circ}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Android罗盘航向角
+\begin_inset Formula $\rho$
+\end_inset
+
+始终等于偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho=\psi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在万向节锁处，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:40"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan(\psi+\theta) & =\left(\frac{R_{yx}}{R_{yy}}\right)\text{ for }\phi=90^{\circ}\\
+\tan(\psi-\theta) & =\left(\frac{R_{yx}}{R_{yy}}\right)\text{ for }\phi=-90^{\circ}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+垂直方向的倾斜角
+\begin_inset Formula $\chi$
+\end_inset
+
+可由旋转重力向量和
+\begin_inset Formula $z$
+\end_inset
+
+轴向下的标量积确定，给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\cos\chi=\left\{ \boldsymbol{R}_{Android}\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)\right\} \cdot\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{l}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\cdot\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=R_{zz}=\cos\theta\cos\phi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Windows 8坐标系
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Windows-8坐标系"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+坐标轴定义
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:4.1坐标轴定义"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节参考的是Microsoft规范：“集成运动和方向传感器”，可从以下网址下载：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://msdn.microsoft.com/en-us/library/windows/hardware/dn642102(v=vs.85).aspx
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Windows 8坐标系如图9所示。它是一个
+\begin_inset Formula $x=\textrm{East},y=\textrm{North},z=\textrm{Up}$
+\end_inset
+
+(称为ENU)坐标系，类似于Android坐标系。
+\end_layout
+
+\begin_layout Standard
+围绕
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转的符号与Android相反，因此与正常的数学用法兼容。结果是，Windows 8罗盘航向角
+\begin_inset Formula $\rho$
+\end_inset
+
+与Windows 8偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+具有相反的意义
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+，为
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\rho=360^{\circ}-\psi$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+Windows 8坐标系是重力(不是加速度)正的，这意味着任何加速度计通道的输出在指向上并与重力对齐时都是负的。因此，当产品平放时，加速计
+\begin_inset Formula $z$
+\end_inset
+
+轴读数为
+\begin_inset Formula $-1g$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+微软：“
+\end_layout
+
+\begin_layout Standard
+a.
+ 将设备放在平面上，屏幕朝上，加速度值应为：
+\begin_inset Formula $X=\sim0.0$
+\end_inset
+
+，
+\begin_inset Formula $Y=\sim0.0$
+\end_inset
+
+，
+\begin_inset Formula $Z=\sim-1.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+b.
+ 握住设备，右手朝上，加速度值应为：
+\begin_inset Formula $X=\sim-1.0$
+\end_inset
+
+，
+\begin_inset Formula $Y=\sim0.0$
+\end_inset
+
+，
+\begin_inset Formula $Z=\sim0.0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+c.
+ 握住设备，使屏幕顶部朝上，加速度值应为：
+\begin_inset Formula $X=\sim0.0$
+\end_inset
+
+，
+\begin_inset Formula $Y=\sim-1.0$
+\end_inset
+
+，
+\begin_inset Formula $Z=\sim0.0$
+\end_inset
+
+”
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig9.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向矩阵
+\end_layout
+
+\begin_layout Standard
+Windows 8中的旋转顺序与航空航天标准相匹配，但与Android不匹配。首先是偏航旋转，然后是俯仰旋转，然后是横滚旋转。
+\end_layout
+
+\begin_layout Standard
+Microsoft：“为了正确描述设备在三维空间中的方向，按照以下顺序应用欧拉角，首先设备位于平面上，
+\begin_inset Formula $+y$
+\end_inset
+
+轴指向正北(朝向北极)：
+\end_layout
+
+\begin_layout Standard
+1.
+ 设备绕其
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转偏航角(相对于航向角，绕
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转方向相反)。
+\end_layout
+
+\begin_layout Standard
+2.
+ 设备绕其
+\begin_inset Formula $x$
+\end_inset
+
+轴以俯仰角旋转。
+\end_layout
+
+\begin_layout Standard
+3.
+ 设备绕其
+\begin_inset Formula $y$
+\end_inset
+
+轴以横滚角旋转。”
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+单个Windows旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{x}(\theta) & =\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & \sin\theta\\
+0 & -\sin\theta & \cos\theta
+\end{array}\right)\\
+\boldsymbol{R}_{y}(\phi) & =\left(\begin{array}{ccc}
+\cos\phi & 0 & -\sin\phi\\
+0 & 1 & 0\\
+\sin\phi & 0 & \cos\phi
+\end{array}\right)\\
+\boldsymbol{R}_{z}(\psi) & =\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用Microsoft旋转序列的复合Windows 8旋转矩阵是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R} & =\boldsymbol{R}_{y}(\phi)\boldsymbol{R}_{x}(\theta)\boldsymbol{R}_{z}(\psi)=\left(\begin{array}{ccc}
+\cos\phi & 0 & -\sin\phi\\
+0 & 1 & 0\\
+\sin\phi & 0 & \cos\phi
+\end{array}\right)\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & \sin\theta\\
+0 & -\sin\theta & \cos\theta
+\end{array}\right)\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)\\
+ & =\left(\begin{array}{ccc}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi & \cos\phi\sin\psi+\cos\psi\sin\phi\sin\theta & -\sin\phi\cos\theta\\
+-\cos\theta\sin\psi & \cos\theta\cos\psi & \sin\theta\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta & \sin\phi\sin\psi-\cos\phi\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:55}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧拉角方向四元数
+\end_layout
+
+\begin_layout Standard
+Windows 8坐标系中的单个欧拉角度旋转四元数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{x}(\theta) & =\cos\left(\frac{\theta}{2}\right)+\boldsymbol{i}\sin\left(\frac{\theta}{2}\right)\\
+q_{y}(\phi) & =\cos\left(\frac{\phi}{2}\right)+\boldsymbol{j}\sin\left(\frac{\phi}{2}\right)\\
+q_{z}(\psi) & =\cos\left(\frac{\psi}{2}\right)+\boldsymbol{k}\sin\left(\frac{\psi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Windows 8旋转四元数
+\begin_inset Formula $q_{zxy}=q_{z}(\psi)q_{x}(\theta)q_{y}(\phi)$
+\end_inset
+
+计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{zxy} & =q_{z}(\psi)q_{x}(\theta)q_{y}(\phi)=\left\{ \cos\left(\frac{\psi}{2}\right)+\boldsymbol{k}\sin\left(\frac{\psi}{2}\right)\right\} \left\{ \cos\left(\frac{\theta}{2}\right)+\boldsymbol{i}\sin\left(\frac{\theta}{2}\right)\right\} \left\{ \cos\left(\frac{\phi}{2}\right)+\boldsymbol{j}\sin\left(\frac{\phi}{2}\right)\right\} \\
+ & \begin{array}{l}
+=\:\left\{ \cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \\
+\;+\left\{ \cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \boldsymbol{i}\\
+\;+\left\{ \cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)+\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)\right\} \boldsymbol{j}\\
+\;+\left\{ \sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)+\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\right\} \boldsymbol{k}
+\end{array}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，Windows 8四元数
+\begin_inset Formula $q_{zxy}$
+\end_inset
+
+的元素是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+q_{0} & =\cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\\
+q_{1} & =\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)-\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)\\
+q_{2} & =\cos\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)+\sin\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)\\
+q_{3} & =\sin\left(\frac{\psi}{2}\right)\cos\left(\frac{\theta}{2}\right)\cos\left(\frac{\phi}{2}\right)+\cos\left(\frac{\psi}{2}\right)\sin\left(\frac{\theta}{2}\right)\sin\left(\frac{\phi}{2}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+万向节锁
+\end_layout
+
+\begin_layout Standard
+当第二个俯仰旋转与第一个偏航和第三个横滚旋转对齐时，在Windows 8坐标系中发生万向节锁定。这发生在
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+俯仰角和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+俯仰角。因此，方向的欧拉角描述中的自由度从三个减少到两个，横滚角和偏航角仅在定义了它们的和与差的情况下振荡。
+\end_layout
+
+\begin_layout Standard
+在万向节锁
+\begin_inset Formula $\theta=90^{\circ}$
+\end_inset
+
+时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}=\left(\begin{array}{ccc}
+\cos(\psi+\phi) & \sin(\psi+\phi) & 0\\
+0 & 0 & 1\\
+\sin(\psi+\phi) & -\cos(\psi+\phi) & 0
+\end{array}\right)\text{ for }\theta=90^{\circ}\label{eq:65}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在万向节锁
+\begin_inset Formula $\theta=-90^{\circ}$
+\end_inset
+
+时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}=\left(\begin{array}{ccc}
+\cos(\psi-\phi) & \sin(\psi-\phi) & 0\\
+0 & 0 & -1\\
+-\sin(\psi-\phi) & \cos(\psi-\phi) & 0
+\end{array}\right)\text{ for }\theta=-90^{\circ}\label{eq:66}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵和四元数是稳定的，但在两个万向节锁方向上只能确定求和角
+\begin_inset Formula $\psi+\theta$
+\end_inset
+
+或差分角
+\begin_inset Formula $\psi-\theta$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+欧拉角不连续性
+\end_layout
+
+\begin_layout Standard
+Windows 8旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)$
+\end_inset
+
+等于矩阵
+\begin_inset Formula $\boldsymbol{R}_{y}\left(\phi+\pi\right)\boldsymbol{R}_{x}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+。通过直接计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\boldsymbol{R}_{y}\left(\phi+\pi\right)\boldsymbol{R}_{x}\left(\pi-\theta\right)\boldsymbol{R}_{z}\left(\psi+\pi\right)\\
+=\left(\begin{array}{ccc}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi & \cos\phi\sin\psi+\cos\psi\sin\phi\sin\theta & -\cos\theta\sin\phi\\
+-\cos\theta\sin\psi & \cos\psi\cos\theta & \sin\theta\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta & \sin\phi\sin\psi-\cos\phi\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)
+\end{array}\label{eq:67}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\left(\begin{array}{ccc}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi & \cos\phi\sin\psi+\cos\psi\sin\phi\sin\theta & -\cos\theta\sin\phi\\
+-\cos\theta\sin\psi & \cos\psi\cos\theta & \sin\theta\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta & \sin\phi\sin\psi-\cos\phi\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)=\boldsymbol{R}_{y}\left(\phi\right)\boldsymbol{R}_{x}\left(\theta\right)\boldsymbol{R}_{z}\left(\psi\right)\label{eq:68}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，对于给定的旋转矩阵，Windows 8的欧拉角有两个解。如果给定方向矩阵的横滚角、俯仰角和偏航角的一个解是
+\begin_inset Formula $\phi$
+\end_inset
+
+、
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\psi$
+\end_inset
+
+，则横滚角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\phi$
+\end_inset
+
+、俯仰角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+减去
+\begin_inset Formula $\theta$
+\end_inset
+
+和偏航角
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+加上
+\begin_inset Formula $\psi$
+\end_inset
+
+的解也是一样。
+\end_layout
+
+\begin_layout Standard
+Windows 8规范通过将横滚角
+\begin_inset Formula $\theta$
+\end_inset
+
+限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+的范围内，删除了两种解情况。
+\end_layout
+
+\begin_layout Standard
+Microsoft：“以下范围用于表示偏航、俯仰和横滚：
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+•
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $0.0^{\circ}\leq\textrm{Yaw}<360.0^{\circ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+•
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $–180.0^{\circ}\leq\textrm{Pitch}<180.0^{\circ}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+• 
+\begin_inset Formula $–90.0^{\circ}\leq\textrm{Roll}<90.0^{\circ}$
+\end_inset
+
+”
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)指出，每当横滚角大于
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+或小于
+\begin_inset Formula $–90^{\circ}$
+\end_inset
+
+时，横滚角应增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{y}\left(\phi+\pi\right)$
+\end_inset
+
+项)，俯仰角应取反并增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{x}\left(\pi-\theta\right)$
+\end_inset
+
+项)，偏航/罗盘航向应增加
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{R}_{z}\left(\psi+\pi\right)$
+\end_inset
+
+项)。这些不连续性如图10至图12所示，应与Microsoft Inc.规范“
+\begin_inset CommandInset href
+LatexCommand href
+name "集成运动和方向传感器"
+target "http://msdn.microsoft.com/en-us/library/windows/hardware/dn642102(v=vs.85).aspx"
+literal "false"
+
+\end_inset
+
+”中的图21进行比较。
+\end_layout
+
+\begin_layout Standard
+图10显示了PCB从默认的开始位置(水平并指向北方)旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。横滚角达到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，有一个不连续到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+，增加到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，然后有另一个不连续到
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+。俯仰角和偏航角/罗盘航向角在
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $–90^{\circ}$
+\end_inset
+
+横滚角下出现
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+不连续。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig10.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图11显示了PCB从同一起始位置俯仰旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+时的欧拉角。俯仰角平稳增加，等效角度为
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $+180^{\circ}$
+\end_inset
+
+之间可接受的取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig11.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图12显示了当PCB在保持偏航平面时旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+的偏航/罗盘角度行为。偏航/罗盘航向平稳增加，当指向北方时，具有可接受的取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+不连续性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename AN5017-Fig12.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当Windows 8的横滚角度通过
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+或
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+时，有
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的罗盘航向改变，就像Android一样，从人体工程学的角度来看，可以说并不理想。然而，由于欧拉角的不幸特性以及将横滚角范围限制在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间的要求，这种行为在数学上被强制到Microsoft规范中。
+\end_layout
+
+\begin_layout Subsection
+由旋转矩阵计算欧拉角
+\end_layout
+
+\begin_layout Standard
+本节介绍了函数
+\family typewriter
+fWin8AnglesDegFromRotationMatrix
+\family default
+，它根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的Windows 8旋转矩阵计算欧拉角。
+\end_layout
+
+\begin_layout Standard
+横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+的解是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi=\tan^{-1}\left(\frac{-R_{xz}}{R_{zz}}\right),-90^{\circ}\leq\phi<90^{\circ}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+俯仰角
+\begin_inset Formula $\theta$
+\end_inset
+
+的范围为
+\begin_inset Formula $–180^{\circ}\leq\theta<180^{\circ}$
+\end_inset
+
+，但首先在
+\begin_inset Formula $–90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+的范围内使用以下方程计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\theta=\sin^{-1}\left(R_{yz}\right),-90^{\circ}\leq\phi<90^{\circ}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\phi$
+\end_inset
+
+在
+\begin_inset Formula $–90^{\circ}$
+\end_inset
+
+到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+的范围内，所以
+\begin_inset Formula $\cos\phi$
+\end_inset
+
+是非负的，并且
+\begin_inset Formula $R_{zz}=\cos\phi\cos\theta$
+\end_inset
+
+与
+\begin_inset Formula $\cos\theta$
+\end_inset
+
+具有相同的符号，可以用于将
+\begin_inset Formula $\theta$
+\end_inset
+
+校正到
+\begin_inset Formula $–180^{\circ}\leq\theta<180^{\circ}$
+\end_inset
+
+的范围内：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\theta & \leftarrow\pi-\theta\text{ if }R_{zz}<0\text{ and }\theta>0\\
+\theta & \leftarrow-\pi-\theta\text{ if }R_{zz}<0\text{ and }\theta\leq0
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于非零
+\begin_inset Formula $\cos\theta$
+\end_inset
+
+，偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+的通解为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi=\tan^{-1}\left(\frac{-\cos\theta R_{yx}}{\cos\theta R_{yy}}\right),0^{\circ}\leq\psi<360^{\circ},\theta\neq-90^{\circ},\theta\neq90^{\circ}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在万向节锁处，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan(\psi+\phi) & =\left(\frac{R_{xy}}{R_{xx}}\right)\text{ for }\theta=90^{\circ}\\
+\tan(\psi-\phi) & =\left(\frac{R_{xy}}{R_{xx}}\right)\text{ for }\theta=-90^{\circ}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Windows 8罗盘航向角
+\begin_inset Formula $\rho$
+\end_inset
+
+是偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+的负值(取模
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho=-\psi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+垂直方向的倾斜角
+\begin_inset Formula $\chi$
+\end_inset
+
+可由旋转重力向量和
+\begin_inset Formula $z$
+\end_inset
+
+轴向下的标量积确定，给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\cos\chi=\left\{ \boldsymbol{R}_{Win8}\left(\begin{array}{l}
+0\\
+0\\
+-1
+\end{array}\right)\right\} \cdot\left(\begin{array}{l}
+0\\
+0\\
+-1
+\end{array}\right)=-\left(\begin{array}{l}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\cdot\left(\begin{array}{l}
+0\\
+0\\
+-1
+\end{array}\right)=R_{zz}=\cos\theta\cos\phi
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Windows 8旋转矩阵的方向
+\end_layout
+
+\begin_layout Standard
+NXP传感器融合库软件将方向矩阵定义为将向量从全局坐标系转换为对于所有坐标系的传感器坐标系。Microsoft Inc.规范中列出的旋转矩阵和四元数：“
+\begin_inset CommandInset href
+LatexCommand href
+name "集成运动和方向传感器"
+target "http://msdn.microsoft.com/en-us/library/windows/hardware/dn642102(v=vs.85).aspx"
+literal "false"
+
+\end_inset
+
+”是指从传感器坐标系到全局坐标系的转换。若要从一个坐标系转换到另一个坐标系，则转置方向矩阵并取方向四元数的共轭。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Itemize
+Android specification available at: 
+\begin_inset CommandInset href
+LatexCommand href
+name "Android APIs > SensorEvent"
+target "https://developer.android.com/reference/android/hardware/SensorEvent.html"
+literal "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Microsoft Inc.
+ specification available at: 
+\begin_inset CommandInset href
+LatexCommand href
+name "Integrating Motion and Orientation Sensors"
+target "https://msdn.microsoft.com/en-us/library/windows/hardware/dn642102(v=vs.85).aspx"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

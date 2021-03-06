@@ -1,0 +1,5076 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "根据传感器数据计算方向矩阵"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+根据传感器数据计算方向矩阵
+\end_layout
+
+\begin_layout Author
+NXP
+\end_layout
+
+\begin_layout Date
+21 June 2016
+\end_layout
+
+\begin_layout Abstract
+本应用说明介绍了旋转或方向矩阵，并记录了文件
+\family typewriter
+orientation.c
+\family default
+中的函数，NXP传感器融合库使用这些函数从传感器测量的不同组合中计算方向矩阵。
+\end_layout
+
+\begin_layout Section
+介绍
+\end_layout
+
+\begin_layout Subsection
+概要
+\end_layout
+
+\begin_layout Standard
+本应用说明介绍了旋转或方向矩阵，并记录了文件
+\family typewriter
+orientation.c
+\family default
+中的函数，
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP传感器融合库"
+target "http://www.nxp.com/sensorfusion"
+literal "false"
+
+\end_inset
+
+使用这些函数从传感器测量的不同组合中计算方向矩阵。
+\end_layout
+
+\begin_layout Subsection
+术语
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="21" columns="2">
+<features islongtable="true" headBottomDL="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="left" valignment="top">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+定义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+地磁场强度
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{S}\boldsymbol{B}_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+传感器坐标系中的校准磁强计测量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{S}B_{cx},{}^{S}B_{cy},{}^{S}B_{cz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+传感器坐标系中的校准磁强计读数的
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+分量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{ENU}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x=\mathrm{East},y=\mathrm{North},z=\mathrm{Up}$
+\end_inset
+
+坐标系(Android和Windows 8)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+传感器坐标系中的校准加速计测量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{S}G_{cx},{}^{S}G_{cy},{}^{S}G_{cz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+传感器坐标系中的加速度计读数的
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+分量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+归一化旋转轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{n}_{x},\hat{n}_{y},\hat{n}_{z}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+归一化旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+分量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{NED}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $x=\mathrm{North},y=\mathrm{East},z=\mathrm{Down}$
+\end_inset
+
+坐标系(航空航天)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+一般方向矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{Android}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Android坐标系中的方向矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{NED}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NED/航空航天坐标系中的方向矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{Win8}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Windows 8 坐标系下的方向矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R_{xy}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+方向矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的
+\begin_inset Formula $x$
+\end_inset
+
+行和
+\begin_inset Formula $y$
+\end_inset
+
+列中的元素
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{tr}(\boldsymbol{R})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+方向矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的迹
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+地磁倾角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转角度
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+俯仰角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+横滚角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+偏航角
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+软件功能
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="top">
+<column alignment="left" valignment="top" width="8cm">
+<column alignment="left" valignment="top" width="5cm">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+功能
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+描述
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+章节
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void f3DOFTiltNED
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fGc[]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void f3DOFTiltAndroid
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fGc[]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void f3DOFTiltWin8
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fGc[]);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在航空航天/NED、Android和Windows 8坐标系下，根据加速度计测量值计算倾斜方向矩阵。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void f3DOFMagnetometerMatrixNED
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fBc[]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void f3DOFMagnetometerMatrixAndroid
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fBc[]);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void f3DOFMagnetometerMatrixWin8
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float fBc[]);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在航空航天/NED、Android和Windows 8坐标系下，根据校准的磁强计测量值计算2D电子罗盘偏航方向矩阵。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void feCompassNED
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float *pfDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfsinDelta, float *pfcosDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfmodBc, float *pfmodGc)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void feCompassAndroid
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float *pfDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfsinDelta, float  *pfcosDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float fBc[], float fGc[],
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfmodBc, float *pfmodGc)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+void feCompassWin8
+\end_layout
+
+\begin_layout Plain Layout
+
+(float fR[][3], float *pfDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfsinDelta, float *pfcosDelta,
+\end_layout
+
+\begin_layout Plain Layout
+
+float fBc[], float fGc[],
+\end_layout
+
+\begin_layout Plain Layout
+
+float *pfmodBc, float *pfmodGc)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在航空航天/NED、Android和Windows 8坐标系下，从加速度计和校准磁强计测量值计算完整的3D方向矩阵。
+\end_layout
+
+\begin_layout Plain Layout
+并且返回地磁倾角和加速度计和磁强计测量的模数。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+一般旋转矩阵
+\end_layout
+
+\begin_layout Subsection
+介绍
+\end_layout
+
+\begin_layout Standard
+一般的旋转矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+将坐标系围绕归一化轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+旋转角度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+而产生的向量变换为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\scriptstyle \boldsymbol{R}=\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)=\left(\begin{array}{ccc}
+\hat{n}_{x}^{2}+\left(1-\hat{n}_{x}^{2}\right)\cos\eta & \hat{n}_{x}\hat{n}_{y}(1-\cos\eta)+\hat{n}_{z}\sin\eta & \hat{n}_{x}\hat{n}_{z}(1-\cos\eta)-\hat{n}_{y}\sin\eta\\
+\hat{n}_{x}\hat{n}_{y}(1-\cos\eta)-\hat{n}_{z}\sin\eta & \hat{n}_{y}^{2}+\left(1-\hat{n}_{y}^{2}\right)\cos\eta & \hat{n}_{y}\hat{n}_{z}(1-\cos\eta)+\hat{n}_{x}\sin\eta\\
+\hat{n}_{x}\hat{n}_{z}(1-\cos\eta)+\hat{n}_{y}\sin\eta & \hat{n}_{y}\hat{n}_{z}(1-\cos\eta)-\hat{n}_{x}\sin\eta & \hat{n}_{z}^{2}+\left(1-\hat{n}_{z}^{2}\right)\cos\eta
+\end{array}\right)}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)称为罗德里格斯旋转矩阵。旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+和旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的乘积称为旋转向量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\boldsymbol{n}}\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+。
+\end_layout
+
+\begin_layout Standard
+如果坐标系围绕
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转角度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，则向量相对于新旋转的坐标系围绕
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转角度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $-\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+。当NXP文档引用定义旋转矩阵的旋转向量时，它总是引用坐标系旋转。
+\end_layout
+
+\begin_layout Standard
+此外，当旋转矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+对传感器相对于地球(全局)参考坐标系的方向进行建模时，
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP传感器融合库"
+target "http://www.nxp.com/sensorfusion"
+literal "false"
+
+\end_inset
+
+标准是乘积
+\begin_inset Formula $\boldsymbol{R}\boldsymbol{v}$
+\end_inset
+
+将向量
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+从全局坐标系变换到传感器坐标系。反向旋转
+\begin_inset Formula $\boldsymbol{R}^{-1}\boldsymbol{v}=\boldsymbol{R}^{\mathrm{T}}\boldsymbol{v}$
+\end_inset
+
+将向量
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+从传感器坐标系转换为全局坐标系。方向矩阵总是相对于全局坐标系中的初始方向定义的，其乘积平面，指向磁北，给出零横滚角、俯仰角和偏航角。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的两种特殊情况出现在绕任意轴的旋转角为 i) 
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+和 ii) 
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+旋转矩阵
+\begin_inset Formula $\boldsymbol{R}\left(0\right)$
+\end_inset
+
+和
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+旋转矩阵
+\begin_inset Formula $\boldsymbol{R}\left(\pi\right)$
+\end_inset
+
+如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}\left(0\right)=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}\left(\pi\right)=\left(\begin{array}{ccc}
+2\hat{n}_{x}^{2}-1 & 2\hat{n}_{x}\hat{n}_{y} & 2\hat{n}_{x}\hat{n}_{z}\\
+2\hat{n}_{x}\hat{n}_{y} & 2\hat{n}_{y}^{2}-1 & 2\hat{n}_{y}\hat{n}_{z}\\
+2\hat{n}_{x}\hat{n}_{z} & 2\hat{n}_{y}\hat{n}_{z} & 2\hat{n}_{z}^{2}-1
+\end{array}\right)\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这两种情况下，旋转矩阵是对称的。
+\end_layout
+
+\begin_layout Subsection
+特征向量与特征值
+\end_layout
+
+\begin_layout Standard
+归一化旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+是对应于特征值
+\begin_inset Formula $1$
+\end_inset
+
+的旋转矩阵乘积
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的特征向量。从几何学上讲，这意味着任何平行于旋转轴的向量都不会因旋转而改变。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle \boldsymbol{R}\hat{\boldsymbol{n}}} & {\scriptstyle =\left(\begin{array}{ccc}
+\hat{n}_{x}^{2}+\left(1-\hat{n}_{x}^{2}\right)\cos\eta & \hat{n}_{x}\hat{n}_{y}(1-\cos\eta)+\hat{n}_{z}\sin\eta & \hat{n}_{x}\hat{n}_{z}(1-\cos\eta)-\hat{n}_{y}\sin\eta\\
+\hat{n}_{x}\hat{n}_{y}(1-\cos\eta)-\hat{n}_{z}\sin\eta & \hat{n}_{y}^{2}+\left(1-\hat{n}_{y}^{2}\right)\cos\eta & \hat{n}_{y}\hat{n}_{z}(1-\cos\eta)+\hat{n}_{x}\sin\eta\\
+\hat{n}_{x}\hat{n}_{z}(1-\cos\eta)+\hat{n}_{y}\sin\eta & \hat{n}_{y}\hat{n}_{z}(1-\cos\eta)-\hat{n}_{x}\sin\eta & \hat{n}_{z}^{2}+\left(1-\hat{n}_{z}^{2}\right)\cos\eta
+\end{array}\right)\left(\begin{array}{c}
+\hat{n}_{x}\\
+\hat{n}_{y}\\
+\hat{n}_{z}
+\end{array}\right)}\label{eq:4}\\
+ & {\scriptstyle =\left(\begin{array}{l}
+\hat{n}_{x}\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}\right)-\hat{n}_{x}\cos\eta\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}-1\right)\\
+\hat{n}_{y}\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}\right)-\hat{n}_{y}\cos\eta\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}-1\right)\\
+\hat{n}_{z}\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}\right)-\hat{n}_{z}\cos\eta\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}-1\right)
+\end{array}\right)=\left(\begin{array}{l}
+\hat{n}_{x}\\
+\hat{n}_{y}\\
+\hat{n}_{z}
+\end{array}\right)}\label{eq:5}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+旋转矩阵与旋转向量的转换
+\end_layout
+
+\begin_layout Subsection
+旋转矩阵到旋转向量
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)允许根据旋转矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的迹确定旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathrm{tr}(\boldsymbol{R}) & =R_{xx}+R_{yy}+R_{zz}=\hat{n}_{x}^{2}+\left(1-\hat{n}_{x}^{2}\right)\cos\eta+\hat{n}_{y}^{2}+\left(1-\hat{n}_{y}^{2}\right)\cos\eta+\hat{n}_{z}^{2}+\left(1-2\hat{n}_{z}^{2}\right)\cos\eta\label{eq:6}\\
+ & =\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}\right)+3\cos\eta-\left(\hat{n}_{x}^{2}+\hat{n}_{y}^{2}+\hat{n}_{z}^{2}\right)\cos\eta\label{eq:7}\\
+\Rightarrow\mathrm{tr}(\boldsymbol{R}) & =1+2\cos\eta\label{eq:8}\\
+\Rightarrow\eta & =\cos^{-1}\left(\dfrac{\mathrm{tr}(\boldsymbol{R})-1}{2}\right)\label{eq:9}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵的迹在
+\begin_inset Formula $-1$
+\end_inset
+
+和
+\begin_inset Formula $+3$
+\end_inset
+
+之间变化。迹为
+\begin_inset Formula $-1$
+\end_inset
+
+对应于绕任意轴旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+，迹为
+\begin_inset Formula $+3$
+\end_inset
+
+对应于旋转
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中没有角度歧义，因为反余弦返回的角度在
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+之间，这意味着旋转角度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+也在
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+之间变化。在
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+之间的旋转角相当于绕负旋转轴
+\begin_inset Formula $-\hat{\boldsymbol{n}}$
+\end_inset
+
+的负角度
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $-\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的旋转，旋转向量
+\begin_inset Formula $\eta\hat{\boldsymbol{n}}$
+\end_inset
+
+不受双符号变化的影响。
+\end_layout
+
+\begin_layout Standard
+穿过
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的前导对角线的差分元素给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2\hat{\boldsymbol{n}}\sin\eta=\left(\begin{array}{c}
+R_{yz}-R_{zy}\\
+R_{zx}-R_{xz}\\
+R_{xy}-R_{yx}
+\end{array}\right)\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\sin\eta\neq0$
+\end_inset
+
+且旋转矩阵不对称的一般情况下，旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+等于：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{n}}=\dfrac{1}{\sqrt{\left(R_{yz}-R_{zy}\right)^{2}+\left(R_{zx}-R_{xz}\right)^{2}+\left(R_{xy}-R_{yx}\right)^{2}}}\left(\begin{array}{c}
+R_{yz}-R_{zy}\\
+R_{zx}-R_{xz}\\
+R_{xy}-R_{yx}
+\end{array}\right)\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+接近零时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在数学上变得不确定，对应于所有旋转轴在零旋转时相等的物理情况。然而，旋转向量
+\begin_inset Formula $\hat{\boldsymbol{n}}\eta$
+\end_inset
+
+仍然定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{n}}\eta=\dfrac{1}{2}\left(\begin{array}{c}
+R_{yz}-R_{zy}\\
+R_{zx}-R_{xz}\\
+R_{xy}-R_{yx}
+\end{array}\right)\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+在
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+附近的情况，旋转矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+近似于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的形式，迹为
+\begin_inset Formula $-1$
+\end_inset
+
+。前导对角线上的元素允许旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+由以下方程给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{n}}=\left(\begin{array}{c}
+\hat{n}_{x}\\
+\hat{n}_{y}\\
+\hat{n}_{z}
+\end{array}\right)=\left(\begin{array}{c}
+\pm\sqrt{\dfrac{R_{xx}+1}{2}}\\
+\pm\sqrt{\dfrac{R_{yy}+1}{2}}\\
+\pm\sqrt{\dfrac{R_{zz}+1}{2}}
+\end{array}\right)\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+正负符号歧义可以通过在前导对角线上求差并利用
+\begin_inset Formula $\sin\eta$
+\end_inset
+
+为非负的结果来解决。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+R_{yz}-R_{zy} & =2\hat{n}_{x}\sin\eta\Rightarrow\mathrm{sign}\left(\hat{n}_{x}\right)=\mathrm{sign}\left(R_{yz}-R_{zy}\right)\label{eq:14}\\
+R_{zx}-R_{xz} & =2\hat{n}_{y}\sin\eta\Rightarrow\mathrm{sign}\left(\hat{n}_{y}\right)=\mathrm{sign}\left(R_{zx}-R_{xz}\right)\label{eq:15}\\
+R_{xy}-R_{yx} & =2\hat{n}_{z}\sin\eta\Rightarrow\mathrm{sign}\left(\hat{n}_{z}\right)=\mathrm{sign}\left(R_{xy}-R_{yx}\right)\label{eq:16}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+任何旋转都可以用归一化的旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+和围绕该轴的旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+来表示，总共有
+\begin_inset Formula $3$
+\end_inset
+
+个自由度。旋转向量
+\begin_inset Formula $\eta\hat{\boldsymbol{n}}$
+\end_inset
+
+是旋转的最有效编码，但没有有用的数学性质。因此，优先使用旋转四元数(
+\begin_inset Formula $4$
+\end_inset
+
+个分量)和旋转矩阵(
+\begin_inset Formula $9$
+\end_inset
+
+个分量)。
+\end_layout
+
+\begin_layout Standard
+陀螺仪传感器的输出(以
+\begin_inset Formula $\deg/s$
+\end_inset
+
+为单位)乘以采样时间间隔是一个旋转向量，因此在软件中会立即转换为旋转四元数或矩阵进行方向积分。
+\end_layout
+
+\begin_layout Subsection
+旋转向量到旋转矩阵
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)直接根据旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+和旋转角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+定义了罗德里格斯旋转矩阵。对于非零旋转向量
+\begin_inset Formula $\eta\hat{\boldsymbol{n}}$
+\end_inset
+
+的情况，可以很容易地使用以下方程确定：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\eta=\left|\eta\hat{\boldsymbol{n}}\right|\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{n}}=\dfrac{\eta\hat{\boldsymbol{n}}}{\left|\eta\hat{\boldsymbol{n}}\right|}\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果旋转向量为零，则旋转矩阵为单位矩阵。
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+加速度计倾斜方向矩阵
+\end_layout
+
+\begin_layout Subsection
+介绍
+\end_layout
+
+\begin_layout Standard
+加速计传感器对线加速度和重力都很敏感，并且对垂直重力轴的旋转不敏感。因此，在没有其他传感器的情况下运行的加速计可以检测水平方向的横滚、俯仰和倾斜角度，前提是没有
+线性加速度，但无法检测罗盘航向。
+\end_layout
+
+\begin_layout Standard
+下面的数学假设偏航角或罗盘角始终为零度。这种假设的一个结果是，方向在
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰角(航空航天/NED坐标系)和
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+横滚角(Android和Windows 8坐标系)下发生
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的扭曲，以确保方向仍然指向北方。
+\end_layout
+
+\begin_layout Standard
+在航空航天/NED坐标系中，描述相同现象的另一种方法是应用
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+横滚角(导致电路板指向北方，但反向)，然后
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+偏航角旋转(这没有影响，因为加速计对绕垂直重力轴的旋转不敏感)。同样的方向也可以通过
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+俯仰角旋转来实现。如果没有
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+俯仰角下的
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+方向扭曲，相同的加速计读数将导致两个不同的方向，具体取决于所采用的路径。
+\end_layout
+
+\begin_layout Subsection
+航空航天/NED
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFTiltNED
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+从水平方向旋转俯仰角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，然后横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+后，零偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的航空航天/NED方向矩阵
+\begin_inset Formula $\boldsymbol{R}_{NED}$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{NED}(\psi=0)=\left(\begin{array}{ccc}
+\cos\theta & 0 & -\sin\theta\\
+\sin\theta\sin\phi & \cos\phi & \cos\theta\sin\phi\\
+\cos\phi\sin\theta & -\sin\phi & \cos\theta\cos\phi
+\end{array}\right)\label{eq:19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过将初始平面方向上的加速计测量值乘以
+\begin_inset Formula $\boldsymbol{R}_{NED}(\psi=0)$
+\end_inset
+
+，可以计算出该方向上传感器坐标系中读取的航空航天/NED加速计的
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left(\begin{array}{c}
+^{S}G_{cx}\\
+^{S}G_{cy}\\
+^{S}G_{cz}
+\end{array}\right) & =\left(\begin{array}{ccc}
+\cos\theta & 0 & -\sin\theta\\
+\sin\theta\sin\phi & \cos\phi & \cos\theta\sin\phi\\
+\cos\phi\sin\theta & -\sin\phi & \cos\theta\cos\phi
+\end{array}\right)\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{c}
+-\sin\theta\\
+\sin\phi\cos\theta\\
+\cos\phi\cos\theta
+\end{array}\right)\label{eq:20}\\
+ & =\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{c}
+-\sin\theta\\
+\sin\phi\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}\\
+\cos\phi\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}
+\end{array}\right)\label{eq:21}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\sin\theta & =\frac{-^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:22}\\
+\cos\theta & =\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}\label{eq:23}\\
+\sin\phi & =\frac{^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}}\label{eq:24}\\
+\cos\phi & =\frac{^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}}\label{eq:25}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\cos\theta$
+\end_inset
+
+的正平方根始终可以在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中取得，因为航空航天/NED坐标系中的俯仰角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间变化，因此
+\begin_inset Formula $\cos\theta$
+\end_inset
+
+的值为非负值。
+\end_layout
+
+\begin_layout Standard
+代回方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，直接根据传感器坐标系加速计读数
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+得出航空航天/NED的3DOF方向矩阵，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{NED}(\psi=0) & =\left(\begin{array}{ccc}
+\dfrac{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}}{\left|^{S}\boldsymbol{G}_{c}\right|} & 0 & \dfrac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-^{S}G_{cx}{}^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cz}}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-^{S}G_{cx}{}^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cy}}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}
+\end{array}\right)\label{eq:26}\\
+ & =\left(\begin{array}{ccc}
+\dfrac{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}}{\left|^{S}\boldsymbol{G}_{c}\right|} & 0 & \dfrac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-R_{xz}R_{yz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{R_{zz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-R_{xz}R_{zz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-R_{yz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}
+\end{array}\right)\label{eq:27}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在具有
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+角
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转的万向节锁方向上，其中
+\begin_inset Formula $^{S}G_{cy}={}^{S}G_{cz}=0$
+\end_inset
+
+且
+\begin_inset Formula $^{S}G_{cx}=\left|^{S}\boldsymbol{G}_{c}\right|$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+和旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{NED}$
+\end_inset
+
+未定义。由于横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+与偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+(假设为零)在同一旋转轴上，最简单的解决方案是也将横滚角设置为零，给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{NED}(\phi=\psi=0)=\left(\begin{array}{ccc}
+0 & 0 & -\sin\theta\\
+0 & 1 & 0\\
+\sin\theta & 0 & 0
+\end{array}\right)=\left(\begin{array}{ccc}
+0 & 0 & \mathrm{sign}\left(^{S}G_{cx}\right)\\
+0 & 1 & 0\\
+-\mathrm{sign}\left(^{S}G_{cx}\right) & 0 & 0
+\end{array}\right)\label{eq:28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Android
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFTiltAndroid
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+由横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+和俯仰角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+从水平方向旋转后，零偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的Android旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{Android}$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}(\psi=0)=\left(\begin{array}{ccc}
+\cos\phi & 0 & \sin\phi\\
+\sin\phi\sin\theta & \cos\theta & -\cos\phi\sin\theta\\
+-\cos\theta\sin\phi & \sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:29}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过将初始平面方向上的加速计测量值乘以
+\begin_inset Formula $\boldsymbol{R}_{Android}(\psi=0)$
+\end_inset
+
+，可以计算出该方向上传感器坐标系中读取的Android加速计的
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left(\begin{array}{c}
+^{S}G_{cx}\\
+^{S}G_{cy}\\
+^{S}G_{cz}
+\end{array}\right) & =\left(\begin{array}{ccc}
+\cos\phi & 0 & \sin\phi\\
+\sin\phi\sin\theta & \cos\theta & -\cos\phi\sin\theta\\
+-\cos\theta\sin\phi & \sin\theta & \cos\phi\cos\theta
+\end{array}\right)\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)=\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{c}
+\sin\phi\\
+-\cos\phi\sin\theta\\
+\cos\phi\cos\theta
+\end{array}\right)\label{eq:30}\\
+ & =\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{c}
+-\sin\phi\\
+-\sin\theta\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}\\
+\cos\theta\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}
+\end{array}\right)\label{eq:31}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\sin\phi & =\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:32}\\
+\cos\phi & =\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}\label{eq:33}\\
+\sin\theta & =\frac{-^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}}\label{eq:34}\\
+\cos\theta & =\frac{^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\sqrt{1-\left(\frac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\right)^{2}}}\label{eq:35}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\cos\phi$
+\end_inset
+
+的正平方根总是可以在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中取得，因为Android坐标系中的横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间变化，给出了
+\begin_inset Formula $\cos\phi$
+\end_inset
+
+的非负值。
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，直接根据加速计读数给出3DOF的Android方向矩阵，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{Android}(\psi=0) & =\left(\begin{array}{ccc}
+\dfrac{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}}{\left|^{S}\boldsymbol{G}_{c}\right|} & 0 & ^{S}G_{cx}\\
+\dfrac{-^{S}G_{cx}{}^{S}G_{cy}}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & ^{S}G_{cy}\\
+\dfrac{-^{S}G_{cx}{}^{S}G_{cz}}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cy}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & ^{S}G_{cz}
+\end{array}\right)\label{eq:36}\\
+ & =\left(\begin{array}{ccc}
+\dfrac{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}}{\left|^{S}\boldsymbol{G}_{c}\right|} & 0 & \dfrac{^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-R_{xz}R_{yz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{R_{zz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-R_{xz}R_{zz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-R_{yz}\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{^{S}G_{cy}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}
+\end{array}\right)\label{eq:37}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+旋转后万向节锁的情况下，当
+\begin_inset Formula $^{S}G_{cy}={}^{S}G_{cz}=0$
+\end_inset
+
+时，俯仰
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+角
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+未定义，可以设置为零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}(\theta=\psi=0)=\left(\begin{array}{ccc}
+0 & 0 & \sin\phi\\
+0 & 1 & 0\\
+-\sin\phi & 0 & 0
+\end{array}\right)=\left(\begin{array}{ccc}
+0 & 0 & \mathrm{sign}\left(^{S}G_{cx}\right)\\
+0 & 1 & 0\\
+-\mathrm{sign}\left(^{S}G_{cx}\right) & 0 & 0
+\end{array}\right)\label{eq:38}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Windows 8
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFTiltWin8
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+零偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+为零的Windows 8旋转矩阵
+\begin_inset Formula $\boldsymbol{R}_{Win8}$
+\end_inset
+
+，在从水平方向旋转俯仰角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，然后是横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+后，为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}(\psi=0)=\left(\begin{array}{ccc}
+\cos\phi & \sin\phi\sin\theta & -\sin\phi\cos\theta\\
+0 & \cos\theta & \sin\theta\\
+\sin\phi & -\cos\phi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过将初始平面方向上的加速计测量值乘以
+\begin_inset Formula $\boldsymbol{R}_{Win8}(\psi=0)$
+\end_inset
+
+，可以计算出该方向上传感器坐标系中读取的Windows 8加速计的
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+^{S}G_{cx}\\
+^{S}G_{cy}\\
+^{S}G_{cz}
+\end{array}\right)=\left(\begin{array}{ccc}
+\cos\phi & \sin\phi\sin\theta & -\sin\phi\cos\theta\\
+0 & \cos\theta & \sin\theta\\
+\sin\phi & -\cos\phi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{l}
+0\\
+0\\
+-1
+\end{array}\right)=\left|^{S}\boldsymbol{G}_{c}\right|\left(\begin{array}{c}
+\sin\phi\cos\theta\\
+-\sin\theta\\
+-\cos\phi\cos\theta
+\end{array}\right)\label{eq:40}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan\phi & =\frac{-^{S}G_{cx}}{^{S}G_{cz}}\Rightarrow\cos\phi=\dfrac{1}{\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}}\label{eq:41}\\
+\Rightarrow\sin\phi & =\tan\phi\cos\phi=\dfrac{-^{S}G_{cx}}{^{S}G_{cz}\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}}\label{eq:42}\\
+\sin\theta & =\frac{-^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:43}\\
+\cos\theta & =\frac{-^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\cos\phi}=\frac{-^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}\label{eq:44}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\cos\phi$
+\end_inset
+
+的正平方根总是可以在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中取得，因为Windows 8坐标系中的横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+在
+\begin_inset Formula $-90^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $+90^{\circ}$
+\end_inset
+
+之间变化，给出了
+\begin_inset Formula $\cos\phi$
+\end_inset
+
+的非负值。
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:39"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，直接根据加速计读数给出Windows 8的3DOF方向矩阵，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{R}_{Win8}(\psi=0) & =\dfrac{1}{\left|^{S}\boldsymbol{G}_{c}\right|}\left(\begin{array}{ccc}
+\dfrac{\left|^{S}\boldsymbol{G}_{c}\right|}{\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}} & \dfrac{^{S}G_{cx}{}^{S}G_{cy}}{^{S}G_{cz}\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}} & -^{S}G_{cx}\\
+0 & -^{S}G_{cz}\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}} & -^{S}G_{cy}\\
+\dfrac{-^{S}G_{cx}\left|^{S}\boldsymbol{G}_{c}\right|}{^{S}G_{cz}\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}} & \dfrac{^{S}G_{cy}}{\sqrt{1+\left(\frac{^{S}G_{cx}}{^{S}G_{cz}}\right)^{2}}} & -^{S}G_{cz}
+\end{array}\right)\label{eq:45}\\
+ & =\left(\begin{array}{ccc}
+\dfrac{^{S}G_{cz}}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cx}R_{yz}}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+0 & \dfrac{-\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}}{\left|^{S}\boldsymbol{G}_{c}\right|} & \dfrac{-^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{-^{S}G_{cx}}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cy}R_{zz}}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}
+\end{array}\right)\label{eq:46}\\
+ & =\left(\begin{array}{ccc}
+\dfrac{^{S}G_{cz}}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{R_{xz}R_{yz}\left|^{S}\boldsymbol{G}_{c}\right|}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cx}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+0 & \dfrac{-1}{\left\{ \dfrac{\left|^{S}\boldsymbol{G}_{c}\right|}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}}\right\} } & \dfrac{-^{S}G_{cy}}{\left|^{S}\boldsymbol{G}_{c}\right|}\\
+\dfrac{R_{xz}\left|^{S}\boldsymbol{G}_{c}\right|}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{R_{yz}R_{zz}\left|^{S}\boldsymbol{G}_{c}\right|}{\mathrm{sign}\left(^{S}G_{cz}\right)\sqrt{^{S}G_{cx}^{2}+{}^{S}G_{cz}^{2}}} & \dfrac{-^{S}G_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|}
+\end{array}\right)\label{eq:47}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\pm90^{\circ}$
+\end_inset
+
+俯仰
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+角
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转后万向锁的情况下，当
+\begin_inset Formula $^{S}G_{cx}={}^{S}G_{cz}=0$
+\end_inset
+
+时，横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+未定义，可以设置为零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}(\phi=\psi=0)=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 0 & \sin\theta\\
+0 & -\sin\theta & 0
+\end{array}\right)=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 0 & -\mathrm{sign}\left(^{S}G_{cy}\right)\\
+0 & \mathrm{sign}\left(^{S}G_{cy}\right) & 0
+\end{array}\right)\label{eq:48}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+磁强计2D罗盘方向矩阵
+\end_layout
+
+\begin_layout Subsection
+介绍
+\end_layout
+
+\begin_layout Standard
+本节记录了2D(仅限磁强计)电子罗盘函数，该函数根据校准的磁强计测量值计算方向矩阵，假设磁强计始终是平面的，并且相对水平面的倾斜为零。这种配置的市场应用是一种汽
+车罗盘，由于车辆加速度、制动力和转弯力的原因，无法使用普通加速计和磁强计倾斜补偿电子罗盘功能。
+\end_layout
+
+\begin_layout Standard
+小心使用这些功能。在汽车应用中，由于磁强计传感器不受加速度的影响，2D电子罗盘将对加速度、制动力和转向力的影响具有鲁棒性。然而，当车辆倾斜角(无论是横滚角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+还是俯仰角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+)偏离水平方向时，罗盘航向会发生变化，因为这违反了磁强计传感器始终是平面的假设。
+\end_layout
+
+\begin_layout Subsection
+航空航天/NED
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFMagnetometerMatrixNED
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+仅当保持水平时，偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转的航空航天/NED旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{NED}(\psi)=\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:49}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航空航天/NED校准磁强计在该方向的读数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+^{S}B_{cx}\\
+^{S}B_{cy}\\
+^{S}B_{cz}
+\end{array}\right)=\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)B\left(\begin{array}{c}
+\cos\delta\\
+0\\
+\sin\delta
+\end{array}\right)=B\left(\begin{array}{c}
+\cos\psi\cos\delta\\
+-\sin\psi\cos\delta\\
+\sin\delta
+\end{array}\right)\label{eq:50}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+地磁场的水平分量的值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+B\cos\delta=\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}\label{eq:51}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+(和罗盘航向角)由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan\psi & =\dfrac{\sin\psi}{\cos\psi}=\dfrac{-^{S}B_{cy}}{^{S}B_{cx}}\label{eq:52}\\
+\sin\psi & =\dfrac{-^{S}B_{cy}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:53}\\
+\cos\psi & =\dfrac{^{S}B_{cx}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:54}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵与未知的地磁倾角
+\begin_inset Formula $\delta$
+\end_inset
+
+无关，其值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{NED}(\psi)=\dfrac{1}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\left(\begin{array}{ccc}
+^{S}B_{cx} & -^{S}B_{cy} & 0\\
+^{S}B_{cy} & ^{S}B_{cx} & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:55}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Android
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFMagnetometerMatrixAndroid
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+仅当保持水平时，偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转的Android旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}(\psi)=\left(\begin{array}{ccc}
+\cos\psi & -\sin\psi & 0\\
+\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:56}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Android校准磁强计在该方向的读数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+^{S}B_{cx}\\
+^{S}B_{cy}\\
+^{S}B_{cz}
+\end{array}\right)=\left(\begin{array}{ccc}
+\cos\psi & -\sin\psi & 0\\
+\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)B\left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)=B\left(\begin{array}{c}
+-\sin\psi\cos\delta\\
+\cos\psi\cos\delta\\
+-\sin\delta
+\end{array}\right)\label{eq:57}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+地磁场的水平分量的值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+B\cos\delta=\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}\label{eq:58}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+(和罗盘航向角)由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan\psi & =\dfrac{\sin\psi}{\cos\psi}=\dfrac{-^{S}B_{cx}}{^{S}B_{cy}}\label{eq:59}\\
+\sin\psi & =\dfrac{-^{S}B_{cx}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:60}\\
+\cos\psi & =\dfrac{^{S}B_{cy}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:61}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵与未知的地磁倾角
+\begin_inset Formula $\delta$
+\end_inset
+
+无关，其值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}(\psi)=\dfrac{1}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\left(\begin{array}{ccc}
+^{S}B_{cy} & ^{S}B_{cx} & 0\\
+-^{S}B_{cx} & ^{S}B_{cy} & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:62}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Windows 8
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+f3DOFMagnetometerMatrixWin8
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+仅当保持水平时，偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转的Windows 8旋转矩阵为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}(\psi)=\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:63}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Windows 8校准磁强计在该方向的读数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+^{S}B_{cx}\\
+^{S}B_{cy}\\
+^{S}B_{cz}
+\end{array}\right)=\left(\begin{array}{ccc}
+\cos\psi & \sin\psi & 0\\
+-\sin\psi & \cos\psi & 0\\
+0 & 0 & 1
+\end{array}\right)B\left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)=B\left(\begin{array}{c}
+\sin\psi\cos\delta\\
+\cos\psi\cos\delta\\
+-\sin\delta
+\end{array}\right)\label{eq:64}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+地磁场的水平分量的值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+B\cos\delta=\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}\label{eq:65}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+偏航角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+等于Windows 8坐标系中罗盘航向的负值，由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tan\psi & =\dfrac{\sin\psi}{\cos\psi}=\dfrac{^{S}B_{cx}}{^{S}B_{cy}}\label{eq:66}\\
+\sin\psi & =\dfrac{^{S}B_{cx}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:67}\\
+\cos\psi & =\dfrac{^{S}B_{cy}}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\label{eq:68}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方向矩阵与未知的地磁倾角
+\begin_inset Formula $\delta$
+\end_inset
+
+无关，其值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}(\psi)=\dfrac{1}{\sqrt{^{S}B_{cx}^{2}+{}^{S}B_{cy}^{2}}}\left(\begin{array}{ccc}
+^{S}B_{cy} & ^{S}B_{cx} & 0\\
+-^{S}B_{cx} & ^{S}B_{cy} & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:69}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+加速度计和磁强计3D电子罗盘方向矩阵
+\end_layout
+
+\begin_layout Subsection
+介绍
+\end_layout
+
+\begin_layout Standard
+本节记录了从加速度计和磁强计测量值计算方向矩阵的过程。这是一个典型的倾斜补偿电子罗盘，它提供了一个完整的方向确定。假设没有线性加速度，因此加速度计读数只是地球引
+力场方向的函数。
+\end_layout
+
+\begin_layout Standard
+方向矩阵可以用一种算法来计算，这种算法最容易从下面的简单数学恒等式中理解：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)=\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)\left(\begin{array}{lll}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right)\label{eq:70}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+右侧的单位矩阵的三列是
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的
+\begin_inset Formula $3$
+\end_inset
+
+个单位向量，与全局参考坐标系中的初始方向对齐。在航空航天/NED坐标系中，
+\begin_inset Formula $x$
+\end_inset
+
+轴指向北方，
+\begin_inset Formula $y$
+\end_inset
+
+轴指向东方，
+\begin_inset Formula $z$
+\end_inset
+
+轴指向下方。在Android和windows 8坐标系中，
+\begin_inset Formula $x$
+\end_inset
+
+轴指向东，
+\begin_inset Formula $y$
+\end_inset
+
+轴指向北，
+\begin_inset Formula $z$
+\end_inset
+
+轴指向上。
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)分解成列向量清楚地表明，方向矩阵的
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+分量是从全局参考坐标系旋转到传感器坐标系的原始
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+单位向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right) & =\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)\left(\begin{array}{c}
+1\\
+0\\
+0
+\end{array}\right)\label{eq:71}\\
+\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right) & =\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+1\\
+0
+\end{array}\right)\label{eq:72}\\
+\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right) & =\left(\begin{array}{lll}
+R_{xx} & R_{xy} & R_{xz}\\
+R_{yx} & R_{yy} & R_{yz}\\
+R_{zx} & R_{zy} & R_{zz}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)\label{eq:73}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在没有加速度的情况下，加速计测量传感器坐标系中可测量的重力向量，因此提供方向矩阵的右侧列。全局坐标系中的地磁向量在北(南)半球指向北方和向下(向上)。根据定义，
+旋转重力向量和旋转地磁向量之间的向量积与两者成直角，因此是来自全局坐标系的旋转东向指向向量，该坐标系在方向矩阵中形成
+\begin_inset Formula $y$
+\end_inset
+
+(航空航天/NED坐标系)或
+\begin_inset Formula $x$
+\end_inset
+
+(Android和Windows 8坐标系)列向量。因为方向矩阵是正交的，所以这两个列向量之间的最终向量积给出方向矩阵的剩余列向量。
+\end_layout
+
+\begin_layout Subsection
+航空航天/NED
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+feCompassNED
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+初始NED方向的
+\begin_inset Formula $z$
+\end_inset
+
+轴向下对齐并与重力平行。方向矩阵的
+\begin_inset Formula $z$
+\end_inset
+
+轴列向量是旋转的
+\begin_inset Formula $z$
+\end_inset
+
+轴向量，在零加速度的假设下，是归一化的加速度计测量
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)=\dfrac{^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:74}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据校准的磁强计测量估计的地磁向量在初始方向上指向北方(NED坐标系的
+\begin_inset Formula $x$
+\end_inset
+
+方向)，在北(南)半球向下(向上)。加速计和磁强计测量的归一化向量积给出了与两者正交的归一化向量，因此，该归一化向量沿指向东的
+\begin_inset Formula $y$
+\end_inset
+
+轴对齐，并等于旋转矩阵的
+\begin_inset Formula $y$
+\end_inset
+
+列：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)=\dfrac{^{S}\boldsymbol{G}_{c}\times{}^{S}\boldsymbol{B}_{c}}{\left|^{S}\boldsymbol{G}_{c}\times{}^{S}\boldsymbol{B}_{c}\right|}\label{eq:75}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，由于旋转矩阵是列(和行)正交的，因此旋转矩阵列的
+\begin_inset Formula $y$
+\end_inset
+
+列和
+\begin_inset Formula $z$
+\end_inset
+
+列的向量积等于剩余的
+\begin_inset Formula $x$
+\end_inset
+
+列：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)=\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\label{eq:76}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+地磁倾斜角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是地球磁场在全球范围内下降到水平面以下的角度。由于两个向量的标量积在旋转下是不变的，因此可以从归一化加速度计的标量积和传感器坐标系中的校准磁测量值计算倾角，给出
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{G}_{c}\cdot{}^{S}\boldsymbol{B}_{c}=\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|\sin\delta\Rightarrow\sin\delta=\dfrac{^{S}G_{cx}{}^{S}B_{cx}+{}^{S}G_{cy}{}^{S}B_{cy}+{}^{S}G_{cz}{}^{S}B_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|}\label{eq:77}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到的方向矩阵可显示为等于AN5017“航空航天、Android和Windows坐标系”方程(5)中导出的航空航天/NED方向矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{NED}=\left(\begin{array}{ccc}
+\cos\theta\cos\psi & \cos\theta\sin\psi & -\sin\theta\\
+\cos\psi\sin\theta\sin\phi-\cos\phi\sin\psi & \cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi & \cos\theta\sin\phi\\
+\cos\phi\cos\psi\sin\theta+\sin\phi\sin\psi & \cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi & \cos\theta\cos\phi
+\end{array}\right)\label{eq:78}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过使用任意两个旋转向量的向量积等于其旋转向量积的标准结果简化了证明：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}\left(\boldsymbol{a}\times\boldsymbol{b}\right)=\boldsymbol{R}\boldsymbol{a}\times\boldsymbol{R}\boldsymbol{b}\label{eq:79}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}=\boldsymbol{R}_{NED}\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+-\sin\theta\\
+\cos\theta\sin\phi\\
+\cos\theta\cos\phi
+\end{array}\right)=\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\label{eq:80}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:75"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+{\scriptstyle {\scriptstyle \dfrac{^{S}\boldsymbol{G}_{c}\times{}^{S}\boldsymbol{B}_{c}}{\left|^{S}\boldsymbol{G}_{c}\times{}^{S}\boldsymbol{B}_{c}\right|}=\dfrac{\boldsymbol{R}_{NED}\left\{ \left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)\times\left(\begin{array}{c}
+\cos\delta\\
+0\\
+\sin\delta
+\end{array}\right)\right\} }{\left|\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)\times\left(\begin{array}{c}
+\cos\delta\\
+0\\
+\sin\delta
+\end{array}\right)\right|}=\boldsymbol{R}_{NED}\left(\begin{array}{c}
+0\\
+1\\
+0
+\end{array}\right)=\left(\begin{array}{c}
+\cos\theta\sin\psi\\
+\cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi\\
+\cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi
+\end{array}\right)=\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)}}\label{eq:81}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle \left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)} & {\scriptstyle =\left(\begin{array}{c}
+\cos\theta\sin\psi\\
+\cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi\\
+\cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi
+\end{array}\right)\times\left(\begin{array}{c}
+-\sin\theta\\
+\cos\theta\sin\phi\\
+\cos\theta\cos\phi
+\end{array}\right)}\label{eq:82}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+(\cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi)\cos\theta\cos\phi-(\cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi)\cos\theta\sin\phi\\
+-(\cos\phi\sin\theta\sin\psi-\cos\psi\sin\phi)\sin\theta-\cos^{2}\theta\sin\psi\cos\phi\\
+\sin\psi\cos^{2}\theta\sin\phi+(\cos\phi\cos\psi+\sin\theta\sin\phi\sin\psi)\sin\theta
+\end{array}\right)}\label{eq:83}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+\cos\theta\cos\psi\\
+\cos\psi\sin\theta\sin\phi-\cos\phi\sin\psi\\
+\cos\phi\cos\psi\sin\theta+\sin\phi\sin\psi
+\end{array}\right)=\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)}\label{eq:84}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Android
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+feCompassAndroid
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+初始Android方向的
+\begin_inset Formula $z$
+\end_inset
+
+轴向上对齐，并与重力反平行。Android标准规定加速度计是正加速度而不是正重力。因此，方向矩阵的
+\begin_inset Formula $z$
+\end_inset
+
+轴列向量是旋转的
+\begin_inset Formula $z$
+\end_inset
+
+轴向量，假设加速度为零，则为归一化加速度计测量
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)=\dfrac{^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:85}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据校准的磁强计测量值估计的地磁向量在初始方向上指向北方(Android坐标系为
+\begin_inset Formula $y$
+\end_inset
+
+方向)，在北(南)半球向下(向上)。磁强计和加速计测量的归一化向量积给出了一个与两者正交的归一化向量，因此，该向量沿指向东的
+\begin_inset Formula $x$
+\end_inset
+
+轴对齐：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)=\dfrac{^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}\right|}\label{eq:86}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，由于旋转矩阵是正交的，因此旋转矩阵
+\begin_inset Formula $z$
+\end_inset
+
+轴和
+\begin_inset Formula $x$
+\end_inset
+
+轴的向量积给出了方向矩阵的剩余
+\begin_inset Formula $y$
+\end_inset
+
+分量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)=\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)\label{eq:87}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据加速计和校准磁测量的标量积计算倾角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{G}_{c}\cdot{}^{S}\boldsymbol{B}_{c}=-\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|\sin\delta\Rightarrow\sin\delta=\dfrac{-\left(^{S}G_{cx}{}^{S}B_{cx}+{}^{S}G_{cy}{}^{S}B_{cy}+{}^{S}G_{cz}{}^{S}B_{cz}\right)}{\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|}\label{eq:88}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:85"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:87"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到的方向矩阵可显示为等于AN5017“航空航天、Android和Windows坐标系”方程(30)中导出的Android方向矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Android}=\left(\begin{array}{ccc}
+\cos\phi\cos\psi & -\cos\phi\sin\psi & \sin\phi\\
+\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta & \cos\psi\cos\theta-\sin\phi\sin\psi\sin\theta & -\cos\phi\sin\theta\\
+-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta & \cos\theta\sin\phi\sin\psi+\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:89}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:85"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}=\boldsymbol{R}_{Android}\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+\sin\phi\\
+-\cos\phi\sin\theta\\
+\cos\phi\cos\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\label{eq:90}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:86"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\frac{^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}\right|} & =\frac{\boldsymbol{R}_{Android}\left\{ \left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)\times\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)\right\} }{\left|\left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)\times\left(\begin{array}{l}
+0\\
+0\\
+1
+\end{array}\right)\right|}=\boldsymbol{R}_{\text{Android }}\left(\begin{array}{c}
+1\\
+0\\
+0
+\end{array}\right)\label{eq:91}\\
+ & =\left(\begin{array}{c}
+\cos\phi\cos\psi\\
+\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta\\
+-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)\label{eq:92}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:87"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle \left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)} & {\scriptstyle =\left(\begin{array}{c}
+\sin\phi\\
+-\cos\phi\sin\theta\\
+\cos\phi\cos\theta
+\end{array}\right)\times\left(\begin{array}{c}
+\cos\phi\cos\psi\\
+\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta\\
+-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta
+\end{array}\right)}\label{eq:93}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+-\cos\phi\sin\theta(-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta)-\cos\phi\cos\theta(\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta)\\
+\cos\phi\cos\theta\cos\phi\cos\psi-\sin\phi(-\cos\psi\cos\theta\sin\phi+\sin\psi\sin\theta)\\
+\sin\phi(\cos\theta\sin\psi+\cos\psi\sin\phi\sin\theta)+\cos\phi\sin\theta\cos\phi\cos\psi
+\end{array}\right)}\label{eq:94}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+-\cos\phi\sin\psi\\
+\cos\psi\cos\theta-\sin\phi\sin\psi\sin\theta\\
+\cos\theta\sin\phi\sin\psi+\cos\psi\sin\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)}\label{eq:95}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Windows 8
+\end_layout
+
+\begin_layout Standard
+本节介绍文件
+\family typewriter
+orientation.c
+\family default
+中的函数
+\family typewriter
+feCompassWin8
+\family default
+的数学基础。
+\end_layout
+
+\begin_layout Standard
+初始方向的Windows 8坐标系中的加速计读数与
+\begin_inset Formula $z$
+\end_inset
+
+轴反平行，因为Windows 8坐标系为ENU，
+\begin_inset Formula $z$
+\end_inset
+
+轴向上，且重力(非加速度)为正。因此，方向矩阵的
+\begin_inset Formula $z$
+\end_inset
+
+轴列向量是旋转的
+\begin_inset Formula $z$
+\end_inset
+
+轴向量，假设加速度为零，则为归一化加速度计测量
+\begin_inset Formula $^{S}\boldsymbol{G}_{c}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)=\dfrac{-^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}\label{eq:96}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据校准的磁强计测量值估计的地磁向量在初始方向上指向北方(Windows 8坐标系为
+\begin_inset Formula $y$
+\end_inset
+
+方向)，在北(南)半球向下(向上)。磁强计和负加速度计测量值的归一化向量积给出了与两者正交的归一化向量，因此，该向量沿指向东的
+\begin_inset Formula $x$
+\end_inset
+
+轴对齐：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)=\dfrac{-^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}\right|}\label{eq:97}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，由于旋转矩阵是正交的，因此旋转矩阵
+\begin_inset Formula $z$
+\end_inset
+
+轴和
+\begin_inset Formula $x$
+\end_inset
+
+轴的向量积给出了方向矩阵的剩余
+\begin_inset Formula $y$
+\end_inset
+
+分量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)=\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)\label{eq:98}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+倾角
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+由加速度计和校准磁测量的标量积计算得出，给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{G}_{c}\cdot{}^{S}\boldsymbol{B}_{c}=\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|\sin\delta\Rightarrow\sin\delta=\dfrac{^{S}G_{cx}{}^{S}B_{cx}+{}^{S}G_{cy}{}^{S}B_{cy}+{}^{S}G_{cz}{}^{S}B_{cz}}{\left|^{S}\boldsymbol{G}_{c}\right|\left|^{S}\boldsymbol{B}_{c}\right|}\label{eq:99}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:96"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:98"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到的方向矩阵可显示为等于AN5017“航空航天、Android和Windows坐标系”方程(55)中导出的Windows 8方向矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{R}_{Win8}=\left(\begin{array}{ccc}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi & \cos\phi\sin\psi+\cos\psi\sin\phi\sin\theta & -\sin\phi\cos\theta\\
+-\cos\theta\sin\psi & \cos\theta\cos\psi & \sin\theta\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta & \sin\phi\sin\psi-\cos\phi\cos\psi\sin\theta & \cos\phi\cos\theta
+\end{array}\right)\label{eq:100}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:96"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{-^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{G}_{c}\right|}=-\boldsymbol{R}_{Win8}\left(\begin{array}{c}
+0\\
+0\\
+-1
+\end{array}\right)=\left(\begin{array}{c}
+-\sin\phi\cos\theta\\
+\sin\theta\\
+\cos\phi\cos\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\label{eq:101}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:97"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\frac{-^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}}{\left|^{S}\boldsymbol{B}_{c}\times{}^{S}\boldsymbol{G}_{c}\right|} & =\frac{-\boldsymbol{R}_{Win8}\left\{ \left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)\times\left(\begin{array}{c}
+0\\
+0\\
+-1
+\end{array}\right)\right\} }{\left|\left(\begin{array}{c}
+0\\
+\cos\delta\\
+-\sin\delta
+\end{array}\right)\times\left(\begin{array}{c}
+0\\
+0\\
+-1
+\end{array}\right)\right|}=\boldsymbol{R}_{Win8}\left(\begin{array}{c}
+1\\
+0\\
+0
+\end{array}\right)\label{eq:102}\\
+ & =\left(\begin{array}{c}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi\\
+-\cos\theta\sin\psi\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)\label{eq:103}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:98"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle \left(\begin{array}{c}
+R_{xz}\\
+R_{yz}\\
+R_{zz}
+\end{array}\right)\times\left(\begin{array}{c}
+R_{xx}\\
+R_{yx}\\
+R_{zx}
+\end{array}\right)} & {\scriptstyle =\left(\begin{array}{c}
+-\sin\phi\cos\theta\\
+\sin\theta\\
+\cos\phi\cos\theta
+\end{array}\right)\times\left(\begin{array}{c}
+\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi\\
+-\cos\theta\sin\psi\\
+\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta
+\end{array}\right)}\label{eq:104}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+\sin\theta(\cos\psi\sin\phi+\cos\phi\sin\psi\sin\theta)+\cos\phi\cos\theta\cos\theta\sin\psi\\
+\cos\phi\cos\theta(\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi)+\sin\phi\cos\theta(\cos\psi\sin\phi+\cos\phi\sin\psi)\\
+\sin\phi\cos\theta\cos\theta\sin\psi-\sin\theta(\cos\phi\cos\psi-\sin\phi\sin\theta\sin\psi)
+\end{array}\right)}\label{eq:105}\\
+ & {\scriptstyle =\left(\begin{array}{c}
+\cos\phi\sin\psi+\cos\psi\sin\phi\sin\theta\\
+\cos\theta\cos\psi\\
+\sin\phi\sin\psi-\cos\phi\cos\psi\sin\theta
+\end{array}\right)=\left(\begin{array}{c}
+R_{xy}\\
+R_{yy}\\
+R_{zy}
+\end{array}\right)}\label{eq:106}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

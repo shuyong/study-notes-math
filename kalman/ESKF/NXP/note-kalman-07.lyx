@@ -1,0 +1,3088 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+\def\tagform@#1{\maketag@@@{(#1)}}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "基于误差的标准卡尔曼滤波的推导"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+基于误差的标准卡尔曼滤波方程的推导
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在前面的文章里，我们使用了误差状态卡尔曼滤波器来估计机体的姿态。本文则尝试推导误差状态卡尔曼滤波方程，并讨论这种类型的卡尔曼滤波器的特点。需要说明的是，本文为简
+化起见，只是简单粗略地推导了基于误差的标准卡尔曼滤波方程，而在姿态估计中使用的是基于误差的扩展卡尔曼滤波方程，因为姿态变化是非线性系统。文档[2]描述了用于加速
+计、磁强计和陀螺仪数据融合的更专业的误差状态卡尔曼滤波器，又称间接互补卡尔曼滤波器，并且NXP还开放了源码。有兴趣的读者可以取来学习。
+\end_layout
+
+\begin_layout Subsection
+术语表
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="31" columns="2">
+<features islongtable="true" headBottomDL="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="left" valignment="top">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+定义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时的线性预测或状态矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{x}_{k}=\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{w}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}=\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的测量矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{k}=\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $E[\:]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+期望运算符 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时的卡尔曼滤波增益矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时线性预测(
+\series bold
+先验
+\series default
+)误差
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}$
+\end_inset
+
+的
+\series bold
+先验
+\series default
+协方差矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}=E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}\hat{\boldsymbol{x}}_{\varepsilon,k}^{-\mathrm{T}}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时卡尔曼(
+\series bold
+后验
+\series default
+)误差
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+的
+\series bold
+后验
+\series default
+协方差矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}=E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\hat{\boldsymbol{x}}_{\varepsilon,k}^{+\mathrm{T}}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+中加性噪声
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+的协方差矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{w,k}=E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+测量过程
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+中加性噪声
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+的协方差矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{v,k}=E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时测量过程
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+中的加性噪声。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时过程中感兴趣的
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的加性噪声。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+时间样本
+\begin_inset Formula $k$
+\end_inset
+
+时的过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的状态向量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{x}_{k}=\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{w}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的线性预测(
+\series bold
+先验
+\series default
+)估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}=\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的卡尔曼滤波(
+\series bold
+后验
+\series default
+)估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的线性预测(
+\series bold
+先验
+\series default
+)估计中的误差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}=\hat{\boldsymbol{x}}_{k}^{-}-\boldsymbol{x}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的
+\series bold
+后验
+\series default
+卡尔曼滤波估计误差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\hat{\boldsymbol{x}}_{k}^{+}-\boldsymbol{x}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+样本
+\begin_inset Formula $k$
+\end_inset
+
+时的测量过程。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{k}=\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta_{kj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+狄拉克 
+\begin_inset Formula $\delta$
+\end_inset
+
+函数。对于
+\begin_inset Formula $k=j$
+\end_inset
+
+则
+\begin_inset Formula $\delta_{k,j}=1$
+\end_inset
+
+，否则为
+\begin_inset Formula $0$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+解题思路
+\end_layout
+
+\begin_layout Standard
+有一类状态系统，我们可以建模，用积分方法估计出状态向量。但是该状态向量无法直接测量或很难测量。例如，机体的姿态，我们对于机体的初始姿态，可以通过水平仪和铅垂线确
+定，然后通过角速度积分的方式计算出机体的当前姿态。但是，当前姿态就很难实时测量出来。并且，机体姿态不是向量，也无法通过卡尔曼滤波直接进行最优估计。
+\end_layout
+
+\begin_layout Standard
+这时，我们需要换一种思路。假设我们建立的模型是符合物理规律的，只是有各种原因造成了理想模型和现实世界有误差。但是大方向是没有错误的，所以这种误差是相对稳定的，变
+化缓慢的。例如，我们汽车的运动符合牛顿定律，理想情况下用加速计就可以计算出汽车的速度和位移，但是有很多原因造成了估算和实际的误差。最后，得到这样的状态
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\underbrace{x}_{\text{True State}}=\underbrace{\hat{x}}_{\text{Nominal State("Large")}}+\underbrace{\delta x}_{\text{Error State("Small")}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以通过积分运动模型来不断更新名义状态，建模误差和过程噪声累积到误差状态。因为上面所说的原因，我们无法直接名义状态，但可以直接估计误差状态，并将其用作对标称
+状态的校正：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\underbrace{\hat{x}}_{\text{Estimate State}}=\underbrace{\hat{x}}_{\text{Nominal State("Large")}}-\underbrace{\delta x}_{\text{Error State("Small")}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+校正过后，此时
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+已经是最佳估计，则
+\begin_inset Formula $\delta x=0$
+\end_inset
+
+。因此在每次迭代结束时，当名义状态
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+经过校正已经是最佳估计，则误差
+\begin_inset Formula $\delta x=0$
+\end_inset
+
+。这就是每次迭代必须执行的重置操作。
+\end_layout
+
+\begin_layout Section
+数学引理
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:数学引理"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节列出为证明卡尔曼滤波所需的数学引理。
+\end_layout
+
+\begin_layout Subsection
+引理 1
+\end_layout
+
+\begin_layout Standard
+两个方阵
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{B}$
+\end_inset
+
+之和的迹等于各个迹的和。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{tr}(\boldsymbol{A}+\boldsymbol{B})=\mathrm{tr}(\boldsymbol{A})+\mathrm{tr}(\boldsymbol{B})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引理 2
+\end_layout
+
+\begin_layout Standard
+矩阵积
+\begin_inset Formula $\boldsymbol{C}=\boldsymbol{A}\boldsymbol{B}$
+\end_inset
+
+的迹对
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+的导数等于
+\begin_inset Formula $\boldsymbol{B}^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\{\mathrm{tr}(\boldsymbol{A}\boldsymbol{B})\}}{\partial\boldsymbol{A}}=\boldsymbol{B}^{\mathrm{T}}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引理 3
+\end_layout
+
+\begin_layout Standard
+矩阵积
+\begin_inset Formula $\boldsymbol{A}\boldsymbol{B}\boldsymbol{A}^{\mathrm{T}}$
+\end_inset
+
+的迹对
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+的导数等于
+\begin_inset Formula $\boldsymbol{A}\left(\boldsymbol{B}+\boldsymbol{B}^{\mathrm{T}}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{A}\boldsymbol{B}\boldsymbol{A}^{\mathrm{T}}\right)\right\} }{\partial A}=\boldsymbol{A}\left(\boldsymbol{B}+\boldsymbol{B}^{\mathrm{T}}\right)\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\boldsymbol{B}$
+\end_inset
+
+也是对称的，则：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{A}\boldsymbol{B}\boldsymbol{A}^{\mathrm{T}}\right)\right\} }{\partial\boldsymbol{A}}=2\boldsymbol{A}\boldsymbol{B}\text{ if }\boldsymbol{B}=\boldsymbol{B}^{\mathrm{T}}\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+卡尔曼滤波推导
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:卡尔曼滤波推导"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+过程模型
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器用线性和递归模型对感兴趣的
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+向量过程进行建模：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{k}=\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{w}_{k}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+有
+\begin_inset Formula $N$
+\end_inset
+
+个自由度，则
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $N\times N$
+\end_inset
+
+的线性预测矩阵(可能是时变的，但假定已知)，
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $N\times1$
+\end_inset
+
+的零均值白噪声向量。
+\end_layout
+
+\begin_layout Standard
+假设过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+是不可直接测量的，并且必须从过程
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+估计，过程
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+是可以测量的。
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+被建模为与
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+线性相关，并有加性零均值白噪声
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}_{k}=\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $M\times1$
+\end_inset
+
+向量，
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $M\times N$
+\end_inset
+
+矩阵(可能是时变的，但假定已知)，
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $M\times1$
+\end_inset
+
+噪声向量。由于噪声向量
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+是零均值白噪声过程，它们的期望向量为零，并且它们的协方差矩阵在不同时间
+\begin_inset Formula $j$
+\end_inset
+
+和
+\begin_inset Formula $k$
+\end_inset
+
+是不相关的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\boldsymbol{w}_{k}\right]=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+E\left[\boldsymbol{v}_{k}\right]=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathrm{cov}\left\{ \boldsymbol{w}_{k},\boldsymbol{w}_{j}\right\} =E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{j}^{\mathrm{T}}\right]=\boldsymbol{Q}_{w,k}\delta_{kj}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathrm{cov}\left\{ \boldsymbol{v}_{k},\boldsymbol{v}_{j}\right\} =E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{j}^{\mathrm{T}}\right]=\boldsymbol{Q}_{v,k}\delta_{kj}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据定义，协方差矩阵是对称的，但不一定是对角的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{w,k}^{\mathrm{T}}=\left\{ E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}{}^{\mathrm{T}}\right]\right\} ^{\mathrm{T}}=E\left[\left(\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right)^{\mathrm{T}}\right]=E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{j}^{\mathrm{T}}\right]=\boldsymbol{Q}_{w,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差矩阵
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+不必是固定的，可以而且通常会随时间而变化。
+\end_layout
+
+\begin_layout Subsection
+推导
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器的目标是从 i)上一次迭代的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+的外推和 ii)当前测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+一起，计算一个无偏的基本过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的一个
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{k-1}^{+}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+时变卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}^{\prime}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+定义了前一次迭代卡尔曼滤波估计
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+和当前测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+的相对权重。如果测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+具有更低噪声，则与外推分量
+\begin_inset Formula $\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+相比，测量项
+\begin_inset Formula $\boldsymbol{K}_{k}\boldsymbol{z}_{k}$
+\end_inset
+
+具有更高的权重，反之亦然。因此，卡尔曼滤波器是一种时变的递归滤波器。
+\end_layout
+
+\begin_layout Subsubsection
+无偏估计约束(确定
+\begin_inset Formula $\boldsymbol{K}_{k}^{\prime}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的无偏估计，
+\series bold
+后验
+\series default
+卡尔曼滤波误差
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+的期望值必须为零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\right]=E\left[\hat{\boldsymbol{x}}_{k}^{+}-\boldsymbol{x}_{k}\right]=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中代入
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\hat{\boldsymbol{x}}_{k}^{+}-\boldsymbol{x}_{k}=\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{k-1}^{+}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}-\boldsymbol{x}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{k-1}^{+}+\boldsymbol{K}_{k}\left(\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}\right)-\boldsymbol{x}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中代入
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+并重新排列得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{+} & =\boldsymbol{K}_{k}^{\prime}\left(\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}+\boldsymbol{x}_{k-1}\right)+\boldsymbol{K}_{k}\left\{ \boldsymbol{H}_{k}\left(\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{w}_{k}\right)+\boldsymbol{v}_{k}\right\} -\left(\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{w}_{k}\right)\\
+ & =\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}+\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}-\boldsymbol{A}_{k}+\boldsymbol{K}_{k}^{\prime}\right)\boldsymbol{x}_{k-1}+\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}-\boldsymbol{I}\right)\boldsymbol{w}_{k}+\boldsymbol{K}_{k}\boldsymbol{v}_{k}\label{eq:17}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+取方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的期望值并应用无偏估计约束得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\right]=E\left[\boldsymbol{K}_{k}^{\prime}\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}\right]+E\left[\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}-\boldsymbol{A}_{k}+\boldsymbol{K}_{k}^{\prime}\right)\boldsymbol{x}_{k-1}\right]+E\left[\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}-\boldsymbol{I}\right)\boldsymbol{w}_{k}\right]+E\left[\boldsymbol{K}_{k}\boldsymbol{v}_{k}\right]=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于噪声矢量
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+是零均值，并且与同时迭代的卡尔曼矩阵不相关，因此如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}-\boldsymbol{I}\right)\boldsymbol{w}_{k}\right]=E\left[\boldsymbol{K}_{k}\boldsymbol{v}_{k}\right]=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外假设过程
+\begin_inset Formula $\boldsymbol{x}_{k-1}$
+\end_inset
+
+独立于迭代
+\begin_inset Formula $k$
+\end_inset
+
+时缓慢变化的矩阵
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{K}_{k}^{\prime}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}-\boldsymbol{A}_{k}+\boldsymbol{K}_{k}^{\prime}\right)\boldsymbol{x}_{k-1}\right]=\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}-\boldsymbol{A}_{k}+\boldsymbol{K}_{k}^{\prime}\right)E\left[\boldsymbol{x}_{k-1}\right]=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+通常不是一个零均值过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}-\boldsymbol{A}_{k}+\boldsymbol{K}_{k}^{\prime}=\boldsymbol{0}\Rightarrow\boldsymbol{K}_{k}^{\prime}=\boldsymbol{A}_{k}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{A}_{k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{A}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\boldsymbol{K}_{k}^{\prime}$
+\end_inset
+
+，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}\label{eq:22}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\shape italic
+先验
+\shape default
+估计
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+先验
+\series default
+卡尔曼滤波估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+是将线性预测矩阵
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+应用于上一次迭代的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+的结果：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{-}=\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}\quad\text{ Kalman equation (\ref{eq:A}) }\label{eq:23}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\shape italic
+后验
+\shape default
+估计的定义
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}\quad\text{Kalman equation (\ref{eq:D})}\label{eq:24}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+等效形式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\left(\boldsymbol{z}_{k}-\boldsymbol{H}_{k}\hat{\boldsymbol{x}}_{k}^{-}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，项
+\begin_inset Formula $\boldsymbol{H}_{k}\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+可解释为测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+的
+\series bold
+先验
+\series default
+估计值
+\begin_inset Formula $\hat{\boldsymbol{z}}_{k}^{-}$
+\end_inset
+
+，给出方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的另一形式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\left(\boldsymbol{z}_{k}-\hat{\boldsymbol{z}}_{k}^{-}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+做为
+\begin_inset Formula $\boldsymbol{P}_{k-1}^{+}$
+\end_inset
+
+的函数
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+先验
+\series default
+和
+\series bold
+后验
+\series default
+误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{-}=\mathrm{cov}\left\{ \hat{\boldsymbol{x}}_{\varepsilon,k}^{-},\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}\right\} =E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}\hat{\boldsymbol{x}}_{\varepsilon,k}^{-\mathrm{T}}\right]=E\left[\left(\hat{\boldsymbol{x}}_{k}^{-}-\boldsymbol{x}_{k}\right)\left(\hat{\boldsymbol{x}}_{k}^{-}-\boldsymbol{x}_{k}\right)^{\mathrm{T}}\right]\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{+}=\mathrm{cov}\left\{ \hat{\boldsymbol{x}}_{\varepsilon,k}^{+},\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\right\} =E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\hat{\boldsymbol{x}}_{\varepsilon,k}^{+\mathrm{T}}\right]=E\left[\left(\hat{\boldsymbol{x}}_{k}^{+}-\boldsymbol{x}_{k}\right)\left(\hat{\boldsymbol{x}}_{k}^{+}-\boldsymbol{x}_{k}\right)^{\mathrm{T}}\right]\label{eq:28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+的定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+的定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出了将当前
+\series bold
+先验
+\series default
+误差协方差
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+与上一次迭代的
+\series bold
+后验
+\series default
+误差协方差估计
+\begin_inset Formula $\boldsymbol{P}_{k-1}^{+}$
+\end_inset
+
+相关的表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{P}_{k}^{-} & =E\left[\left(\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}-\boldsymbol{w}_{k}\right)\left(\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{A}_{k}\boldsymbol{x}_{k-1}-\boldsymbol{w}_{k}\right)^{\mathrm{T}}\right]\\
+ & =E\left[\left\{ \boldsymbol{A}_{k}\left(\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{x}_{k-1}\right)-\boldsymbol{w}_{k}\right\} \left\{ \boldsymbol{A}_{k}\left(\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{x}_{k-1}\right)-\boldsymbol{w}_{k}\right\} ^{\mathrm{T}}\right]\\
+ & =\boldsymbol{A}_{k}E\left[\left(\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{x}_{k-1}\right)\left(\hat{\boldsymbol{x}}_{k-1}^{+}-\boldsymbol{x}_{k-1}\right)^{\mathrm{T}}\right]\boldsymbol{A}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\boldsymbol{P}_{k}^{-}=\boldsymbol{A}_{k}\boldsymbol{P}_{k-1}^{+}\boldsymbol{A}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}\quad\text{ Kalman equation (\ref{eq:B1}) }
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+最小误差协方差约束(确定
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+通过
+\series bold
+后验
+\series default
+误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+的迹最小化
+\series bold
+后验
+\series default
+误差
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+方差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{+\mathrm{T}}\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}\right]=\mathrm{tr}\left(\boldsymbol{P}_{k}^{+}\right)\label{eq:33}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到了
+\series bold
+后验
+\series default
+误差和
+\series bold
+先验
+\series default
+误差之间的关系：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\hat{\boldsymbol{x}}_{k}^{+}=\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}+\boldsymbol{x}_{k} & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\left(\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{x}_{k}\right)+\boldsymbol{K}_{k}\left(\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}\right)\\
+\Rightarrow\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}+\boldsymbol{x}_{k} & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{x}_{k}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{K}_{k}\left(\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}\right)\\
+\Rightarrow\hat{\boldsymbol{x}}_{\varepsilon,k}^{+} & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{K}_{k}\boldsymbol{v}_{k}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将该结果代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\series bold
+后验
+\series default
+协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+的定义中，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{P}_{k}^{+} & =E\left[\left\{ \left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{K}_{k}\boldsymbol{v}_{k}\right\} \left\{ \left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{K}_{k}\boldsymbol{v}_{k}\right\} ^{\mathrm{T}}\right]\\
+ & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)E\left[\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}{}^{\mathrm{T}}\right]\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)^{\mathrm{T}}+\boldsymbol{K}_{k}E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]\boldsymbol{K}_{k}^{\mathrm{T}}\\
+ & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k}^{-}\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)^{\mathrm{T}}+\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}\boldsymbol{K}_{k}^{\mathrm{T}}\label{eq:39}\\
+ & =\boldsymbol{P}_{k}^{-}-\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}+\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}+\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}\boldsymbol{K}_{k}^{\mathrm{T}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波增益
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+是使
+\series bold
+后验
+\series default
+误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+的迹最小化，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+\begin_inset Formula 
+\begin{equation}
+{\textstyle \frac{\partial}{\partial\boldsymbol{K}_{k}}\mathrm{tr}\left(\boldsymbol{P}_{k}^{+}\right)=\frac{\partial}{\partial\boldsymbol{K}_{k}}\left\{ \mathrm{tr}\left(\boldsymbol{P}_{k}^{-}\right)-\mathrm{tr}\left(\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\right)-\mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\right)+\mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\right)+\mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}\boldsymbol{K}_{k}^{\mathrm{T}}\right)\right\} =\boldsymbol{0}}\label{eq:41}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第一项
+\begin_inset Formula $\mathrm{tr}\left(\boldsymbol{P}_{k}^{-}\right)$
+\end_inset
+
+不依赖于
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{P}_{k}^{-}\right)\right\} }{\partial\boldsymbol{K}_{k}}=\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{A}_{k}\boldsymbol{P}_{k-1}^{+}\boldsymbol{A}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}\right)\right\} }{\partial\boldsymbol{K}_{k}}=\boldsymbol{0}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为矩阵的迹显然不受转置的影响，所以可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的第二项进行转置和简化，从而得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}{}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\right)\right\} }{\partial\boldsymbol{K}_{k}}=\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\right)\right\} }{\partial\boldsymbol{K}_{k}}=\left(\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\right)^{\mathrm{T}}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\label{eq:43}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+是对称的这一事实，可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化第四项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\right)\right\} }{\partial\boldsymbol{K}_{k}}=\boldsymbol{K}_{k}\left\{ \boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+\left(\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\right)^{\mathrm{T}}\right\} =2\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\label{eq:44}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一项也可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以及
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+的对称性来简化：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\left\{ \mathrm{tr}\left(\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}\boldsymbol{K}_{k}^{\mathrm{T}}\right)\right\} }{\partial\boldsymbol{K}_{k}}=2\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}\label{eq:45}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到最优卡尔曼滤波器增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+的表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+-2\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+2\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+2\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\boldsymbol{K}_{k}\left(\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{v,k}\right)=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\label{eq:47}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\boldsymbol{K}_{k}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\left(\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{v,k}\right)^{-1}\quad\text{Kalman equation (\ref{eq:C})}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+做为
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+的函数
+\end_layout
+
+\begin_layout Standard
+重新排列方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\label{eq:49}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:49"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\boldsymbol{K}_{k}\boldsymbol{Q}_{v,k}$
+\end_inset
+
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:39"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{P}_{k}^{+} & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k}^{-}\left(\boldsymbol{I}-\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\right)+\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\\
+ & =\boldsymbol{P}_{k}^{-}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}-\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}+\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}+\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\boldsymbol{K}_{k}^{\mathrm{T}}\\
+\Rightarrow\boldsymbol{P}_{k}^{+} & =\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k}^{-}\quad\text{Kalman equation (\ref{eq:E})}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就完成了标准卡尔曼滤波方程的推导。
+\end_layout
+
+\begin_layout Subsection
+标准卡尔曼方程
+\end_layout
+
+\begin_layout Standard
+本节简单地重新列出了上一节中导出的关键卡尔曼滤波方程。
+\end_layout
+
+\begin_layout Subsubsection
+卡尔曼方程(A)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼方程(A)"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+线性预测(
+\series bold
+先验
+\series default
+)估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+是通过将线性预测矩阵
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+应用于前一样本的卡尔曼(
+\series bold
+后验
+\series default
+)滤波器估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+ 来实现的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{-}=\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{k-1}^{+}\tag{A}\label{eq:A}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+卡尔曼方程(B)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼方程(B)"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后使用模型矩阵
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+和噪声矩阵
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+更新
+\series bold
+先验
+\series default
+(线性外推)误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{-}=\boldsymbol{A}_{k}\boldsymbol{P}_{k-1}^{+}\boldsymbol{A}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}\tag{B1}\label{eq:B1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以将卡尔曼方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:B1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:E"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)组合以给出
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+的递归更新，而无需显式计算卡尔曼方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:E"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\series bold
+后验
+\series default
+误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{-}=\boldsymbol{A}_{k}\left(\boldsymbol{I}-\boldsymbol{K}_{k-1}\boldsymbol{C}_{k-1}\right)\boldsymbol{P}_{k-1}^{-}\boldsymbol{A}_{k}{}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}\tag{B2}\label{eq:B2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+的唯一目的是允许计算卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+，以确定
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+。因为上一次迭代结束后，
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}$
+\end_inset
+
+已经应用到
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k-1}^{+}$
+\end_inset
+
+ 中，所以有一次重置操作，
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}\equiv0$
+\end_inset
+
+，所以在新的迭代开始时，无需预测(
+\series bold
+先验
+\series default
+)估计误差。
+\end_layout
+
+\begin_layout Subsubsection
+卡尔曼方程(C)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼方程(C)"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+更新为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\left(\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{v,k}\right)^{-1}\tag{C}\label{eq:C}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+卡尔曼方程(D)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼方程(D)"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波(
+\series bold
+后验
+\series default
+)估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+是根据当前
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+和当前测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+计算得到。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\left(\boldsymbol{z}_{k}-\boldsymbol{H}_{k}\hat{\boldsymbol{x}}_{k}^{-}\right)=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}\tag{D}\label{eq:D}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+卡尔曼方程(E)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼方程(E)"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+更新
+\series bold
+后验
+\series default
+卡尔曼误差协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+，并为下一次迭代做好准备。如果以递归方式更新
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+，则可以跳过此方程。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k}^{-}\tag{E}\label{eq:E}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+极限情况
+\end_layout
+
+\begin_layout Standard
+根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:C"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，当测量噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+相对于过程噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+减小时，卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+满足：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}\boldsymbol{H}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\Rightarrow\boldsymbol{K}_{k}\boldsymbol{H}_{k}=\boldsymbol{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+仅依赖于测量
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\boldsymbol{z}_{k}=\boldsymbol{K}_{k}\boldsymbol{z}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当测量噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+相对于过程噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+增加时，卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+接近零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}=\boldsymbol{P}_{k}^{-}\boldsymbol{H}_{k}^{\mathrm{T}}\left(\boldsymbol{Q}_{v,k}\right)^{-1}=\boldsymbol{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+后验
+\series default
+过程估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{+}$
+\end_inset
+
+然后近似于
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k}^{-}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k}^{+}=\hat{\boldsymbol{x}}_{k}^{-}+\boldsymbol{K}_{k}\left(\boldsymbol{z}_{k}-\boldsymbol{H}_{k}\hat{\boldsymbol{x}}_{k}^{-}\right)=\hat{\boldsymbol{x}}_{k}^{-}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+基于误差的卡尔曼滤波器，适用于这样的情况：
+\end_layout
+
+\begin_layout Itemize
+可以将状态分解为“大的”名义状态和“小的”误差状态。
+\end_layout
+
+\begin_layout Itemize
+“大的”名义状态无法或很难直接测量，而“小的”误差状态可测量且相对稳定，变化缓慢。
+\end_layout
+
+\begin_layout Itemize
+“大的”名义状态因为过度参数化，存在约束，所以不是向量，所以无法用卡尔曼滤波器进行最优估计。而“小的”误差状态是最小参数化，无约束，所以是向量，所以可以用卡尔曼
+滤波器进行最优估计。
+\end_layout
+
+\begin_layout Standard
+基于误差的卡尔曼滤波器，有别于其它种类的卡尔曼滤波器有如下特点：
+\end_layout
+
+\begin_layout Itemize
+使用局部线性化来估计误差状态，并使用它来校正名义状态，使得名义状态也是最优估计。
+\end_layout
+
+\begin_layout Itemize
+每次迭代结束，误差状态校正名义状态之后，名义状态已经是最优估计，所以系统要有重置操作，
+\begin_inset Formula $\delta x\equiv0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+基于误差的卡尔曼滤波器，有如下优点：
+\end_layout
+
+\begin_layout Itemize
+误差状态参数最小 (即，其参数数量与自由度相同)，避免了过度参数化 (或冗余) 的相关问题，以及相关协方差矩阵奇异性的风险，这通常是由强制约束引起的。
+ 
+\end_layout
+
+\begin_layout Itemize
+误差状态系统总是在接近原点的位置运行，因此远离可能的参数奇异性、万向节 锁问题，或类似的问题，从而提供保证在所有时间里线性化有效性始终保持不变。
+ 
+\end_layout
+
+\begin_layout Itemize
+误差状态总是很小，这意味着所有二阶乘积都可以忽略不计。这使得 Jacobians 矩 阵的计算变得非常简单和快速。有些 Jacobians 矩阵数值甚至可能是常
+数或等于 可用状态量。 
+\end_layout
+
+\begin_layout Itemize
+误差动力学变化很慢，因为所有大信号动力学已集成在标称状态。这意味着我们 可以以低于预测的速度应用 KF 修正 (这是观测误差的唯一方法)。
+\end_layout
+
+\begin_layout Itemize
+相对应的，误差状态因为参数最小，又围绕原点运行，所以性能比普通EKF性能更好。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+AN5018 Basic Kalman Filter Theory - 
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP Sensor Fusion Library"
+target "http://www.nxp.com/sensorfusion"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+AN5023 Sensor Fusion Kalman Filters - 
+\begin_inset CommandInset href
+LatexCommand href
+name "NXP Sensor Fusion Library"
+target "http://www.nxp.com/sensorfusion"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "The Error State Extended Kalman Filter"
+target "https://www.youtube.com/watch?v=T1xfiQRXhWw"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

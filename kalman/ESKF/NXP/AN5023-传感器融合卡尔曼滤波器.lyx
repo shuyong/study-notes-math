@@ -1,0 +1,8756 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "传感器融合卡尔曼滤波器"
+\pdf_author "NXP"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen true
+\pdf_bookmarksopenlevel 3
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+传感器融合卡尔曼滤波器
+\end_layout
+
+\begin_layout Author
+NXP
+\end_layout
+
+\begin_layout Date
+2016年6月21
+\end_layout
+
+\begin_layout Abstract
+本应用说明记录了实现 i) 加速度计、磁强计和陀螺仪数据以及 ii) 加速度计和陀螺仪数据融合的两个卡尔曼滤波器所使用的数学。
+\end_layout
+
+\begin_layout Section
+介绍
+\end_layout
+
+\begin_layout Subsection
+总结
+\end_layout
+
+\begin_layout Standard
+本应用说明记录了实现 i) 加速度计、磁强计和陀螺仪数据以及 ii) 加速度计和陀螺仪数据融合的两个卡尔曼滤波器所使用的数学。这两种算法在用于Windows的N
+XP传感器融合工具箱中被标记为“游戏手机”和“陀螺稳定罗盘”。NXP应用说明(AN5018)卡尔曼滤波器的基本理论介绍了卡尔曼滤波器的数学。传感器融合卡尔曼滤波
+器是一个变种，称为“互补”，其中方向估计由陀螺仪和加速度计和磁强计的组合独立提供，而“间接”，因为卡尔曼滤波器跟踪过程误差而不是基础过程本身。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:估计加速度和磁干扰"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节描述了传感器噪声、加速度和磁干扰水平的估计，影响 i) 重力向量的加速度计估计，以及 ii) 地磁向量的磁强计估计。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:重力和地磁倾斜误差四元数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了四元数方向误差的表达式 i) 陀螺仪和加速度计之间的重力向量估计值，以及 ii) 陀螺仪和磁强计之间的地磁向量估计值。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:陀螺仪传感器模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节记录了陀螺仪传感器零速率偏移误差的模型，零速率偏移误差是陀螺仪方向估计误差的主要来源。与加速度计不同，陀螺仪本质上对加速度不敏感，与磁强计不同，它对磁场完全
+不敏感。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了卡尔曼滤波器，该滤波器使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:估计加速度和磁干扰"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的噪声估计值校正第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:重力和地磁倾斜误差四元数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中推导的重力和地磁误差四元数，以加权陀螺仪、加速度计和磁强计测量的相对置信度。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计与陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节的卡尔曼滤波器的简化变体，该滤波器仅用于加速度计和陀螺仪传感器系统。这里，只有重力误差四元数根据加速度计和陀螺仪测量的相对置信度进行更新。
+\end_layout
+
+\begin_layout Subsection
+术语
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="87" columns="2">
+<features islongtable="true" headBottomDL="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="left" valignment="top">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+定义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+右上标 
+\begin_inset Formula $- $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示卡尔曼滤波器校正前的
+\series bold
+先验
+\series default
+估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+右上标
+\begin_inset Formula $+$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示应用卡尔曼滤波器后的
+\series bold
+后验
+\series default
+估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+下标
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示误差分量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+下标
+\begin_inset Formula $k$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+指采样迭代
+\begin_inset Formula $k$
+\end_inset
+
+时。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+右下标
+\begin_inset Formula $G$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示加速度计测量或估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+右下标
+\begin_inset Formula $M$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示磁强计测量或估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+右下标
+\begin_inset Formula $Y$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示陀螺仪测量或估计。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+左上标
+\begin_inset Formula $G$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示测量或估计在全局(地球)坐标系
+\begin_inset Formula $\left\{ G\right\} $
+\end_inset
+
+中。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+左上标
+\begin_inset Formula $S$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+表示测量值或估计值在传感器坐标系
+\begin_inset Formula $\left\{ S\right\} $
+\end_inset
+
+中。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{G}\boldsymbol{a}_{k}$
+\end_inset
+
+,
+\begin_inset Formula $^{S}\boldsymbol{a}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时全局和传感器坐标系中的加速度(单位
+\begin_inset Formula $g$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时误差过程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的线性预测或状态矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪零速率偏移向量(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\boldsymbol{b}_{\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪零速率偏移误差向量(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+局部地磁场强度(单位：
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $^{S}\boldsymbol{B}_{c,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时传感器坐标系中校准的磁强计测量值(单位：
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\boldsymbol{C}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时将测量误差过程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+与基本误差过程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+相关联的测量矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}=\boldsymbol{C}_{k}\boldsymbol{x}_{\varepsilon,k}+\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{G}\boldsymbol{d}_{k}$
+\end_inset
+
+,
+\begin_inset Formula $^{S}\boldsymbol{d}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时全局和传感器坐标系中的磁干扰(单位
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $E\left[\:\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+期望运算符
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在所有测量坐标系中的重力向量，大小为
+\begin_inset Formula $1g$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{G}\boldsymbol{g}_{k}$
+\end_inset
+
+,
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时全局和传感器坐标系中的重力向量(单位
+\begin_inset Formula $g$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $^{S}\boldsymbol{G}_{c,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时传感器坐标系中校准的加速度计测量值(单位
+\begin_inset Formula $g$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3\times3$
+\end_inset
+
+单位矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{I}_{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n\times n$
+\end_inset
+
+单位矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的卡尔曼滤波器增益矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{G}\boldsymbol{m}_{k}$
+\end_inset
+
+,
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时，全局和传感器坐标系中的地磁向量(单位：
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+归一化旋转轴
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{O}_{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n\times n$
+\end_inset
+
+零矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+先验
+\series default
+的协方差矩阵。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+后验
+\series default
+协方差矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q=\left\{ q_{0},q_{1},q_{2},q_{3}\right\} $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+坐标系旋转导致的从全局坐标系到传感器坐标系的方向四元数转换
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+方向四元数在迭代
+\begin_inset Formula $k$
+\end_inset
+
+从全局坐标系到传感器坐标系的转换
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{q}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+先验
+\series default
+的迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的四元数方向估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{q}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+后验
+\series default
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的四元数方向估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{zg\varepsilon,k}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+测量旋转四元数，将加速度计和重力向量的
+\series bold
+先验
+\series default
+(陀螺仪)估计之间的误差联系起来。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{zg\varepsilon,k}$
+\end_inset
+
+是完整四元数，
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+是向量分量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{zm\varepsilon,k}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+测量旋转四元数，将磁强计和地磁向量的
+\series bold
+先验
+\series default
+(陀螺仪)估计之间的误差联系起来。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ 
+\begin_inset Formula $q_{zm\varepsilon,k}$
+\end_inset
+
+是完整四元数，
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+是向量分量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{g\varepsilon,k}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{q}_{g\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在卡尔曼滤波器中，相对于真实重力向量的方向倾斜误差四元数。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{g\varepsilon,k}$
+\end_inset
+
+是完整四元数，
+\begin_inset Formula $\boldsymbol{q}_{g\varepsilon,k}$
+\end_inset
+
+是向量分量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{m\varepsilon,k}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{q}_{m\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在卡尔曼滤波器中，相对于真实地磁向量的方向倾斜误差四元数。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $q_{m\varepsilon,k}$
+\end_inset
+
+是完整四元数，
+\begin_inset Formula $\boldsymbol{q}_{m\varepsilon,k}$
+\end_inset
+
+是向量分量。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{a,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的加速度方差(单位
+\begin_inset Formula $g^{2}$
+\end_inset
+
+)：
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{a,k}=E\left[\left|^{S}\boldsymbol{a}_{k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{d,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的磁扰方差(单位
+\begin_inset Formula $\mathrm{\mu T}^{2}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{d,k}=E\left[\left|^{S}\boldsymbol{d}_{k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vB,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+磁强计传感器在迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的噪声方差(单位
+\begin_inset Formula $\mathrm{\mu T}^{2}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vB,k}=E\left[\left|\boldsymbol{v}_{B,k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vG,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+加速度计传感器迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的噪声方差(单位
+\begin_inset Formula $g^{2}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vG,k}=E\left[\left|\boldsymbol{v}_{G,k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vY,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪传感器噪声方差(单位
+\begin_inset Formula $\deg^{2}/s^{2}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{vY,k}=E\left[\left|\boldsymbol{v}_{Y,k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{wb,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪零速率偏移随机行走的协方差(单位
+\begin_inset Formula $\deg^{2}/\sec^{2}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q_{wb,k}=E\left[\left|\boldsymbol{w}_{b,k}\right|^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在基本过程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+中的噪声过程
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+的协方差矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{w,k}=\mathrm{cov}\left\{ \boldsymbol{w}_{k},\boldsymbol{w}_{k}\right\} =E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在测量过程
+\begin_inset Formula $\boldsymbol{z}$
+\end_inset
+
+中的测量噪声过程
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+的协方差矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{Q}_{v,k}=\mathrm{cov}\left\{ \boldsymbol{v}_{k},\boldsymbol{v}_{k}\right\} =E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时从全局到传感器坐标系的旋转或方向矩阵转换
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+先验
+\series default
+的迭代
+\begin_inset Formula $k$
+\end_inset
+
+时方向矩阵
+\begin_inset Formula $\boldsymbol{R}_{k}$
+\end_inset
+
+的估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+后验
+\series default
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时方向矩阵
+\begin_inset Formula $\boldsymbol{R}_{k}$
+\end_inset
+
+的估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+,
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+任意向量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+卡尔曼滤波器测量误差过程
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+中的加性噪声：
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}=\boldsymbol{C}_{k}\boldsymbol{x}_{\varepsilon,k}+\boldsymbol{v}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{B,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+磁强计传感器迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的加性噪声(单位：
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{G,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+加速度计传感器迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的加性噪声(单位
+\begin_inset Formula $g$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{Y,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪传感器加性噪声(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{qzg,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时测量重力倾斜的误差四元数
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+的噪声
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{qzm,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时测量地磁倾斜的误差四元数
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+的噪声
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+基本卡尔曼滤波过程
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的误差中的加性噪声
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}=\boldsymbol{A}_{k}\boldsymbol{x}_{\varepsilon,k-1}+\boldsymbol{w}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时陀螺仪偏移随机行走的驱动噪声(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的卡尔曼滤波误差过程
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+卡尔曼滤波误差过程
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的
+\series bold
+先验
+\series default
+估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+卡尔曼滤波误差过程
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的
+\series bold
+后验
+\series default
+估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{S}\boldsymbol{Y}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $k$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+时的陀螺仪测量值(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的测量误差向量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+从
+\begin_inset Formula $\deg/s$
+\end_inset
+
+到弧度的比例常量：
+\begin_inset Formula $\alpha=\left(\dfrac{\pi\delta t}{180}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时的地磁倾角(
+\begin_inset Formula $\deg$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta_{k}^{6DOF}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时6DOF(加速度计和磁强计)估计的地磁倾角
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时
+\series bold
+后验
+\series default
+(陀螺仪)估计的地磁倾角
+\begin_inset Formula $\delta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\delta t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+卡尔曼滤波器的采样间隔(单位
+\begin_inset Formula $s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\eta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+旋转角度(度或弧度)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+真实角速度(
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\omega}_{k}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+角速度
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+(
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)的
+\series bold
+先验
+\series default
+估计
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+软件功能
+\end_layout
+
+\begin_layout Standard
+表1.
+ 传感器融合软件功能
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Functions
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Section
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quaternion Algebra (
+\family typewriter
+orientation.c
+\family default
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void fveqconjgquq
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+(struct fquaternion *pfq, float fu[], float fv[])
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nine Axis Sensor Fusion (
+\family typewriter
+fusion.c
+\family default
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void fInit_9DOF_GBY_KALMAN
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+(struct SV_9DOF_GBY_KALMAN *pthisSV, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+AccelSensor *pthisAccel, struct MagSensor 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+*pthisMag, struct GyroSensor *pthisGyro, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+MagCalibration *pthisMagCal);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void fRun_9DOF_GBY_KALMAN 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+(struct SV_9DOF_GBY_KALMAN *pthisSV, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+AccelSensor *pthisAccel, struct MagSensor 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+*pthisMag, struct GyroSensor *pthisGyro, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+MagCalibration *pthisMagCal);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Six Axis Sensor Fusion (
+\family typewriter
+fusion.c
+\family default
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void fInit_6DOF_GY_KALMAN
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+(struct SV_6DOF_GY_KALMAN *pthisSV, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+AccelSensor *pthisAccel, struct GyroSensor 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+*pthisGyro);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+void fRun_6DOF_GY_KALMAN 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+(struct SV_6DOF_GY_KALMAN *pthisSV, struct 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+AccelSensor *pthisAccel, struct GyroSensor 
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+
+*pthisGyro);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+估计加速度和磁干扰
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:估计加速度和磁干扰"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引言
+\end_layout
+
+\begin_layout Standard
+本节介绍了估计影响重力向量的加速度计估计的噪声水平和地磁向量的磁强计估计的算法。然后将估计的噪声水平用于稍后描述的卡尔曼滤波器，以确定应用于陀螺仪、加速度计和磁
+强计传感器数据的相对权重。
+\end_layout
+
+\begin_layout Standard
+静止的加速度计传感器具有高频率、样品对样品、大约
+\begin_inset Formula $3\:mg$
+\end_inset
+
+的测量噪声和
+\begin_inset Formula $30\:mg$
+\end_inset
+
+左右的方向相关误差，这些误差是由各种来源引起的，包括 i) 传感器信号链中的非线性 ii) 未完全校准的偏移 iii) 未完全校准的增益以及 iv)
+ 未校正的交叉坐标轴干扰。此外，在游戏应用中，加速度计还将体验到高达
+\begin_inset Formula $8000\:mg$
+\end_inset
+
+的巨大且快速变化的物理加速度，在
+\begin_inset Formula $2000\:dps$
+\end_inset
+
+时方向可能发生变化。因此，影响加速度计重力向量估计值的噪声水平变化约为
+\begin_inset Formula $60\:dB$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+静止的磁强计传感器也具有高频率、样品对样品、
+\begin_inset Formula $1$
+\end_inset
+
+或
+\begin_inset Formula $2\:\mathrm{\mu T}$
+\end_inset
+
+的测量噪声和一些
+\begin_inset Formula $\mathrm{\mu T}$
+\end_inset
+
+的低频方向相关误差，这是由于对PCB上的磁源产生的硬铁和软铁干扰的不完全估计造成的。磁干扰是由外部磁场源(如磁铁)引起的，与固定在PCB坐标系中的硬铁和软铁磁干
+扰不同，当磁铁靠近时，磁干扰的变化范围为
+\begin_inset Formula $0$
+\end_inset
+
+到
+\begin_inset Formula $1000\:\mathrm{\mu T}$
+\end_inset
+
+或更大。因此，影响地磁向量磁强计估计的噪声水平也会变化约
+\begin_inset Formula $60\:dB$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在任何位置，重力向量都是常量，向下指向，地磁向量是常量，在北(南)半球指向北和向下(向上)。当由加速度计和磁强计(针对硬铁和软铁效应进行校准)在旋转至任意方向后
+进行测量时，两个传感器测量的这两个参考向量的量级是恒定的。因此，在旋转传感器坐标系中测量的重力向量的轨迹是半径为
+\begin_inset Formula $1g$
+\end_inset
+
+的球体(在没有加速度或加速度计校准噪声的情况下)，同样，在旋转传感器坐标系中测量的地磁向量的轨迹是半径等于地磁场强度
+\begin_inset Formula $B$
+\end_inset
+
+的球体(同样，假设无磁干扰或磁校准噪声)。
+\end_layout
+
+\begin_layout Standard
+加速度计和磁强计传感器噪声均为零平均值，并倾向于将测量值分别从
+\begin_inset Formula $1g$
+\end_inset
+
+的重力和地磁球上偏移，从而产生径向误差。
+\end_layout
+
+\begin_layout Standard
+加速度计(增益、偏移和横轴)和磁强计(硬铁和软铁)的校准误差显示为方向相关的凸起扭曲了从球体到椭球体的测量轨迹。任何方向的校准误差越大，与
+\begin_inset Formula $1g$
+\end_inset
+
+重力和地磁球的径向误差偏差越大。
+\end_layout
+
+\begin_layout Standard
+最后，物理加速度和磁扰动增加了加速度计和磁强计的测量值，也使这些测量值远离重力和地磁球。
+\end_layout
+
+\begin_layout Standard
+因此，在加速度计和磁强计测量中，加速度计和磁强计测量值与重力和地磁球之间的瞬时偏差可用作加速度计和磁强计测量中来自所有来源的干扰噪声向量总和的代理。对于任何特定
+测量，如果干扰噪声向量偶然地取消或移动到重力或地磁球上的另一点上的测量，这可能不准确，但在大量测量中统计上是有效的。
+\end_layout
+
+\begin_layout Subsection
+加速度计传感器型号及噪声方差
+\end_layout
+
+\begin_layout Standard
+经校准的加速度计测量值
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{S}\boldsymbol{G}_{c,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+包括物理加速度
+\begin_inset Formula $^{S}\boldsymbol{a}_{k}$
+\end_inset
+
+，重力
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}$
+\end_inset
+
+和噪声
+\begin_inset Formula $\boldsymbol{v}_{G,k}$
+\end_inset
+
+，其中噪声项
+\begin_inset Formula $\boldsymbol{v}_{G,k}$
+\end_inset
+
+包括上一节中讨论的所有项。
+\end_layout
+
+\begin_layout Standard
+所有加速度传感器本身都是“加速度正”的，因为它们的轴被定义为任何轴正方向上的物理加速度都会增加传感器的输出。Android坐标系与加速度计一样为“加速度正”，但
+航空航天/NED和Windows 8坐标系为“重力正”或“加速度负”。加速度和重力之间的符号差异源于基本物理，因为不可能区分 i) 在向下指向
+\begin_inset Formula $1g$
+\end_inset
+
+的重力场中静止或 ii) 在没有任何重力场的情况下以
+\begin_inset Formula $1g$
+\end_inset
+
+的速度向上加速的两种情况。
+\end_layout
+
+\begin_layout Standard
+在零横滚角或俯仰角的参考位置，由于
+\begin_inset Formula $z$
+\end_inset
+
+轴和重力都对齐并指向下方，因此航空航天/NED坐标系中的加速度计测量值为
+\begin_inset Formula $+1g$
+\end_inset
+
+。在Android(ENU)坐标系中，相同参考位置的加速度计测量值也为
+\begin_inset Formula $+1g$
+\end_inset
+
+，因为
+\begin_inset Formula $z$
+\end_inset
+
+轴和与重力相等的加速度都对齐并指向上。在Windows 8(ENU)坐标系中，加速度计测量值为
+\begin_inset Formula $-1g$
+\end_inset
+
+，因为
+\begin_inset Formula $z$
+\end_inset
+
+轴指向上，重力向量指向下。
+\end_layout
+
+\begin_layout Standard
+因此，三个坐标系传感器坐标系中加速度计测量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{S}\boldsymbol{G}_{c,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的模型为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+^{S}\boldsymbol{G}_{c,k} & =-^{S}\boldsymbol{a}_{k}+{}^{S}\boldsymbol{g}_{k}-\boldsymbol{v}_{G,k}\mathrm{(Aerospace,Windows\:8)}\\
+^{S}\boldsymbol{G}_{c,k} & =^{S}\boldsymbol{a}_{k}-{}^{S}\boldsymbol{g}_{k}+\boldsymbol{v}_{G,k}\mathrm{\mathrm{(Android)}}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+物理加速度方差
+\begin_inset Formula $Q_{a,k}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{a,k}=E\left[\left|^{S}\boldsymbol{a}_{k}\right|^{2}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速度计传感器噪声方差
+\begin_inset Formula $Q_{vG,k}$
+\end_inset
+
+(包括校准误差引起的高频传感器噪声和低频定向相关噪声)定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{vG,k}=E\left[\left|\boldsymbol{v}_{G,k}\right|^{2}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于所有三个坐标系，瞬时加速度方差
+\begin_inset Formula $Q_{a,k}$
+\end_inset
+
+和传感器噪声方差
+\begin_inset Formula $Q_{vG,k}$
+\end_inset
+
+之和被定义为加速度计测量值
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\left|^{S}\boldsymbol{G}_{c,k}\right|$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+与
+\begin_inset Formula $1g$
+\end_inset
+
+球体的
+\begin_inset Formula $g$
+\end_inset
+
+值之间的所有偏差项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{a,k}+Q_{vG,k}\approx k\left(\left|^{S}\boldsymbol{G}_{c,k}\right|-g\right)^{2}=k\left(\left|^{S}\boldsymbol{a}_{k}-{}^{S}\boldsymbol{g}_{k}+\boldsymbol{v}_{G,k}\right|-g\right)^{2}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在方程中，
+\begin_inset Formula $k$
+\end_inset
+
+是一个比例常量，可以从几何参数中确定。
+\end_layout
+
+\begin_layout Standard
+图1显示了方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中各分量项的向量之和。加速度噪声向量
+\begin_inset Formula $^{S}\boldsymbol{a}_{k}$
+\end_inset
+
+和传感器噪声向量
+\begin_inset Formula $\boldsymbol{v}_{G,k}$
+\end_inset
+
+不相关，在传感器坐标系会有一些关于真实重力测量
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}$
+\end_inset
+
+的分布。迭代
+\begin_inset Formula $k$
+\end_inset
+
+时向量噪声项之和
+\begin_inset Formula $r_{k}$
+\end_inset
+
+的量级等于：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+r_{k}=\left|^{S}\boldsymbol{a}_{k}+\boldsymbol{v}_{G,k}\right|
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+角
+\begin_inset Formula $\theta_{k}$
+\end_inset
+
+在图1中定义，使得
+\begin_inset Formula $r_{k}\sin\theta_{k}$
+\end_inset
+
+是
+\begin_inset Formula $1g$
+\end_inset
+
+球体测量的径向误差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+r_{k}\sin\theta_{k}=\left|^{S}\boldsymbol{a}_{k}-{}^{S}\boldsymbol{g}_{k}+\boldsymbol{v}_{G,k}\right|-g
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Graphics
+	filename AN5023-Fig1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+常量
+\begin_inset Formula $k$
+\end_inset
+
+可以通过以下假设计算得出： i) 噪声呈球形分布， ii) 其量级明显小于
+\begin_inset Formula $1g$
+\end_inset
+
+，得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\int_{0}^{\infty}\int_{0}^{\frac{\pi}{2}}p(r)r^{2}2\pi r\cos\theta\mathrm{d}\theta\mathrm{d}r=k\int_{0}^{\infty}\int_{0}^{\frac{\pi}{2}}p(r)r^{2}\sin^{2}\theta2\pi r\cos\theta\mathrm{d}\theta\mathrm{d}r
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+函数
+\begin_inset Formula $p(r)$
+\end_inset
+
+定义了振幅噪声衰减的统计信息，但与
+\begin_inset Formula $k$
+\end_inset
+
+无关，因为积分分为径向和角度项，径向分布
+\begin_inset Formula $p(r)$
+\end_inset
+
+消除：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2\pi\int_{0}^{\infty}p(r)r^{3}\mathrm{d}r\int_{0}^{\frac{\pi}{2}}\cos\theta\mathrm{d}\theta=2\pi k\int_{0}^{\infty}p(r)r^{3}\mathrm{d}r\int_{0}^{\frac{\pi}{2}}\sin^{2}\theta\cos\theta\mathrm{d}\theta
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\left[\sin\theta\right]_{0}^{\frac{\pi}{2}}=k\left[\dfrac{\sin^{3}\theta}{3}\right]_{0}^{\frac{\pi}{2}}\Rightarrow k=3
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出了加速度和传感器噪声方差之和的简单表达式，其为加速度计测量值与
+\begin_inset Formula $1g$
+\end_inset
+
+球体之差的平方的
+\begin_inset Formula $3$
+\end_inset
+
+倍：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{a,k}+Q_{vG,k}\approx3\left(\left|^{S}\boldsymbol{G}_{c,k}\right|-g\right)^{2}\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+磁强计传感器型号及噪声方差
+\end_layout
+
+\begin_layout Standard
+校准磁强计测量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{S}\boldsymbol{B}_{c,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+建模为地磁分量
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}$
+\end_inset
+
+和任意磁扰动
+\begin_inset Formula $^{S}\boldsymbol{d}_{k}$
+\end_inset
+
+和磁强计噪声
+\begin_inset Formula $\boldsymbol{v}_{B,k}$
+\end_inset
+
+的总和，包括传感器噪声和硬铁和软铁校准误差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{B}_{c,k}={}^{S}\boldsymbol{m}_{k}+{}^{S}\boldsymbol{d}_{k}+\boldsymbol{v}_{B,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁校准算法去除传感器坐标系中恒定的硬铁和软铁磁畸变效应，留下校准测量值
+\begin_inset Formula $^{S}\boldsymbol{B}_{c,k}$
+\end_inset
+
+。磁干扰
+\begin_inset Formula $^{S}\boldsymbol{d}_{k}$
+\end_inset
+
+定义为不随传感器坐标系旋转的任何磁干扰，因此不包括在硬铁和软铁校准中。磁扰方差
+\begin_inset Formula $Q_{d,k}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{d,k}=E\left[\left|^{S}\boldsymbol{d}_{k}\right|^{2}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁强计传感器噪声方差
+\begin_inset Formula $Q_{vB,k}$
+\end_inset
+
+(包括来自硬铁和软铁校准误差的高频传感器噪声和低频定向相关噪声)定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{vB,k}=E\left[\left|\boldsymbol{v}_{B,k}\right|^{2}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过完善的磁校准，在没有任何磁干扰和传感器噪声的情况下，已校准的磁强计的测量值位于地磁球上，其量级等于地磁场强度
+\begin_inset Formula $B$
+\end_inset
+
+。在实践中，由于 i) 磁强计传感器噪声 ii) 硬铁和软铁校准不完善以及 iii) 环境中存在磁干扰，测量值不会位于地磁球上。
+\end_layout
+
+\begin_layout Standard
+使用与加速度计相同的参数和代数，将磁扰动和磁强计噪声方差之和估计为已校准磁强计测量值与地磁球差值平方的
+\begin_inset Formula $3$
+\end_inset
+
+倍：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{vB,k}+Q_{d,k}\approx3\left(\left|^{S}\boldsymbol{B}_{c,k}\right|-B\right)^{2}\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+编译时间常量
+\end_layout
+
+\begin_layout Standard
+为了对加速度计和磁强计噪声分量的向量之和导致测量恰好位于重力或地磁球上的偶然情况提供鲁棒性，传感器融合软件将下限应用于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的噪声估计。这些常量在下面列出并在 
+\family typewriter
+fusion.h
+\family default
+ 文件中定义。
+\end_layout
+
+\begin_layout Standard
+对于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的全
+\begin_inset Formula $9$
+\end_inset
+
+个自由度加速度计、磁强计和陀螺仪卡尔曼滤波器，常量为：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=C,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// minimum accelerometer noise variance units g^2 computed from 1g sphere
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+#define FQVG_9DOF_GBY_KALMAN 1.2E-3 
+\end_layout
+
+\begin_layout Plain Layout
+
+// minimum magnetometer noise variance units uT^2 computed from geomagnetic
+ sphere
+\end_layout
+
+\begin_layout Plain Layout
+
+#define FQVB_9DOF_GBY_KALMAN 5E0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计与陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的
+\begin_inset Formula $6$
+\end_inset
+
+个自由度加速度计和陀螺仪卡尔曼滤波器，常量为：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+lstparams "language=C,basicstyle={\small},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// minimum accelerometer noise variance units g^2 computed from 1g sphere
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+#define FQVG_6DOF_GY_KALMAN 1.2E-3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+重力和地磁倾斜误差四元数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:重力和地磁倾斜误差四元数"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引言
+\end_layout
+
+\begin_layout Standard
+对陀螺仪传感器的输出进行积分，得到传感器参考系中重力和地磁向量的
+\series bold
+先验
+\series default
+方向矩阵和
+\series bold
+先验
+\series default
+估计。陀螺仪传感器对加速度和磁干扰不敏感，因此重力和地磁向量的
+\series bold
+先验
+\series default
+估计也对加速度和磁干扰不敏感。但是，陀螺仪传感器集成中的任何误差都会导致陀螺仪对重力和地磁向量的
+\series bold
+先验
+\series default
+估计缓慢漂移，需要卡尔曼滤波器进行
+\series bold
+后验
+\series default
+校正。
+\end_layout
+
+\begin_layout Standard
+加速度计和磁强计传感器可以使用AN5021“根据传感器数据计算方向矩阵”中记录的方法，计算
+\begin_inset Formula $6$
+\end_inset
+
+个自由度(或 6DOF)的方向估计。6DOF方向估计对加速度和磁扰动敏感，但不受长期漂移的影响。因此，6DOF加速度计和磁强计方向估计是对
+\series bold
+先验
+\series default
+陀螺仪方向估计的补充，可用于稳定
+\series bold
+先验
+\series default
+方向。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:重力矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节和第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:地磁矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了 i) 重力向量以及 ii) 根据
+\series bold
+先验
+\series default
+陀螺仪方向矩阵和6DOF加速度计和磁强计方向矩阵计算的地磁向量估计的表达式。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:两个矢量之间的旋转四元数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了将一个向量旋转到另一个等长向量所需的旋转四元数表达式。此表达式允许计算定义
+\series bold
+先验
+\series default
+陀螺仪和6DOF加速度计之间倾斜误差的旋转四元数，以及磁强计对重力和地磁向量的估计。这两个倾斜误差四元数的向量分量构成间接卡尔曼滤波器
+\begin_inset Formula $9$
+\end_inset
+
+个分量中的
+\begin_inset Formula $6$
+\end_inset
+
+个，陀螺仪零速率偏移误差提供其余
+\begin_inset Formula $3$
+\end_inset
+
+个分量。
+\end_layout
+
+\begin_layout Standard
+如果方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明加速度计测量具有低噪声且可靠，则
+\series bold
+后验
+\series default
+卡尔曼滤波器方向校正可减小6DOF重力向量估计方向上的重力倾斜误差。同样，如果方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明磁强计测量具有低噪声且可靠，则
+\series bold
+后验
+\series default
+卡尔曼滤波器方向校正可减小6DOF地磁向量估计方向上的地磁倾斜误差。由于重力向量和地磁向量不平行，除地磁极点外，应用卡尔曼滤波器计算的两个方向倾斜校正，可得到稳
+定的
+\series bold
+后验
+\series default
+方向估计。
+\end_layout
+
+\begin_layout Subsection
+重力向量估计
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:重力矢量估计"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+全局参考坐标系中的重力向量
+\begin_inset Formula $^{G}\boldsymbol{g}_{k}$
+\end_inset
+
+为常量，对于所有卡尔曼滤波器迭代
+\begin_inset Formula $k$
+\end_inset
+
+时，始终指向正下方。对于航空航天(NED)坐标系，重力方向为正
+\begin_inset Formula $z$
+\end_inset
+
+轴，对于Android(ENU)和 Windows 8(ENU)坐标系，重力方向为负
+\begin_inset Formula $z$
+\end_inset
+
+轴。
+\end_layout
+
+\begin_layout Standard
+NXP约定是方向矩阵将向量从全局坐标系转换为传感器坐标系。因此，传感器坐标系中的重力向量
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}$
+\end_inset
+
+可以通过将
+\begin_inset Formula $^{G}\boldsymbol{g}_{k}$
+\end_inset
+
+乘以方向矩阵
+\begin_inset Formula $\boldsymbol{R}_{k}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}=\boldsymbol{R}_{k}{}^{G}\boldsymbol{g}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $3$
+\end_inset
+
+个坐标系中，利用6DOF(加速度计和磁强计)方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{6DOF}$
+\end_inset
+
+和一个
+\series bold
+先验
+\series default
+(陀螺)方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{-}$
+\end_inset
+
+给出的 6DOF 的
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{6DOF}$
+\end_inset
+
+和一个
+\series bold
+先验
+\series default
+的传感器坐标系中重力向量的估计值
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{-}$
+\end_inset
+
+如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}^{6DOF}=\left(\begin{array}{ccc}
+\hat{\boldsymbol{R}}_{xx,k}^{6DOF} & \hat{\boldsymbol{R}}_{xy,k}^{6DOF} & \hat{\boldsymbol{R}}_{xz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yx,k}^{6DOF} & \hat{\boldsymbol{R}}_{yy,k}^{6DOF} & \hat{\boldsymbol{R}}_{yz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zx,k}^{6DOF} & \hat{\boldsymbol{R}}_{zy,k}^{6DOF} & \hat{\boldsymbol{R}}_{zz,k}^{6DOF}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zz,k}^{6DOF}
+\end{array}\right)\mathrm{(for\:Aerospace/NED)}\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}^{-}=\left(\begin{array}{ccc}
+\hat{\boldsymbol{R}}_{xx,k}^{-} & \hat{\boldsymbol{R}}_{xy,k}^{-} & \hat{\boldsymbol{R}}_{xz,k}^{-}\\
+\hat{\boldsymbol{R}}_{yx,k}^{-} & \hat{\boldsymbol{R}}_{yy,k}^{-} & \hat{\boldsymbol{R}}_{yz,k}^{-}\\
+\hat{\boldsymbol{R}}_{zx,k}^{-} & \hat{\boldsymbol{R}}_{zy,k}^{-} & \hat{\boldsymbol{R}}_{zz,k}^{-}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xz,k}^{-}\\
+\hat{\boldsymbol{R}}_{yz,k}^{-}\\
+\hat{\boldsymbol{R}}_{zz,k}^{-}
+\end{array}\right)\mathrm{(for\:Aerospace/NED)}\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}^{6DOF}=\left(\begin{array}{ccc}
+\hat{\boldsymbol{R}}_{xx,k}^{6DOF} & \hat{\boldsymbol{R}}_{xy,k}^{6DOF} & \hat{\boldsymbol{R}}_{xz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yx,k}^{6DOF} & \hat{\boldsymbol{R}}_{yy,k}^{6DOF} & \hat{\boldsymbol{R}}_{yz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zx,k}^{6DOF} & \hat{\boldsymbol{R}}_{zy,k}^{6DOF} & \hat{\boldsymbol{R}}_{zz,k}^{6DOF}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+0\\
+-1
+\end{array}\right)=-\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yz,k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zz,k}^{6DOF}
+\end{array}\right)\mathrm{(for\:Android,Windows\:8)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}^{-}=\left(\begin{array}{ccc}
+\hat{\boldsymbol{R}}_{xx,k}^{-} & \hat{\boldsymbol{R}}_{xy,k}^{-} & \hat{\boldsymbol{R}}_{xz,k}^{-}\\
+\hat{\boldsymbol{R}}_{yx,k}^{-} & \hat{\boldsymbol{R}}_{yy,k}^{-} & \hat{\boldsymbol{R}}_{yz,k}^{-}\\
+\hat{\boldsymbol{R}}_{zx,k}^{-} & \hat{\boldsymbol{R}}_{zy,k}^{-} & \hat{\boldsymbol{R}}_{zz,k}^{-}
+\end{array}\right)\left(\begin{array}{c}
+0\\
+0\\
+-1
+\end{array}\right)=-\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xz,k}^{-}\\
+\hat{\boldsymbol{R}}_{yz,k}^{-}\\
+\hat{\boldsymbol{R}}_{zz,k}^{-}
+\end{array}\right)\mathrm{(for\:Android,Windows\:8)}\label{eq:20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+地磁向量估计
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:地磁矢量估计"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+全局参考系中的地磁向量
+\begin_inset Formula $^{G}\boldsymbol{m}_{k}$
+\end_inset
+
+为常量，通过倾角
+\begin_inset Formula $\delta_{k}$
+\end_inset
+
+从水平方向指向北下。对于航空航天(NED)坐标系，向北为正
+\begin_inset Formula $x$
+\end_inset
+
+轴方向；对于Android(ENU)和Windows 8(ENU)坐标系，向北为正
+\begin_inset Formula $y$
+\end_inset
+
+轴方向。
+\end_layout
+
+\begin_layout Standard
+传感器坐标系中的地磁向量
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}$
+\end_inset
+
+可通过将
+\begin_inset Formula $^{G}\boldsymbol{m}_{k}$
+\end_inset
+
+乘以方向矩阵
+\begin_inset Formula $\boldsymbol{R}_{k}$
+\end_inset
+
+来计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{m}_{k}=\boldsymbol{R}_{k}{}^{G}\boldsymbol{m}_{k}\label{eq:21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在三个坐标系中，估计方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)使用6DOF(加速度计和磁强计)方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{6DOF}$
+\end_inset
+
+和一个
+\series bold
+先验
+\series default
+(陀螺)方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{-}$
+\end_inset
+
+给出 6DOF 的
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}^{6DOF}$
+\end_inset
+
+和一个
+\series bold
+先验
+\series default
+的传感器坐标系中的地磁向量的估计值
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{-}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}=\hat{\boldsymbol{R}}_{k}^{6DOF}\left(\begin{array}{c}
+\cos\delta_{k}^{6DOF}\\
+0\\
+\sin\delta_{k}^{6DOF}
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xx,k}^{6DOF}\cos\delta_{k}^{6DOF}+\hat{\boldsymbol{R}}_{xz,k}^{6DOF}\sin\delta_{k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yx,k}^{6DOF}\cos\delta_{k}^{6DOF}+\hat{\boldsymbol{R}}_{yz,k}^{6DOF}\sin\delta_{k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zx,k}^{6DOF}\cos\delta_{k}^{6DOF}+\hat{\boldsymbol{R}}_{zz,k}^{6DOF}\sin\delta_{k}^{6DOF}
+\end{array}\right)\mathrm{(for\:Aerospace/NED)}\label{eq:22}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}=\hat{\boldsymbol{R}}_{k}^{-}\left(\begin{array}{c}
+\cos\delta_{k}^{6DOF}\\
+0\\
+\sin\delta_{k}^{6DOF}
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xx,k}^{-}\cos\delta_{k-1}^{+}+\hat{\boldsymbol{R}}_{xz,k}^{-}\sin\delta_{k-1}^{+}\\
+\hat{\boldsymbol{R}}_{yx,k}^{-}\cos\delta_{k-1}^{+}+\hat{\boldsymbol{R}}_{yz,k}^{-}\sin\delta_{k-1}^{+}\\
+\hat{\boldsymbol{R}}_{zx,k}^{-}\cos\delta_{k-1}^{+}+\hat{\boldsymbol{R}}_{zz,k}^{-}\sin\delta_{k-1}^{+}
+\end{array}\right)\mathrm{(for\:Aerospace/NED)}\label{eq:23}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}=\hat{\boldsymbol{R}}_{k}^{6DOF}\left(\begin{array}{c}
+0\\
+\cos\delta_{k}^{6DOF}\\
+-\sin\delta_{k}^{6DOF}
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xy,k}^{6DOF}\cos\delta_{k}^{6DOF}-\hat{\boldsymbol{R}}_{xz,k}^{6DOF}\sin\delta_{k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{yy,k}^{6DOF}\cos\delta_{k}^{6DOF}-\hat{\boldsymbol{R}}_{yz,k}^{6DOF}\sin\delta_{k}^{6DOF}\\
+\hat{\boldsymbol{R}}_{zy,k}^{6DOF}\cos\delta_{k}^{6DOF}-\hat{\boldsymbol{R}}_{zz,k}^{6DOF}\sin\delta_{k}^{6DOF}
+\end{array}\right)\mathrm{(for\:Android,Windows\:8)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}=\hat{\boldsymbol{R}}_{k}^{-}\left(\begin{array}{c}
+0\\
+\cos\delta_{k}^{6DOF}\\
+-\sin\delta_{k}^{6DOF}
+\end{array}\right)=\left(\begin{array}{c}
+\hat{\boldsymbol{R}}_{xy,k}^{-}\cos\delta_{k-1}^{+}-\hat{\boldsymbol{R}}_{xz,k}^{-}\sin\delta_{k-1}^{+}\\
+\hat{\boldsymbol{R}}_{yy,k}^{-}\cos\delta_{k-1}^{+}-\hat{\boldsymbol{R}}_{yz,k}^{-}\sin\delta_{k-1}^{+}\\
+\hat{\boldsymbol{R}}_{zy,k}^{-}\cos\delta_{k-1}^{+}-\hat{\boldsymbol{R}}_{zz,k}^{-}\sin\delta_{k-1}^{+}
+\end{array}\right)\mathrm{(for\:Android,Windows\:8)}\label{eq:25}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\delta_{k}^{6DOF}$
+\end_inset
+
+是迭代
+\begin_inset Formula $k$
+\end_inset
+
+时倾角的6DOF估计值，
+\begin_inset Formula $\delta_{k-1}^{+}$
+\end_inset
+
+是前一次迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+中倾角的
+\series bold
+后验
+\series default
+估计值。使用上一次迭代的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\delta_{k-1}^{+}$
+\end_inset
+
+是因为当前迭代的
+\series bold
+后验
+\series default
+倾斜角
+\begin_inset Formula $\delta_{k-1}^{+}$
+\end_inset
+
+直到执行卡尔曼滤波器后才可用。AN5021“根据传感器数据计算方向矩阵”方程(77)、(88)和(99)推导出6DOF倾角估计值
+\begin_inset Formula $\delta_{k}^{6DOF}$
+\end_inset
+
+可由加速度计
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{S}\boldsymbol{G}_{c,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+和磁强计
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{S}\boldsymbol{B}_{c,k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的测量值的标量积计算出来：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sin\left(\delta_{k}^{6DOF}\right)=\dfrac{^{S}\boldsymbol{G}_{c,k}\cdot{}^{S}\boldsymbol{B}_{c,k}}{\left|^{S}\boldsymbol{G}_{c,k}\right|\left|^{S}\boldsymbol{B}_{c,k}\right|}\mathrm{(for\:Aerospace/NED,Windows\:8)}\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sin\left(\delta_{k}^{6DOF}\right)=\dfrac{-^{S}\boldsymbol{G}_{c,k}\cdot{}^{S}\boldsymbol{B}_{c,k}}{\left|^{S}\boldsymbol{G}_{c,k}\right|\left|^{S}\boldsymbol{B}_{c,k}\right|}\mathrm{(for\:Android)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+后验
+\series default
+倾斜角估计
+\begin_inset Formula $\delta_{k1}^{+}$
+\end_inset
+
+是根据重力向量
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{+}$
+\end_inset
+
+和地磁向量
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}^{+}$
+\end_inset
+
+估计值的标量积归一化后计算得出的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sin\left(\delta_{k}^{+}\right)=\dfrac{^{S}\boldsymbol{g}_{k}^{+}\cdot{}^{S}\boldsymbol{m}_{k}^{+}}{\left|^{S}\boldsymbol{g}_{k}^{+}\right|\left|^{S}\boldsymbol{m}_{k}^{+}\right|}\mathrm{(for\:Aerospace/NED,Android,Windows\:8)}\label{eq:28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中使用正弦角而非余弦角是由于倾斜角定义为磁场在水平面以下的倾角，而不是垂直重力向量的倾角。
+\end_layout
+
+\begin_layout Subsection
+两个向量之间的旋转四元数
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:两个矢量之间的旋转四元数"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:重力矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节和第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:地磁矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了6DOF(加速度计和磁强计)的表达式以及传感器坐标系中测量的重力和地磁向量的
+\series bold
+先验
+\series default
+(陀螺仪)估计。本节推导与这两组向量测量相关的旋转四元数，特别是将重力和地磁向量的6DOF估计旋转到
+\series bold
+先验
+\series default
+估计的四元数。
+\end_layout
+
+\begin_layout Standard
+将一般向量
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+旋转到向量
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+上所需的旋转四元数
+\begin_inset Formula $q$
+\end_inset
+
+满足：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{s}=q^{*}\boldsymbol{r}q\label{eq:29}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+要想得到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的解，两个向量的模数必须相等
+\begin_inset Formula $\left|\boldsymbol{s}\right|=\left|\boldsymbol{r}\right|$
+\end_inset
+
+，因为一个向量的模数在旋转时不变。
+\end_layout
+
+\begin_layout Standard
+两个向量之间的角
+\begin_inset Formula $\eta$
+\end_inset
+
+可由标量积
+\begin_inset Formula $\boldsymbol{r}\cdot\boldsymbol{s}$
+\end_inset
+
+确定：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\cos\eta=2\cos^{2}\left(\dfrac{\eta}{2}\right)-1=\dfrac{\boldsymbol{r}\cdot\boldsymbol{s}}{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+重新排列给出了旋转四元数
+\begin_inset Formula $q$
+\end_inset
+
+的标量分量
+\begin_inset Formula $q_{0}$
+\end_inset
+
+的解：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{0}=\cos\left(\dfrac{\eta}{2}\right)=\sqrt{\dfrac{1}{2}+\dfrac{\boldsymbol{r}\cdot\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}}=\sqrt{\dfrac{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}}\label{eq:31}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+由向量积
+\begin_inset Formula $\boldsymbol{r}\times\boldsymbol{s}$
+\end_inset
+
+计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{n}}\sin\eta=2\hat{\boldsymbol{n}}\sin\left(\dfrac{\eta}{2}\right)\cos\left(\dfrac{\eta}{2}\right)=\dfrac{-\boldsymbol{r}\times\boldsymbol{s}}{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}\label{eq:32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的减号来自计算坐标系旋转角度为
+\begin_inset Formula $\eta$
+\end_inset
+
+的旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}$
+\end_inset
+
+的要求，而不是在固定坐标系中将向量
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+旋转到
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+所需的旋转轴。
+\end_layout
+
+\begin_layout Standard
+代入给出的旋转四元数
+\begin_inset Formula $q$
+\end_inset
+
+的向量分量
+\begin_inset Formula $\boldsymbol{q}=\{q_{1},q_{2},q_{3}\}=\hat{\boldsymbol{n}}\sin\left(\dfrac{\eta}{2}\right)$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\left(\begin{array}{c}
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right)=\hat{\boldsymbol{n}}\sin\left(\dfrac{\eta}{2}\right)=\dfrac{-\boldsymbol{r}\times\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|\sqrt{\dfrac{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}}}\label{eq:33}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所需的旋转四元数
+\begin_inset Formula $q$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\cos\left(\dfrac{\eta}{2}\right)+\hat{\boldsymbol{n}}\sin\left(\dfrac{\eta}{2}\right)=\sqrt{\dfrac{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}}-\dfrac{\boldsymbol{r}\times\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|\sqrt{\dfrac{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}}{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|}}}=\dfrac{\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}-\boldsymbol{r}\times\boldsymbol{s}}{\sqrt{2\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|\left(\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}\right)}}\label{eq:34}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中旋转四元数的标量分量
+\begin_inset Formula $q_{0}$
+\end_inset
+
+的解总是被定义的，除了零量级向量
+\begin_inset Formula $\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|=0$
+\end_inset
+
+的无意义情况。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中旋转四元数的向量分量
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+的解在
+\begin_inset Formula $\left|\boldsymbol{r}\right|\left|\boldsymbol{s}\right|+\boldsymbol{r}\cdot\boldsymbol{s}=0$
+\end_inset
+
+时未定义。当两个向量
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+为反平行时会发生。在这种情况下，分子也为零，因为
+\begin_inset Formula $\boldsymbol{r}\times\boldsymbol{s}=0$
+\end_inset
+
+。两个向量之间的旋转角度为
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+，但有无数个可能的旋转轴与
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+正交。
+\end_layout
+
+\begin_layout Standard
+通过检验，向量分量
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+(可用的无限个解中)的一个解对于除
+\begin_inset Formula $r_{x}=r_{y}=r_{z}$
+\end_inset
+
+之外的所有
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+旋转情况均有效：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\left(\begin{array}{c}
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right)=\dfrac{1}{\sqrt{\left(r_{y}-r_{z}\right)^{2}+\left(r_{z}-r_{x}\right)^{2}+\left(r_{x}-r_{y}\right)^{2}}}\left(\begin{array}{c}
+r_{y}-r_{z}\\
+r_{z}-r_{x}\\
+r_{x}-r_{y}
+\end{array}\right)\label{eq:35}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的向量四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+具有模数
+\begin_inset Formula $\left|\boldsymbol{q}\right|=1$
+\end_inset
+
+对应于
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+旋转，且明显与向量
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+正交(因此也与
+\begin_inset Formula $\boldsymbol{s}=-\boldsymbol{r}$
+\end_inset
+
+正交)，因为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}\cdot\boldsymbol{r}=\dfrac{1}{\sqrt{\left(r_{y}-r_{z}\right)^{2}+\left(r_{z}-r_{x}\right)^{2}+\left(r_{x}-r_{y}\right)^{2}}}\left(\begin{array}{c}
+r_{y}-r_{z}\\
+r_{z}-r_{x}\\
+r_{x}-r_{y}
+\end{array}\right)\cdot\left(\begin{array}{c}
+r_{x}\\
+r_{y}\\
+r_{z}
+\end{array}\right)=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于特殊情况
+\begin_inset Formula $r_{x}=r_{y}=r_{z}$
+\end_inset
+
+和
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+旋转角度，解决方案是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\left(\begin{array}{c}
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right)=\dfrac{1}{\sqrt{2}}\left(\begin{array}{c}
+1\\
+-1\\
+0
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+因为
+\begin_inset Formula $\left|\boldsymbol{q}\right|=1$
+\end_inset
+
+并且
+\begin_inset Formula $\boldsymbol{q}\cdot\boldsymbol{r}=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+当向量
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+具有单位量级时，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\cos\left(\dfrac{\eta}{2}\right)+\hat{\boldsymbol{n}}\sin\left(\dfrac{\eta}{2}\right)=\dfrac{1+\boldsymbol{r}\cdot\boldsymbol{s}-\boldsymbol{r}\times\boldsymbol{s}}{\sqrt{2\left(1+\boldsymbol{r}\cdot\boldsymbol{s}\right)}}=\dfrac{1}{\sqrt{2}}\left(\sqrt{1+\boldsymbol{r}\cdot\boldsymbol{s}}-\dfrac{\boldsymbol{r}\times\boldsymbol{s}}{\sqrt{1+\boldsymbol{r}\cdot\boldsymbol{s}}}\right),\mathrm{for}\:\left|\boldsymbol{r}\right|=\left|\boldsymbol{s}\right|=1\label{eq:38}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在文件 
+\family typewriter
+orientation.c
+\family default
+ 中的函数 
+\family typewriter
+fveqconjgquq()
+\family default
+ 中实现。
+\end_layout
+
+\begin_layout Subsection
+重力和地磁倾斜误差四元数
+\end_layout
+
+\begin_layout Standard
+现在可以将第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:重力矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 、 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:地磁矢量估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 和 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:两个矢量之间的旋转四元数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节结合起来，给出与6DOF相关的旋转四元数以及传感器坐标系中测量的重力和地磁向量的
+\series bold
+先验
+\series default
+估计。这些四元数被称为倾斜误差四元数，因为它们是输入到卡尔曼滤波器的测量误差向量，卡尔曼滤波器定义重力和地磁向量两个估计值之间的倾斜角。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以做为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的归一化形式使用，因为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的重力和标准化地磁向量具有单位量级。
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)到(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出重力倾斜误差四元数
+\begin_inset Formula $q_{zg\varepsilon,k}$
+\end_inset
+
+的表达式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{zg\varepsilon,k}=\dfrac{1}{\sqrt{2}}\left(\sqrt{1+^{S}\boldsymbol{g}_{k}^{6DOF}\cdot{}^{S}\boldsymbol{g}_{k}^{-}}-\dfrac{^{S}\boldsymbol{g}_{k}^{6DOF}\times{}^{S}\boldsymbol{g}_{k}^{-}}{\sqrt{1+^{S}\boldsymbol{g}_{k}^{6DOF}\cdot{}^{S}\boldsymbol{g}_{k}^{-}}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并有向量分量
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}_{zg\varepsilon,k}=\dfrac{-^{S}\boldsymbol{g}_{k}^{6DOF}\times{}^{S}\boldsymbol{g}_{k}^{-}}{\sqrt{2+2^{S}\boldsymbol{g}_{k}^{6DOF}\cdot{}^{S}\boldsymbol{g}_{k}^{-}}}\label{eq:40}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)到(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出了地磁倾斜误差四元数
+\begin_inset Formula $q_{zm\varepsilon,k}$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{zm\varepsilon,k}=\dfrac{1}{\sqrt{2}}\left(\sqrt{1+\left(\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}\right)\cdot\left(\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}\right)}-\dfrac{\left(\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}\right)\times\left(\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}\right)}{\sqrt{1+\left(\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}\right)\cdot\left(\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}\right)}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并有向量分量
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}_{zm\varepsilon,k}=\dfrac{-\left(\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}\right)\times\left(\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}\right)}{\sqrt{2+2\left(\dfrac{^{S}\boldsymbol{m}_{k}^{6DOF}}{B}\right)\cdot\left(\dfrac{^{S}\boldsymbol{m}_{k}^{-}}{B}\right)}}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+陀螺仪传感器模型
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:陀螺仪传感器模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+零速率偏移模型
+\end_layout
+
+\begin_layout Standard
+陀螺仪传感器测量
+\begin_inset Formula $^{S}\boldsymbol{Y}_{k}$
+\end_inset
+
+(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)的模型为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{Y}_{k}=\boldsymbol{\omega}_{k}+\boldsymbol{b}_{k}+\boldsymbol{v}_{Y,k}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+是以
+\begin_inset Formula $\deg/s$
+\end_inset
+
+为单位的真实角速度，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是陀螺仪偏移向量(
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)。
+\begin_inset Formula $\boldsymbol{v}_{Y,k}$
+\end_inset
+
+是加性陀螺仪噪声向量(
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)，其协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{vY}$
+\end_inset
+
+假定为时间常量，轴(对角线元素)之间不相关，且在每个轴上具有相同的值
+\begin_inset Formula $\dfrac{Q_{vY}}{3}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{vY}=E\left[\boldsymbol{v}_{Y,k}\left(\boldsymbol{v}_{Y,k}\right)^{\mathrm{T}}\right]=\left(\dfrac{Q_{vY}}{3}\right)\boldsymbol{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+陀螺仪偏移量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+向量(单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)建模为随机行走：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{b}_{k}=\boldsymbol{b}_{k-1}+\boldsymbol{w}_{b,k}\label{eq:45}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+是一个零均值的白高斯噪声向量，单位为
+\begin_inset Formula $\deg/s$
+\end_inset
+
+，其协方差
+\begin_inset Formula $\boldsymbol{Q}_{wb}$
+\end_inset
+
+假定为时间常量，轴(对角线元素)之间不相关，且在每个轴上具有相同值
+\begin_inset Formula $\dfrac{Q_{wb}}{3}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{wb}=E\left[\boldsymbol{w}_{b,k}\left(\boldsymbol{w}_{b,k}\right)^{\mathrm{T}}\right]=\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+陀螺仪偏移量的
+\series bold
+先验
+\series default
+估计值只是之前样本的
+\series bold
+后验
+\series default
+估计值，因为
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+为零均值和白色：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{b}}_{k}^{-}=\hat{\boldsymbol{b}}_{k-1}^{+}\label{eq:47}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+简单代数运算后给出
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+做为
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}=\hat{\boldsymbol{b}}_{k}^{-}-\boldsymbol{b}_{k}=\hat{\boldsymbol{b}}_{k-1}^{+}-\boldsymbol{b}_{k}=\hat{\boldsymbol{b}}_{k-1}^{+}-\left(\boldsymbol{b}_{k-1}+\boldsymbol{w}_{b,k}\right)=\left(\hat{\boldsymbol{b}}_{k-1}^{+}-\boldsymbol{b}_{k-1}\right)-\boldsymbol{w}_{b,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}=\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}-\boldsymbol{w}_{b,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+角速度模型
+\end_layout
+
+\begin_layout Standard
+真实角速度
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{\omega}}_{k}^{-}$
+\end_inset
+
+的计算由传感器坐标系中的陀螺读数
+\begin_inset Formula $^{S}\boldsymbol{Y}_{k}$
+\end_inset
+
+减去当前的
+\series bold
+先验
+\series default
+零速率陀螺偏移
+\begin_inset Formula $\hat{\boldsymbol{b}}_{k}^{-}$
+\end_inset
+
+，它等于上一次迭代中的一个
+\series bold
+后验
+\series default
+偏移估计值
+\begin_inset Formula $\hat{\boldsymbol{b}}_{k-1}^{+}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}_{k}^{-}=\left(^{S}\boldsymbol{Y}_{k}-\hat{\boldsymbol{b}}_{k}^{-}\right)=\left(^{S}\boldsymbol{Y}_{k}-\hat{\boldsymbol{b}}_{k-1}^{+}\right)\label{eq:50}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入
+\begin_inset Formula $^{S}\boldsymbol{Y}_{k}$
+\end_inset
+
+给出的误差分量之间的关系：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}_{k}^{-}=\boldsymbol{\omega}_{k}+\boldsymbol{b}_{k}+\boldsymbol{v}_{Y,k}-\hat{\boldsymbol{b}}_{k-1}^{+}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{\omega}}_{k}^{-}=\boldsymbol{\omega}_{k}+\hat{\boldsymbol{\omega}}_{\varepsilon,k}^{-}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\hat{\boldsymbol{\omega}}_{\varepsilon,k}^{-}=\boldsymbol{b}_{k-1}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}-\hat{\boldsymbol{b}}_{k-1}^{+}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}=\hat{\boldsymbol{b}}_{k-1}^{+}-\boldsymbol{b}_{k-1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\hat{\boldsymbol{\omega}}_{\varepsilon,k}^{-}=-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}=-\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\label{eq:55}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表明，角速度
+\series bold
+先验
+\series default
+估计中的误差包括三项：
+\end_layout
+
+\begin_layout Enumerate
+陀螺仪零速率传感器的
+\series bold
+先验
+\series default
+估计误差
+\begin_inset Formula $\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}$
+\end_inset
+
+。负号是由于对陀螺仪零速率陀螺偏移的高估导致对角速度的低估。
+\end_layout
+
+\begin_layout Enumerate
+陀螺仪零速率偏移漂移中的噪声
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+加性陀螺仪传感器噪声
+\begin_inset Formula $\boldsymbol{v}_{Y,k}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+传感器噪声项
+\begin_inset Formula $\boldsymbol{v}_{Y,k}$
+\end_inset
+
+只能通过在足够长的时间内观察陀螺仪来将其与偏移漂移项
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+分离，以便测量漂移。在样本对样本的基础上，陀螺仪偏移漂移项
+\begin_inset Formula $\boldsymbol{w}_{b,k}$
+\end_inset
+
+与陀螺仪噪声项
+\begin_inset Formula $\boldsymbol{v}_{Y,k}$
+\end_inset
+
+不可区分。
+\end_layout
+
+\begin_layout Subsection
+编译时间常量
+\end_layout
+
+\begin_layout Standard
+编译时为6DOF和9DOF卡尔曼滤波算法设置了
+\begin_inset Formula $Q_{vY}$
+\end_inset
+
+的值。编译时间常量 
+\family typewriter
+FQVY_9DOF_GBY_KALMAN
+\family default
+ 和 
+\family typewriter
+FQVY_6DOF_GY_KALMAN
+\family default
+ 在文件 
+\family typewriter
+fusion.h
+\family default
+ 中定义。增加
+\begin_inset Formula $Q_{vY}$
+\end_inset
+
+的值会降低陀螺仪方向估计的权重，从而使加速度计和磁强计对重力和地磁向量估计的收敛速度更快，但增加了加速和磁干扰噪声的灵敏度。
+\end_layout
+
+\begin_layout Standard
+编译时为6DOF和9DOF卡尔曼滤波算法设置了
+\begin_inset Formula $Q_{wb}$
+\end_inset
+
+的值。编译时间常量
+\family typewriter
+FQWB_9DOF_GBY_KALMAN
+\family default
+ 和 
+\family typewriter
+FQWB_6DOF_GY_KALMAN
+\family default
+ 在文件 
+\family typewriter
+fusion.h
+\family default
+ 中定义。增加
+\begin_inset Formula $Q_{wb}$
+\end_inset
+
+的值可以更快速地跟踪零速率偏移量的变化，包括开机时的初始估计。但其缺点是对加速度和磁干扰噪声的灵敏度增加。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引言
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:直接卡尔曼滤波过程模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节推导了传感器噪声和外部来源(如加速度和磁干扰)的干扰噪声水平的表达式。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:直接过程模型的先验估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节定义了构成互补卡尔曼滤波器测量误差向量的两个倾斜误差四元数。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:间接卡尔曼滤波过程模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节定义了陀螺仪和角速度模型。
+\end_layout
+
+\begin_layout Standard
+本节结合所有这些结果，推导了加速度计、磁强计和陀螺仪数据传感器融合的卡尔曼滤波方程。它也通常被称为
+\begin_inset Formula $9$
+\end_inset
+
+自由度或9DOF传感器融合，因为
+\begin_inset Formula $3$
+\end_inset
+
+个传感器中的每一个都有
+\begin_inset Formula $3$
+\end_inset
+
+个轴，并为滤波器提供
+\begin_inset Formula $3$
+\end_inset
+
+自由度。
+\end_layout
+
+\begin_layout Subsection
+直接卡尔曼滤波过程模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:直接卡尔曼滤波过程模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+系统采用
+\begin_inset Formula $7$
+\end_inset
+
+元状态向量
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+，包括迭代
+\begin_inset Formula $k$
+\end_inset
+
+时 i) 方向四元数
+\begin_inset Formula $q_{k}$
+\end_inset
+
+以及 ii) 零速率陀螺仪偏移
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{k}=\left(\begin{array}{c}
+q_{k}\\
+\boldsymbol{b}_{k}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+状态向量的方向四元数分量
+\begin_inset Formula $q_{k}$
+\end_inset
+
+在卡尔曼滤波时间周期
+\begin_inset Formula $\delta t$
+\end_inset
+
+内演化，从迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+到
+\begin_inset Formula $k$
+\end_inset
+
+，通过系统角速度
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+演化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{k}=q_{k-1}\Delta q\left(\boldsymbol{\omega}_{k}\delta t\right)\label{eq:57}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Delta q\left(\boldsymbol{\omega}_{k}\delta t\right)$
+\end_inset
+
+是用角
+\begin_inset Formula $\left|\boldsymbol{\omega}_{k}\right|\delta t$
+\end_inset
+
+围绕归一化后的旋转轴
+\begin_inset Formula $\hat{\boldsymbol{n}}=\left(\dfrac{\boldsymbol{\omega}_{k}}{\left|\boldsymbol{\omega}_{k}\right|}\right)$
+\end_inset
+
+编码旋转的增量旋转四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta q=\left\{ \cos\left(\dfrac{\left|\boldsymbol{\omega}_{k}\right|\delta t}{2}\right),\left(\dfrac{\boldsymbol{\omega}_{k}}{\left|\boldsymbol{\omega}_{k}\right|}\right)\sin\left(\dfrac{\left|\boldsymbol{\omega}_{k}\right|\delta t}{2}\right)\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+状态向量的陀螺仪偏移分量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+演变为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的随机行走。
+\end_layout
+
+\begin_layout Subsection
+直接过程模型的先验估计
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:直接过程模型的先验估计"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+迭代
+\begin_inset Formula $k$
+\end_inset
+
+时方向四元数的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{q}_{k}^{-}$
+\end_inset
+
+利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算，通过在卡尔曼滤波时间周期
+\begin_inset Formula $\delta t$
+\end_inset
+
+内的增量旋转向量
+\begin_inset Formula $\left|\boldsymbol{\omega}_{k}\right|\delta t$
+\end_inset
+
+，旋转先前的
+\series bold
+后验
+\series default
+方向估计
+\begin_inset Formula $\hat{q}_{k-1}^{+}$
+\end_inset
+
+来计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{q}_{k}^{-}=\hat{q}_{k-1}^{+}\Delta q\left(\hat{\boldsymbol{\omega}}_{k}^{-}\delta t\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+先验
+\series default
+估计的角速度
+\begin_inset Formula $\hat{\boldsymbol{\omega}}_{k}^{-}$
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:50"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义。
+\end_layout
+
+\begin_layout Standard
+由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出了陀螺仪零速率偏移的
+\series bold
+先验
+\series default
+估计，并且简单地等于先前迭代的
+\series bold
+后验
+\series default
+估计。
+\end_layout
+
+\begin_layout Subsection
+间接卡尔曼滤波过程模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:间接卡尔曼滤波过程模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与直接估计过程
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+相比，使用状态向量为
+\begin_inset Formula $9\times1$
+\end_inset
+
+误差向量
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的间接卡尔曼滤波器更为方便，其分量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{\varepsilon,k}=\left(\begin{array}{c}
+\boldsymbol{q}_{g\varepsilon,k}\\
+\boldsymbol{q}_{m\varepsilon,k}\\
+\boldsymbol{b}_{\varepsilon,k}
+\end{array}\right)\label{eq:60}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\boldsymbol{q}_{g\varepsilon,k}$
+\end_inset
+
+是四元数
+\begin_inset Formula $q_{g\varepsilon,k}$
+\end_inset
+
+的向量分量，它模拟相对于真实重力向量
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}$
+\end_inset
+
+的倾斜角方向误差。术语“重力倾斜误差角”的正常含义是相对于向下指向重力向量的倾斜误差。它可以单独使用加速度计测量来确定。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\boldsymbol{q}_{m\varepsilon,k}$
+\end_inset
+
+是四元数
+\begin_inset Formula $q_{m\varepsilon,k}$
+\end_inset
+
+的向量分量，它模拟相对于真实地磁向量
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}$
+\end_inset
+
+的倾斜角方向误差。术语“地磁倾斜误差角”类似于重力倾斜角，但现在定义为相对于北(南)半球中指向地磁向量的向北和向下(向上)倾斜。它可以单独使用磁强计测量来确定。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\boldsymbol{b}_{\varepsilon,k}$
+\end_inset
+
+(
+\begin_inset Formula $\deg/s$
+\end_inset
+
+)模拟零速率陀螺仪偏移估计中的误差。
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器同时对重力和地磁倾斜误差角进行校正，将估计方向朝向真实方向校正。在存在磁铁的高水平磁干扰的情况下，只有重力倾斜误差才会得到校正，从而导致方向估计在横
+滚角和俯仰角中稳定，但在足够长的时间内容易受到罗盘航向漂移的影响。同样地，在存在来自震动的高水平加速度干扰时，只有地磁倾斜误差会被校正，从而导致在足够长的时间内
+，方向估计容易受到横滚角和俯仰角漂移的影响。
+\end_layout
+
+\begin_layout Subsection
+直接过程模型的后验校正
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:直接过程模型的后验校正"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+间接卡尔曼滤波器计算方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的误差状态向量
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{\varepsilon,k}^{+}=\left(\begin{array}{c}
+\hat{\boldsymbol{q}}_{g\varepsilon,k}^{+}\\
+\hat{\boldsymbol{q}}_{m\varepsilon,k}^{+}\\
+\hat{\boldsymbol{b}}_{\varepsilon,k}^{+}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节记录了如何使用
+\series bold
+后验
+\series default
+误差向量
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+来计算
+\series bold
+后验
+\series default
+状态向量
+\begin_inset Formula $\boldsymbol{x}_{k}^{+}$
+\end_inset
+
+，它被定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{k}^{+}=\left(\begin{array}{c}
+\hat{q}_{k}^{+}\\
+\hat{\boldsymbol{b}}_{k}^{+}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+后验
+\series default
+重力倾斜误差四元数
+\begin_inset Formula $\hat{q}_{g\varepsilon,k}^{+}$
+\end_inset
+
+用于校正方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的传感器坐标系中重力向量的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{-}$
+\end_inset
+
+，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{g}_{k}^{+}=\hat{q}_{g\varepsilon,k}^{+}{}^{S}\boldsymbol{g}_{k}^{-}\left(\hat{q}_{g\varepsilon,k}^{+}\right)^{*}\label{eq:63}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+后验
+\series default
+地磁倾斜误差四元数
+\begin_inset Formula $\hat{q}_{m\varepsilon,k}^{+}$
+\end_inset
+
+用于校正方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的传感器坐标系的地磁向量的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}^{-}$
+\end_inset
+
+，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{S}\boldsymbol{m}_{k}^{+}=\hat{q}_{m\varepsilon,k}^{+}{}^{S}\boldsymbol{m}_{k}^{-}\left(\hat{q}_{m\varepsilon,k}^{+}\right)^{*}\label{eq:64}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:63"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是通过旋转四元数及其共轭进行前乘和后乘的向量旋转。共轭旋转四元数出现在右手边，非共轭四元数出现在左手边，以确保将倾斜误差从当前的
+\series bold
+先验
+\series default
+估计中移除，而不是添加。
+\end_layout
+
+\begin_layout Standard
+陀螺仪偏移向量的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{b}}_{k}^{+}$
+\end_inset
+
+只是简单地用
+\series bold
+先验
+\series default
+估计减去
+\series bold
+后验
+\series default
+误差估计
+\begin_inset Formula $\hat{\boldsymbol{b}}_{\varepsilon,k}^{+}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{b}}_{k}^{+}=\hat{\boldsymbol{b}}_{k}^{-}-\hat{\boldsymbol{b}}_{\varepsilon,k}^{+}=\hat{\boldsymbol{b}}_{k-1}^{+}-\hat{\boldsymbol{b}}_{\varepsilon,k}^{+}\label{eq:65}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一步是用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:63"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中计算得到的
+\series bold
+后验
+\series default
+重力向量
+\begin_inset Formula $^{S}\boldsymbol{g}_{k}^{+}$
+\end_inset
+
+和地磁向量
+\begin_inset Formula $^{S}\boldsymbol{m}_{k}^{+}$
+\end_inset
+
+直接计算
+\series bold
+后验
+\series default
+方向四元数
+\begin_inset Formula $\hat{q}_{k}^{+}$
+\end_inset
+
+。这是这样实现的，首先使用AN5021“根据传感器数据计算方向矩阵”第 6 节中记录的向量积算法计算
+\series bold
+后验
+\series default
+方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{+}$
+\end_inset
+
+，然后从方向矩阵
+\begin_inset Formula $\hat{\boldsymbol{R}}_{k}^{+}$
+\end_inset
+
+计算方向四元数
+\begin_inset Formula $\hat{q}_{k}^{+}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+卡尔曼滤波器测量误差模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:卡尔曼滤波器测量误差模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+倾斜误差四元数的向量分量
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:40"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义，并在6DOF(加速度计和磁强计)和重力和地磁向量的
+\series bold
+先验
+\series default
+(陀螺仪)估计值之间测量。这两个向量四元数构成
+\begin_inset Formula $6\times1$
+\end_inset
+
+间接卡尔曼滤波器测量误差向量
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+的分量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}_{\varepsilon,k}=\left(\begin{array}{c}
+\boldsymbol{q}_{zg\varepsilon,k}\\
+\boldsymbol{q}_{zm\varepsilon,k}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量误差向量
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+通过
+\begin_inset Formula $6\times9$
+\end_inset
+
+测量矩阵
+\begin_inset Formula $\boldsymbol{C}_{k}$
+\end_inset
+
+加上测量噪声
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+建模为与误差过程向量
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+相关：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}_{\varepsilon,k}=\left(\begin{array}{c}
+\boldsymbol{q}_{zg\varepsilon,k}\\
+\boldsymbol{q}_{zm\varepsilon,k}
+\end{array}\right)=\boldsymbol{C}_{k}\boldsymbol{x}_{\varepsilon,k}+\boldsymbol{v}_{k}=\boldsymbol{C}_{k}\left(\begin{array}{c}
+\boldsymbol{q}_{g\varepsilon,k}\\
+\boldsymbol{q}_{m\varepsilon,k}\\
+\boldsymbol{b}_{\varepsilon,k}
+\end{array}\right)+\left(\begin{array}{c}
+\boldsymbol{v}_{qzg,k}\\
+\boldsymbol{v}_{qzm,k}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $6\times1$
+\end_inset
+
+测量噪声向量
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+分解为
+\begin_inset Formula $3\times1$
+\end_inset
+
+重力
+\begin_inset Formula $\boldsymbol{v}_{qzg,k}$
+\end_inset
+
+和
+\begin_inset Formula $3\times1$
+\end_inset
+
+地磁
+\begin_inset Formula $\boldsymbol{v}_{qzm,k}$
+\end_inset
+
+测量噪声向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{v}_{k}=\left(\begin{array}{c}
+\boldsymbol{v}_{qzg,k}\\
+\boldsymbol{v}_{qzm,k}
+\end{array}\right)\label{eq:68}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测得的重力倾斜误差四元数
+\begin_inset Formula $q_{zg\varepsilon,k}$
+\end_inset
+
+测量了
+\series bold
+先验
+\series default
+(陀螺仪)和6DOF(加速度计和磁强计)方向估计之间的差异。因此，它等于真实重力倾斜误差四元数
+\begin_inset Formula $q_{g\varepsilon,k}$
+\end_inset
+
+以及 i) 由于对
+\series bold
+先验
+\series default
+角速度的错误估计而产生的四元数误差
+\begin_inset Formula $q\left(\hat{\boldsymbol{\omega}}_{\varepsilon,k}^{-}\delta t\right)$
+\end_inset
+
+，以及 ii) 在6DOF方向估计中由噪声引入的四元数误差
+\begin_inset Formula $q\left(\boldsymbol{v}_{k}\right)$
+\end_inset
+
+的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q_{zg\varepsilon,k}=q_{g\varepsilon,k}q\left(\hat{\boldsymbol{\omega}}_{\varepsilon,k}^{-}\delta t\right)q\left(\boldsymbol{v}_{k}\right)=q_{g\varepsilon,k}q\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\delta t\right)q\left(\boldsymbol{w}_{b,k}\delta t\right)q\left(\boldsymbol{v}_{Y,k}\delta t\right)q\left(\boldsymbol{v}_{qzg,k}\right)\label{eq:69}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设误差很小，四元数的标量分量接近
+\begin_inset Formula $1$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:69"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可写成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ 1,\boldsymbol{q}_{zg\varepsilon,k}\right\} \approx\left\{ 1,\boldsymbol{q}_{g\varepsilon,k}\right\} \left\{ 1,\boldsymbol{q}\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\delta t\right)\right\} \left\{ 1,\boldsymbol{q}\left(\boldsymbol{w}_{b,k}\delta t\right)\right\} \left\{ 1,\boldsymbol{q}\left(\boldsymbol{v}_{Y,k}\delta t\right)\right\} \left\{ 1,\boldsymbol{q}\left(\boldsymbol{v}_{qzg,k}\right)\right\} \label{eq:70}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+分离方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的四元数向量分量得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}_{zg\varepsilon,k}\approx\boldsymbol{q}_{g\varepsilon,k}+\left(\dfrac{1}{2}\right)\left(\dfrac{\pi\delta t}{180}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)+\boldsymbol{v}_{qzg,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因子
+\begin_inset Formula $\left(\dfrac{1}{2}\right)\left(\dfrac{\pi\delta t}{180}\right)$
+\end_inset
+
+将陀螺仪偏移误差、随机行走和噪声向量中的自然单位
+\begin_inset Formula $\deg/s$
+\end_inset
+
+转换为四元数向量中使用的对角(等于以弧度表示的对角的一半)的正弦值。
+\end_layout
+
+\begin_layout Standard
+测得的地磁倾斜误差向量四元数
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+的由类似论点给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}_{zm\varepsilon,k}\approx\boldsymbol{q}_{m\varepsilon,k}+\left(\dfrac{1}{2}\right)\left(\dfrac{\pi\delta t}{180}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)+\boldsymbol{v}_{qzm,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+常量
+\begin_inset Formula $\alpha$
+\end_inset
+
+的定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha=\left(\dfrac{\pi\delta t}{180}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $6\times9$
+\end_inset
+
+测量矩阵
+\begin_inset Formula $\boldsymbol{C}_{k}$
+\end_inset
+
+可写为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{C}_{k}=\left(\begin{array}{ccc}
+\boldsymbol{I}_{3} & \boldsymbol{0}_{3} & \left(\dfrac{-\alpha}{2}\right)\boldsymbol{I}_{3}\\
+\boldsymbol{0}_{3} & \boldsymbol{I}_{3} & \left(\dfrac{-\alpha}{2}\right)\boldsymbol{I}_{3}
+\end{array}\right)=\left(\begin{array}{ccccccccc}
+1 & 0 & 0 & 0 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0\\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right)\\
+0 & 0 & 0 & 1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0\\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right)
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+间接卡尔曼滤波更新方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:间接卡尔曼滤波更新方程"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节参考了AN5018“基本卡尔曼滤波理论”中推导的标准卡尔曼滤波方程，但适用于本节所述间接卡尔曼滤波的误差过程。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的误差过程
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+采用线性模型模拟为传统卡尔曼滤波样式的演变：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{\varepsilon,k}=\boldsymbol{A}_{k}\boldsymbol{x}_{\varepsilon,k-1}+\boldsymbol{w}_{k}\label{eq:75}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\boldsymbol{A}_{k}$
+\end_inset
+
+为卡尔曼滤波状态矩阵，
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+为加性不可预测(白色)噪声分量。
+\end_layout
+
+\begin_layout Standard
+AN5018中的方程(A)根据前一次迭代的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}$
+\end_inset
+
+将误差向量的
+\series bold
+先验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}=\boldsymbol{A}_{k}\hat{\boldsymbol{x}}_{\varepsilon,k-1}^{+}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于迭代
+\begin_inset Formula $k−1$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:63"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)使用
+\series bold
+后验
+\series default
+误差向量
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k-1}^{+}$
+\end_inset
+
+去校正
+\series bold
+后验
+\series default
+状态向量
+\begin_inset Formula $\boldsymbol{x}_{k-1}^{+}$
+\end_inset
+
+，其结果是
+\series bold
+先验
+\series default
+误差向量估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}$
+\end_inset
+
+在下一次迭代
+\begin_inset Formula $k$
+\end_inset
+
+为零：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}=0\Rightarrow\boldsymbol{A}_{k}=0\label{eq:77}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+AN5018中的方程(D)根据测量矩阵
+\begin_inset Formula $\boldsymbol{C}_{k}$
+\end_inset
+
+，卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+和测量向量
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+将误差向量的
+\series bold
+后验
+\series default
+估计
+\begin_inset Formula $\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{C}_{k}\right)\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}+\boldsymbol{K}_{k}\boldsymbol{z}_{\varepsilon,k}\label{eq:78}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:77"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\boldsymbol{K}_{k}\boldsymbol{z}_{\varepsilon,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+AN5018中的方程(B1)将
+\series bold
+先验
+\series default
+协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{k}^{-}$
+\end_inset
+
+的演化定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{-}=\boldsymbol{A}_{k}\boldsymbol{P}_{k-1}^{+}\boldsymbol{A}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{w,k}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+是过程噪声向量
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+的协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{w,k}=E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:77"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入
+\begin_inset Formula $\boldsymbol{A}_{k}=0$
+\end_inset
+
+得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k}^{-}=\boldsymbol{Q}_{w,k}\label{eq:82}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+AN5018的方程(C)将卡尔曼增益矩阵
+\begin_inset Formula $\boldsymbol{K}_{k}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}=\boldsymbol{P}_{k}^{-}\boldsymbol{C}_{k}^{\mathrm{T}}\left(\boldsymbol{C}_{k}\boldsymbol{P}_{k}^{-}\boldsymbol{C}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{v,k}\right)^{-1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+是测量噪声向量
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+的协方差矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{v,k}=E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:82"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得出间接滤波器中的卡尔曼滤波器增益的表达式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}=\boldsymbol{Q}_{w,k}\boldsymbol{C}_{k}^{\mathrm{T}}\left(\boldsymbol{C}_{k}\boldsymbol{Q}_{w,k}\boldsymbol{C}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{v,k}\right)^{-1}\label{eq:85}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一旦推导出两个噪声协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+的表达式，现在就可以完全定义间接卡尔曼滤波器。但是在下一节推导这两个矩阵之前，了解它们在间接卡尔曼滤波器运算中的作用是很有用的。
+\end_layout
+
+\begin_layout Standard
+协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+利用陀螺仪传感器对状态向量的
+\series bold
+先验
+\series default
+外推中的误差建模，协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+利用加速度计和磁强计传感器对状态向量测量中的误差建模。
+\end_layout
+
+\begin_layout Standard
+在高测量噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+的极限情况下，卡尔曼滤波器应使用
+\series bold
+先验
+\series default
+陀螺仪传感器外推，并从测量向量
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+应用零的
+\series bold
+后验
+\series default
+校正。在该限值中对方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:85"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行评估得出预期结果：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}\approx\boldsymbol{Q}_{w,k}\boldsymbol{C}_{k}^{\mathrm{T}}\boldsymbol{Q}_{v,k}^{-1}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\hat{\boldsymbol{x}}_{\varepsilon,k}^{-}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在低测量噪声协方差
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+的极限情况下，卡尔曼滤波器应忽略陀螺仪，使用加速度计和磁强计测得的方向估计。在该限值中对方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:85"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行评估得出预期结果：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{C}_{k}\boldsymbol{K}_{k}\boldsymbol{C}_{k}\approx\left(\boldsymbol{C}_{k}\boldsymbol{Q}_{w,k}\boldsymbol{C}_{k}^{\mathrm{T}}\right)\left(\boldsymbol{C}_{k}\boldsymbol{Q}_{w,k}\boldsymbol{C}_{k}^{\mathrm{T}}\right)^{-1}\boldsymbol{C}_{k}=\boldsymbol{C}_{k}\Rightarrow\boldsymbol{K}_{k}\boldsymbol{C}_{k}=\boldsymbol{I}_{9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Rightarrow\hat{\boldsymbol{x}}_{\varepsilon,k}^{+}=\boldsymbol{K}_{k}\boldsymbol{z}_{\varepsilon,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+过程误差协方差矩阵
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:过程误差协方差矩阵"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $9\times9$
+\end_inset
+
+误差过程噪声协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+测量方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:75"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的误差状态向量
+\begin_inset Formula $\boldsymbol{x}_{\varepsilon,k}$
+\end_inset
+
+的
+\series bold
+先验
+\series default
+线性预测中的误差协方差，从一次迭代到下一次迭代：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{w,k}=E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right]=\left(\begin{array}{ccc}
+E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]\\
+E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]\\
+E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的计算结果为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]=E\left[\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}-\boldsymbol{w}_{b,k}\right)\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}-\boldsymbol{w}_{b,k}\right)^{\mathrm{T}}\right]=\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}+\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}_{3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}$
+\end_inset
+
+近似于迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+时计算的
+\series bold
+后验
+\series default
+值，忽略非对角项。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}=E\left[\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\right)^{\mathrm{T}}\right]\approx\left(\begin{array}{ccc}
+\left(\hat{b}_{x\varepsilon,k-1}^{+}\right)^{2} & 0 & 0\\
+0 & \left(\hat{b}_{y\varepsilon,k-1}^{+}\right)^{2} & 0\\
+0 & 0 & \left(\hat{b}_{z\varepsilon,k-1}^{+}\right)^{2}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+先验
+\series default
+重力倾斜误差协方差
+\begin_inset Formula $E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+的计算结果为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]} & {\scriptstyle =E\left[\left(\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)\left(\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)^{\mathrm{T}}\right]}\\
+ & {\scriptstyle =\boldsymbol{Q}_{q_{g\varepsilon}q_{g\varepsilon},k-1}^{+}+\left(\dfrac{\alpha}{2}\right)^{2}\left(\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}+\left(\dfrac{Q_{vY}}{3}\right)\boldsymbol{I}_{3}+\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}_{3}\right)}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{q_{g\varepsilon}q_{g\varepsilon},k-1}^{+}$
+\end_inset
+
+近似于迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+时计算的
+\series bold
+后验
+\series default
+值，忽略非对角项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{q_{g\varepsilon}q_{g\varepsilon},k-1}^{+}=E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}\right)^{\mathrm{T}}\right]\approx\left(\begin{array}{ccc}
+\left(\hat{q}_{gx\varepsilon,k-1}^{+}\right)^{2} & 0 & 0\\
+0 & \left(\hat{q}_{gy\varepsilon,k-1}^{+}\right)^{2} & 0\\
+0 & 0 & \left(\hat{q}_{gz\varepsilon,k-1}^{+}\right)^{2}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样地，地磁倾斜误差协方差
+\begin_inset Formula $E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+可以写成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+{\scriptstyle E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]} & {\scriptstyle =E\left[\left(\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)\left(\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)^{\mathrm{T}}\right]}\\
+ & {\scriptstyle =\boldsymbol{Q}_{q_{m\varepsilon}q_{m\varepsilon},k-1}^{+}+\left(\dfrac{\alpha}{2}\right)^{2}\left(\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}+\left(\dfrac{Q_{vY}}{3}\right)\boldsymbol{I}_{3}+\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}_{3}\right)}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{q_{m\varepsilon}q_{m\varepsilon},k-1}^{+}$
+\end_inset
+
+近似于迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+处的
+\series bold
+后验
+\series default
+值，忽略非对角项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{q_{m\varepsilon}q_{m\varepsilon},k-1}^{+}=E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}\right)^{\mathrm{T}}\right]\approx\left(\begin{array}{ccc}
+\left(\hat{q}_{mx\varepsilon,k-1}^{+}\right)^{2} & 0 & 0\\
+0 & \left(\hat{q}_{my\varepsilon,k-1}^{+}\right)^{2} & 0\\
+0 & 0 & \left(\hat{q}_{mz\varepsilon,k-1}^{+}\right)^{2}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设重力倾斜和地磁倾斜误差的交叉协方差不相关，协方差
+\begin_inset Formula $E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+设为零。
+\end_layout
+
+\begin_layout Standard
+协方差
+\begin_inset Formula $E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+的计算结果为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]=E\left[\left(\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}-\boldsymbol{w}_{b,k}\right)^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\boldsymbol{Q}_{g_{\varepsilon}b_{\varepsilon},k-1}^{+}-\left(\dfrac{\alpha}{2}\right)\left(\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}+\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}_{3}\right)
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{g_{\varepsilon}b_{\varepsilon},k-1}^{+}$
+\end_inset
+
+近似于迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+处的
+\series bold
+后验
+\series default
+值，忽略非对角项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{g_{\varepsilon}b_{\varepsilon},k-1}^{+}=E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k-1}^{+}\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\right)^{\mathrm{T}}\right]\approx\left(\begin{array}{ccc}
+\hat{q}_{gx\varepsilon,k-1}^{+}\hat{b}_{x\varepsilon,k-1}^{+} & 0 & 0\\
+0 & \hat{q}_{gy\varepsilon,k-1}^{+}\hat{b}_{y\varepsilon,k-1}^{+} & 0\\
+0 & 0 & \hat{q}_{gz\varepsilon,k-1}^{+}\hat{b}_{z\varepsilon,k-1}^{+}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差
+\begin_inset Formula $E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+的计算结果为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]=E\left[\left(\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}+\left(\dfrac{\alpha}{2}\right)\left(-\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}+\boldsymbol{w}_{b,k}+\boldsymbol{v}_{Y,k}\right)\right)\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}-\boldsymbol{w}_{b,k}\right)^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\boldsymbol{Q}_{m_{\varepsilon}b_{\varepsilon},k-1}^{+}-\left(\dfrac{\alpha}{2}\right)\left(\boldsymbol{Q}_{b_{\varepsilon}b_{\varepsilon},k-1}^{+}+\left(\dfrac{Q_{wb}}{3}\right)\boldsymbol{I}_{3}\right)
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{Q}_{m_{\varepsilon}b_{\varepsilon},k-1}^{+}$
+\end_inset
+
+近似于迭代
+\begin_inset Formula $k-1$
+\end_inset
+
+处的
+\series bold
+后验
+\series default
+值，忽略非对角项：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{m_{\varepsilon}b_{\varepsilon},k-1}^{+}=E\left[\hat{\boldsymbol{q}}_{m\varepsilon,k-1}^{+}\left(\hat{\boldsymbol{b}}_{\varepsilon,k-1}^{+}\right)^{\mathrm{T}}\right]\approx\left(\begin{array}{ccc}
+\hat{q}_{mx\varepsilon,k-1}^{+}\hat{b}_{x\varepsilon,k-1}^{+} & 0 & 0\\
+0 & \hat{q}_{my\varepsilon,k-1}^{+}\hat{b}_{y\varepsilon,k-1}^{+} & 0\\
+0 & 0 & \hat{q}_{mz\varepsilon,k-1}^{+}\hat{b}_{z\varepsilon,k-1}^{+}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+测量误差协方差矩阵
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:测量误差协方差矩阵"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量噪声向量
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+的
+\begin_inset Formula $6\times6$
+\end_inset
+
+协方差矩阵使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{v,k}=E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]=E\left[\left(\begin{array}{c}
+\boldsymbol{v}_{qzg,k}\\
+\boldsymbol{v}_{qzm,k}
+\end{array}\right)\left(\begin{array}{c}
+\boldsymbol{v}_{qzg,k}\\
+\boldsymbol{v}_{qzm,k}
+\end{array}\right)^{\mathrm{T}}\right]=E\left(\begin{array}{cc}
+E\left[\boldsymbol{v}_{qzg,k}\left(\boldsymbol{v}_{qzg,k}\right)^{\mathrm{T}}\right] & E\left[\boldsymbol{v}_{qzg,k}\left(\boldsymbol{v}_{qzm,k}\right)^{\mathrm{T}}\right]\\
+E\left[\boldsymbol{v}_{qzm,k}\left(\boldsymbol{v}_{qzg,k}\right)^{\mathrm{T}}\right] & E\left[\boldsymbol{v}_{qzm,k}\left(\boldsymbol{v}_{qzm,k}\right)^{\mathrm{T}}\right]
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量四元数向量
+\begin_inset Formula $\boldsymbol{q}_{zg\varepsilon,k}$
+\end_inset
+
+与重力向量的
+\series bold
+先验
+\series default
+和6DOF测量之间的旋转角一半的正弦成正比。其噪声项
+\begin_inset Formula $\boldsymbol{v}_{qzg,k}$
+\end_inset
+
+因此包括 i) 加速度计传感器噪声加上加速度噪声以及 ii) 陀螺仪传感器和零速率偏移噪声。它不受磁强计噪声和磁干扰的影响。
+\end_layout
+
+\begin_layout Standard
+同样地，测量四元数向量
+\begin_inset Formula $\boldsymbol{q}_{zm\varepsilon,k}$
+\end_inset
+
+是地磁向量的
+\series bold
+先验
+\series default
+和6DOF测量之间的旋转角一半的正弦成正比。其噪声项
+\begin_inset Formula $\boldsymbol{v}_{qzm,k}$
+\end_inset
+
+因此包括 i) 磁强计传感器噪声加上磁干扰噪声以及 ii) 陀螺仪传感器和零速率偏移噪声。它不受加速度计噪声和加速度的影响。
+\end_layout
+
+\begin_layout Standard
+在小角度近似下，记住向量四元数的本地单位是弧度，陀螺仪的本地单位是
+\begin_inset Formula $\deg/s$
+\end_inset
+
+，然后
+\begin_inset Formula $\boldsymbol{Q}_{v,k}$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+E\left[\boldsymbol{v}_{qzg,k}\left(\boldsymbol{v}_{qzg,k}\right)^{\mathrm{T}}\right] & =\left(\dfrac{1}{4}\right)\left(\left(\dfrac{Q_{vG,k}}{3}\right)+\left(\dfrac{Q_{a,k}}{3}\right)\right)\boldsymbol{I}_{3}+\left(\dfrac{\alpha^{2}}{4}\right)\left(\left(\dfrac{Q_{vY,k}}{3}\right)+\left(\dfrac{Q_{wb,k}}{3}\right)\right)\boldsymbol{I}_{3}\\
+ & =\left(\dfrac{1}{12}\right)\left(\left(Q_{vG,k}+Q_{a,k}\right)+\alpha^{2}\left(Q_{vY,k}+Q_{wb,k}\right)\right)\boldsymbol{I}_{3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+E\left[\boldsymbol{v}_{qzm,k}\left(\boldsymbol{v}_{qzm,k}\right)^{\mathrm{T}}\right] & =\left(\dfrac{1}{4B^{2}}\right)\left(\left(\dfrac{Q_{vB,k}}{3}\right)+\left(\dfrac{Q_{d,k}}{3}\right)\right)\boldsymbol{I}_{3}+\left(\dfrac{\alpha^{2}}{4}\right)\left(\left(\dfrac{Q_{vY,k}}{3}\right)+\left(\dfrac{Q_{wb,k}}{3}\right)\right)\boldsymbol{I}_{3}\\
+ & =\left(\dfrac{1}{12}\right)\left(\dfrac{\left(Q_{vB,k}+Q_{d,k}\right)}{B^{2}}+\alpha^{2}\left(Q_{vY,k}+Q_{wb,k}\right)\right)\boldsymbol{I}_{3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+噪声协方差
+\begin_inset Formula $Q_{vG,k}+Q_{a,k}$
+\end_inset
+
+和
+\begin_inset Formula $Q_{vB,k}+Q_{d,k}$
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义为重力和地磁球的测量偏差。假设互相关测量噪声项不相关：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\boldsymbol{v}_{qzg,k}\left(\boldsymbol{v}_{qzm,k}\right)^{\mathrm{T}}\right]=E\left[\boldsymbol{v}_{qzm,k}\left(\boldsymbol{v}_{qzg,k}\right)^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+编译时间常量
+\end_layout
+
+\begin_layout Standard
+这些编译时常量是用 
+\family typewriter
+#define
+\family default
+ 在文件 
+\family typewriter
+fusion.h
+\family default
+ 中实现的。
+\end_layout
+
+\begin_layout Standard
+常量 
+\family typewriter
+FQVY_9DOF_GBY_KALMAN
+\family default
+ 和 
+\family typewriter
+FQWB_9DOF_GBY_KALMAN
+\family default
+ 定义了协方差
+\begin_inset Formula $\boldsymbol{Q}_{vY}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Q}_{wb}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+常量 
+\family typewriter
+FMIN_9DOF_GBY_BPL
+\family default
+ 和 
+\family typewriter
+FMAX_9DOF_GBY_BPL
+\family default
+ 限制了陀螺仪零速率偏移
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{b}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的允许范围。默认范围为
+\begin_inset Formula $-7\deg/s$
+\end_inset
+
+至
+\begin_inset Formula $+7\deg/s$
+\end_inset
+
+。主要目的是防止在传感器融合初始化时，如果传感器旋转而不是保持静止，则陀螺仪零速率偏移初始化为无意义值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+加速度计与陀螺仪传感器融合卡尔曼滤波器
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:加速度计与陀螺仪传感器融合卡尔曼滤波器"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+引言
+\end_layout
+
+\begin_layout Standard
+本文推导了加速度计与陀螺仪数据传感器融合的卡尔曼滤波方程。它通常也被称为
+\begin_inset Formula $6$
+\end_inset
+
+自由度或6DOF传感器融合模型，因为
+\begin_inset Formula $2$
+\end_inset
+
+个传感器中的每一个都有
+\begin_inset Formula $3$
+\end_inset
+
+个轴提供
+\begin_inset Formula $3$
+\end_inset
+
+个自由度。该卡尔曼滤波器是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计、磁强计和陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的9DOF滤波器的简化版本。
+\end_layout
+
+\begin_layout Subsection
+直接卡尔曼滤波过程模型
+\end_layout
+
+\begin_layout Standard
+这与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:直接卡尔曼滤波过程模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的描述相同。
+\end_layout
+
+\begin_layout Subsection
+直接过程模型的先验估计
+\end_layout
+
+\begin_layout Standard
+这与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:直接过程模型的先验估计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的描述相同，并通过陀螺仪角速度向量的增量旋转产生
+\series bold
+先验
+\series default
+方向四元数。
+\end_layout
+
+\begin_layout Subsection
+间接卡尔曼滤波过程模型
+\end_layout
+
+\begin_layout Standard
+这是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:间接卡尔曼滤波过程模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中模型的简化版本，其中只有重力向量误差四元数包含在误差状态向量中。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{\varepsilon,k}=\left(\begin{array}{c}
+\boldsymbol{q}_{g\varepsilon,k}\\
+\boldsymbol{b}_{\varepsilon,k}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+直接过程模型的后验校正
+\end_layout
+
+\begin_layout Standard
+这是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:直接过程模型的后验校正"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节描述的简化版本，其中只有重力向量四元数校正包括在
+\series bold
+后验
+\series default
+校正向量中。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{x}_{\varepsilon,k}^{+}=\left(\begin{array}{c}
+\hat{\boldsymbol{q}}_{g\varepsilon,k}^{+}\\
+\hat{\boldsymbol{b}}_{\varepsilon,k}^{+}
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+后验
+\series default
+重力倾斜误差四元数
+\begin_inset Formula $\hat{q}_{g\varepsilon,k}^{+}$
+\end_inset
+
+直接校正
+\series bold
+先验
+\series default
+方向四元数
+\begin_inset Formula $\hat{q}_{k}^{-}$
+\end_inset
+
+给出
+\series bold
+后验
+\series default
+方向估计
+\begin_inset Formula $\hat{q}_{k}^{+}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{q}_{k}^{+}=\hat{q}_{g\varepsilon,k}^{+}\hat{q}_{k}^{-}\left(\hat{q}_{g\varepsilon,k}^{+}\right)^{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+卡尔曼滤波器测量误差模型
+\end_layout
+
+\begin_layout Standard
+这是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:卡尔曼滤波器测量误差模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的测量向量的简化版本，因为只有重力向量倾斜误差四元数存在于测量误差向量
+\begin_inset Formula $\boldsymbol{z}_{\varepsilon,k}$
+\end_inset
+
+中。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}_{\varepsilon,k}=\boldsymbol{q}_{zg\varepsilon,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在测量模型为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{z}_{\varepsilon,k}=\boldsymbol{q}_{zg\varepsilon,k}=\boldsymbol{C}_{k}\boldsymbol{x}_{\varepsilon,k}+\boldsymbol{v}_{k}=\boldsymbol{C}_{k}\left(\begin{array}{c}
+\boldsymbol{q}_{g\varepsilon,k}\\
+\boldsymbol{b}_{\varepsilon,k}
+\end{array}\right)+\boldsymbol{v}_{qzg,k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $3\times6$
+\end_inset
+
+测量矩阵
+\begin_inset Formula $\boldsymbol{C}_{k}$
+\end_inset
+
+等于：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{C}_{k}=\left(\begin{array}{cc}
+\boldsymbol{I}_{3} & \left(\dfrac{-\alpha}{2}\right)\boldsymbol{I}_{3}\end{array}\right)=\left(\begin{array}{cccccc}
+1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0 & 0\\
+0 & 1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right) & 0\\
+0 & 0 & 1 & 0 & 0 & \left(\dfrac{-\alpha}{2}\right)
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+间接卡尔曼滤波更新方程
+\end_layout
+
+\begin_layout Standard
+本节与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:间接卡尔曼滤波更新方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节相同，但使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:加速度计与陀螺仪传感器融合卡尔曼滤波器"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的矩阵和向量定义。
+\end_layout
+
+\begin_layout Subsection
+过程误差协方差矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $6\times6$
+\end_inset
+
+误差过程噪声协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{w,k}$
+\end_inset
+
+是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:过程误差协方差矩阵"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的简化版本。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{w,k}=E\left[\boldsymbol{w}_{k}\boldsymbol{w}_{k}^{\mathrm{T}}\right]=\left(\begin{array}{cc}
+E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]\\
+E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{q}}_{g\varepsilon,k}^{-}\right)^{\mathrm{T}}\right] & E\left[\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\left(\hat{\boldsymbol{b}}_{\varepsilon,k}^{-}\right)^{\mathrm{T}}\right]
+\end{array}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵中的项与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:过程误差协方差矩阵"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的值相同。
+\end_layout
+
+\begin_layout Subsection
+测量误差协方差矩阵
+\end_layout
+
+\begin_layout Standard
+测量噪声向量
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+的
+\begin_inset Formula $3\times3$
+\end_inset
+
+协方差矩阵是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:测量误差协方差矩阵"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的协方差矩阵的简化版本，仅包含重力向量项。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Q}_{v,k}=E\left[\boldsymbol{v}_{k}\boldsymbol{v}_{k}^{\mathrm{T}}\right]=E\left[\boldsymbol{v}_{qzg,k}\left(\boldsymbol{v}_{qzg,k}\right)^{\mathrm{T}}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+=\left(\dfrac{1}{12}\right)\left(\left(Q_{vG,k}+Q_{a,k}\right)+\alpha^{2}\left(Q_{vY,k}+Q_{wb,k}\right)\right)\boldsymbol{I}_{3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+噪声协方差
+\begin_inset Formula $Q_{vG,k}+Q_{a,k}$
+\end_inset
+
+的定义与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:测量误差协方差矩阵"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的重力球测量偏差相同。
+\end_layout
+
+\begin_layout Subsection
+编译时间常量
+\end_layout
+
+\begin_layout Standard
+下面的编译时常量是用 
+\family typewriter
+#define
+\family default
+ 在文件 
+\family typewriter
+fusion.h
+\family default
+ 中实现的。
+\end_layout
+
+\begin_layout Standard
+常量 
+\family typewriter
+FQVY_6DOF_GY_KALMAN
+\family default
+ 和 
+\family typewriter
+FQWB_6DOF_GY_KALMAN
+\family default
+ 定义协方差
+\begin_inset Formula $Q_{vY}$
+\end_inset
+
+和
+\begin_inset Formula $Q_{wb}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+常量 
+\family typewriter
+FMIN_6DOF_GBY_BPL
+\family default
+ 和 
+\family typewriter
+FMAX_6DOF_GBY_BPL
+\family default
+ 具有与9DOF融合算法等效的函数和值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Itemize
+NXP Application Note (AN5018) Basic Kalman Filter Theory
+\end_layout
+
+\begin_layout Itemize
+NXP Application Note (AN5021) Calculation of Orientation Matrices from Sensor
+ Data
+\end_layout
+
+\end_body
+\end_document
