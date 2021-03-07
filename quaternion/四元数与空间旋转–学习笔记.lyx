@@ -8665,7 +8665,7 @@ q(t+\Delta t)\leftarrow\dfrac{q(t+\Delta t)}{|q(t+\Delta t)|}
 
 \begin_layout Standard
 另外，表示旋转的单位四元数不是向量，而是群，因为只有乘法是封闭的。因为对4维的四元数附加
-\begin_inset Formula $i^{2}+j^{2}+k^{2}=1$
+\begin_inset Formula $s^{2}+x^{2}+y^{2}+z^{2}=1$
 \end_inset
 
 这个约束，使得4维的四元数可以表示3维旋转。但也是因为这个约束，单位四元数不是向量，因此也就不能直接被卡尔曼滤波器估计，所有直接用卡尔曼滤波器估计姿态四元数和旋
@@ -8787,7 +8787,7 @@ q=a+bj
 \end_layout
 
 \begin_layout Standard
-四元数是二重向量(bivector)，而不是向量。记住这个概念，对于理解在姿态估计中，为什么将四元数带入卡尔曼滤波器中会有冲突这个问题有帮助。
+四元数是二重向量(bivector)，而不是向量。和通常意义所说的4参数向量构成的4D空间还是有区别的。
 \end_layout
 
 \begin_layout Section
@@ -8808,7 +8808,7 @@ q=a+bj
 \begin_inset Formula $qpq^{*}$
 \end_inset
 
-计算旋转了。然后后面就开始不声不响用四参数的姿态四元数，用微分方程推导出来的四元数加法算法计算旋转。说好的3参数纯四元数在哪里？说好的用
+计算旋转了。然后后面就开始不声不响用4参数的姿态四元数，用微分方程推导出来的四元数加法算法计算旋转。说好的3参数纯四元数在哪里？说好的用
 \begin_inset Formula $qpq^{*}$
 \end_inset
 
@@ -9475,107 +9475,35 @@ noprefix "false"
 \end_inset
 
 的三角函数相关，变化周期为
-\begin_inset Formula $\pi$
+\begin_inset Formula $2\pi$
 \end_inset
 
-。因为三维空间缩放的关系，虽然
-\begin_inset Formula $\left|\mathbf{v}_{\perp}'\right|=\left|\mathbf{v}_{\perp}\right|$
+。如果把旋转中的向量
+\begin_inset Formula $\mathbf{v}'$
 \end_inset
 
-，但是因为
-\begin_inset Formula $\left|v_{\parallel}'\right|$
+划过的轨迹画出来，其实是一个椭圆。以旋转轴
+\begin_inset Formula $\mathbf{u}$
 \end_inset
 
-的变化，垂直分量
-\begin_inset Formula $\mathbf{v}_{\perp}'$
+为圆心，以
+\begin_inset Formula $\left|\mathbf{v}_{\perp}\right|$
 \end_inset
 
-和
-\begin_inset Formula $\mathbf{v}_{\perp}$
-\end_inset
-
-都已经不在同一个平面上。
-\end_layout
-
-\begin_layout Standard
-可以从向量
+为半径形成一个圆柱体，以向量
 \begin_inset Formula $\mathbf{v}$
 \end_inset
 
-分解出和旋转轴
-\begin_inset Formula $\mathbf{u}$
+和向量
+\begin_inset Formula $\mathbf{w}=\mathbf{u}\times\mathbf{v}_{\perp}$
 \end_inset
 
-垂直的向量
-\begin_inset Formula $\mathbf{v}_{\perp}$
+张成的平面与这个圆柱体相交形成的椭圆，半长轴为
+\begin_inset Formula $\left|\mathbf{v}\right|$
 \end_inset
 
-。如果把这次旋转中向量
-\begin_inset Formula $\mathbf{v}_{\perp}$
-\end_inset
-
-划过的轨迹用微分的方法画出来，类似于图7.2。
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Quaternions_and_spatial_rotation_figure7.2_正螺旋面.png
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-向量
-\begin_inset Formula $\mathbf{v}_{\perp}$
-\end_inset
-
-轨迹变化示意图
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-这里要强调一点，图7.2只是示意，只是让读者形象理解向量
-\begin_inset Formula $\mathbf{v}_{\perp}$
-\end_inset
-
-的在三维空间中的变化轨迹。实际上，图中的图形叫螺杆面，又叫正螺旋面，是向量模长不变，向量等速在旋转轴
-\begin_inset Formula $\mathbf{u}$
-\end_inset
-
-上移动划出的结果。而因为
-\begin_inset Formula $\left|v_{\parallel}'\right|$
-\end_inset
-
-的变化和旋转角
-\begin_inset Formula $\theta$
-\end_inset
-
-的三角函数相关，不是等速的，变化周期为
-\begin_inset Formula $\pi$
+，半短轴为
+\begin_inset Formula $\left|\mathbf{v}_{\perp}\right|$
 \end_inset
 
 。
@@ -9590,7 +9518,7 @@ status open
 \begin_inset Formula $\left|\mathbf{v}'\right|$
 \end_inset
 
-的变化轨迹，见图7.3。
+的变化轨迹，见图7.2。
 \end_layout
 
 \begin_layout Standard
@@ -9601,7 +9529,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Quaternions_and_spatial_rotation_figure7.3.eps
+	filename Quaternions_and_spatial_rotation_figure7.2.eps
 	scale 80
 
 \end_inset
@@ -10481,10 +10409,10 @@ Hamilton
 
 \begin_layout Plain Layout
 \begin_inset Formula $\mathbf{R}=\left[\begin{array}{cccc}
-1-2q_{2}^{2}-2q_{3}^{2} & 2q_{1}q_{2}-2q_{0}q_{3} & 2q_{1}q_{3}+2q_{0}q_{2} & 0\\
-2q_{1}q_{2}+2q_{0}q_{3} & 1-2q_{1}^{2}-2q_{3}^{2} & 2q_{2}q_{3}-2q_{0}q_{1} & 0\\
-2q_{1}q_{3}-2q_{0}q_{2} & 2q_{2}q_{3}+2q_{0}q_{1} & 1-2q_{1}^{2}-2q_{2}^{2} & 0\\
-0 & 0 & 0 & 1
+1 & 0 & 0 & 0\\
+0 & 1-2q_{2}^{2}-2q_{3}^{2} & 2q_{1}q_{2}-2q_{0}q_{3} & 2q_{1}q_{3}+2q_{0}q_{2}\\
+0 & 2q_{1}q_{2}+2q_{0}q_{3} & 1-2q_{1}^{2}-2q_{3}^{2} & 2q_{2}q_{3}-2q_{0}q_{1}\\
+0 & 2q_{1}q_{3}-2q_{0}q_{2} & 2q_{2}q_{3}+2q_{0}q_{1} & 1-2q_{1}^{2}-2q_{2}^{2}
 \end{array}\right]$
 \end_inset
 
