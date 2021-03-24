@@ -53,6 +53,7 @@
 12. [PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF](https://github.com/PX4/ecl/tree/master/EKF/documentation)
     + PX4项目里24个状态的EKF。
     + [Using the ECL EKF](https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html)
+    + [Nonlinear Quadrocopter Attitude Control - 2013](https://www.research-collection.ethz.ch/handle/20.500.11850/154099)
 
 13. [A Sequential Multiplicative Extended Kalman Filter for Attitude Estimation Using Vector Observations - 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5982416/)
     + 基于向量观测的序贯乘性扩展卡尔曼滤波姿态估计

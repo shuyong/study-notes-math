@@ -1,0 +1,4978 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "PX4 的 ECL EKF2 方程推导"
+\pdf_author "Shuyong Chen"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+PX4 的 ECL EKF2 方程推导
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+PX4 的 ECL (Estimation and Control Library，估计与控制库) 使用EKF对机体状态进行估计，是一个很成熟很优秀的状态估计模
+块。因此在很多项目里面得到了广泛应用。但是，对于 ECL EKF 里面的算法，却很少有文档进行系统的总结，而是散落在各个角落。而总结 ECL EKF
+ 的算法，也相当困难。如果直接看 C++ 代码，则会被里面复杂庞大的计算式吓到。因为它的算法，以前采用 matlab 描述，后来采用 python
+ 描述，C++ 代码则是由符号推导系统优化后的展开式。但是，matlab / python 描述的只是算法的主要部分，有很多细节的处理，还需要回头看
+ C++ 代码的部分。
+\end_layout
+
+\begin_layout Standard
+本文试图对 ECL EKF 其中的主要算法做一个梳理。经验和学识不足，难免有错漏。欢迎读者讨论和指正。
+\end_layout
+
+\begin_layout Section
+EKF简单回顾
+\end_layout
+
+\begin_layout Standard
+对于一个在状态空间描述的线性或者准线性系统，状态
+\begin_inset Formula $k$
+\end_inset
+
+从
+\begin_inset Formula $k-1$
+\end_inset
+
+的状态演变而来，根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x}_{k}=\boldsymbol{F}_{k}\boldsymbol{x}_{k-1}+\boldsymbol{G}_{k}\boldsymbol{u}_{k}+\boldsymbol{w}_{k}
+\]
+
+\end_inset
+
+在这里，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{F}_{k}$
+\end_inset
+
+是状态转换矩阵。对于简单的问题，这个矩阵可以是一个常数，但是对于大多数实际应用程序，转换矩阵依赖于状态向量的值并每次迭代改变。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{G}_{k}$
+\end_inset
+
+是应用于控制向量
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+的控制输入模型。这可用于为系统的已知控制输入建模，例如应用于机器人电机的电流、汽车方向盘的位置等。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{w}_{k}$
+\end_inset
+
+是过程噪声，假定从零均值多元正态分布
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+中提取，利用协方差矩阵
+\begin_inset Formula $\boldsymbol{Q}_{k}:\boldsymbol{w}_{k}\sim\mathcal{N}\left(0,\boldsymbol{Q}_{k}\right)$
+\end_inset
+
+。为这个矩阵确定一个合适的值是很棘手的，并且在卡尔曼滤波器的文献中经常被忽视。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在时间“
+\begin_inset Formula $k$
+\end_inset
+
+”时刻，一个真实状态的观测(或测量)
+\begin_inset Formula $\boldsymbol{z}_{k}$
+\end_inset
+
+根据
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{z}_{k}=\boldsymbol{H}_{k}\boldsymbol{x}_{k}+\boldsymbol{v}_{k}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+是将状态空间映射到观测空间的观测模型。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{v}_{k}$
+\end_inset
+
+是假设为零均值高斯协方差的观测噪声
+\begin_inset Formula $\boldsymbol{R}_{k}:\boldsymbol{v}_{k}\sim\mathcal{N}\left(0,\boldsymbol{R}_{k}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+将状态向量映射到观测值，而不是相反。这是因为
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+通常是不可逆的，也就是说，它不提供对状态的直接可见性。
+\end_layout
+
+\begin_layout Standard
+滤波器的状态由两个变量表示：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k\mid k}$
+\end_inset
+
+，时间k的后验状态估计，给出时间
+\begin_inset Formula $k$
+\end_inset
+
+之前(包括该时间)的观测值；
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{P}_{k\mid k}$
+\end_inset
+
+，后验误差协方差矩阵(状态估计精度的度量)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+滤波器分两步工作：
+\end_layout
+
+\begin_layout Itemize
+一个时间更新(预测)步骤，其中状态和协方差矩阵根据我们对系统动力学和误差特征的了解进行更新，这些特征由
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Q}$
+\end_inset
+
+矩阵建模。预测步骤不包括观察结果的影响。
+\end_layout
+
+\begin_layout Itemize
+一个测量更新(校正)步骤，其中包括观测的影响，以完善状态估计和协方差矩阵。这一步需要确定测量矩阵
+\begin_inset Formula $\boldsymbol{H}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+预测和校正步骤的相应方程式如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\lang english
+预测
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k\mid k-1}=\boldsymbol{F}_{k}\hat{\boldsymbol{x}}_{k-1\mid k-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测(先验)估计协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k\mid k-1}=\boldsymbol{F}_{k}\boldsymbol{P}_{k-1\mid k-1}\boldsymbol{F}_{k}^{\mathrm{T}}+\boldsymbol{Q}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\lang english
+校正
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新或测量残差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\tilde{\boldsymbol{y}}_{k}=\boldsymbol{z}_{k}-\boldsymbol{H}_{k}\hat{\boldsymbol{x}}_{k\mid k-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+创新(或残差)协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{S}_{k}=\boldsymbol{H}_{k}\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}+\boldsymbol{R}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+最佳卡尔曼增益
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{K}_{k}=\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}\boldsymbol{S}_{k}^{-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的状态估计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{x}}_{k\mid k}=\hat{\boldsymbol{x}}_{k\mid k-1}+\boldsymbol{K}_{k}\tilde{\mathbf{y}}_{k}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+更新(后验)的协方差
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{k|k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k|k-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波实现的主要任务是利用系统动力学模型和测量模型，提出状态转换矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+、测量矩阵
+\begin_inset Formula $\boldsymbol{H}$
+\end_inset
+
+和系统噪声特性，设计过程和测量噪声协方差矩阵。
+\end_layout
+
+\begin_layout Standard
+对于EKF系统，上述方程则增加了本地线性化的处理，变化后的预测和校正步骤的相应方程式如下：
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\lang english
+预测
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+预测(先验)状态估计
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k\mid k-1}=f\left(\hat{\boldsymbol{x}}_{k-1\mid k-1},\boldsymbol{u}_{k},\boldsymbol{w}_{k}\right)\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+预测(先验)估计协方差
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k\mid k-1}=\boldsymbol{F}_{k}\boldsymbol{P}_{k-1\mid k-1}\boldsymbol{F}_{k}^{\mathrm{T}}+\boldsymbol{G}_{k}\boldsymbol{Q}_{k}\boldsymbol{G}_{k}^{\mathrm{T}}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中，状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}_{k}$
+\end_inset
+
+为雅克比矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{F}_{k}=\left.\dfrac{\partial f}{\partial\boldsymbol{x}}\right|_{\hat{\boldsymbol{x}}_{k-1\mid k-1},\boldsymbol{u}_{k}}
+\]
+
+\end_inset
+
+控制输入矩阵
+\begin_inset Formula $\boldsymbol{G}_{k}$
+\end_inset
+
+为雅克比矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{G}_{k}=\left.\dfrac{\partial f}{\partial\boldsymbol{w}}\right|_{\hat{\boldsymbol{x}}_{k-1\mid k-1},\boldsymbol{u}_{k}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+\lang english
+校正
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+创新或测量残差
+\begin_inset Formula 
+\[
+\tilde{\boldsymbol{y}}_{k}=\boldsymbol{z}_{k}-h\left(\hat{\boldsymbol{x}}_{k\mid k-1}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+创新(或残差)协方差
+\begin_inset Formula 
+\[
+\boldsymbol{S}_{k}=\boldsymbol{H}_{k}\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}+\boldsymbol{R}_{k}
+\]
+
+\end_inset
+
+其中，观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{k}$
+\end_inset
+
+为雅克比矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{k}=\left.\dfrac{\partial h}{\partial\boldsymbol{x}}\right|_{\hat{\boldsymbol{x}}_{k\mid k-1}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+最佳卡尔曼增益
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{K}_{k}=\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}\boldsymbol{S}_{k}^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+更新(后验)的状态估计
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{x}}_{k\mid k}=\hat{\boldsymbol{x}}_{k\mid k-1}+\boldsymbol{K}_{k}\tilde{\mathbf{y}}_{k}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+更新(后验)的协方差
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{P}_{k|k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k|k-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+对于EKF，新增的任务就是计算状态转换矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+、控制输入矩阵
+\begin_inset Formula $\boldsymbol{G}$
+\end_inset
+
+和测量矩阵
+\begin_inset Formula $\boldsymbol{H}$
+\end_inset
+
+的雅克比矩阵。
+\end_layout
+
+\begin_layout Section
+ECL EKF 所使用的传感器测量值
+\end_layout
+
+\begin_layout Standard
+ECL EKF 具有不同的操作模式，以允许不同的传感器测量组合。 滤波器在启动时会检查传感器的最小可行组合，并且在完成初始倾斜，偏航和高度对准之后，进入提供旋转
+，垂直速度，垂直位置，IMU 角度偏差和 IMU 速度偏差估计的模式。 
+\end_layout
+
+\begin_layout Standard
+此模式需要 IMU 数据，偏航数据源(磁力计或外部视觉)和高度数据源。 该数据集是所有EKF运行模式的最低需求数据。 在此基础上可以使用其它传感器数据来估计额外
+的状态变量。 
+\end_layout
+
+\begin_layout Subsection
+IMU 
+\end_layout
+
+\begin_layout Standard
+与机体固连的三轴惯性测量单元(IMU)，以最小100Hz的频率获取增量角度和增量速度数据 。EKF仅将IMU数据用于状态预测。 在EKF推导中，IMU数据不作为
+观测值使用。
+\end_layout
+
+\begin_layout Subsection
+磁力计 
+\end_layout
+
+\begin_layout Standard
+需要以最小 5Hz 的速度的三轴机体固连磁力计数据(或外部视觉系统姿势数据)。 磁力计数据可以用于两种方式： 
+\end_layout
+
+\begin_layout Itemize
+使用倾角估计和磁偏角将磁力计测量值转换为偏航角。 然后将该偏航角用作 EKF 的观察值。 该方法精度较低并且不允许学习机体坐标系场偏移，但是它对于磁场异常和大的
+初置陀螺偏差更有鲁棒性。 它是启动期间和在地面时的默认方法。 
+\end_layout
+
+\begin_layout Itemize
+XYZ 磁力计读数用作单独的观察值。 该方法更精确并且允许学习机体坐标系场偏移，但是它假设地球磁场环境只会缓慢变化，并且当存在显着的外部磁场异常时表现较差。
+ 
+\end_layout
+
+\begin_layout Subsection
+高度 
+\end_layout
+
+\begin_layout Standard
+高度数据源 — 来自 GPS，气压计，测距仪或外部视觉设备，需要最小频率为 5Hz。 
+\end_layout
+
+\begin_layout Standard
+如果不存在这些测量值，EKF 将无法启动。 当检测到这些测量值时，EKF 将初始化状态并完成倾角和偏航对准。 当倾角和偏航对齐完成后，EKF 可以转换到其它操作
+模式，从而可以使用其它传感器数据。 
+\end_layout
+
+\begin_layout Subsection
+GPS 
+\end_layout
+
+\begin_layout Subsubsection
+位置和速度测量 
+\end_layout
+
+\begin_layout Standard
+GPS 提供位置和速度测量。
+\end_layout
+
+\begin_layout Subsubsection
+偏航角测量 
+\end_layout
+
+\begin_layout Standard
+有一些全球定位系统接收器可用来提供一个偏航角测量，以取代磁强计数据的使用。 在存在大型磁场异常的环境中工作时，或在高纬度地区，地球磁场具有很大的倾斜角时，这可能
+是一个重要的优势。 
+\end_layout
+
+\begin_layout Subsubsection
+从 GPS 速度数据获取偏航角 
+\end_layout
+
+\begin_layout Standard
+EKF在内部运行一个附加的多假设滤波器，它使用多个3-状态—北/东向(N/E)的速度和偏航角—的扩展卡尔曼滤波器(EKF)。 然后使用高斯加和滤波器(GSF)合
+并这些偏航角的估计值。 单个3-状态的EKF使用了IMU和GPS水平速度数据(加上可选的空速数据)，而不依赖于事先对偏航角或磁强计测量有任何了解。
+ 这里提供了一个对于主滤波器的偏航角备份，当起飞后导航丢失，表明磁力计的偏航估计值不好时，它被用于重置主 EKF 滤波器的24-状态的中的偏航数据。
+\end_layout
+
+\begin_layout Standard
+这也使得 ECL 能够在没有任何磁力计、或没有双天线 GPS 接收器的情况下运行，并提供偏航数据，只要起飞后能够进行某种水平的移动，偏航数据就变得可观测。
+ 一旦机体完成了足够的水平移动，使偏航角可观测， 24-状态的主EKF将使其偏航角与GSF的估计值对齐，并开始使用 GPS。 
+\end_layout
+
+\begin_layout Subsubsection
+双 GPS 接收器 
+\end_layout
+
+\begin_layout Standard
+GPS接收器提供的数据可以用基于所报告数据的精确度的加权算法混合(如果两者都以相同的速度输出数据并使用相同的精确度，这样做效果最好)。 如果来自接收器的数据丢失
+，该机制还提供了自动故障转移，(例如，它允许使用标准 GPS 作为更精确的 RTK 接收器的备份)。
+\end_layout
+
+\begin_layout Subsection
+测距仪 
+\end_layout
+
+\begin_layout Standard
+测距仪的对地距离被用于一个单状态滤波器以估计地形相对于高度基准的垂直位置。 
+\end_layout
+
+\begin_layout Standard
+如果在可用作零高度基准面的平面上操作，则 EKF 也可以直接使用测距仪数据估算高度。
+\end_layout
+
+\begin_layout Subsection
+空速 
+\end_layout
+
+\begin_layout Standard
+当存在空速传感器并且飞机类型不是旋翼时，将使用空速数据。 
+\end_layout
+
+\begin_layout Subsection
+合成侧滑 
+\end_layout
+
+\begin_layout Standard
+固定翼平台可以利用假定的侧滑观测值为零来改进风速估计，也可以在没有空速传感器的情况下进行风速估计。 
+\end_layout
+
+\begin_layout Subsection
+基于阻力比力的多旋翼风场估计
+\end_layout
+
+\begin_layout Standard
+多旋翼平台可以利用沿 X 和 Y 机体轴的空速和阻力之间的关系来估计风速的北/东分量。 
+\end_layout
+
+\begin_layout Subsection
+光流 
+\end_layout
+
+\begin_layout Standard
+光流传感器依赖测距仪，提供
+\begin_inset Formula $xy$
+\end_inset
+
+水平面的速度测量值。 
+\end_layout
+
+\begin_layout Subsection
+外部视觉系统 
+\end_layout
+
+\begin_layout Standard
+外部视觉系统提供位置、速度和姿态测量。
+\end_layout
+
+\begin_layout Subsection
+测量值用途汇总
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+测量值
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+单位
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+来源
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+最小频率
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+用途
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+角速度
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{rad}/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IMU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+加速度
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m/s^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IMU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+预测
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+地球磁场
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{M}_{meas}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{gauss}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+磁力计
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+距地高度
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{hagl}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GPS/气压计/测距仪/外部视觉
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+速度测量
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{V}_{meas}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GPS/(光流+测距仪)/外部视觉
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+位置测量
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{P}_{meas}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GPS/外部视觉
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+偏航角测量
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{rad}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GPS/磁力计/外部视觉
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5Hz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+等效空速
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{airspeed}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $m/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+空速传感器
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+合成侧滑
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{beta}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{rad}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+虚拟
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+阻力比力
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{drag}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+虚拟
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+校正
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据前面的描述可知：
+\end_layout
+
+\begin_layout Itemize
+ECL EKF2 最小传感器集合为：IMU，偏航数据源和高度数据源。
+\end_layout
+
+\begin_layout Itemize
+机体的姿态变化由角速度驱动，速度变化由加速度驱动，这两者由IMU提供。
+\end_layout
+
+\begin_layout Itemize
+偏航测量值校正了在
+\begin_inset Formula $xy$
+\end_inset
+
+水平面上姿态，高度测量值校正了
+\begin_inset Formula $z$
+\end_inset
+
+轴上的位置。有了这两者才能执行最基本的自动导航功能。
+\end_layout
+
+\begin_layout Itemize
+磁力计是最适合校正姿态的传感器，也是最容易受到外界影响的传感器。气压计是最常见的测量高度的设备，因为成本低廉。
+\end_layout
+
+\begin_layout Itemize
+GPS是多面手，可以提供很多测量数据。所以如果不是成本受限，GPS应该是无人机的标配设备。
+\end_layout
+
+\begin_layout Itemize
+光流设备和外部视觉设备是最时髦的设备。但是应用效果还有待观察。
+\end_layout
+
+\begin_layout Itemize
+ECL EKF2 做了很多数据质量检测判断。因此外接传感器的种类越多，则容错率就越高。
+\end_layout
+
+\begin_layout Section
+ECL EKF 时间更新方程
+\end_layout
+
+\begin_layout Subsection
+状态向量
+\end_layout
+
+\begin_layout Standard
+估计和控制库(ECL)使用扩展卡尔曼滤波算法(EKF)来处理传感器的测量信息，并提供如下状态向量的估计值： 
+\end_layout
+
+\begin_layout Itemize
+四元数定义从北，东，地(NED)局部地球坐标系到 X，Y，Z 机体坐标系的旋转 
+\end_layout
+
+\begin_layout Itemize
+IMU 的速度 — 北，东，地(NED)(m/s) 
+\end_layout
+
+\begin_layout Itemize
+IMU 的位置 — 北，东，地(NED)(m) 
+\end_layout
+
+\begin_layout Itemize
+IMU 增量角度偏差估计 — X, Y, Z(rad) 
+\end_layout
+
+\begin_layout Itemize
+IMU 增量速度偏差估计 — X, Y, Z(m/s) 
+\end_layout
+
+\begin_layout Itemize
+地球磁场组分 — 北，东，地(NED)(gauss) 
+\end_layout
+
+\begin_layout Itemize
+飞行器机体坐标系磁场偏差 — X, Y, Z(gauss) 
+\end_layout
+
+\begin_layout Itemize
+风速 — 北, 东(NE)(m/s)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+24个状态的向量定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\left[\begin{array}{cccccccc}
+q & \boldsymbol{V}_{NED} & \boldsymbol{P}_{NED} & \boldsymbol{\Delta\theta}_{b} & \boldsymbol{\Delta V}_{b} & \boldsymbol{M}_{I} & \boldsymbol{M}_{B} & \boldsymbol{V}_{wind}\end{array}\right]^{\mathrm{T}}
+\]
+
+\end_inset
+
+其中，姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+，用于定义 XYZ 机体坐标系相对于 NED 导航
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+坐标系
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的角度位置，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+表示在 NED 坐标系的机体速度，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{NED}=\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{P}_{NED}$
+\end_inset
+
+表示在 NED 坐标系的机体位置，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{NED}=\left[\begin{array}{c}
+P_{N}\\
+P_{E}\\
+P_{D}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{b}$
+\end_inset
+
+表示在 XYZ 机体坐标系的增量角度偏差(bias)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\Delta\theta}_{b}=\left[\begin{array}{c}
+\Delta\theta_{b_{X}}\\
+\Delta\theta_{b_{Y}}\\
+\Delta\theta_{b_{Z}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+\end_inset
+
+表示在 XYZ 机体坐标系的增量速度偏差(bias)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\Delta V}_{b}=\left[\begin{array}{c}
+\Delta V_{b_{X}}\\
+\Delta V_{b_{Y}}\\
+\Delta V_{b_{Z}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{M}_{I}$
+\end_inset
+
+表示在 NED 坐标系的地球磁场向量，简称地磁，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{M}_{I}=\left[\begin{array}{c}
+M_{N}\\
+M_{E}\\
+M_{D}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{M}_{B}$
+\end_inset
+
+表示在 XYZ 机体坐标系的磁场偏差(bias)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{M}_{B}=\left[\begin{array}{c}
+M_{X}\\
+M_{Y}\\
+M_{Z}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+表示在 NED 坐标系的在北东 (NE) 方向上的风速，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{wind}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应用常用的数据输出有：
+\end_layout
+
+\begin_layout Itemize
+姿态输出。 
+\end_layout
+
+\begin_layout Itemize
+速度输出。 
+\end_layout
+
+\begin_layout Itemize
+位置输出。 
+\end_layout
+
+\begin_layout Itemize
+风速输出。 
+\end_layout
+
+\begin_layout Standard
+注意：输出的数据项和状态向量中的数据不完全相同，而是使用输出互补滤波器进行修正的数据，参见文档[12]中的算法。
+\end_layout
+
+\begin_layout Subsection
+时间更新方程
+\end_layout
+
+\begin_layout Subsubsection
+旋转矩阵
+\end_layout
+
+\begin_layout Standard
+从机体坐标系到导航坐标系的旋转矩阵根据姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+由以下方程给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[T\right]_{B}^{N}=\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right) & 2\left(q_{1}\cdot q_{3}+q_{0}\cdot q_{2}\right)\\
+2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}\cdot q_{3}-q_{0}\cdot q_{1}\right)\\
+2\left(q_{1}\cdot q_{3}-q_{0}\cdot q_{2}\right) & 2\left(q_{2}\cdot q_{3}+q_{0}\cdot q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果需要从导航坐标系到机体坐标系的旋转，将使用转置，并用
+\begin_inset Formula $\left[T\right]_{N}^{B}$
+\end_inset
+
+表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[T\right]_{N}^{B}=\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}=\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}q_{2}+q_{0}q_{3}\right) & 2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right) & 2\left(q_{2}q_{3}-q_{0}q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+时间更新
+\end_layout
+
+\begin_layout Standard
+IMU传感器定时采样，采样间隔时间为
+\begin_inset Formula $\Delta t$
+\end_inset
+
+，获得
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+角速度
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+加速度
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+数据。所以我们得到增量角度的测量值为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Delta\theta}_{meas}=\boldsymbol{\omega}\Delta t\label{eq:6}
+\end{equation}
+
+\end_inset
+
+还有增量速度的测量值为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Delta V}_{meas}=\boldsymbol{a}\Delta t\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+已知陀螺仪的测量方差为
+\begin_inset Formula $\boldsymbol{\sigma}_{gyro}^{2}$
+\end_inset
+
+，加速计的测量方差为
+\begin_inset Formula $\boldsymbol{\sigma}_{accel}^{2}$
+\end_inset
+
+。所以我们有增量角度的测量方差为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}=\boldsymbol{\sigma}_{gyro}^{2}\Delta t^{2}\label{eq:8}
+\end{equation}
+
+\end_inset
+
+还有增量速度的测量方差为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}=\boldsymbol{\sigma}_{accel}^{2}\Delta t^{2}\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据IMU测量值
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{meas}$
+\end_inset
+
+和增量角度偏差
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{b}$
+\end_inset
+
+计算出真增量角度
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{truth}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Delta\theta}_{truth}=\boldsymbol{\Delta\theta}_{meas}-\boldsymbol{\Delta\theta}_{b}\label{eq:10}
+\end{equation}
+
+\end_inset
+
+增量四元数
+\begin_inset Formula $\Delta q$
+\end_inset
+
+定义了从第
+\begin_inset Formula $k$
+\end_inset
+
+时刻到第
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻四元数的旋转，使用小角度近似从真增量角度
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{truth}$
+\end_inset
+
+计算(惯性导航采用其它精确方法计算)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta q=\left[\begin{array}{c}
+1\\
+\dfrac{\boldsymbol{\Delta\theta}_{truth}}{2}
+\end{array}\right]\label{eq:11}
+\end{equation}
+
+\end_inset
+
+从
+\begin_inset Formula $k$
+\end_inset
+
+时刻到
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻，四元数乘积规则用于将姿态四元数的状态向前旋转增量四元数
+\begin_inset Formula $\Delta q$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+q_{k+1} & =q_{k}\cdot\Delta q\\
+\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]_{k+1} & =\left[\begin{array}{c}
+q_{0}\Delta q_{0}-q_{1}\Delta q_{1}-q_{2}\Delta q_{2}-q_{3}\Delta q_{3}\\
+q_{1}\Delta q_{0}+q_{0}\Delta q_{1}-q_{3}\Delta q_{2}+q_{2}\Delta q_{3}\\
+q_{2}\Delta q_{0}+q_{3}\Delta q_{1}+q_{0}\Delta q_{2}-q_{1}\Delta q_{3}\\
+q_{3}\Delta q_{0}-q_{2}\Delta q_{1}+q_{1}\Delta q_{2}+q_{0}\Delta q_{3}
+\end{array}\right]
+\end{array}\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据IMU测量值
+\begin_inset Formula $\boldsymbol{\Delta V}_{meas}$
+\end_inset
+
+和增量速度偏差
+\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+\end_inset
+
+计算出真增量速度
+\begin_inset Formula $\boldsymbol{\Delta V}_{truth}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Delta V}_{truth}=\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+从
+\begin_inset Formula $k$
+\end_inset
+
+时刻到
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻，将真增量速度向量
+\begin_inset Formula $\boldsymbol{\Delta V}_{truth}$
+\end_inset
+
+从机体坐标系旋转到地球坐标系，并减去重力，计算速度状态变化
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\left(\boldsymbol{V}_{NED}\right)_{k+1} & =\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\\
+\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]_{k+1} & =\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\left[\begin{array}{c}
+0\\
+0\\
+g
+\end{array}\right]\cdot\Delta t
+\end{array}\label{eq:14}
+\end{equation}
+
+\end_inset
+
+使用欧拉积分更新位置状态(惯性导航使用更精确的梯形积分方法)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\left(\boldsymbol{P}_{NED}\right)_{k+1} & =\left(\boldsymbol{P}_{NED}\right)_{k}+\left(\boldsymbol{V}_{NED}\right)_{k}\cdot\Delta t\\
+\left[\begin{array}{c}
+P_{N}\\
+P_{E}\\
+P_{D}
+\end{array}\right]_{k+1} & =\left[\begin{array}{c}
+P_{N}\\
+P_{E}\\
+P_{D}
+\end{array}\right]_{k}+\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]_{k}\cdot\Delta t
+\end{array}\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+IMU传感器的偏差、磁场和风速状态均采用静态过程模型：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+\boldsymbol{\Delta\theta}_{b}\\
+\boldsymbol{\Delta V}_{b}\\
+\boldsymbol{M}_{I}\\
+\boldsymbol{M}_{B}\\
+\boldsymbol{V}_{wind}
+\end{array}\right]_{k+1}=\left[\begin{array}{c}
+\boldsymbol{\Delta\theta}_{b}\\
+\boldsymbol{\Delta V}_{b}\\
+\boldsymbol{M}_{I}\\
+\boldsymbol{M}_{B}\\
+\boldsymbol{V}_{wind}
+\end{array}\right]_{k}\label{eq:16}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+自此，已经完成预测(先验)状态估计的计算。接下来要进行预测(先验)估计协方差的计算。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可表示为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x}_{k+1}=\boldsymbol{F}\boldsymbol{x}_{k}+\boldsymbol{G}\boldsymbol{u}_{k}+\boldsymbol{w}_{k}
+\]
+
+\end_inset
+
+其中，控制向量
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+，也称干扰(disturbance)向量，为
+\begin_inset Formula 
+\[
+\boldsymbol{u}=\left[\begin{array}{c}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+它是由惯性测量单元(IMU)的增量角度和增量速度的测量方差，
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}$
+\end_inset
+
+所定义。在状态变量中消除偏差影响后，假设惯性解中的误差增长是由增量角度和增量速度中的“噪声”驱动的。这种方案是可行的，因为在状态方程中考虑了传感器偏差。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的矩阵
+\begin_inset Formula $\boldsymbol{Q}$
+\end_inset
+
+为测量方差元素构成的对角线矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{Q}_{6\times6} & =\mathrm{diag}\left(\left[\begin{array}{c}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}
+\end{array}\right]\right)
+\end{align*}
+
+\end_inset
+
+并且
+\begin_inset Formula $\boldsymbol{G}\boldsymbol{Q}\boldsymbol{G}^{\mathrm{T}}$
+\end_inset
+
+被称为状态误差矩阵。
+\end_layout
+
+\begin_layout Standard
+根据前面推导的第 
+\begin_inset Formula $k+1$
+\end_inset
+
+ 时刻的状态向量方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，分别对第 
+\begin_inset Formula $k$
+\end_inset
+
+ 时刻的状态 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 求 Jacobian 可得状态转换矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+、控制(干扰)影响矩阵
+\begin_inset Formula $\boldsymbol{G}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+状态转换矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+是一个
+\begin_inset Formula $24\times24$
+\end_inset
+
+的稀疏矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F} & =\dfrac{\partial\boldsymbol{x}_{k+1}}{\partial\boldsymbol{x}_{k}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{F}_{q_{k}}^{q_{k+1}} & 0_{4\times3} & 0_{4\times3} & \boldsymbol{F}_{\Delta\theta_{b}^{k}}^{q_{k+1}} & 0_{4\times3} & 0_{4\times3} & 0_{4\times3} & 0_{4\times2}\\
+\boldsymbol{F}_{q_{k}}^{V_{k+1}} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{3\times4} & \boldsymbol{F}_{V_{k}}^{P_{k+1}} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{3\times4} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{3\times4} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{3\times4} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{3\times4} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times2}\\
+0_{2\times4} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & \boldsymbol{I}_{2\times2}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{F}_{q_{k}}^{q_{k+1}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{F}_{q_{k}}^{V_{k+1}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{F}_{V_{k}}^{P_{k+1}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{F}_{\Delta\theta_{b}^{k}}^{q_{k+1}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}}$
+\end_inset
+
+这5个分块矩阵见下面的推导。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{F}_{q_{k}}^{q_{k+1}}$
+\end_inset
+
+为关于四元数的状态转移矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的旋转相对于
+\begin_inset Formula $k$
+\end_inset
+
+时刻的 Jacobian ，大小为
+\begin_inset Formula $4\times4$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F}_{q_{k}}^{q_{k+1}} & =\dfrac{\partial q_{k+1}}{\partial q_{k}}\\
+ & =\dfrac{\partial\left(q_{k}\cdot\Delta q\right)}{\partial q_{k}}\\
+ & =\dfrac{\partial\left(q_{k}+q_{k}\cdot\left[\begin{array}{c}
+0\\
+\dfrac{\boldsymbol{\Delta\theta}_{truth}}{2}
+\end{array}\right]\right)}{\partial q_{k}}\\
+ & =\boldsymbol{I}_{4\times4}+M\left(\dfrac{\boldsymbol{\Delta\theta}_{truth}}{2}\right)
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $M\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+为
+\begin_inset Formula $4\times4$
+\end_inset
+
+斜对称矩阵
+\begin_inset Formula 
+\[
+M\left(\boldsymbol{\theta}\right)=\left[\begin{array}{cccc}
+0 & -\theta_{x} & -\theta_{y} & -\theta_{z}\\
+\theta_{x} & 0 & \theta_{z} & -\theta_{y}\\
+\theta_{y} & -\theta_{z} & 0 & \theta_{x}\\
+\theta_{z} & \theta_{y} & -\theta_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{F}_{q_{k}}^{V_{k+1}}$
+\end_inset
+
+为速度关于四元数的状态转移矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的速度相对于
+\begin_inset Formula $k$
+\end_inset
+
+时刻的旋转的 Jacobian ，大小为
+\begin_inset Formula $3\times4$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F}_{q_{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial q_{k}}\\
+ & =\dfrac{\partial\left(\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}\right)}{\partial q_{k}}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right) & 2\left(q_{1}\cdot q_{3}+q_{0}\cdot q_{2}\right)\\
+2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}\cdot q_{3}-q_{0}\cdot q_{1}\right)\\
+2\left(q_{1}\cdot q_{3}-q_{0}\cdot q_{2}\right) & 2\left(q_{2}\cdot q_{3}+q_{0}\cdot q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\left[\begin{array}{c}
+\Delta V_{X}\\
+\Delta V_{Y}\\
+\Delta V_{Z}
+\end{array}\right]\right)}{\partial q_{k}}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{c}
+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)\Delta V_{X}+2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right)\Delta V_{Y}+2\left(q_{1}\cdot q_{3}+q_{0}\cdot q_{2}\right)\Delta V_{Z}\\
+2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right)\Delta V_{X}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\Delta V_{Y}+2\left(q_{2}\cdot q_{3}-q_{0}\cdot q_{1}\right)\Delta V_{Z}\\
+2\left(q_{1}\cdot q_{3}-q_{0}\cdot q_{2}\right)\Delta V_{X}+2\left(q_{2}\cdot q_{3}+q_{0}\cdot q_{1}\right)\Delta V_{Y}+\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)\Delta V_{Z}
+\end{array}\right]\right)}{\partial q_{k}}\\
+ & \tiny=2\left[\begin{array}{cccc}
+q_{0}\Delta V_{X}-q_{3}\Delta V_{Y}+q_{2}\Delta V_{Z} & q_{1}\Delta V_{X}+q_{2}\Delta V_{Y}+q_{3}\Delta V_{Z} & -q_{2}\Delta V_{X}+q_{1}\Delta V_{Y}+q_{0}\Delta V_{Z} & -q_{3}\Delta V_{X}-q_{0}\Delta V_{Y}+q_{1}\Delta V_{Z}\\
+q_{3}\Delta V_{X}+q_{0}\Delta V_{Y}-q_{1}\Delta V_{Z} & q_{2}\Delta V_{X}-q_{1}\Delta V_{Y}-q_{0}\Delta V_{Z} & q_{1}\Delta V_{X}+q_{2}\Delta V_{Y}+q_{3}\Delta V_{Z} & q_{0}\Delta V_{X}-q_{3}\Delta V_{Y}+q_{2}\Delta V_{Z}\\
+-q_{2}\Delta V_{X}+q_{1}\Delta V_{Y}+q_{0}\Delta V_{Z} & q_{3}\Delta V_{X}+q_{0}\Delta V_{Y}-q_{1}\Delta V_{Z} & -q_{0}\Delta V_{X}+q_{3}\Delta V_{Y}-q_{2}\Delta V_{Z} & q_{1}\Delta V_{X}+q_{2}\Delta V_{Y}+q_{3}\Delta V_{Z}
+\end{array}\right]\\
+ & =2\left[\begin{array}{c}
+\left(\Phi_{1}\cdot\boldsymbol{\Delta V}_{truth}\right)^{\mathrm{T}}\\
+\left(\Phi_{2}\cdot\boldsymbol{\Delta V}_{truth}\right)^{\mathrm{T}}\\
+\left(\Phi_{3}\cdot\boldsymbol{\Delta V}_{truth}\right)^{\mathrm{T}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula 
+\[
+\Phi_{1}=\left[\begin{array}{ccc}
+q_{0} & -q_{3} & q_{2}\\
+q_{1} & q_{2} & q_{3}\\
+-q_{2} & q_{1} & q_{0}\\
+-q_{3} & -q_{0} & q_{1}
+\end{array}\right],\quad\Phi_{2}=\left[\begin{array}{ccc}
+q_{3} & q_{0} & -q_{1}\\
+q_{2} & -q_{1} & -q_{0}\\
+q_{1} & q_{2} & q_{3}\\
+q_{0} & -q_{3} & q_{2}
+\end{array}\right],\quad\Phi_{3}=\left[\begin{array}{ccc}
+-q_{2} & q_{1} & q_{0}\\
+q_{3} & q_{0} & -q_{1}\\
+-q_{0} & q_{3} & -q_{2}\\
+q_{1} & q_{2} & q_{3}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{F}_{V_{k}}^{P_{k+1}}$
+\end_inset
+
+为位置关于速度的状态转移矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的位置相对于
+\begin_inset Formula $k$
+\end_inset
+
+时刻的速度的 Jacobian ，大小为
+\begin_inset Formula $3\times3$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F}_{V_{k}}^{P_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{P}_{NED}\right)_{k}+\left(\boldsymbol{V}_{NED}\right)_{k}\cdot\Delta t\right)}{\partial\left(\boldsymbol{V}_{NED}\right)_{k}}\\
+ & =\boldsymbol{I}_{3\times3}\cdot\Delta t
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{F}_{\Delta\theta_{b}^{k}}^{q_{k+1}}$
+\end_inset
+
+为四元数关于增量角度偏差的状态转移矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的旋转相对于陀螺仪
+\begin_inset Formula $k$
+\end_inset
+
+时刻增量角度偏差的 Jacobian ，大小为
+\begin_inset Formula $4\times3$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F}_{\Delta\theta_{b}^{k}}^{q_{k+1}} & =\dfrac{\partial\left(q_{k}\cdot\Delta q\right)}{\partial\left(\boldsymbol{\Delta\theta}_{b}\right)_{k}}\\
+ & =\dfrac{\partial\left(q_{k}+q_{k}\left[\begin{array}{c}
+0\\
+\dfrac{\boldsymbol{\Delta\theta}_{meas}}{2}
+\end{array}\right]+q_{k}\left[\begin{array}{c}
+0\\
+\dfrac{-\left(\boldsymbol{\Delta\theta}_{b}\right)_{k}}{2}
+\end{array}\right]\right)}{\partial\left(\boldsymbol{\Delta\theta}_{b}\right)_{k}}\\
+ & =\dfrac{\partial\left(-\dfrac{1}{2}\left[\begin{array}{c}
+-q_{1}\Delta\theta_{b_{X}}-q_{2}\Delta\theta_{b_{Y}}-q_{3}\Delta\theta_{b_{Z}}\\
++q_{0}\Delta\theta_{b_{X}}-q_{3}\Delta\theta_{b_{Y}}+q_{2}\Delta\theta_{b_{Z}}\\
++q_{3}\Delta\theta_{b_{X}}+q_{0}\Delta\theta_{b_{Y}}-q_{1}\Delta\theta_{b_{Z}}\\
+-q_{2}\Delta\theta_{b_{X}}+q_{1}\Delta\theta_{b_{Y}}+q_{0}\Delta\theta_{b_{Z}}
+\end{array}\right]\right)}{\partial\left(\boldsymbol{\Delta\theta}_{b}\right)_{k}}\\
+ & =-\dfrac{1}{2}\left[\begin{array}{ccc}
+-q_{1} & -q_{2} & -q_{3}\\
++q_{0} & -q_{3} & +q_{2}\\
++q_{3} & +q_{0} & -q_{1}\\
+-q_{2} & +q_{1} & +q_{0}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}}$
+\end_inset
+
+为速度关于增量速度偏差的状态转移矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的速度相对于加速度计
+\begin_inset Formula $k$
+\end_inset
+
+时刻增量速度偏差的 Jacobian ，大小为
+\begin_inset Formula $3\times3$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{b}\right)_{k}}\\
+ & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{b}\right)_{k}}\\
+ & =-\left[T\right]_{B}^{N}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+控制(干扰)影响矩阵
+\begin_inset Formula $\boldsymbol{G}$
+\end_inset
+
+需要对增量角度和增量速度的测量值求偏导，因为测量值中包含有噪声。它是一个
+\begin_inset Formula $24\times6$
+\end_inset
+
+的稀疏矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{G} & =\dfrac{\partial\boldsymbol{x}_{k+1}}{\partial\boldsymbol{w}_{k}}\\
+ & =\dfrac{\partial\boldsymbol{x}_{k+1}}{\partial\left(\boldsymbol{\Delta\theta}_{meas},\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
+ & =\left[\begin{array}{cc}
+\boldsymbol{G}_{\Delta\theta_{meas}^{k}}^{q_{k+1}} & 0_{4\times3}\\
+0_{3\times3} & \boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}}\\
+0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3}\\
+0_{3\times3} & 0_{3\times3}\\
+0_{2\times3} & 0_{2\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{G}_{\Delta\theta_{meas}^{k}}^{q_{k+1}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}}$
+\end_inset
+
+这2个分块矩阵见下面的推导。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{G}_{\Delta\theta_{meas}^{k}}^{q_{k+1}}$
+\end_inset
+
+为姿态四元数关于增量角度噪声的控制输入矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的旋转相对于陀螺仪
+\begin_inset Formula $k$
+\end_inset
+
+时刻增量角度噪声的协方差矩阵，大小为
+\begin_inset Formula $4\times3$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{G}_{\Delta\theta_{meas}^{k}}^{q_{k+1}} & =\dfrac{\partial\left(q_{k}\cdot\Delta q\right)}{\partial\left(\boldsymbol{\Delta\theta}_{meas}\right)_{k}}\\
+ & =\dfrac{\partial\left(q_{k}+q_{k}\left[\begin{array}{c}
+0\\
+\dfrac{\boldsymbol{\Delta\theta}_{meas}}{2}
+\end{array}\right]+q_{k}\left[\begin{array}{c}
+0\\
+\dfrac{-\left(\boldsymbol{\Delta\theta}_{b}\right)_{k}}{2}
+\end{array}\right]\right)}{\partial\left(\boldsymbol{\Delta\theta}_{meas}\right)_{k}}\\
+ & =\dfrac{\partial\left(\dfrac{1}{2}\left[\begin{array}{c}
+-q_{1}\Delta\theta_{meas_{X}}-q_{2}\Delta\theta_{meas_{Y}}-q_{3}\Delta\theta_{meas_{Z}}\\
++q_{0}\Delta\theta_{meas_{X}}-q_{3}\Delta\theta_{meas_{Y}}+q_{2}\Delta\theta_{meas_{Z}}\\
++q_{3}\Delta\theta_{meas_{X}}+q_{0}\Delta\theta_{meas_{Y}}-q_{1}\Delta\theta_{meas_{Z}}\\
+-q_{2}\Delta\theta_{meas_{X}}+q_{1}\Delta\theta_{meas_{Y}}+q_{0}\Delta\theta_{meas_{Z}}
+\end{array}\right]\right)}{\partial\left(\boldsymbol{\Delta\theta}_{meas}\right)_{k}}\\
+ & =\dfrac{1}{2}\left[\begin{array}{ccc}
+-q_{1} & -q_{2} & -q_{3}\\
++q_{0} & -q_{3} & +q_{2}\\
++q_{3} & +q_{0} & -q_{1}\\
+-q_{2} & +q_{1} & +q_{0}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}}$
+\end_inset
+
+为速度关于增量速度噪声的控制输入矩阵，即
+\begin_inset Formula $k+1$
+\end_inset
+
+时刻的速度相对于加速度计
+\begin_inset Formula $k$
+\end_inset
+
+时刻增量速度噪声的协方差矩阵，大小为
+\begin_inset Formula $3\times3$
+\end_inset
+
+，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可得：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
+ & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
+ & =\left[T\right]_{B}^{N}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的协方差矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+增加过程噪声
+\begin_inset Formula $\boldsymbol{w}$
+\end_inset
+
+。那些运动学的状态(姿态
+\begin_inset Formula $q$
+\end_inset
+
+、速度
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+和位置
+\begin_inset Formula $\boldsymbol{P}_{NED}$
+\end_inset
+
+)，它们的误差增长分别由IMU噪声方差控制，已经在前面的方程中加入。对于其它静态过程模型的状态，则用静态过程模型构造这些状态的过程噪声方差对角线，
+\begin_inset Formula $24\times24$
+\end_inset
+
+的过程噪声矩阵为
+\begin_inset Formula 
+\[
+\boldsymbol{w}=\mathrm{diag}\left(\left[\begin{array}{c}
+0_{4\times1}\\
+0_{3\times1}\\
+0_{3\times1}\\
+\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{M}_{I}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{M}_{B}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{V}_{wind}}^{2}
+\end{array}\right]\right)
+\]
+
+\end_inset
+
+其中，增量角度偏差和增量速度偏差的过程噪声方差，同样采用增量角度的测量方差
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}$
+\end_inset
+
+和增量速度的测量方差
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}$
+\end_inset
+
+。地球磁场
+\begin_inset Formula $\boldsymbol{M}_{I}$
+\end_inset
+
+，机体磁场偏差
+\begin_inset Formula $\boldsymbol{M}_{B}$
+\end_inset
+
+和风速
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+的过程噪声方差，
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{M}_{I}}^{2}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{M}_{B}}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{V}_{wind}}^{2}$
+\end_inset
+
+，可由用户自行设定。
+\end_layout
+
+\begin_layout Standard
+至此，已经完成预测(先验)估计协方差的计算。
+\end_layout
+
+\begin_layout Section
+ECL EKF 测量更新方程
+\end_layout
+
+\begin_layout Standard
+ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这样的好处是系统具有很高的容错性，不管发生什么异常，总是有方法进行数据校正。但是带来的问题就是算法
+复杂，代码分支繁多，很难把握，更难调试。
+\end_layout
+
+\begin_layout Standard
+该算法的第二个特点是将
+\begin_inset Formula $xy$
+\end_inset
+
+水平面和
+\begin_inset Formula $z$
+\end_inset
+
+轴方向的高度分开估计。这个估计是因为GPS的高度数据误差太大，而高度数据源又很多，这么处理可以提升高度数据的精度。
+\end_layout
+
+\begin_layout Standard
+该算法的第三个特点是对所有的观测向量都是拆分为一维一维的数据进行校正。这是一种优化算法，通过使用更多的运算步骤换取使用更少的栈空间。这对于MCU这种内存紧张的环
+境有好处。
+\end_layout
+
+\begin_layout Subsection
+磁力计融合
+\end_layout
+
+\begin_layout Standard
+磁力计更新分为两种情况：
+\end_layout
+
+\begin_layout Enumerate
+用三轴磁力计的数据作为三维观测。
+\end_layout
+
+\begin_layout Enumerate
+直接将磁力计的数据转换为磁偏角作为一维观测。
+\end_layout
+
+\begin_layout Standard
+第二种方法对于磁场异常和大的初置陀螺偏差更有鲁棒性。 它是启动期间和在地面时的默认方法。第一种方法有更好的精度，但是当存在显着的外部磁场异常时表现较差。
+\end_layout
+
+\begin_layout Standard
+三轴磁场的更新根据是否有磁偏角的约束分为两个阶段。在初始化或差工况时，先进行无磁偏角约束的磁力计融合阶段，再进行有磁偏角约束的融合阶段；好工况时则相反。下面2个
+小节分别进行这两个阶段的方程推导。第3小节进行一维观测的方程推导。
+\end_layout
+
+\begin_layout Subsubsection
+磁力计测量融合方程
+\end_layout
+
+\begin_layout Standard
+无磁偏角约束的三轴磁场的融合阶段，不考虑磁偏角
+\begin_inset Formula $\psi_{DECLINATION}$
+\end_inset
+
+，也就是假设地球的地理南北极与地磁南北极重合。
+\end_layout
+
+\begin_layout Standard
+由磁力计测量的机体磁场强度为
+\begin_inset Formula $\boldsymbol{M}_{meas}$
+\end_inset
+
+。已知磁力计的测量方差为
+\begin_inset Formula $\boldsymbol{R}_{MAG}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+预测的机体磁场强度为
+\begin_inset Formula $\boldsymbol{M}_{pred}$
+\end_inset
+
+，由状态向量中的地球磁场
+\begin_inset Formula $\boldsymbol{M}_{I}$
+\end_inset
+
+旋转到机体轴得到：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{M}_{pred} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{M}_{I}+\boldsymbol{M}_{B}\\
+\left[\begin{array}{c}
+M_{pred_{X}}\\
+M_{pred_{Y}}\\
+M_{pred_{Z}}
+\end{array}\right] & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left[\begin{array}{c}
+M_{N}\\
+M_{E}\\
+M_{D}
+\end{array}\right]+\left[\begin{array}{c}
+M_{X}\\
+M_{Y}\\
+M_{Z}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁场观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{MAG}$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times24$
+\end_inset
+
+的稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{MAG} & =\dfrac{\partial\boldsymbol{M}_{pred}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{H}_{M_{I}} & \boldsymbol{H}_{M_{B}} & 0_{3\times2}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{H}_{M_{I}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{H}_{M_{B}}$
+\end_inset
+
+这3个分块矩阵见下面的推导。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{H}_{q}$
+\end_inset
+
+为磁力计的观测相对于姿态四元数的观测矩阵，即磁场测量值相对于旋转的 Jacobian ，大小为
+\begin_inset Formula $3\times4$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{q} & =\dfrac{\partial\boldsymbol{M}_{pred}}{\partial q}\\
+ & =\dfrac{\partial\left(\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{M}_{I}+\boldsymbol{M}_{B}\right)}{\partial q}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}q_{2}+q_{0}q_{3}\right) & 2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right) & 2\left(q_{2}q_{3}-q_{0}q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\left[\begin{array}{c}
+M_{N}\\
+M_{E}\\
+M_{D}
+\end{array}\right]\right)}{\partial q}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{c}
+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)M_{N}+2\left(q_{1}q_{2}+q_{0}q_{3}\right)M_{E}+2\left(q_{1}q_{3}-q_{0}q_{2}\right)M_{D}\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right)M_{N}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)M_{E}+2\left(q_{2}q_{3}+q_{0}q_{1}\right)M_{D}\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right)M_{N}+2\left(q_{2}q_{3}-q_{0}q_{1}\right)M_{E}+\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)M_{D}
+\end{array}\right]\right)}{\partial q}\\
+ & \tiny=2\left[\begin{array}{cccc}
+q_{0}M_{N}+q_{3}M_{E}-q_{2}M_{D} & q_{1}M_{N}+q_{2}M_{E}+q_{3}M_{D} & -q_{2}M_{N}+q_{1}M_{E}-q_{0}M_{D} & -q_{3}M_{N}+q_{0}M_{E}+q_{1}M_{D}\\
+-q_{3}M_{N}+q_{0}M_{E}+q_{1}M_{D} & q_{2}M_{N}-q_{1}M_{E}+q_{0}M_{D} & q_{1}M_{N}+q_{2}M_{E}+q_{3}M_{D} & -q_{0}M_{N}-q_{3}M_{E}+q_{2}M_{D}\\
+q_{2}M_{N}-q_{1}M_{E}+q_{0}M_{D} & q_{3}M_{N}-q_{0}M_{E}-q_{1}M_{D} & q_{0}M_{N}+q_{3}M_{E}-q_{2}M_{D} & q_{1}M_{N}+q_{2}M_{E}+q_{3}M_{D}
+\end{array}\right]\\
+ & =2\left[\begin{array}{c}
+\left(\Phi_{4}\cdot\boldsymbol{M}_{I}\right)^{\mathrm{T}}\\
+\left(\Phi_{5}\cdot\boldsymbol{M}_{I}\right)^{\mathrm{T}}\\
+\left(\Phi_{6}\cdot\boldsymbol{M}_{I}\right)^{\mathrm{T}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula 
+\[
+\Phi_{4}=\left[\begin{array}{ccc}
+q_{0} & q_{3} & -q_{2}\\
+q_{1} & q_{2} & q_{3}\\
+-q_{2} & q_{1} & -q_{0}\\
+-q_{3} & q_{0} & q_{1}
+\end{array}\right],\quad\Phi_{5}=\left[\begin{array}{ccc}
+-q_{3} & q_{0} & q_{1}\\
+q_{2} & -q_{1} & q_{0}\\
+q_{1} & q_{2} & q_{3}\\
+-q_{0} & -q_{3} & q_{2}
+\end{array}\right],\quad\Phi_{6}=\left[\begin{array}{ccc}
+q_{2} & -q_{1} & q_{0}\\
+q_{3} & -q_{0} & -q_{1}\\
+q_{0} & q_{3} & -q_{2}\\
+q_{1} & q_{2} & q_{3}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{H}_{M_{I}}$
+\end_inset
+
+为磁力计的观测相对于地球磁场向量的观测矩阵，即磁场测量值相对于地球磁场的 Jacobian ，大小
+\begin_inset Formula $3\times3$
+\end_inset
+
+为：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{M_{I}} & =\dfrac{\partial\boldsymbol{M}_{pred}}{\partial\boldsymbol{M}_{I}}\\
+ & =\dfrac{\partial\left(\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{M}_{I}+\boldsymbol{M}_{B}\right)}{\partial\boldsymbol{M}_{I}}\\
+ & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{H}_{M_{B}}$
+\end_inset
+
+为磁力计的观测相对于机体磁场偏差的观测矩阵，即磁场测量值相对于磁场偏差的 Jacobian ，大小
+\begin_inset Formula $3\times3$
+\end_inset
+
+为：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{M_{B}} & =\dfrac{\partial\boldsymbol{M}_{pred}}{\partial\boldsymbol{M}_{B}}\\
+ & =\dfrac{\partial\left(\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{M}_{I}+\boldsymbol{M}_{B}\right)}{\partial\boldsymbol{M}_{B}}\\
+ & =\boldsymbol{I}_{3\times3}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在实际的代码里，磁场观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{MAG}$
+\end_inset
+
+实际上是分为3个一维观测矩阵进行观测：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{MAG_{X}} & =\dfrac{\partial M_{pred_{X}}}{\partial\boldsymbol{x}}\\
+\boldsymbol{H}_{MAG_{Y}} & =\dfrac{\partial M_{pred_{Y}}}{\partial\boldsymbol{x}}\\
+\boldsymbol{H}_{MAG_{Z}} & =\dfrac{\partial M_{pred_{Z}}}{\partial\boldsymbol{x}}
+\end{align*}
+
+\end_inset
+
+这是一种优化算法，使用更多的运算步骤换取使用更少的栈空间。这对于MCU这种内存紧张的环境有好处。
+\end_layout
+
+\begin_layout Subsubsection
+综合偏差测量的融合方程
+\end_layout
+
+\begin_layout Standard
+有磁偏角约束的融合阶段，考虑事实上，地球的地理南北极与地磁南北极并不重合，也就是真北和磁北有一定夹角，这个夹角称为磁偏角
+\begin_inset Formula $\psi_{DECLINATION}$
+\end_inset
+
+。 因此如果增加了磁偏角的约束，则需要在融合完三轴磁力计测量值的基础上进行此部分的融合。这用于在没有绝对位置或速度测量的情况下保持正确的航向—例如使用光流时。这
+可以用来防止在航向观测不良期间地球磁场估计的不必要的偏航旋转。
+\end_layout
+
+\begin_layout Standard
+磁偏角的测量值，有两个来源：一是由GPS提供，二是由用户设定本地的磁偏角数据。磁偏角的噪声为
+\begin_inset Formula $R=\sigma_{decl}^{2}$
+\end_inset
+
+，其中标准差
+\begin_inset Formula $\sigma_{decl}$
+\end_inset
+
+在代码中设定，好工况为
+\begin_inset Formula $0.02$
+\end_inset
+
+，差工况为
+\begin_inset Formula $0.5$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+磁偏角
+\begin_inset Formula $\psi_{DECLINATION}$
+\end_inset
+
+的预测值为
+\begin_inset Formula 
+\[
+\psi_{DECLINATION}=\arctan\left(\dfrac{M_{E}}{M_{N}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁偏角观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{\psi_{DECLINATION}}$
+\end_inset
+
+是一个
+\begin_inset Formula $1\times24$
+\end_inset
+
+的稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{\psi_{DECLINATION}} & =\dfrac{\partial\psi_{DECLINATION}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+0_{1\times4} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & \boldsymbol{H}_{M_{I}}^{\psi_{DECLINATION}} & 0_{1\times3} & 0_{1\times2}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{M_{I}}^{\psi_{DECLINATION}}$
+\end_inset
+
+是一个
+\begin_inset Formula $1\times3$
+\end_inset
+
+的矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{M_{I}}^{\psi_{DECLINATION}} & =\dfrac{\partial\psi_{DECLINATION}}{\partial\boldsymbol{M}_{I}}\\
+ & =\dfrac{\partial\left(\tan^{-1}\left(\dfrac{M_{E}}{M_{N}}\right)\right)}{\partial\left(M_{N},M_{E},M_{D}\right)}\\
+ & =\left[\begin{array}{ccc}
+\dfrac{\partial\left(\tan^{-1}\left(\dfrac{M_{E}}{M_{N}}\right)\right)}{\partial\left(M_{N}\right)} & \dfrac{\partial\left(\tan^{-1}\left(\dfrac{M_{E}}{M_{N}}\right)\right)}{\partial\left(M_{E}\right)} & 0\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+\dfrac{-M_{E}}{M_{N}^{2}+M_{E}^{2}} & \dfrac{M_{N}}{M_{N}^{2}+M_{E}^{2}} & 0\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在飞行期间磁力数据对齐之后，进行最优估计之后的磁偏角
+\begin_inset Formula $\psi_{DECLINATION}$
+\end_inset
+
+成为磁偏角的第三个数据源，其它模块通过调用
+\family typewriter
+Ekf::getMagDeclination()
+\family default
+函数获得当前最适合的磁偏角数据。
+\end_layout
+
+\begin_layout Subsubsection
+一维磁罗盘航向测量融合方程
+\end_layout
+
+\begin_layout Standard
+航向角(heading)，也称偏航角(yaw)
+\begin_inset Formula $\psi$
+\end_inset
+
+，其测量值可由磁力计测量值
+\begin_inset Formula $\boldsymbol{M}_{meas}$
+\end_inset
+
+计算出来。
+\end_layout
+
+\begin_layout Standard
+首先将机体磁场旋转到 NED 坐标系：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{M}_{meas_{I}} & =\left[T\right]_{B}^{N}\left(\boldsymbol{M}_{meas}-\boldsymbol{M}_{B}\right)\\
+\left[\begin{array}{c}
+M_{meas_{N}}\\
+M_{meas_{E}}\\
+M_{meas_{D}}
+\end{array}\right] & =\left[T\right]_{B}^{N}\left(\left[\begin{array}{c}
+M_{meas_{X}}\\
+M_{meas_{Y}}\\
+M_{meas_{Z}}
+\end{array}\right]-\left[\begin{array}{c}
+M_{X}\\
+M_{Y}\\
+M_{Z}
+\end{array}\right]\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则航向角的测量值
+\begin_inset Formula $\psi_{meas}$
+\end_inset
+
+为：
+\begin_inset Formula 
+\[
+\psi_{meas}=-\arctan\left(\dfrac{M_{meas_{E}}}{M_{meas_{N}}}\right)+\psi_{DECLINATION}
+\]
+
+\end_inset
+
+它的噪声
+\begin_inset Formula $R_{yaw}$
+\end_inset
+
+由用户设定。
+\end_layout
+
+\begin_layout Standard
+航向角的预测值
+\begin_inset Formula $\psi_{pred}$
+\end_inset
+
+可由旋转矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+，也就是姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+计算出来：
+\begin_inset Formula 
+\begin{align*}
+\psi_{pred} & =\begin{cases}
+\arctan\left(\dfrac{\left(\left[T\right]_{B}^{N}\right)_{\left(1,0\right)}}{\left(\left[T\right]_{B}^{N}\right)_{\left(0,0\right)}}\right) & \text{for yaw321}\\
+\arctan\left(\dfrac{-\left(\left[T\right]_{B}^{N}\right)_{\left(0,1\right)}}{\left(\left[T\right]_{B}^{N}\right)_{\left(1,1\right)}}\right) & \text{for yaw312}
+\end{cases}\\
+ & =\begin{cases}
+\arctan\left(\dfrac{2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right)}{q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}}\right) & \text{for yaw321}\\
+\arctan\left(\dfrac{-2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right)}{q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}}\right) & \text{for yaw312}
+\end{cases}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁偏角的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{\psi}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $1\times24$
+\end_inset
+
+的稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{\psi} & =\dfrac{\partial\psi_{pred}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q}^{\psi} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times2}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}^{\psi}$
+\end_inset
+
+为磁偏角的观测相对于姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+的观测矩阵，为
+\begin_inset Formula $1\times4$
+\end_inset
+
+矩阵：
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{q}^{\psi}=\dfrac{\partial\psi_{pred}}{\partial q}
+\]
+
+\end_inset
+
+这个偏导展开太复杂，就不在这里推导。具体可见代码中用符号推导系统生成的计算式。
+\end_layout
+
+\begin_layout Subsection
+光流测量序列融合方程
+\end_layout
+
+\begin_layout Standard
+光流传感器(optical flow)依赖于测距仪(range finder)，它可以提供
+\begin_inset Formula $xy$
+\end_inset
+
+水平面的速度测量值。 光流传感器的观测量有：
+\end_layout
+
+\begin_layout Itemize
+视轴(line of sight, LOS)角速度测量(相对于传感器坐标系)，从向下看的光流传感器测量，以
+\begin_inset Formula $\mathrm{rad}/\sec$
+\end_inset
+
+为单位，围绕
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+传感器坐标系轴。这些速度是运动补偿的。
+\end_layout
+
+\begin_layout Itemize
+正视轴
+\begin_inset Formula $X$
+\end_inset
+
+速度是图像围绕
+\begin_inset Formula $X$
+\end_inset
+
+传感器轴的相对旋转，在正的
+\begin_inset Formula $Y$
+\end_inset
+
+轴方向上产生地面相对速度。
+\end_layout
+
+\begin_layout Itemize
+正视轴
+\begin_inset Formula $Y$
+\end_inset
+
+速度是图像围绕
+\begin_inset Formula $Y$
+\end_inset
+
+传感器轴的相对旋转，在负的
+\begin_inset Formula $X$
+\end_inset
+
+轴方向上产生地面相对速度。
+\end_layout
+
+\begin_layout Itemize
+距离(range)的测量与机体
+\begin_inset Formula $Z$
+\end_inset
+
+轴对齐(假设为平地模型)。
+\end_layout
+
+\begin_layout Standard
+距离(range)为从摄像机焦点到传感器视场(field of view, fov)中心的距离，已知其测量噪声
+\begin_inset Formula $\boldsymbol{R}_{LOS}$
+\end_inset
+
+，由地形高差(terrain height offset)估计算法计算，详见第6节的描述。
+\end_layout
+
+\begin_layout Standard
+首先计算传感器坐标系中的相对速度
+\begin_inset Formula $\boldsymbol{V}_{B}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{B} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{V}_{NED}\\
+\left[\begin{array}{c}
+V_{X}\\
+V_{Y}\\
+V_{Z}
+\end{array}\right] & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将速度除以距离(range)得到相对于
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+轴的预测视轴角速度(注：这些是机体角速度运动补偿光流速度)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+V_{LOS_{X}} & =+V_{Y}/\mathrm{range}\\
+V_{LOS_{Y}} & =-V_{X}/\mathrm{range}\\
+\boldsymbol{V}_{LOS} & =\left[\begin{array}{c}
+V_{LOS_{X}}\\
+V_{LOS_{Y}}
+\end{array}\right]\\
+ & =\dfrac{1}{\mathrm{range}}\left[\begin{array}{c}
+2\left(q_{1}q_{2}-q_{0}q_{3}\right)V_{N}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)V_{E}+2\left(q_{2}q_{3}+q_{0}q_{1}\right)V_{D}\\
+-\left(\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)V_{N}+2\left(q_{1}q_{2}+q_{0}q_{3}\right)V_{E}+2\left(q_{1}q_{3}-q_{0}q_{2}\right)V_{D}\right)
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+视轴角速度的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\text{\boldsymbol{H}_{LOS}}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $2\times24$
+\end_inset
+
+的稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{LOS} & =\dfrac{\partial\boldsymbol{V}_{LOS}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q}^{V_{LOS}} & \boldsymbol{H}_{V}^{V_{LOS}} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times2}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}^{V_{LOS}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{H}_{V}^{V_{LOS}}$
+\end_inset
+
+这2个分块矩阵见下面的推导。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{H}_{q}^{V_{LOS}}$
+\end_inset
+
+为视轴角速度的观测相对于姿态四元数的观测矩阵，即视轴角速度相对于旋转的 Jacobian ，大小为
+\begin_inset Formula $2\times4$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{q}^{V_{LOS}} & =\dfrac{\partial\boldsymbol{V}_{LOS}}{\partial q}\\
+ & =\dfrac{\partial\left(\dfrac{1}{\mathrm{range}}\left[\begin{array}{c}
+2\left(q_{1}q_{2}-q_{0}q_{3}\right)V_{N}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)V_{E}+2\left(q_{2}q_{3}+q_{0}q_{1}\right)V_{D}\\
+-\left(\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)V_{N}+2\left(q_{1}q_{2}+q_{0}q_{3}\right)V_{E}+2\left(q_{1}q_{3}-q_{0}q_{2}\right)V_{D}\right)
+\end{array}\right]\right)}{\partial q}\\
+ & \tiny=\dfrac{2}{\mathrm{range}}\left[\begin{array}{cccc}
+-q_{3}V_{N}+q_{0}V_{E}+q_{1}V_{D} & q_{2}V_{N}-q_{1}V_{E}+q_{0}V_{D} & q_{1}V_{N}+q_{2}V_{E}+q_{3}V_{D} & -q_{0}V_{N}-q_{3}V_{E}+q_{2}V_{D}\\
+-\left(q_{0}V_{N}+q_{3}V_{E}-q_{2}V_{D}\right) & -\left(q_{1}V_{N}+q_{2}V_{E}+q_{3}V_{D}\right) & -\left(-q_{2}V_{N}+q_{1}V_{E}-q_{0}V_{D}\right) & -\left(-q_{3}V_{N}+q_{0}V_{E}+q_{1}V_{D}\right)
+\end{array}\right]\\
+ & =\dfrac{2}{\mathrm{range}}\left[\begin{array}{c}
+\left(\Phi_{5}\cdot\boldsymbol{V}_{NED}\right)^{\mathrm{T}}\\
+\left(-\Phi_{4}\cdot\boldsymbol{V}_{NED}\right)^{\mathrm{T}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula 
+\[
+\Phi_{4}=\left[\begin{array}{ccc}
+q_{0} & q_{3} & -q_{2}\\
+q_{1} & q_{2} & q_{3}\\
+-q_{2} & q_{1} & -q_{0}\\
+-q_{3} & q_{0} & q_{1}
+\end{array}\right],\quad\Phi_{5}=\left[\begin{array}{ccc}
+-q_{3} & q_{0} & q_{1}\\
+q_{2} & -q_{1} & q_{0}\\
+q_{1} & q_{2} & q_{3}\\
+-q_{0} & -q_{3} & q_{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\boldsymbol{H}_{V}^{V_{LOS}}$
+\end_inset
+
+为视轴角速度的观测相对于 NED 坐标系下机体速度的观测矩阵，即视轴角速度相对于 NED 坐标系下机体速度的 Jacobian ，大小为
+\begin_inset Formula $2\times3$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{V}^{V_{LOS}} & =\dfrac{\partial\boldsymbol{V}_{LOS}}{\partial\boldsymbol{V}_{NED}}\\
+ & =\dfrac{\partial\left(\dfrac{1}{\mathrm{range}}\left[\begin{array}{c}
+2\left(q_{1}q_{2}-q_{0}q_{3}\right)V_{N}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)V_{E}+2\left(q_{2}q_{3}+q_{0}q_{1}\right)V_{D}\\
+-\left(\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)V_{N}+2\left(q_{1}q_{2}+q_{0}q_{3}\right)V_{E}+2\left(q_{1}q_{3}-q_{0}q_{2}\right)V_{D}\right)
+\end{array}\right]\right)}{\partial\boldsymbol{V}_{NED}}\\
+ & =\dfrac{1}{\mathrm{range}}\left[\begin{array}{ccc}
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+-\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right) & -2\left(q_{1}q_{2}+q_{0}q_{3}\right) & -2\left(q_{1}q_{3}-q_{0}q_{2}\right)
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在实际的代码里，磁场观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{LOS}$
+\end_inset
+
+实际上是分为2个一维观测矩阵进行观测：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{LOS_{X}} & =\dfrac{\partial V_{LOS_{X}}}{\partial\boldsymbol{x}}\\
+\boldsymbol{H}_{LOS_{Y}} & =\dfrac{\partial V_{LOS_{Y}}}{\partial\boldsymbol{x}}
+\end{align*}
+
+\end_inset
+
+这是一种优化算法，使用更多的运算步骤换取使用更少的栈空间。这对于MCU这种内存紧张的环境有好处。
+\end_layout
+
+\begin_layout Subsection
+GPS速度和位置测量序列融合方程
+\end_layout
+
+\begin_layout Standard
+GPS的速度和位置都涉及状态的直接观测，因此观测模型比较简单。因为GPS在
+\begin_inset Formula $z$
+\end_inset
+
+轴方向上的数据误差比较大，而高度数据源比较多，所以对于位置向量只使用NE方向的更新。
+\end_layout
+
+\begin_layout Standard
+GPS 的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{GPS}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian 比较简单，为
+\begin_inset Formula $5\times24$
+\end_inset
+
+稀疏矩阵：
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{GPS}=\left[\begin{array}{cccccccc}
+0_{3\times4} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+0_{2\times4} & 0_{2\times3} & \left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0
+\end{array}\right] & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times3} & 0_{2\times2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并且已知GPS的测量噪声
+\begin_inset Formula $\boldsymbol{R}_{GPS}$
+\end_inset
+
+，由此可对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的速度和位置进行校正。
+\end_layout
+
+\begin_layout Subsection
+空速融合方程
+\end_layout
+
+\begin_layout Standard
+空速观测方程假设传感器测量相对于风场的速度
+\begin_inset Formula $\boldsymbol{V}_{EAS}$
+\end_inset
+
+为：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{EAS} & =\boldsymbol{V}_{NED}-\boldsymbol{V}_{wind}\\
+\left[\begin{array}{c}
+V_{EAS_{N}}\\
+V_{EAS_{E}}\\
+V_{EAS_{D}}
+\end{array}\right] & =\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]-\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+0
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则真实风速的预测值
+\begin_inset Formula $V_{TAS}$
+\end_inset
+
+为：
+\begin_inset Formula 
+\[
+V_{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当只使用风速估计而不使用合成侧滑时，真实风速的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{TAS}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $1\times24$
+\end_inset
+
+稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{TAS} & =\dfrac{\partial V_{TAS}}{\partial\boldsymbol{x}}\\
+ & =\dfrac{\partial\left(\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}\right)^{\frac{1}{2}}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+0_{1\times4} & \boldsymbol{H}_{V_{NED}}^{V_{TAS}} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & \boldsymbol{H}_{V_{wind}}^{V_{TAS}}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{V_{NED}}^{V_{TAS}}$
+\end_inset
+
+为真实风速相对于速度的观测矩阵：
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{V_{NED}}^{V_{TAS}}=\left[\begin{array}{c}
+\dfrac{V_{N}-V_{wind_{N}}}{\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}}\\
+\dfrac{V_{E}-V_{wind_{E}}}{\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}}\\
+\dfrac{V_{D}}{\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}}
+\end{array}\right]^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{H}_{V_{wind}}^{V_{TAS}}$
+\end_inset
+
+为真实风速相对于风速的观测矩阵：
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{V_{wind}}^{V_{TAS}}=-\left[\begin{array}{c}
+\dfrac{V_{N}-V_{wind_{N}}}{\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}}\\
+\dfrac{V_{E}-V_{wind_{E}}}{\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}}
+\end{array}\right]^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并且已知风速传感器的测量噪声
+\begin_inset Formula $\boldsymbol{R}_{TAS}$
+\end_inset
+
+，由此可对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的速度和风速进行校正。
+\end_layout
+
+\begin_layout Subsection
+合成侧滑融合方程
+\end_layout
+
+\begin_layout Standard
+固定翼平台可以利用假定的侧滑观测值为零来改进风速估计，也可以在没有空速传感器的情况下进行风速估计。
+\end_layout
+
+\begin_layout Standard
+首先将等效风速
+\begin_inset Formula $\boldsymbol{V}_{EAS}$
+\end_inset
+
+旋转到机体坐标系中得到机体的风速
+\begin_inset Formula $\boldsymbol{V}_{wind_{B}}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind_{B}} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{V}_{EAS}\\
+ & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left(\boldsymbol{V}_{NED}-\boldsymbol{V}_{wind}\right)\\
+\left[\begin{array}{c}
+V_{wind_{X}}\\
+V_{wind_{Y}}\\
+V_{wind_{Z}}
+\end{array}\right] & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left(\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]-\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+0
+\end{array}\right]\right)\\
+ & =\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}q_{2}+q_{0}q_{3}\right) & 2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right) & 2\left(q_{2}q_{3}-q_{0}q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\left[\begin{array}{c}
+V_{N}-V_{wind_{N}}\\
+V_{E}-V_{wind_{E}}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用小角近似法计算预测侧滑角度，也是侧滑新息，因为假设观测值为零：
+\begin_inset Formula 
+\[
+\mathrm{beta}=\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+合成侧滑的噪声
+\begin_inset Formula $R_{beta}$
+\end_inset
+
+由用户设定。合成侧滑的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{beta}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $1\times24$
+\end_inset
+
+稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{beta} & =\dfrac{\partial\left(\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}\right)}{\partial\boldsymbol{x}}\\
+ & =\dfrac{\partial\left(\dfrac{2\left(q_{1}q_{2}-q_{0}q_{3}\right)\left(V_{N}-V_{wind_{N}}\right)+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\left(V_{E}-V_{wind_{E}}\right)+2\left(q_{2}q_{3}+q_{0}q_{1}\right)V_{D}}{\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)\left(V_{N}-V_{wind_{N}}\right)+2\left(q_{1}q_{2}+q_{0}q_{3}\right)\left(V_{E}-V_{wind_{E}}\right)+2\left(q_{1}q_{3}-q_{0}q_{2}\right)V_{D}}\right)}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q}^{beta} & \boldsymbol{H}_{V}^{beta} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & \boldsymbol{H}_{V_{wind}}^{beta}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}^{beta}$
+\end_inset
+
+为合成侧滑的观测相对于姿态四元数的观测矩阵，即合成侧滑相对于旋转的 Jacobian ，大小为
+\begin_inset Formula $1\times4$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{H}_{V}^{beta}$
+\end_inset
+
+为合成侧滑的观测相对于 NED 坐标系下机体速度的观测矩阵，即合成侧滑相对于 NED 坐标系下机体速度的 Jacobian ，大小为
+\begin_inset Formula $1\times3$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{H}_{V_{wind}}^{beta}$
+\end_inset
+
+为合成侧滑的观测相对于风速观测矩阵，大小为
+\begin_inset Formula $1\times3$
+\end_inset
+
+。这3个偏导展开太复杂，就不在这里推导。具体可见代码中用符号推导系统生成的计算式。
+\end_layout
+
+\begin_layout Subsection
+阻力比力融合方程
+\end_layout
+
+\begin_layout Standard
+与合成侧滑类似，首先将等效风速
+\begin_inset Formula $\boldsymbol{V}_{EAS}$
+\end_inset
+
+旋转到机体坐标系中得到机体的风速
+\begin_inset Formula $\boldsymbol{V}_{wind_{B}}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind_{B}} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{V}_{EAS}\\
+ & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left(\boldsymbol{V}_{NED}-\boldsymbol{V}_{wind}\right)\\
+\left[\begin{array}{c}
+V_{wind_{X}}\\
+V_{wind_{Y}}\\
+V_{wind_{Z}}
+\end{array}\right] & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left(\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]-\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+0
+\end{array}\right]\right)\\
+ & =\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}q_{2}+q_{0}q_{3}\right) & 2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right) & 2\left(q_{2}q_{3}-q_{0}q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\left[\begin{array}{c}
+V_{N}-V_{wind_{N}}\\
+V_{E}-V_{wind_{E}}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据IMU测得的加速度
+\begin_inset Formula $\boldsymbol{a}_{meas}$
+\end_inset
+
+计算阻力比力
+\begin_inset Formula $\mathrm{drag}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\mathrm{drag}=\boldsymbol{a}_{meas}-\boldsymbol{\Delta V}_{b}/\Delta t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并用空气密度
+\begin_inset Formula $\rho$
+\end_inset
+
+和弹道系数
+\begin_inset Formula $\mathrm{coef}$
+\end_inset
+
+估算空速
+\begin_inset Formula $\mathrm{airspeed}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\mathrm{airspeed}=\sqrt{\left(2\left|\mathrm{drag}\right|\right)/\left(\mathrm{coef}\cdot\rho\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并计算比力系数
+\begin_inset Formula $\boldsymbol{K}_{acc}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\boldsymbol{K}_{acc}=\mathrm{coef}\cdot\mathrm{airspeed}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+预测的加速度
+\begin_inset Formula $\boldsymbol{a}_{pred}$
+\end_inset
+
+为：
+\begin_inset Formula 
+\[
+\boldsymbol{a}_{pred}=-\dfrac{1}{2}\mathrm{sign}\left(\left[\begin{array}{c}
+V_{wind_{X}}\\
+V_{wind_{Y}}\\
+V_{wind_{Z}}
+\end{array}\right]\right)\left(\mathrm{coef}\cdot\rho\right)\left[\begin{array}{c}
+V_{wind_{X}}^{2}\\
+V_{wind_{Y}}^{2}\\
+V_{wind_{Z}}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则阻力比力新息
+\begin_inset Formula $\mathrm{drag\_innov}$
+\end_inset
+
+为：
+\begin_inset Formula 
+\[
+\mathrm{drag\_innov}=\boldsymbol{a}_{pred}-\mathrm{drag}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+阻力比力的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{drag}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $3\times24$
+\end_inset
+
+稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{drag} & =\dfrac{\partial\boldsymbol{a}_{pred}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q}^{drag} & \boldsymbol{H}_{V}^{drag} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{H}_{V_{wind}}^{drag}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}^{drag}$
+\end_inset
+
+为阻力比力的观测相对于姿态四元数的观测矩阵，即阻力比力相对于旋转的 Jacobian ，大小为
+\begin_inset Formula $3\times4$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{H}_{V}^{drag}$
+\end_inset
+
+为阻力比力的观测相对于 NED 坐标系下机体速度的观测矩阵，即阻力比力相对于 NED 坐标系下机体速度的 Jacobian ，大小为
+\begin_inset Formula $3\times3$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{H}_{V_{wind}}^{drag}$
+\end_inset
+
+为阻力比力的观测相对于风速观测矩阵，大小为
+\begin_inset Formula $3\times2$
+\end_inset
+
+。这3个偏导展开太复杂，就不在这里推导。具体可见代码中用符号推导系统生成的计算式。
+\end_layout
+
+\begin_layout Subsection
+高度融合方程
+\end_layout
+
+\begin_layout Standard
+高度涉及状态的直接观测，因此观测模型比较简单。
+\end_layout
+
+\begin_layout Standard
+高度数据源比较多，有4个：
+\end_layout
+
+\begin_layout Itemize
+气压计
+\end_layout
+
+\begin_layout Itemize
+测距仪
+\end_layout
+
+\begin_layout Itemize
+GPS
+\end_layout
+
+\begin_layout Itemize
+外部视觉
+\end_layout
+
+\begin_layout Standard
+软件内部会根据数据源的质量状况进行切换。
+\end_layout
+
+\begin_layout Standard
+高度的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{hgt}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $1\times24$
+\end_inset
+
+稀疏矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{hgt}=\left[\begin{array}{cccccccc}
+0_{1\times4} & 0_{1\times3} & \left[\begin{array}{ccc}
+0 & 0 & 1\end{array}\right] & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times3} & 0_{1\times2}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据各自传感器的噪声
+\begin_inset Formula $R_{hgt}$
+\end_inset
+
+，就可以对高度进行校正。
+\end_layout
+
+\begin_layout Subsection
+外部视觉融合方程
+\end_layout
+
+\begin_layout Standard
+外部视觉系统可以提供速度、位置和航向角的测量值。相对应的融合方程见前面章节的描述。
+\end_layout
+
+\begin_layout Section
+地形高差估计的EKF方程
+\end_layout
+
+\begin_layout Standard
+因为光流的算法依赖测距仪提供的高度数据，所以ECL模块在原先维护的24状态EKF之外，还单独维护一个地形估计器，目的是融合测距仪的测量值以估计地形垂直位置。地形
+高差(terrain height offset)估计的EKF方程在本节描述。
+\end_layout
+
+\begin_layout Subsection
+距地高度的估计
+\end_layout
+
+\begin_layout Standard
+在地形估计器内部用一个标准KF维护一个地形高度(terrain height)状态值，又称地形垂直位置(terrain vertical position,
+ 
+\begin_inset Formula $\mathrm{terrain}_{vpos}$
+\end_inset
+
+)，也称在向下轴的地形位置(position of terrain in down axis, ptd)。相对应的，在 ECL/EKF2 中维护的垂直速度
+\begin_inset Formula $V_{D}$
+\end_inset
+
+为高差，又称在向下轴飞行器的位置(position of vehicle in down axis, pd)。
+\end_layout
+
+\begin_layout Standard
+距地高度(height above ground, 
+\begin_inset Formula $\mathrm{hagl}_{meas}$
+\end_inset
+
+)的测量值由测距仪提供。距地高度预测值
+\begin_inset Formula $\mathrm{hagl}_{pred}$
+\end_inset
+
+由以下方程计算：
+\begin_inset Formula 
+\[
+\mathrm{hagl}_{pred}=\mathrm{terrain}_{vpos}-V_{D}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+距地高度新息：
+\begin_inset Formula 
+\[
+\mathrm{hagl}_{innov}=\mathrm{hagl}_{pred}-\mathrm{hagl}_{meas}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此可以得出最优估计的地形高度
+\begin_inset Formula $\mathrm{terrain}_{vpos}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+光流速度的估计
+\end_layout
+
+\begin_layout Standard
+已知从导航坐标系到机体坐标系的旋转矩阵
+\begin_inset Formula $\left(\left[T\right]_{N}^{B}\right)^{\mathrm{T}}$
+\end_inset
+
+，以及光流观测方差
+\begin_inset Formula $R_{LOS}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+距离(range)为从摄像机焦点到传感器视场(field of view, fov)中心的距离，由以下方程计算：
+\begin_inset Formula 
+\[
+\mathrm{range}=\left(\mathrm{terrain}_{vpos}-V_{D}\right)/\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算传感器坐标系中的相对速度
+\begin_inset Formula $\boldsymbol{V}_{B}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{B} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\boldsymbol{V}_{NED}\\
+\left[\begin{array}{c}
+V_{X}\\
+V_{Y}\\
+V_{Z}
+\end{array}\right] & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将速度除以距离(range)得到相对于
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+轴的预测视轴角速度(注：这些是机体角速度运动补偿光流速度)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+V_{LOS_{X}} & =+V_{Y}/\mathrm{range}\\
+V_{LOS_{Y}} & =-V_{X}/\mathrm{range}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算观测雅可比矩阵：
+\begin_inset Formula 
+\begin{align*}
+H_{flow} & =\dfrac{\partial\left(V_{LOS_{X}},V_{LOS_{Y}}\right)}{\partial\left(\mathrm{terrain}_{vpos}\right)}\\
+ & =\dfrac{\partial\left(\dfrac{+V_{Y}\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)}{\left(\mathrm{terrain}_{vpos}-V_{D}\right)},\dfrac{-V_{X}\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)}{\left(\mathrm{terrain}_{vpos}-V_{D}\right)}\right)}{\partial\left(\mathrm{terrain}_{vpos}\right)}\\
+ & =\left[\begin{array}{c}
+\dfrac{+V_{Y}\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)}{\left(\mathrm{terrain}_{vpos}-V_{D}\right)^{2}}\\
+\dfrac{-V_{X}\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)}{\left(\mathrm{terrain}_{vpos}-V_{D}\right)^{2}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此可以对光流速度进行最优估计。
+\end_layout
+
+\begin_layout Section
+YawEKFGSF（暂缺）
+\end_layout
+
+\begin_layout Section
+输出互补滤波器（暂缺）
+\end_layout
+
+\begin_layout Standard
+参考文档[12]
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这使得系统具有很高的容错性，但也使得算法具有更大的复杂度。但是在代码里，更多的代码是对数据和协方差
+矩阵质量判断，并对上下限进行钳制处理，发现异常后更换数据源的处理。这些方法和经验数据，是多年的经验积累，是在一个个项目中一点点地磨炼出来的经验总结。这才是
+ ECL EKF 模块最有价值的地方，因为主要算法可以在短时间内掌握，而这些知识只有靠时间来积淀。
+\end_layout
+
+\begin_layout Standard
+不过 ECL EKF 算法也有值得探讨的地方。现在已经知道，旋转(包括四元数和旋转矩阵)不可以直接用卡尔曼滤波器进行估计，因为旋转是群而不是向量，而卡尔曼滤波器
+里面最核心的概念—协方差—只能处理向量。因此直接把四元数放入卡尔曼滤波器中计算，估计的是四元数而不是旋转。
+\end_layout
+
+\begin_layout Standard
+此外，对比误差状态EKF算法，就会发现这里的 Jacobian 矩阵展开后十分复杂，只要涉及旋转(包括四元数和旋转矩阵)的方程的 Jacobian
+ 矩阵都很复杂。而在误差状态EKF算法中，误差大多在零点附近抖动，因此有较好的近线性特性，因此 Jacobian 矩阵和标准的KF的矩阵很类似，因此计算速度会快
+一些，精度也会高一些。
+\end_layout
+
+\begin_layout Standard
+但是，ECL EKF 模块已经在广大的产品和项目里得到验证，不论是在模拟器里还是在实际环境中，它的计算速度和精度都经受了检验。对此只能说卡尔曼滤波器真是一个很神
+奇的东西，在工程中实用为上。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4: Estimation & Control Library for Guidance, Navigation and Control Applications - EKF"
+target "https://github.com/PX4/ecl/tree/master/EKF"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 - EKF - documentation"
+target "https://github.com/PX4/ecl/tree/master/EKF/documentation"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 - EKF - python code"
+target "https://github.com/PX4/PX4-ECL/tree/master/EKF/python"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 - EKF - matlab code"
+target "https://github.com/PX4/PX4-ECL/tree/master/EKF/matlab"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Using the ECL EKF"
+target "https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "EKF2 Estimation System"
+target "https://ardupilot.org/dev/docs/ekf2-estimation-system.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Extended Kalman Filter Navigation Overview and Tuning"
+target "https://ardupilot.org/dev/docs/extended-kalman-filter.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Extended Kalman Filter (EKF)"
+target "https://ardupilot.org/copter/docs/common-apm-navigation-extended-kalman-filter-overview.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "NavEKF Change Overview 2020"
+target "http://manual.cuav.net/ardupilot2020/EKF%20update.pptx"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 State Estimation 2021 Update"
+target "https://px4.io/wp-content/uploads/2020/07/Paul-Riseborough-PX4-state-estimation-update.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 State Estimation Overview"
+target "https://youtu.be/HkYRJJoyBwQ"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements"
+target "https://www.researchgate.net/profile/Alireza-Khosravian/publication/277143039_Recursive_Attitude_Estimation_in_the_Presence_of_Multi-rate_and_Multi-delay_Vector_Measurements/links/556a5ea108aec22683035ed3/Recursive-Attitude-Estimation-in-the-Presence-of-Multi-rate-and-Multi-delay-Vector-Measurements.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 的 ECL EKF 公式推导及代码解析"
+target "https://blog.csdn.net/u010307048/article/details/100553475"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "PX4 InertialNAV Filter 与 EKF2概论"
+target "https://blog.csdn.net/westlovehehe/article/details/54754943"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

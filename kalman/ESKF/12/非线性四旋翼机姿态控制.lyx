@@ -1,0 +1,4036 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "非线性四旋翼机姿态控制"
+\pdf_author "Dario Brescianini, Markus Hehn and Raffaello D’Andrea"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "非线性四旋翼机姿态控制"
+target "https://www.research-collection.ethz.ch/handle/20.500.11850/154099"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Dario Brescianini"
+target "bdario@ethz.ch"
+type "mailto:"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Markus Hehn"
+target "hehnm@ethz.ch"
+literal "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset href
+LatexCommand href
+name "Raffaello D’Andrea"
+target "rdandrea@ethz.ch"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+October 10, 2013
+\end_layout
+
+\begin_layout Abstract
+本文讨论了四旋翼机的非线性姿态控制问题。提出了一种基于单位四元数的全局稳定姿态控制器，并证明了其稳定性和鲁棒性。此外，本文还提出了一种在偏航角之上对关键的俯仰角
+和横滚角进行优先控制的方法。最后，对所提出的非线性控制器进行了实验验证。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+四旋翼机是一个热门的研究课题，关于四旋翼机姿态控制的文献很多。通常，用欧拉角来描述姿态，这是一种非常自然的描述姿态的方法，尤其是对于固定翼飞机。然后根据悬停条件
+下非线性姿态控制问题的线性化导出控制器。对于较小的俯仰角和滚转角，这会产生合理的结果。最近，这项研究的方向是高机动性。然而，对于攻击性机动，即姿态的极端变化，这
+些局部稳定控制器存在显著缺陷，导致性能较差，甚至更糟，无法稳定飞行器。
+\end_layout
+
+\begin_layout Standard
+为了充分发挥四旋翼机的潜力，必须采用全局稳定的姿态控制器。此外，欧拉角会产生奇异，必须避免。由于纯数学原因，这限制了所有可能的运动，而这些运动与四旋翼机的物理约
+束无关，因此欧拉角不适用于全局姿态控制。对于全局姿态控制来说，选择一个既不具有几何奇异性，也不具有运动学奇异性的参数化是至关重要的。文[2]综述了姿态描述及其在
+刚体姿态控制中的适用性。通常，全局稳定的姿态控制器基于单位四元数[14, 4, 13, 12]，但也存在一些使用旋转矩阵表示姿态的控制器[2,
+ 9, 10]。
+\end_layout
+
+\begin_layout Standard
+本报告是2011年秋季进行的一个学期项目的结果，目的是为飞行器领域中使用的四旋翼机开发和实现一个全局稳定的姿态控制器
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.flyingmachinearena.org
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+。现以技术报告的形式发表，为飞行器姿态控制器的应用提供参考。
+\end_layout
+
+\begin_layout Standard
+本报告的其余部分组织如下：在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2预备工作"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，提供了有关姿态表示和四旋翼机设置的背景资料。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3姿态控制设计"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节提出了一个全局渐近稳定的控制律。最后，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4结果"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出了所提出控制器的实验结果，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5结论"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出了结论。
+\end_layout
+
+\begin_layout Section
+预备工作
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2预备工作"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+姿态表示
+\end_layout
+
+\begin_layout Standard
+刚体的姿态可以用参考坐标系和固体坐标系之间的旋转来描述。存在几种旋转参数化，如欧拉角(
+\begin_inset Formula $3$
+\end_inset
+
+个参数)、单位四元数(
+\begin_inset Formula $4$
+\end_inset
+
+个参数)和旋转矩阵(
+\begin_inset Formula $9$
+\end_inset
+
+个参数)。所有
+\begin_inset Formula $3$
+\end_inset
+
+个参数表示都有奇点，所有
+\begin_inset Formula $k$
+\end_inset
+
+参数表示(
+\begin_inset Formula $k>3$
+\end_inset
+
+)都有
+\begin_inset Formula $k-3$
+\end_inset
+
+个约束[11]。
+\end_layout
+
+\begin_layout Subsubsection
+旋转矩阵
+\end_layout
+
+\begin_layout Standard
+旋转
+\begin_inset Formula $R_{BI}$
+\end_inset
+
+是一种线性变换，它将线性空间
+\begin_inset Formula $\mathcal{I}=\mathbb{R}^{3}$
+\end_inset
+
+映射到线性空间
+\begin_inset Formula $\mathcal{B}=\mathbb{R}^{3}$
+\end_inset
+
+，同时保持长度和右手习惯。根据这些性质，可以直接得出
+\begin_inset Formula $R_{BI}\in SO(3)$
+\end_inset
+
+。考虑正交基
+\begin_inset Formula $\vec{\bar{e}}^{I}\in\mathcal{I}$
+\end_inset
+
+和
+\begin_inset Formula $\vec{\bar{e}}^{B}\in\mathcal{B}$
+\end_inset
+
+，其中
+\begin_inset Formula $\vec{\bar{e}}^{I}$
+\end_inset
+
+定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{\bar{e}}^{I}:=\left(\vec{e}_{x}^{I},\vec{e}_{y}^{I},\vec{e}_{z}^{I}\right)
+\end{equation}
+
+\end_inset
+
+并且用坐标系
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+表示的向量
+\begin_inset Formula $\vec{r}$
+\end_inset
+
+为
+\begin_inset Formula $_{I}\vec{r}$
+\end_inset
+
+和
+\begin_inset Formula $_{B}\vec{r}$
+\end_inset
+
+。然后是线性变换
+\begin_inset Formula $R_{BI}$
+\end_inset
+
+，它将向量
+\begin_inset Formula $_{I}\vec{r}$
+\end_inset
+
+映射到
+\begin_inset Formula $_{B}\vec{r}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{B}\vec{r}=R_{BI}{}_{I}\vec{r},
+\end{equation}
+
+\end_inset
+
+这是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+R_{BI}=\left(_{B}\vec{e}_{x}^{I},{}_{B}\vec{e}_{y}^{I},{}_{B}\vec{e}_{z}^{I}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $R_{BI}$
+\end_inset
+
+的列向量是在坐标系
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+中表示的坐标系
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+的
+\begin_inset Formula $3$
+\end_inset
+
+个正交单位基向量。类似地，
+\begin_inset Formula $3$
+\end_inset
+
+个行向量对应于在坐标系
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+中表示的坐标系
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+的基向量。
+\end_layout
+
+\begin_layout Subsubsection
+欧拉角
+\end_layout
+
+\begin_layout Standard
+欧拉角是基于这样一个事实：任何旋转矩阵都可以通过连续应用
+\begin_inset Formula $3$
+\end_inset
+
+个初等旋转矩阵来构造。旋转矩阵的
+\begin_inset Formula $9$
+\end_inset
+
+个条目可以由
+\begin_inset Formula $3$
+\end_inset
+
+个基本旋转的旋转角度参数化。飞机应用中非常常见的旋转顺序是
+\begin_inset Formula $ZYX$
+\end_inset
+
+顺序(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Enumerate
+围绕初始
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+(
+\begin_inset Formula $\mathcal{I}\rightarrow\mathcal{K}$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Enumerate
+围绕新的(旋转后的)
+\begin_inset Formula $y$
+\end_inset
+
+轴旋转俯仰角
+\begin_inset Formula $\theta$
+\end_inset
+
+(
+\begin_inset Formula $\mathcal{K}\rightarrow\mathcal{L}$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Enumerate
+围绕新的(旋转后的)
+\begin_inset Formula $x$
+\end_inset
+
+轴旋转滚动角
+\begin_inset Formula $\phi$
+\end_inset
+
+(
+\begin_inset Formula $\mathcal{L}\rightarrow\mathcal{B}$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure1.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+
+\begin_inset Formula $ZYX$
+\end_inset
+
+-Euler angles.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $R_{BI}$
+\end_inset
+
+可以写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+R_{BI} & =R_{BL}R_{LK}R_{KI}\\
+ & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & c_{\phi} & s_{\phi}\\
+0 & -s_{\phi} & c_{\phi}
+\end{array}\right]\left[\begin{array}{ccc}
+c_{\theta} & 0 & -s_{\theta}\\
+0 & 1 & 0\\
+s_{\theta} & 0 & c_{\theta}
+\end{array}\right]\left[\begin{array}{ccc}
+c_{\psi} & s_{\psi} & 0\\
+-s_{\psi} & c_{\psi} & 0\\
+0 & 0 & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+c_{\theta}c_{\psi} & c_{\theta}s_{\psi} & -s_{\theta}\\
+-c_{\phi}s_{\psi}+s_{\phi}s_{\theta}c_{\psi} & c_{\phi}c_{\psi}+s_{\phi}s_{\theta}s_{\psi} & s_{\phi}c_{\theta}\\
+s_{\phi}s_{\psi}+c_{\phi}s_{\theta}c_{\psi} & -s_{\phi}c_{\psi}+c_{\phi}s_{\theta}s_{\psi} & c_{\phi}c_{\theta}
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $c\left(\cdot\right)$
+\end_inset
+
+和
+\begin_inset Formula $s\left(\cdot\right)$
+\end_inset
+
+分别是
+\begin_inset Formula $\cos\left(\cdot\right)$
+\end_inset
+
+和
+\begin_inset Formula $\sin\left(\cdot\right)$
+\end_inset
+
+的缩写。然后是旋转矩阵到欧拉角的逆映射
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\phi & =\mathrm{arctan2}\left(R_{23},R_{33}\right)\\
+\theta & =-\arcsin\left(R_{13}\right)\\
+\psi & =\mathrm{arctan2}\left(R_{12},R_{11}\right)
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $R_{ij}$
+\end_inset
+
+是
+\begin_inset Formula $R_{BI}$
+\end_inset
+
+的第
+\begin_inset Formula $i$
+\end_inset
+
+行和第
+\begin_inset Formula $j$
+\end_inset
+
+列中的条目。
+\end_layout
+
+\begin_layout Subsubsection
+单位四元数
+\end_layout
+
+\begin_layout Standard
+每一个旋转都可以由一个关于单位向量
+\begin_inset Formula $\vec{k}$
+\end_inset
+
+和旋转角
+\begin_inset Formula $\alpha$
+\end_inset
+
+所描述的固定轴的单个旋转来参数化。这被称为特征轴旋转，体现了两个方向之间最短路径的旋转。基于此，单位四元数定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}=\left[\begin{array}{cccc}
+q_{0} & q_{1} & q_{2} & q_{3}\end{array}\right]^{\mathrm{T}}=\left[\begin{array}{c}
+q_{0}\\
+\mathbf{q}_{1:3}
+\end{array}\right]=\left[\begin{array}{c}
+\cos\left(\frac{\alpha}{2}\right)\\
+\vec{k}\sin\left(\frac{\alpha}{2}\right)
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的共轭、范数和逆为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\bar{\mathbf{q}} & =\left[\begin{array}{c}
+q_{0}\\
+-\mathbf{q}_{1:3}
+\end{array}\right],\\
+\|\mathbf{q}\| & =\sqrt{q_{0}^{2}+q_{1}^{2}+q_{2}^{2}+q_{3}^{2}},\\
+\mathbf{q}^{-1} & =\frac{\bar{\mathbf{q}}}{\|\mathbf{q}\|}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两个四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的乘积定义
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+注：为便于解释，本报告中使用的四元数乘法与[3]中定义的不同。根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的定义，四元数乘法
+\begin_inset Formula $\mathbf{q}\cdot\mathbf{p}$
+\end_inset
+
+在新坐标系中首先对应
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的旋转，然后对应
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的旋转。
+\end_layout
+
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}\cdot\mathbf{p}=Q\left(\mathbf{q}\right)\mathbf{p}\label{eq:14}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q(\mathbf{q}):=\left[\begin{array}{cccc}
+q_{0} & -q_{1} & -q_{2} & -q_{3}\\
+q_{1} & q_{0} & -q_{3} & q_{2}\\
+q_{2} & q_{3} & q_{0} & -q_{1}\\
+q_{3} & -q_{2} & q_{1} & q_{0}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，对应于旋转矩阵
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+的四元数给出为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{I}}=\left[\begin{array}{c}
+1\\
+0\\
+0\\
+0
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+旋转向量
+\begin_inset Formula $\vec{r}$
+\end_inset
+
+的计算公式为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{p}\left(\vec{r}_{r}\right)=\mathbf{q}\cdot\mathbf{p}\left(\vec{r}\right)\cdot\bar{\mathbf{q}}\label{eq:17}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\vec{r}_{r}$
+\end_inset
+
+是旋转后的向量，
+\begin_inset Formula $\mathbf{p}\left(\cdot\right)$
+\end_inset
+
+是向量的四元数表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{p}\left(\vec{r}\right)=\left[\begin{array}{c}
+0\\
+\vec{r}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $ZYX$
+\end_inset
+
+顺序的从欧拉角到单位四元数的映射为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}(\psi,\theta,\phi)=\left[\begin{array}{c}
+c_{\frac{\phi}{2}}c_{\frac{\theta}{2}}c_{\frac{\psi}{2}}+s_{\frac{\phi}{2}}s_{\frac{\theta}{2}}s_{\frac{\psi}{2}}\\
+-c_{\frac{\phi}{2}}s_{\frac{\theta}{2}}s_{\frac{\psi}{2}}+c_{\frac{\theta}{2}}c_{\frac{\psi}{2}}s_{\frac{\phi}{2}}\\
+c_{\frac{\phi}{2}}c_{\frac{\psi}{2}}s_{\frac{\theta}{2}}+s_{\frac{\phi}{2}}c_{\frac{\psi}{2}}s_{\frac{\psi}{2}}\\
+c_{\frac{\phi}{2}}c_{\frac{\theta}{2}}s_{\frac{y}{2}}-s_{\frac{\phi}{2}}c_{\frac{y}{2}}s_{\frac{\theta}{2}}
+\end{array}\right].\label{eq:19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+姿态表示评述
+\end_layout
+
+\begin_layout Standard
+旋转矩阵和单位四元数两者都提供了姿态的无奇异表示。但是请注意，单位四元数
+\begin_inset Formula $\mathbb{S}^{3}$
+\end_inset
+
+的空间覆盖了物理姿态
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的空间。因此，单位四元数不是唯一的。实际上，每对正反对的单位四元数
+\begin_inset Formula $\pm\mathbf{q}\in\mathbb{S}^{3}$
+\end_inset
+
+对应于相同的物理姿态[2]。对于
+\begin_inset Formula $\mathbb{S}^{3}$
+\end_inset
+
+中的姿态控制任务，这意味着必须设计一个控制器来稳定一组不连续的平衡点。然而，由于单位四元数是一种最小的全局非奇异参数化，因此在姿态控制的实践中(包括本报告)通常
+选择单位四元数作为参数化。此外，单位四元数提供了一个简单的洞察在几何水平发生了什么。
+\end_layout
+
+\begin_layout Subsection
+四旋翼无人机
+\end_layout
+
+\begin_layout Standard
+在下文中，我们考虑具有如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的机体固定坐标系
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+和惯性坐标系
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+的四旋翼机。四旋翼机的输入是四个发动机推力。输出是位置、速度和加速度以及姿态和角速度。由于模型的输出多于输入，很明显，并非所有的输出都可以独立控制。在FMA中，
+采用级联控制结构来控制四旋翼机，位置控制器作为最外层的控制回路(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。这种控制方法被称为时标分离，只要内环明显快于外环，它就有效。本报告只考虑了姿态控制回路。假设机载控制回路和四旋翼机的动力学速度快得多，以便将要控制的系统建模
+为刚体，以期望的机体角速度
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+作为直接输入。四翼机的动力学可以建模为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{q}}=\left[\begin{array}{c}
+\dot{q}_{0}\\
+\dot{\mathbf{q}}_{1:3}
+\end{array}\right]=\frac{1}{2}\mathbf{q}\cdot\mathbf{p}\left(\vec{\Omega}\right)=\left[\begin{array}{c}
+-\frac{1}{2}\mathbf{q}_{1:3}^{\mathrm{T}}\vec{\Omega}\\
+\frac{1}{2}\left(S\left(\mathbf{q}_{1:3}\right)+q_{0}\mathbf{I}\right)\vec{\Omega}
+\end{array}\right]\label{eq:20}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $S\left(\mathbf{q}_{1:3}\right)$
+\end_inset
+
+表示
+\begin_inset Formula $\mathbf{q}_{1:3}$
+\end_inset
+
+的斜对称矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+S\left(\mathbf{q}_{1:3}\right)=\left[\begin{array}{ccc}
+0 & -q_{3} & q_{2}\\
+q_{3} & 0 & -q_{1}\\
+-q_{2} & q_{1} & 0
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure2.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+具有固定坐标系
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+和参考坐标系
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+的四旋翼机。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure3.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+级联控制结构。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+姿态控制设计
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3姿态控制设计"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+作为第一步，必须将来自位置回路的指令加速度和指令偏航角转换为所需的姿态
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+(第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.2期望姿态"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)。目标是设计一个反馈律，使四旋翼机稳定在任何期望的物理姿态。由于
+\begin_inset Formula $SO(3)$
+\end_inset
+
+中的任何物理姿态都对应于
+\begin_inset Formula $\mathbb{S}^{3}$
+\end_inset
+
+中的两个正反对四元数，这可以通过将姿态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+稳定在
+\begin_inset Formula $\pm\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+来实现。如果忽略这一事实，基于四元数的控制器可能会导致不必要的现象，如回绕，即刚体通过完全旋转进行不必要的旋转[7,2]。为了解决回绕问题，控制器必须满足
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{\Omega}_{cmd}\left(\mathbf{q}\right)=\vec{\Omega}_{cmd}\left(-\mathbf{q}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这很容易看出，因为
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+和
+\begin_inset Formula $−\mathbf{q}$
+\end_inset
+
+表示相同的物理姿态，所以控制输出也应该相同。只要
+\begin_inset Formula $q_{0}<0$
+\end_inset
+
+，就可以通过改变
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的符号来解决这个问题。但是，更改符号会导致控制器不连续。有趣的是，这并不是一个缺点，因为可以证明所有的连续状态反馈控制律差不多
+\series bold
+总是
+\series default
+全局稳定的。
+\end_layout
+
+\begin_layout Subsection
+控制律
+\end_layout
+
+\begin_layout Standard
+考虑以下控制律：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{\Omega}_{cmd}\left(\mathbf{q}\right)=\dfrac{2}{\tau}\mathrm{sgn}\left(q_{e,0}\right)\mathbf{q}_{\mathbf{e},1:3},\qquad\mathrm{sgn}\left(q_{e,0}\right)=\begin{cases}
+1, & q_{e,0}\geq0\\
+-1, & q_{e,0}<0
+\end{cases}\label{eq:23}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\tau$
+\end_inset
+
+等于一阶系统时间常数
+\begin_inset Formula $[s]$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{q}_{\mathbf{e}}:=\mathbf{q}^{-1}\cdot\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+为误差测量，表示从
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+到
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+的旋转。
+\end_layout
+
+\begin_layout Standard
+那么，
+\begin_inset Formula $\pm\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+就是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的全局渐近稳定平衡点。
+\end_layout
+
+\begin_layout Paragraph
+证明：
+\end_layout
+
+\begin_layout Standard
+在不丧失一般性的情况下，设置
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}=\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+。定义一个自治的混合自动机[6]
+\begin_inset Formula $H=(Z,Q,f,Init,Dom,E,G,R)$
+\end_inset
+
+，其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Z=\{z_{1}，z_{2}\}$
+\end_inset
+
+，两个离散态，对应于
+\begin_inset Formula $\mathbb{S}^{3}$
+\end_inset
+
+的上下半球。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $Q=\mathbb{S}^{3}\subset\mathbb{R}^{4}$
+\end_inset
+
+，连续状态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+，位于三维球体中，代表当前姿态。
+\end_layout
+
+\begin_layout Itemize
+向量场为
+\begin_inset Formula 
+\begin{equation}
+f\left(z,\mathbf{q}\right)=\begin{cases}
+\dfrac{1}{2}\mathbf{q}\cdot\mathbf{p}\left(\vec{\Omega}_{cmd}\left(z,\mathbf{q}\right)\right), & \text{if }z=z_{1}\vspace{1ex}\\
+-\dfrac{1}{2}\mathbf{q}\cdot\mathbf{p}\left(\vec{\Omega}_{cmd}\left(z,\mathbf{q}\right)\right), & \text{if }z=z_{2}
+\end{cases}\label{eq:24}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+\vec{\Omega}_{cmd}\left(z,\mathbf{q}\right)=\begin{cases}
+\dfrac{2}{\tau}\mathbf{q}_{\mathbf{e},1:3}=-\dfrac{2}{\tau}\mathbf{q}_{1:3}, & \text{if }z=z_{1}\vspace{1ex}\\
+-\dfrac{2}{\tau}\mathbf{q}_{\mathbf{e},1:3}=\dfrac{2}{\tau}\mathbf{q}_{1:3}, & \text{if }z=z_{2}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+描述四元数分别位于上半球
+\begin_inset Formula $z_{1}$
+\end_inset
+
+和下半球
+\begin_inset Formula $z_{2}$
+\end_inset
+
+时
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+在时间上的演化。
+\end_layout
+
+\begin_layout Itemize
+域
+\begin_inset Formula $Dom(z_{1})=Dom(z_{2})=\mathbb{S}^{3}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+边
+\begin_inset Formula $E=\{(z_{1},z_{2}),(z_{2},z_{1})\}$
+\end_inset
+
+，表示从
+\begin_inset Formula $z_{1}$
+\end_inset
+
+到
+\begin_inset Formula $z_{2}$
+\end_inset
+
+的可能性，反之亦然。
+\end_layout
+
+\begin_layout Itemize
+守护条件
+\begin_inset Formula $G(z_{1},z_{2})=\{\mathbf{q}\in\mathbb{S}^{3}|q_{0}<0\}$
+\end_inset
+
+，并且
+\begin_inset Formula $G(z_{2},z_{1})=\{\mathbf{q}\in\mathbb{S}^{3}|q_{0}<0\}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+重置映射
+\begin_inset Formula $R(z_{1},z_{2},\mathbf{q})=R(z_{2},z_{1},\mathbf{q})=−\mathbf{q}$
+\end_inset
+
+，因为绕轴旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+等于绕同一轴旋转
+\begin_inset Formula $-180^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+现在，考虑以下Lyapunovs候选函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+V\left(z,\mathbf{q}\right)=\mathbf{q}_{1:3}^{\mathrm{T}}\mathbf{q}_{1:3}+\left(q_{0}-1\right)^{2}\quad\forall z\in Z\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相对于时间求微分并且插入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dot{V}\left(z,\mathbf{q}\right) & =\dfrac{\partial V\left(z,\mathbf{q}\right)}{\partial\mathbf{q}}f\left(z,\mathbf{q}\right)\\
+ & =\left[\begin{array}{cc}
+2\left(q_{0}-1\right) & 2\mathbf{q}_{1:3}^{\mathrm{T}}\end{array}\right]\left[\begin{array}{c}
+\dfrac{1}{2}\mathbf{q}_{1:3}^{\mathrm{T}}\dfrac{2}{\tau}\mathbf{q}_{1:3}\\
+-\dfrac{1}{2}\left(S\left(\mathbf{q}_{1:3}\right)+q_{0}\mathbf{I}\right)\dfrac{2}{\tau}\mathbf{q}_{1:3}
+\end{array}\right]\\
+ & =\dfrac{2}{\tau}\left(q_{0}-1\right)\mathbf{q}_{1:3}^{\mathrm{T}}\mathbf{q}_{1:3}-\dfrac{2}{\tau}\mathbf{q}_{1:3}^{\mathrm{T}}\left(S\left(\mathbf{q}_{1:3}\right)+q_{0}\mathbf{I}\right)\mathbf{q}_{1:3}\\
+ & =-\dfrac{2}{\tau}\mathbf{q}_{1:3}^{\mathrm{T}}\left(S\left(\mathbf{q}_{1:3}\right)+\mathbf{I}\right)\mathbf{q}_{1:3}\\
+ & =-\dfrac{2}{\tau}\mathbf{q}_{1:3}^{\mathrm{T}}\mathbf{q}_{1:3}\quad\forall z\in Z
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据混合系统的Lyapunovs稳定性定理[6]，姿态
+\begin_inset Formula $\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+是一个稳定平衡点，因为：
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $V\left(z,\cdot\right)=0$
+\end_inset
+
+当且仅当
+\begin_inset Formula $\mathbf{q}=\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $V\left(z,\mathbf{q}\right)>0\quad\forall\mathbf{q},\left(z,\mathbf{q}\right)\in Dom\left(z\right)\backslash\left\{ \mathbf{q}_{\mathbf{I}}\right\} $
+\end_inset
+
+，并且
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\dot{V}\left(z,\mathbf{q}\right)=\dfrac{\partial V\left(z,\mathbf{q}\right)}{\partial\mathbf{q}}f\left(z,\mathbf{q}\right)\leq0\quad\forall\mathbf{q},\left(z,\mathbf{q}\right)\in Dom\left(z\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom VPhantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，
+\begin_inset Formula $\dot{V}\left(z,\mathbf{q}\right)<0\quad\forall z\in Z,\quad\forall\mathbf{q}\in Dom\left(z\right)\backslash\left\{ \mathbf{q}_{\mathbf{I}}\right\} $
+\end_inset
+
+。注意，当
+\begin_inset Formula $z$
+\end_inset
+
+改变其状态时，
+\begin_inset Formula $V\left(z,\mathbf{q}\right)$
+\end_inset
+
+不会跳跃，因此
+\begin_inset Formula $V\left(z,\mathbf{q}\right)$
+\end_inset
+
+是严格递减的，这意味着
+\begin_inset Formula $\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+是一个全局渐近稳定的平衡点。
+\begin_inset Formula $\hfill\square$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 1：
+\end_layout
+
+\begin_layout Standard
+\noindent
+误差测量
+\begin_inset Formula $\mathbf{q}_{\mathbf{e}}$
+\end_inset
+
+表示从当前姿态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+到所需姿态
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+的旋转。通过采用
+\begin_inset Formula $\mathbf{q}_{\mathbf{e}}$
+\end_inset
+
+正负符号，可确保旋转角度始终小于或等于
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。这意味着控制器总是以最小的旋转角度旋转刚体。然而，请注意，最小旋转角度通常并不意味着时间最优旋转机动[1,5]。这很容易看出，如果机体角速度是有限的，即
+\begin_inset Formula $\left|\Omega_{i}\right|\leq\Omega_{i,max},\;i\in\{x,y,z\}$
+\end_inset
+
+并且
+\begin_inset Formula $\Omega_{i,max}\neq\Omega_{j,max}\text{ for }i\neq j$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 2：
+\end_layout
+
+\begin_layout Standard
+\noindent
+对于
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}＝\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+的控制律方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的直观解释如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure4.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+本文所提出的控制律使姿态稳定在
+\begin_inset Formula $q_{0}=1$
+\end_inset
+
+或
+\begin_inset Formula $q_{0}=-1$
+\end_inset
+
+。然而，在
+\begin_inset Formula $q_{0}=0$
+\end_inset
+
+时存在不连续性。如果不考虑
+\begin_inset Formula $q_{e,0}$
+\end_inset
+
+的正负符号，控制器将仅在
+\begin_inset Formula $q_{0}=−1$
+\end_inset
+
+作为不稳定平衡点时几乎全局渐近稳定[8]。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 3：
+\end_layout
+
+\begin_layout Standard
+\noindent
+根据定义，
+\begin_inset Formula $\left\Vert \mathbf{q}\right\Vert =1\quad\forall\mathbf{q}\in\mathbb{S}^{3}$
+\end_inset
+
+，因此
+\begin_inset Formula $\left\Vert \mathbf{q}_{\mathbf{e},1:3}\right\Vert \leq1$
+\end_inset
+
+。因此，最大可能的控制输出仅限于
+\begin_inset Formula $\left\Vert \vec{\Omega}_{cmd}\right\Vert \leq\dfrac{2}{\tau}$
+\end_inset
+
+。这对于饱和系统尤其有利。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 4：
+\end_layout
+
+\begin_layout Standard
+\noindent
+假定
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}＝\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+，但不失一般性。将控制律方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)插入到状态方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{q}}=\left[\begin{array}{c}
+\dot{q_{0}}\\
+\dot{q_{1}}\\
+\dot{q_{2}}\\
+\dot{q_{3}}
+\end{array}\right]=\dfrac{1}{\tau}\left[\begin{array}{c}
+q_{1}^{2}+q_{2}^{2}+q_{3}^{2}\\
+-q_{0}q_{1}\\
+-q_{0}q_{2}\\
+-q_{0}q_{3}
+\end{array}\right].\label{eq:32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于平衡点
+\begin_inset Formula $\mathbf{q}_{\mathbf{I}}\left(q_{0}\approx1,\mathbf{q}_{1:3}\ll1\right)$
+\end_inset
+
+的小偏差，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{q}}=\left[\begin{array}{c}
+\dot{q_{0}}\\
+\dot{q_{1}}\\
+\dot{q_{2}}\\
+\dot{q_{3}}
+\end{array}\right]=\dfrac{1}{\tau}\left[\begin{array}{c}
+0\\
+-q_{1}\\
+-q_{2}\\
+-q_{3}
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+这是一个时间常数为
+\begin_inset Formula $\tau$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+注意，
+\begin_inset Formula $\tau$
+\end_inset
+
+表示四元数误差衰减到
+\begin_inset Formula $\frac{1}{e}$
+\end_inset
+
+的时间，而
+\series bold
+不是
+\series default
+欧拉角误差衰减到
+\begin_inset Formula $\frac{1}{e}$
+\end_inset
+
+的时间。
+\end_layout
+
+\end_inset
+
+的非耦合一阶系统。
+\end_layout
+
+\begin_layout Subsubsection
+鲁棒性
+\end_layout
+
+\begin_layout Standard
+虽然所提出的控制器在任何期望姿态下都能达到全局渐近稳定，但它对任意小的测量噪声都不具有鲁棒性。紧跟在文献[8]中的证明之后，可以构造噪声信号
+\begin_inset Formula $\mathbf{q}_{\mathbf{noise}}$
+\end_inset
+
+，使得当开始任意接近不连续时，
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+始终保持接近不连续。
+\end_layout
+
+\begin_layout Standard
+设当前的姿态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}=\left[\begin{array}{c}
+\cos\left(\frac{\alpha}{2}\right)\\
+\vec{k}\sin\left(\frac{\alpha}{2}\right)
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定义
+\begin_inset Formula $\mathbf{q}_{\mathbf{noise}}$
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{noise}}\left(\mathbf{q}\right):=\left[\begin{array}{c}
+\cos\left(\frac{\beta\left(\mathbf{q}\right)}{2}\right)\\
+\vec{k}\sin\left(\frac{\beta\left(\mathbf{q}\right)}{2}\right)
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\vec{k}$
+\end_inset
+
+是姿态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的特征轴，并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\beta\left(\mathbf{q}\right)=\begin{cases}
+\beta_{0}, & \text{if }0<\alpha\leq\pi\\
+-\beta_{0}, & \text{if }\pi<\alpha<2\pi\\
+-\beta_{0}, & \text{if }0\geq\alpha>-\pi\\
+\beta_{0}, & \text{if }-\pi\geq\alpha>-2\pi
+\end{cases},\quad\text{with }0<\beta_{0}<\pi.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果测得的姿态
+\begin_inset Formula $\tilde{\mathbf{q}}$
+\end_inset
+
+是被噪声信号旋转的当前姿态，即
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{q}}=\mathbf{q}\cdot\mathbf{q}_{\mathbf{noise}}\left(\mathbf{q}\right):=\left[\begin{array}{c}
+\cos\left(\frac{\alpha+\beta\left(\mathbf{q}\right)}{2}\right)\\
+\vec{k}\sin\left(\frac{\alpha+\beta\left(\mathbf{q}\right)}{2}\right)
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+那么，
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}＝\mathbf{q}_{\mathbf{I}}$
+\end_inset
+
+的运动方程是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{q}}=\begin{cases}
+\dfrac{1}{\tau}\mathbf{q}\cdot\mathbf{p}\left(\mathrm{sgn}\left(q_{0}\right)\tilde{\mathbf{q}}_{1:3}\right), & \text{if }\left|\pi-\alpha\right|\leq\beta_{0}\\
+-\dfrac{1}{\tau}\mathbf{q}\cdot\mathbf{p}\left(\mathrm{sgn}\left(q_{0}\right)\tilde{\mathbf{q}}_{1:3}\right), & \text{if }\left|\pi-\alpha\right|>\beta_{0}.
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定义所有不连续的集合
+\begin_inset Formula $\mathcal{M}:=\left\{ \mathbf{q}\in\mathbb{S}^{3}:q_{0}=0\right\} $
+\end_inset
+
+，它对应于从
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+旋转
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的所有姿态。现在考虑Lyapunov候选函数
+\begin_inset Formula $V_{\mathcal{M}}(\mathbf{q})=q_{0}^{2}$
+\end_inset
+
+，其中
+\begin_inset Formula $V_{\mathcal{M}}(\mathbb{S}^{3}\backslash\mathcal{M})>0$
+\end_inset
+
+，并且
+\begin_inset Formula $V_{\mathcal{M}}(\mathcal{M})=0$
+\end_inset
+
+。那么，对于
+\begin_inset Formula $\left|\pi-\alpha\right|\leq\beta_{0}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dot{V}_{\mathcal{M}}(\mathbf{q}) & =2q_{0}\dot{q}_{0}\\
+ & =-\dfrac{1}{\tau}\left|q_{0}\right|\mathbf{q}_{1:3}^{\mathrm{T}}\tilde{\mathbf{q}}_{1:3}\\
+ & =-\dfrac{1}{\tau}\left|q_{0}\right|\vec{k}^{\mathrm{T}}\vec{k}\sin\left(\frac{\alpha}{2}\right)\sin\left(\frac{\alpha+\beta\left(\mathbf{q}\right)}{2}\right)\\
+ & \leq0.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，从
+\begin_inset Formula $\left|\pi-\alpha\right|\leq\beta_{0}$
+\end_inset
+
+的任何姿态开始，系统不会收敛到期望姿态。
+\end_layout
+
+\begin_layout Standard
+在文献[8]中，提出了一种具有滞后记忆状态的不连续控制器来避免这种不必要的平衡。滞后记忆状态定义了旋转方向，并且总是选择使机体以最短转换的方向旋转。如果
+\begin_inset Formula $\left|\pi-\alpha\right|\leq\beta_{0}$
+\end_inset
+
+，则滞后记忆状态不会得到更新，并且旋转方向保持不变，从而任意小的噪声信号可以使控制器离开不稳定的区域。在实际中，如果控制律是在离散时间控制器上实现的，则不需要滞
+后记忆状态。由于离散时间控制器的输出在两次更新之间是恒定的，因此在该时间段内旋转方向不会改变，因此，离散时间控制器的行为类似于具有滞后的连续时间控制器。
+\end_layout
+
+\begin_layout Subsection
+期望姿态
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.2期望姿态"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑到图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中四旋翼机设置的机体固连坐标系
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+，很明显四旋翼机只能在
+\begin_inset Formula $\vec{e}_{z}^{B}$
+\end_inset
+
+的方向加速。因此，必须将指令加速度
+\begin_inset Formula $\vec{a}_{cmd}$
+\end_inset
+
+转换为目标方向
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+，以便相应的
+\begin_inset Formula $z$
+\end_inset
+
+轴与期望加速度对齐。与每一个定点应用一样，围绕定点方向的旋转是不相关的，即围绕推力方向
+\begin_inset Formula $\vec{e}_{z}^{B}$
+\end_inset
+
+的旋转对四旋翼机的平动性能没有影响。因此，将控制任务分为两部分是有意义的：
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+简化姿态控制：
+\series default
+只控制推力的关键指向方向。不直接控制偏航角，但始终选择
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+，这样就不会引起绕偏航轴的旋转。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+完全姿态控制：
+\series default
+控制推力向量的指向方向和偏航角。选择
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+，使相应的
+\begin_inset Formula $z$
+\end_inset
+
+轴与
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+和
+\begin_inset Formula $\psi=\psi_{cmd}$
+\end_inset
+
+对齐。
+\end_layout
+
+\begin_layout Subsubsection
+简化姿态控制
+\end_layout
+
+\begin_layout Standard
+给定任意所需加速度
+\begin_inset Formula $\vec{a}_{cmd}$
+\end_inset
+
+，所需推力和方向可由以下公式计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+_{I}\vec{e}_{cmd,z}^{B} & =\frac{_{I}\vec{a}_{cmd}}{\left\Vert _{I}\vec{a}_{cmd}\right\Vert },\label{eq:43}\\
+coll_{cmd} & =\left\Vert _{I}\vec{a}_{cmd}\right\Vert .
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后使用简化误差的四元数
+\begin_inset Formula $\mathbf{q}_{\mathbf{e},\mathbf{red}}$
+\end_inset
+
+(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，将四角机从当前姿态旋转到所需姿态
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{e},\mathbf{red}}=\left[\begin{array}{c}
+\cos\left(\frac{\alpha}{2}\right)\\
+\vec{k}\sin\left(\frac{\alpha}{2}\right)
+\end{array}\right]=\left[\begin{array}{c}
+\cos\left(\frac{\alpha}{2}\right)\\
+\sin\left(\frac{\alpha}{2}\right)\left(\frac{_{I}\vec{e}_{z}^{B}\times\vec{e}_{cmd,z}^{B}}{\left\Vert _{I}\vec{e}_{z}^{B}\times{}_{I}\vec{e}_{cmd,z}^{B}\right\Vert }\right)
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $_{I}\vec{e}_{z}^{B}$
+\end_inset
+
+是当前姿态
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的对应
+\begin_inset Formula $z$
+\end_inset
+
+轴，
+\begin_inset Formula $\alpha$
+\end_inset
+
+是当前推力方向和期望推力方向之间的角度：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha=\arccos\left(\left(_{I}\vec{e}_{z}^{B}\right)^{\mathrm{T}}{}_{I}\vec{e}_{cmd,z}^{B}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure5.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{q}_{\mathbf{e},\mathbf{red}}$
+\end_inset
+
+的几何解释。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，期望的姿态可以从以下方程得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{cmd},\mathbf{red}}=\mathbf{q}\cdot\mathbf{q}_{\mathbf{e},\mathbf{red}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，
+\begin_inset Formula $\mathbf{q}_{\mathbf{e},\mathbf{red}}$
+\end_inset
+
+的最后一个条目始终为零，因为
+\begin_inset Formula $\vec{k}\bot\vec{e}_{z}^{B}$
+\end_inset
+
+表示
+\begin_inset Formula $\Omega_{cmd,z}=0$
+\end_inset
+
+。由于欧拉角的结构，这并不意味着偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+是恒定的。
+\end_layout
+
+\begin_layout Subsubsection
+完全姿态控制
+\end_layout
+
+\begin_layout Standard
+期望的偏航角
+\begin_inset Formula $\psi_{cmd}$
+\end_inset
+
+和推力方向
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+完全决定了姿态。因此，利用
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+在中间坐标系
+\begin_inset Formula $\mathcal{K}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+上的投影，可以从
+\begin_inset Formula $\psi_{cmd}$
+\end_inset
+
+和
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+中恢复俯仰角
+\begin_inset Formula $\theta_{cmd}$
+\end_inset
+
+和横滚角
+\begin_inset Formula $\phi_{cmd}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+首先，所需的指向方向
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+用坐标系
+\begin_inset Formula $\mathcal{K}$
+\end_inset
+
+表示，其绕初始
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转
+\begin_inset Formula $\psi_{cmd}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{K}\vec{e}_{cmd,z}^{B}=R_{KI}{}_{I}\vec{e}_{cmd,z}^{B}=\left[\begin{array}{ccc}
+\cos\left(\psi_{cmd}\right) & \sin\left(\psi_{cmd}\right) & 0\\
+-\sin\left(\psi_{cmd}\right) & \cos\left(\psi_{cmd}\right) & 0\\
+0 & 0 & 1
+\end{array}\right]{}_{I}\vec{e}_{cmd,z}^{B}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，通过将指向向量投影到
+\begin_inset Formula $\vec{e}_{x}^{K},\vec{e}_{z}^{K}$
+\end_inset
+
+平面上，可以很容易地重建俯仰角
+\begin_inset Formula $\theta_{cmd}$
+\end_inset
+
+(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\theta_{cmd}=\arctan\left(\frac{_{K}\vec{e}_{cmd,z,1}^{B}}{_{K}\vec{e}_{cmd,z,3}^{B}}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure6.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+投射到
+\begin_inset Formula $\vec{e}_{x}^{K},\vec{e}_{z}^{K}$
+\end_inset
+
+平面上。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在坐标系
+\begin_inset Formula $\mathcal{L}$
+\end_inset
+
+中表示
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+，通过新计算的计算俯仰角
+\begin_inset Formula $\theta_{cmd}$
+\end_inset
+
+围绕
+\begin_inset Formula $\vec{e}_{y}^{K}$
+\end_inset
+
+旋转，得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{L}\vec{e}_{cmd,z}^{B}=R_{LK}{}_{K}\vec{e}_{cmd,z}^{B}=\left[\begin{array}{ccc}
+\cos\left(\theta_{cmd}\right) & 0 & -\sin\left(\theta_{cmd}\right)\\
+0 & 1 & 0\\
+\sin\left(\theta_{cmd}\right) & 0 & \cos\left(\theta_{cmd}\right)
+\end{array}\right]{}_{K}\vec{e}_{cmd,z}^{B}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样，将
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+投影到
+\begin_inset Formula $\vec{e}_{y}^{K},\vec{e}_{z}^{K}$
+\end_inset
+
+平面上，从图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 可以看出，横滚角
+\begin_inset Formula $\phi_{cmd}$
+\end_inset
+
+由以下方程得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi_{cmd}=\mathrm{arctan2}\left(-_{L}\vec{e}_{cmd,z,2}^{B},{}_{L}\vec{e}_{cmd,z,3}^{B}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure7.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+投射到
+\begin_inset Formula $\vec{e}_{y}^{K},\vec{e}_{z}^{K}$
+\end_inset
+
+平面上。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来构造所需的姿态：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{cmd},\mathbf{full}}=\mathbf{q}\left(\psi_{cmd},\theta_{cmd},\phi_{cmd}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+混合完全和简化姿态控制
+\end_layout
+
+\begin_layout Standard
+虽然没有必要为了跟随任何期望的轨迹而控制偏航，但是有时仍然是期望的。在实践中，使用完全姿态控制(
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}=\mathbf{q}_{\mathbf{cmd},\mathbf{full}}$
+\end_inset
+
+)并不能产生很好的效果。
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+的动力学比
+\begin_inset Formula $\Omega_{x}$
+\end_inset
+
+和
+\begin_inset Formula $\Omega_{y}$
+\end_inset
+
+慢得多。其原因是
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+不能通过施加差动推力来控制，而只能通过利用螺旋桨的空气阻力来控制。当以相同的增益
+\begin_inset Formula $\frac{1}{\tau}$
+\end_inset
+
+控制所有角速度时，要么控制器对俯仰角和滚转角的速度非常慢，要么在偏航中存在大量的超调。此外，由于控制结构
+\begin_inset Formula $\left\Vert \vec{\Omega}_{cmd}\right\Vert $
+\end_inset
+
+是有限的，许多控制工作可能会浪费在控制偏航，虽然它不是至关重要的四旋翼机的运动。但这对于非常激进的机动非常重要。克服这些问题的一种可能性是混合减少和完全的姿态控
+制。定义
+\begin_inset Formula $\mathbf{q}_{\mathbf{mix}}:=\mathbf{q}_{\mathbf{cmd},\mathbf{red}}^{-1}\cdot\mathbf{q}_{\mathbf{cmd},\mathbf{full}}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{red}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{full}}$
+\end_inset
+
+之间的旋转。根据定义，
+\begin_inset Formula $\mathbf{q}_{\mathbf{mix}}$
+\end_inset
+
+总是有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{mix}}=\left[\begin{array}{c}
+\cos\left(\dfrac{\alpha_{mix}}{2}\right)\\
+0\\
+0\\
+\sin\left(\dfrac{\alpha_{mix}}{2}\right)
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\alpha_{mix}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{red}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{full}}$
+\end_inset
+
+之间关于
+\begin_inset Formula $_{B}\vec{e}_{z}^{B}$
+\end_inset
+
+的旋转角。选择
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd}}$
+\end_inset
+
+位于两种姿态
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{red}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{q}_{\mathbf{cmd},\mathbf{full}}$
+\end_inset
+
+之间，即：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{cmd}}=\mathbf{q}_{\mathbf{cmd},\mathbf{red}}\cdot\left[\begin{array}{c}
+\cos\left(\dfrac{p\alpha_{mix}}{2}\right)\\
+0\\
+0\\
+\sin\left(\dfrac{p\alpha_{mix}}{2}\right)
+\end{array}\right],\quad\text{with }p\in\left[0,1\right],\label{eq:54}
+\end{equation}
+
+\end_inset
+
+然后，可以保证由此产生的旋转产生正确的俯仰角和横滚角。尽管控制器只校正实际偏航误差的
+\begin_inset Formula $p$
+\end_inset
+
+分数，但它仍然收敛到期望的偏航角
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+。
+\begin_inset Formula $\Omega_{cmd,z}$
+\end_inset
+
+现在限制为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Omega_{cmd,z}\leq\dfrac{2\sin\left(\dfrac{p\pi}{2}\right)}{\tau}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+限制最大倾斜角度
+\end_layout
+
+\begin_layout Standard
+对于某些应用，例如承载负载，可能需要四翼机只能倾斜到某个最大倾斜角度
+\begin_inset Formula $\alpha_{max}$
+\end_inset
+
+。这可以在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)之后的步骤立即实现。首先，倾角
+\begin_inset Formula $\alpha_{tilt}$
+\end_inset
+
+定义为
+\begin_inset Formula $\vec{e}_{z}^{I}$
+\end_inset
+
+和
+\begin_inset Formula $\vec{e}_{cmd,z}^{B}$
+\end_inset
+
+之间的角度：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{tilt}=\arccos\left(\left(_{I}\vec{e}_{z}^{I}\right)^{\mathrm{T}}{}_{I}\vec{e}_{cmd,z}^{B}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\left|\alpha_{tilt}\right|>\alpha_{max}$
+\end_inset
+
+，则角度可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来限制。首先计算旋转轴，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{k}=\frac{_{I}\vec{e}_{z}^{I}\times{}_{I}\vec{e}_{cmd,z}^{B}}{\left\Vert \left(_{I}\vec{e}_{z}^{I}\right)^{\mathrm{T}}{}_{I}\vec{e}_{cmd,z}^{B}\right\Vert },
+\end{equation}
+
+\end_inset
+
+并且倾斜旋转定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{tilt}}=\left[\begin{array}{c}
+\cos\left(\frac{\alpha_{tilt}}{2}\right)\\
+\vec{k}\sin\left(\frac{\alpha_{tilt}}{2}\right)
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+新的目标推力方向位于孔径为
+\begin_inset Formula $2\alpha_{max}$
+\end_inset
+
+的圆锥内，然后
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{p}\left(_{I}\vec{e}_{new\:cmd,z}^{B}\right)=\mathbf{q}_{\mathbf{tilt}}\cdot\mathbf{p}\left(_{I}\vec{e}_{cmd,z}^{B}\right)\cdot\bar{\mathbf{q}}_{\mathbf{tilt}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+值得一提的是，这并不能阻止四旋翼机翻转。尽管可到达的姿态集合现在受到限制，但是四翼机可能会被一些外部动量旋转到一个极端的姿态。恢复到指令姿态的最小角度旋转仍然需
+要执行翻转。
+\end_layout
+
+\begin_layout Subsection
+启发式
+\end_layout
+
+\begin_layout Standard
+本文所提出的控制律方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)总是以尽可能小的旋转使四旋翼机稳定到所需的方向。这是一个非常理想的结果，然而，这是假设
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+可以被直接和无限快地控制，这在实践中是不正确的。想象一下，四旋翼机的偏航误差几乎为
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。如果四旋翼机绕
+\begin_inset Formula $\vec{k}$
+\end_inset
+
+或
+\begin_inset Formula $−\vec{k}$
+\end_inset
+
+旋转，时间上不会有很大差别。但是，如果
+\begin_inset Formula $\left|\Omega_{z}\right|$
+\end_inset
+
+较大，则与
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+相同方向旋转明显快于加速从相反方向旋转。问题是，是否更快地进行较大的旋转，不是简单的事。实际上，
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+的上升时间取决于许多参数，例如推力大小和
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+本身的值，不存在任何代数表达式来回答这个问题。为了保持较小的计算工作量，本文使用了一个简单的启发式算法。
+\end_layout
+
+\begin_layout Standard
+这里只介绍偏航误差的启发式算法，然而，对于俯仰角和横滚角，它的工作方式是相同的。假设四翼机的机体角速度为
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+。
+\begin_inset Formula $\mathbf{q}_{\mathbf{mix}}$
+\end_inset
+
+的旋转轴为
+\begin_inset Formula $\vec{k}=(0,0,1)^{\mathrm{T}}$
+\end_inset
+
+或
+\begin_inset Formula $\vec{k}=(0,0,−1)^{\mathrm{T}}$
+\end_inset
+
+。如果四旋翼机已经按照命令的方向旋转，即
+\begin_inset Formula $\vec{k}^{\mathrm{T}}\vec{\Omega}\geq0$
+\end_inset
+
+，那么显然没有什么需要改变的。否则，如果
+\begin_inset Formula $\vec{k}^{\mathrm{T}}\vec{\Omega}<0$
+\end_inset
+
+，根据偏航误差，进行较长的旋转可能更快。决策标准是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vec{k}^{\mathrm{T}}\vec{\Omega}<0\quad\text{AND}\quad\left|\vec{k}^{\mathrm{T}}\vec{\Omega}\right|\geq\mathrm{threshold}\left(\alpha_{mix}\right).\label{eq:60}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于偏航误差接近
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+时，阈值应接近
+\begin_inset Formula $0$
+\end_inset
+
+，并且应严格增加，以减小误差角。实验发现，一个好的阈值是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{threshold}\left(\alpha_{mix}\right)=\dfrac{\pi-\alpha_{mix}}{\pi}\Omega_{z,min}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+每当
+\begin_inset Formula $\left|\vec{k}^{\mathrm{T}}\vec{\Omega}\right|$
+\end_inset
+
+高于阈值时，最好继续朝这个方向旋转。为了获得尽可能多的时间，应全速旋转直到误差角为
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+，即：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{\mathbf{e},\mathbf{full}}=\mathbf{q}_{\mathbf{e},\mathbf{red}}\cdot\left[\begin{array}{c}
+\cos\left(\frac{p\pi}{2}\right)\\
+-\vec{k}\sin\left(\frac{p\pi}{2}\right)
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，必须确保旋转方向一旦确定，就不会再改变。因此，指令转速应远高于阈值，这意味着
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Omega_{z,min}<\dfrac{2\sin\left(\dfrac{p\pi}{2}\right)}{\tau}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于单位四元数是归一化的，在俯仰和横滚中的大误差会降低
+\begin_inset Formula $\Omega_{cmd,z}$
+\end_inset
+
+，因此当
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Omega_{z,min}=2\sin\left(p\pi/2\right)/\tau$
+\end_inset
+
+时，结果是不确定的。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 1：
+\end_layout
+
+\begin_layout Standard
+\noindent
+上述启发式也适用于
+\begin_inset Formula $\Omega_{x,y}$
+\end_inset
+
+。但是，
+\begin_inset Formula $\Omega_{x,y}$
+\end_inset
+
+可以控制得更快，因此时间收益不再那么大。实验表明，该方法只对俯仰和横滚中的极大角速度有利，而这两种速度几乎超出了陀螺传感器的测量范围。此外，该启发式算法是针对四
+旋翼机的主轴进行单次旋转设计的。目前还不清楚3D案例中会发生什么。因此，建议仅将启发式应用于偏航轴，因为偏航轴只能缓慢控制，因此时间收益最高。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 2：
+\end_layout
+
+\begin_layout Standard
+\noindent
+作为启发式方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的替换，它还试图通过模拟状态方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来解决问题，一次在较小的方向上旋转，一次在相反的方向上旋转。然而，结果并不比上述启发式方法更好。此外，模拟计算非常昂贵，这使得它无法用于实时应用。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 3：
+\end_layout
+
+\begin_layout Standard
+\noindent
+如果使用上述启发式，那么控制器的稳定性和鲁棒性将不得不再次得到证明。虽然结果很直观，但这里没有证明。
+\end_layout
+
+\begin_layout Section
+结果
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4结果"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+时间常数
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:4.1时间常数"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本文所提出的控制器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)基于
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+可以被直接控制的假设。对于大
+\begin_inset Formula $\tau$
+\end_inset
+
+，这个假设当然成立。为了确定
+\begin_inset Formula $\tau$
+\end_inset
+
+的取值范围，使得上述假设仍然成立，本节将分析姿态的一系列阶跃响应。
+\end_layout
+
+\begin_layout Subsubsection
+阶跃俯仰角
+\end_layout
+
+\begin_layout Standard
+从悬停开始，指令俯仰角
+\begin_inset Formula $\phi$
+\end_inset
+
+为
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+。由于该问题在俯仰和横滚上是对称的，所以只分析了俯仰的阶跃响应。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)各种
+\begin_inset Formula $\tau$
+\end_inset
+
+和
+\begin_inset Formula $p$
+\end_inset
+
+的结果，使得
+\begin_inset Formula $\tau_{yaw}=0.02\,s$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure8.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:8"
+
+\end_inset
+
+
+\begin_inset Formula $q_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\Omega_{y}$
+\end_inset
+
+的阶跃响应。虚线是对应
+\begin_inset Formula $\Omega_{cmd,y}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\tau\geq0.1\,s$
+\end_inset
+
+时，
+\begin_inset Formula $q_{2}$
+\end_inset
+
+表现为一阶系统。对于
+\begin_inset Formula $\tau<0.1\,s$
+\end_inset
+
+，
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+可以直接控制的假设不再成立。在时间
+\begin_inset Formula $t=0.2\,s$
+\end_inset
+
+时，指令的俯仰角速度
+\begin_inset Formula $\Omega_{cmd,y}$
+\end_inset
+
+等于零，但
+\begin_inset Formula $\Omega_{y}(t=0.2\,s)\gg0\mathrm{rad}/s$
+\end_inset
+
+，因此，系统表现出均匀的超调。因此，
+\begin_inset Formula $\tau\in[0.08\,s,0.15\,s]$
+\end_inset
+
+可以实现几乎没有超调的快速响应。
+\end_layout
+
+\begin_layout Subsubsection
+阶跃偏航角
+\end_layout
+
+\begin_layout Standard
+从
+\begin_inset Formula $\psi=0^{\circ}$
+\end_inset
+
+悬停开始，在
+\begin_inset Formula $t=0\,s$
+\end_inset
+
+时向姿态控制器提供
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+的偏航阶跃输入。不同
+\begin_inset Formula $\tau(p=1)$
+\end_inset
+
+的结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $\tau\geq0.2\,s$
+\end_inset
+
+时，
+\begin_inset Formula $q_{3}$
+\end_inset
+
+的行为与一阶系统非常相似。对于较小的
+\begin_inset Formula $\tau$
+\end_inset
+
+，由于基本假设受到损害，系统开始出现超调。这也可以在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中看到，其中
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+在
+\begin_inset Formula $\tau=0.1\,s$
+\end_inset
+
+时达到饱和，即使在减速时也是如此。因此，为了控制偏航，
+\begin_inset Formula $\tau$
+\end_inset
+
+应在
+\begin_inset Formula $[0.2\,s,0.4\,s]$
+\end_inset
+
+的范围内。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure9.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:9"
+
+\end_inset
+
+
+\begin_inset Formula $q_{3}$
+\end_inset
+
+和
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+的阶跃响应。虚线是对应
+\begin_inset Formula $\Omega_{cmd,z}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 1：
+\end_layout
+
+\begin_layout Standard
+\noindent
+在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，
+\begin_inset Formula $q_{3}$
+\end_inset
+
+对于
+\begin_inset Formula $\tau=0.5\,s$
+\end_inset
+
+的响应实际在轻微振荡。这是由于在这个时间常数上小的控制增益不能阻止四旋翼机在其俯仰和横滚轴上摆动。
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 2：
+\end_layout
+
+\begin_layout Standard
+\noindent
+上述结果强烈依赖于总推力。对于这两个实验，
+\begin_inset Formula $\tau$
+\end_inset
+
+被分析为一个允许保持高度的集体推力。
+\end_layout
+
+\begin_layout Subsection
+混合完全和简化姿态控制
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:4.1时间常数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的实验表明，对于偏航轴的良好控制器增益对于横滚和俯仰轴明显要小。实现这一点的一种方法是将完全姿态控制和简化姿态控制相结合，并选择方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的优先化因子
+\begin_inset Formula $p$
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p=\dfrac{\tau}{\tau_{yaw}},\label{eq:64}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\tau$
+\end_inset
+
+偏航是一个时间常数，它在偏航中获得良好的响应，
+\begin_inset Formula $\tau$
+\end_inset
+
+是整个控制器(俯仰和横滚)的期望时间常数。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)源于针对偏航小误差的混合姿态控制的控制律线性化。如果根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)选择
+\begin_inset Formula $p$
+\end_inset
+
+，那么对于偏航中的小误差，控制器的行为就像一个时间常数为
+\begin_inset Formula $\tau_{yaw}$
+\end_inset
+
+而不是
+\begin_inset Formula $\tau$
+\end_inset
+
+的控制器。对于
+\begin_inset Formula $\tau=0.08\,s$
+\end_inset
+
+和
+\begin_inset Formula $\tau_{yaw}=0.2\,s$
+\end_inset
+
+的非常激进的控制器，
+\begin_inset Formula $p$
+\end_inset
+
+是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p=\dfrac{0.08\,s}{0.2\,s}=0.4\:.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，显示了
+\begin_inset Formula $p$
+\end_inset
+
+和
+\begin_inset Formula $\tau=0.08\,s$
+\end_inset
+
+的不同值的实验。从欧拉角
+\begin_inset Formula $(\psi,\theta,\phi)=(180^{\circ},45^{\circ},0^{\circ})$
+\end_inset
+
+的位置开始，在
+\begin_inset Formula $t=0\,s$
+\end_inset
+
+时指令偏航
+\begin_inset Formula $180^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+作为基准，
+\begin_inset Formula $p=0$
+\end_inset
+
+的结果绘制在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+a 中。对于不同的
+\begin_inset Formula $p$
+\end_inset
+
+值，围绕俯仰角的旋转没有显著变化，并且在所有情况下，在
+\begin_inset Formula $0.2\,s$
+\end_inset
+
+后不久都获得了正确的倾斜角。但是仔细检查图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+，可以看出，随着
+\begin_inset Formula $p$
+\end_inset
+
+的增加，俯仰角的校正稍微慢一些。这是由于
+\begin_inset Formula $p$
+\end_inset
+
+越大，偏航控制功率越大。值得注意的是
+\begin_inset Formula $p$
+\end_inset
+
+越大，偏航控制越快。对于
+\begin_inset Formula $p=0.4$
+\end_inset
+
+，在
+\begin_inset Formula $t=0.88\,s$
+\end_inset
+
+时达到正确姿态，而对于
+\begin_inset Formula $p=0.267$
+\end_inset
+
+和
+\begin_inset Formula $p=0.133$
+\end_inset
+
+，在
+\begin_inset Formula $t=1\,s$
+\end_inset
+
+时尚未达到所需姿态。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure10.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:10"
+
+\end_inset
+
+在
+\begin_inset Formula $xz$
+\end_inset
+
+平面和
+\begin_inset Formula $xy$
+\end_inset
+
+平面上分别显示不同优先级因子的四旋翼机视图：a) 
+\begin_inset Formula $p=0.0$
+\end_inset
+
+，b) 
+\begin_inset Formula $p=0.133$
+\end_inset
+
+，c) 
+\begin_inset Formula $p=0.267$
+\end_inset
+
+和 d) 
+\begin_inset Formula $p=0.4$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\noindent
+
+\series bold
+备注 1：
+\end_layout
+
+\begin_layout Standard
+\noindent
+对于极大角速度约为
+\begin_inset Formula $\vec{e}_{z}^{B}$
+\end_inset
+
+的情况，混合姿态控制又比单纯降阶姿态控制取得了更好的控制效果。如果
+\begin_inset Formula $\left|\Omega_{z}\right|$
+\end_inset
+
+较大，则
+\begin_inset Formula $\mathbf{q}_{\mathbf{e},\mathbf{red}}$
+\end_inset
+
+的特征轴
+\begin_inset Formula $\vec{k}$
+\end_inset
+
+在
+\begin_inset Formula $\vec{e}_{x}^{B}\vec{e}_{y}^{B}$
+\end_inset
+
+平面上以
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+的速度旋转。这意味着电机的转速不断增加和降低。然而，电机的动态特性受到限制，电机的转速不能无限快地控制。此外，由于
+\begin_inset Formula $\Omega_{cmd,z}=0$
+\end_inset
+
+，板载控制器使用大量控制力来分解
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+，几乎没有控制力来围绕俯仰和横滚轴旋转四旋翼机。
+\end_layout
+
+\begin_layout Subsection
+启发式
+\end_layout
+
+\begin_layout Standard
+实验表明，该方法是有效的。从悬停开始，四旋翼机以不同的角速度绕偏航轴旋转。一旦偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+达到
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+，四旋翼机被指令返回
+\begin_inset Formula $\psi_{cmd}=0^{\circ}$
+\end_inset
+
+。本实验的控制参数为
+\begin_inset Formula $\tau=0.1\,s$
+\end_inset
+
+，
+\begin_inset Formula $p=0.3$
+\end_inset
+
+，
+\begin_inset Formula $\Omega_{z,min}=4\,\mathrm{rad}/s$
+\end_inset
+
+。结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename eth-7387-01-Figure11.png
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:11"
+
+\end_inset
+
+实验测试不同角速度下的启发式：a) 
+\begin_inset Formula $\Omega_{z}=1.5\,\mathrm{rad}/s$
+\end_inset
+
+，b) 
+\begin_inset Formula $\Omega_{z}=4\,\mathrm{rad}/s$
+\end_inset
+
+，c) 
+\begin_inset Formula $\Omega_{z}=6.5\,\mathrm{rad}/s$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+显然，对于较慢的角速度，如果启用或不启用启发式，则没有区别(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+a)。但如果
+\begin_inset Formula $\Omega_{z}$
+\end_inset
+
+超过某个阈值，则执行较长的旋转路径速度更快，因此启用启发式的控制器可以获得更好的结果。
+\end_layout
+
+\begin_layout Section
+结论
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5结论"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本文提出了一种基于单位四元数的飞行器姿态非线性控制器。控制输入是期望的加速度和横摆角，然后将其转换为指令的目标方向。假设机载控制器和四旋翼机动力学比姿态控制回路
+快得多，因此四旋翼机可以直接由
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+控制。控制器的稳定性和鲁棒性已被证明。
+\end_layout
+
+\begin_layout Standard
+通过实验验证了非线性控制器的性能。所提出的姿态控制器有许多优点，特别是对于攻击性机动。该控制器具有全局渐近稳定性，能使四旋翼机从任意姿态恢复到悬停状态，并能跟踪
+任意可行轨迹。此外，研究还表明，通过混合完全姿态控制和简化姿态控制，可以优先控制关键俯仰角和滚转角。所提出的启发式算法能够缩短到达期望姿态的时间，但是对于绕偏航
+轴旋转的情况，它只能得到很好的结果。
+\end_layout
+
+\begin_layout Standard
+尽管如此，仍有许多问题有待解决。目前，
+\begin_inset Formula $\vec{\Omega}$
+\end_inset
+
+的上升时间取决于指令推力。如果指令推力很低，这会导致旋转速度非常慢，尽管整个旋转只需要十分之几秒，因此，大推力对平动的影响很小。此外，如果根据姿态误差动态地调整
+优先级因子
+\begin_inset Formula $p$
+\end_inset
+
+将是很好的。俯仰和横滚的较大误差应首先控制，但如果俯仰和横滚没有误差发生，则
+\begin_inset Formula $p$
+\end_inset
+
+可以较大，以便在合理的时间内纠正偏航误差。实验还表明，偏航欧拉角
+\begin_inset Formula $\psi$
+\end_inset
+
+不适合定义四旋翼机
+\begin_inset Formula $z$
+\end_inset
+
+轴的期望旋转。由于俯仰角
+\begin_inset Formula $\theta$
+\end_inset
+
+仅定义在
+\begin_inset Formula $\left[\frac{-\pi}{2},\frac{\pi}{2}\right]$
+\end_inset
+
+的范围内，如果俯仰角超出其范围，则
+\begin_inset Formula $\psi$
+\end_inset
+
+会发生跳跃。如果在输入轨迹中不考虑这些跳跃，四旋翼机可能会无意中绕其偏航轴旋转。
+\end_layout
+
+\begin_layout Standard
+目前，所提出的控制器与模型无关，因此可用于各种飞行器。然而，结合姿态和机载控制器，并考虑惯性矩等模型参数，在时间上可能是有益的。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Bilimoria and B.
+ Wie.
+ Time-optimal three-axis reorientation of a rigid spacecraft.
+ Journal of Guidance Control and Dynamics, 16(3):446–452, 1993.
+ 
+\end_layout
+
+\begin_layout Enumerate
+N.A.
+ Chaturvedi, A.K.
+ Sanyal, and N.H.
+ McClamroch.
+ Rigid-body attitude control.
+ Control Systems, IEEE, 31(3):30–51, june 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Diebel.
+ Representing attitude: Euler angles, unit quaternions, and rotation vectors,
+ 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Dvorak, M.
+ de Lellis, and Z.
+ Hurak.
+ Advanced control of quadrotor using eigenaxis rotation.
+ In Control Applications (CCA), 2011 IEEE International Conference on, pages
+ 153–158, sept.
+ 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+T.
+ Lee, M.
+ Leok, and N.H.
+ McClamroch.
+ Time optimal attitude control for a rigid body.
+ In American Control Conference, 2008, pages 5210–5215, june 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Lygeros, S.
+ Sastry, and C.
+ Tomlin.
+ Hybrid systems: Foundations, advanced topics and applications.
+ 
+\end_layout
+
+\begin_layout Enumerate
+C.G.
+ Mayhew, R.G.
+ Sanfelice, and A.R.
+ Teel.
+ On quaternion-based attitude control and the unwinding phenomenon.
+ In American Control Conference (ACC), 2011, pages 299–304, 29 2011-july
+ 1 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+C.G.
+ Mayhew, R.G.
+ Sanfelice, and A.R.
+ Teel.
+ Quaternion-based hybrid control for robust global attitude tracking.
+ Automatic Control, IEEE Transactions on, 56(11):2555–2566, nov.
+ 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Mellinger and V.
+ Kumar.
+ Minimum snap trajectory generation and control for quadro- tors.
+ In ICRA, pages 2520–2525.
+ IEEE, 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+[10] K Rudin, M.-D.
+ Hua, G.
+ Ducard, and S.
+ Bouabdallah.
+ A robust attitude controller and its application to quadrotor helicopters.
+ In 18th IFAC World Congress, 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Stuelpnagel.
+ On the parametrization of the three-dimensional rotation group.
+ SIAM Review, 6(4):pp.
+ 422–430, 1964.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Tayebi.
+ Unit quaternion-based output feedback for the attitude tracking problem.
+ Au- tomatic Control, IEEE Transactions on, 53(6):1516–1520, july 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Tayebi and S.
+ McGilvray.
+ Attitude stabilization of a vtol quadrotor aircraft.
+ Control Systems Technology, IEEE Transactions on, 14(3):562–571, may 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.T.-Y.
+ Wen and K.
+ Kreutz-Delgado.
+ The attitude control problem.
+ Automatic Control, IEEE Transactions on, 36(10):1148–1162, oct 1991.
+\end_layout
+
+\end_body
+\end_document
