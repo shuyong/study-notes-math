@@ -1,0 +1,1134 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+为什么四元数对向量是半角旋转
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+— 题记：如果看世界只有旋转，那脑子就是轴。
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+四元数对向量的旋转，是著名的
+\begin_inset Formula $v^{\prime}=qvq^{*}$
+\end_inset
+
+公式。为什么会形成夹心饼干形式，为什么不能一步到位而是分成了两个半角的乘积？几乎所有的初学者在这个问题上都会有疑惑。许多教材和资料试图讲明白这个问题。结果是写的
+人很费劲，看的人更迷糊。本文也试图在这方面添一把乱，让这个世界再多一点噪声。
+\end_layout
+
+\begin_layout Standard
+文档[1]是我见过的说得最清晰明了的教材，用最简单的数学概念，只用了复数和复平面(二维空间)、三维空间与向量、矩阵这几个线性代数基本概念就说清楚了四元数旋转三维
+向量的几何意义。很值得给初学者推荐。
+\end_layout
+
+\begin_layout Standard
+文档[2]用了高深一些的数学知识，从流形(manifold)的双倍覆盖和等倾旋转 (isoclinic rotation)出发，指出存在两个正交的旋转。数学知识
+是坚涩了一些，但如果要学习基于李群的ESKF，这是要过的关卡。
+\end_layout
+
+\begin_layout Standard
+文档[3]说是精确直观的几何解释，但里面要的数学知识也不少，不看也罢。
+\end_layout
+
+\begin_layout Standard
+本文试图在文档[1]的基础上，用稍微再进一步的线性代数知识，再次解释半角旋转这个问题。但本文想走另外的风格，没有什么精巧的思维和巧妙的数学推导，全是傻算楞算，简
+单粗暴，直指问题核心。
+\end_layout
+
+\begin_layout Section
+成果回顾
+\end_layout
+
+\begin_layout Standard
+对于向量旋转的问题描述：有任意向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+绕旋转轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+旋转
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\theta$
+\end_inset
+
+角度得到
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+新的向量
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+，其中向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+为单位向量。用什么样的方程解决这个问题？
+\end_layout
+
+\begin_layout Standard
+要解决这个问题，我们需要几个辅助向量。
+\end_layout
+
+\begin_layout Standard
+首先将
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+分解为平行(投影
+\begin_inset Formula $\parallel$
+\end_inset
+
+)于旋转轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+以及正交(垂直
+\begin_inset Formula $\perp$
+\end_inset
+
+)于
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的两个向量，
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+，即：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{v}=\mathbf{v}_{\parallel}+\mathbf{v}_{\perp}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+其实就是
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+上的正交投影(Orthogonal Projection)，根据正交投影的公式，我们可以得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rlc}
+\mathbf{v}_{\parallel} & =\mathrm{proj}_{\mathbf{u}}(\mathbf{v})\\
+ & =\dfrac{\mathbf{u}\cdot\mathbf{v}}{\mathbf{u}\cdot\mathbf{u}}\mathbf{u}\\
+ & =\dfrac{\mathbf{u}\cdot\mathbf{v}}{\left|\mathbf{u}\right|^{2}}\mathbf{u} & \left|\mathbf{u}\right|^{2}=\mathbf{u}\cdot\mathbf{u}\\
+ & =\left(\mathbf{u}\cdot\mathbf{v}\right)\mathbf{u} & \left|\mathbf{u}\right|^{2}=1
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+公式中包含一个向量的点乘，假设
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的夹角为
+\begin_inset Formula $\phi$
+\end_inset
+
+，则
+\begin_inset Formula $\mathbf{u}\cdot\mathbf{v}=\left|\mathbf{u}\right|\left|\mathbf{v}\right|\cos(\phi)$
+\end_inset
+
+，所以投影的几何意义一目了然。
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\mathbf{v}=\mathbf{v}_{\parallel}+\mathbf{v}_{\perp}$
+\end_inset
+
+，我们可以得到：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\mathbf{v}_{\perp} & =\mathbf{v}-\mathbf{v}_{\parallel}\\
+ & =\mathbf{v}-(\mathbf{u}\cdot\mathbf{v})\mathbf{u}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转后的向量
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+同样也可以分解为类似的两个两个向量，
+\begin_inset Formula $\mathbf{v}'_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+，即：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{v}'=\mathbf{v}'_{\parallel}+\mathbf{v}'_{\perp}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+之间的叉乘得到一个新的向量
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{w}=\mathbf{u}\times\mathbf{v}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据叉乘的定义，向量
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+正交(垂直
+\begin_inset Formula $\perp$
+\end_inset
+
+)于向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，并且和向量
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+张成的平面就是以向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+为法向量的平面，也是向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+旋转的正交投影平面，旋转后的向量
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+就位于这个平面中。
+\end_layout
+
+\begin_layout Standard
+如果是用单位四元数
+\begin_inset Formula $q=\left[\cos\left(\frac{\theta}{2}\right),\sin\left(\frac{\theta}{2}\right)\mathbf{u}\right]$
+\end_inset
+
+去旋转向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，先需要将上面的向量扩展为四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rclcrcl}
+v & = & \left[0,\mathbf{v}\right] &  & v' & = & \left[0,\mathbf{v}'\right]\\
+v_{\perp} & = & \left[0,\mathbf{v}_{\perp}\right] &  & v_{\perp}' & = & \left[0,\mathbf{v}_{\perp}'\right]\\
+v_{\parallel} & = & \left[0,\mathbf{v}_{\parallel}\right] &  & v_{\parallel}' & = & \left[0,\mathbf{v}_{\parallel}'\right]\\
+u & = & \left[0,\mathbf{u}\right]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+v=v_{\parallel}+v_{\perp} &  & v'=v_{\parallel}'+v_{\perp}'\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后用著名的夹心饼干形式的四元数旋转公式去旋转向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+v'=qvq^{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在文档[1]中，解释方程(1)的最关键的假设就是设定旋转前后的“不变量”(‘invariant’)是
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{equation}
+v_{\parallel}'=v_{\parallel}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后旋转只针对
+\begin_inset Formula $v_{\perp}$
+\end_inset
+
+进行
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v'=v_{\parallel}+q^{2}v_{\perp}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后经过一系列的巧妙变形就得到了方程(1)。
+\end_layout
+
+\begin_layout Section
+强攻问题
+\end_layout
+
+\begin_layout Standard
+文档[1]其实是用逆推法回答了方程(1)为什么行，但是没有回答
+\begin_inset Formula $v'=qv$
+\end_inset
+
+为什么不行。本文试图正面回答这个问题。这其实涉及到两个问题：
+\end_layout
+
+\begin_layout Enumerate
+首先，方程(1)旋转的是向量还是四元数？
+\end_layout
+
+\begin_layout Enumerate
+其次，四元数空间的旋转意味着什么？
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们先看
+\begin_inset Formula $v'=qv$
+\end_inset
+
+的运行结果。有单位四元数为
+\begin_inset Formula $q=\left[\cos(\theta),\sin(\theta)\mathbf{u}\right]$
+\end_inset
+
+，我们用这个单位四元数去逆时针旋转一个四元数
+\begin_inset Formula $v=[0,\mathbf{v}]$
+\end_inset
+
+，则为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v' & =qv\\
+ & =\left[\cos(\theta),\sin(\theta)\mathbf{u}\right]\left[0,\mathbf{v}\right]\\
+ & =\left[-\sin(\theta)\mathbf{u}\cdot\mathbf{v},\cos(\theta)\mathbf{v}+\sin(\theta)\left(\mathbf{u}\times\mathbf{v}\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以验证，
+\begin_inset Formula $\left|v'\right|=\left|v\right|$
+\end_inset
+
+，这符合单位四元数乘法的特性。但是
+\begin_inset Formula $v'$
+\end_inset
+
+的实部不为零，根据四元数模长不变的约束，则
+\begin_inset Formula $v'$
+\end_inset
+
+的向量部分
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+的模长就发生了变化，这就不符合旋转的要求：旋转前后模长不变。
+\end_layout
+
+\begin_layout Standard
+我们做类似上一章的分解
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+v' & =qv\\
+ & =q\left(v_{\parallel}+v_{\perp}\right)\\
+ & =qv_{\parallel}+qv_{\perp}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $qv_{\parallel}$
+\end_inset
+
+的结果为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+qv_{\parallel} & =\left[\cos(\theta),\sin(\theta)\mathbf{u}\right]\left[0,\left(\mathbf{u}\cdot\mathbf{v}\right)\mathbf{u}\right]\\
+ & =\left[-\sin(\theta)\left(\mathbf{u}\cdot\mathbf{v}\right),\cos(\theta)\left(\mathbf{u}\cdot\mathbf{v}\right)\mathbf{u}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+而
+\begin_inset Formula $qv_{\perp}$
+\end_inset
+
+的结果为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+qv_{\perp} & =\left[\cos(\theta),\sin(\theta)\mathbf{u}\right]\left[0,\mathbf{v}-(\mathbf{u}\cdot\mathbf{v})\mathbf{u}\right]\\
+ & =\left[0,\cos(\theta)\mathbf{v}-\cos(\theta)\left(\mathbf{u}\cdot\mathbf{v}\right)\mathbf{u}+\sin(\theta)\left(\mathbf{u}\times\mathbf{v}\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以看到，
+\begin_inset Formula $v'$
+\end_inset
+
+的实部的变化是由
+\begin_inset Formula $qv_{\parallel}$
+\end_inset
+
+贡献的，这就是
+\begin_inset Formula $v'=qv$
+\end_inset
+
+违反了方程(2)的假设的原因。有些人对此的解释是：只有四元数实部为零，虚部才表示我们现实世界的三维向量，因为现在
+\begin_inset Formula $v'$
+\end_inset
+
+的实部不为零，所以
+\begin_inset Formula $v'$
+\end_inset
+
+的虚部就不再表示我们现实世界的向量了。这种观点就有点科幻色彩了，是值得商榷的。
+\end_layout
+
+\begin_layout Standard
+我们先看方程(1)的运算特点。如果我们把方程(1)转换为
+\begin_inset Formula $4\times4$
+\end_inset
+
+的矩阵形式就很明显了。
+\end_layout
+
+\begin_layout Standard
+设：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+q=s+x\mathbf{i}+y\mathbf{j}+z\mathbf{k},\left|q\right|=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则方程(1)的矩阵形式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v'=qvq^{*}=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1-2y^{2}-2z^{2} & 2xy-2sz & 2sy+2xz\\
+0 & 2xy+2sz & 1-2x^{2}-2z^{2} & 2yz-2sx\\
+0 & 2xz-2sy & 2sx+2yz & 1-2x^{2}-2y^{2}
+\end{array}\right]v
+\]
+
+\end_inset
+
+其中矩阵的右下角就是
+\begin_inset Formula $3\times3$
+\end_inset
+
+的旋转矩阵，就负责向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的旋转。
+\end_layout
+
+\begin_layout Standard
+从上式的特点可以确定最终结果
+\begin_inset Formula $v'$
+\end_inset
+
+中：
+\end_layout
+
+\begin_layout Itemize
+实部：完全由
+\begin_inset Formula $v$
+\end_inset
+
+的实部贡献，也就是
+\begin_inset Formula $v'$
+\end_inset
+
+的实部与
+\begin_inset Formula $v$
+\end_inset
+
+的实部相等。整个
+\begin_inset Formula $q$
+\end_inset
+
+的实部和虚部，
+\begin_inset Formula $v$
+\end_inset
+
+的虚部对此都没有任何影响。
+\end_layout
+
+\begin_layout Itemize
+虚部：
+\begin_inset Formula $v$
+\end_inset
+
+的实部对此没有任何影响。完全由
+\begin_inset Formula $q$
+\end_inset
+
+的实部和虚部，
+\begin_inset Formula $v$
+\end_inset
+
+的虚部进行运算。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，不管是方程(1)还是方程
+\begin_inset Formula $v'=qv$
+\end_inset
+
+，旋转的都是四元数。通俗但不严谨地讲，如果要将四元数中的向量部分映射到我们现实世界的三维空间中，则需要约定两者的转换算法，也就是如何确定实部的数值。对于三维向量
+旋转，四元数中不同的实部数值代表不同的三维空间。只有在同一个三维空间中，也就是具有相同的实部数值，映射出来的旋转结果才是我们所需要的。而实部写零，是其中的一种方
+法，是最简单最快捷的方法，所以大家也就这样约定了。
+\end_layout
+
+\begin_layout Section
+进一步的几何解释
+\end_layout
+
+\begin_layout Standard
+我们需要进一步的探索，四元数中不同的实部数值代表不同的三维空间，到底说的是什么？
+\end_layout
+
+\begin_layout Standard
+假如我们继续使用方程
+\begin_inset Formula $v'=q^{k}v$
+\end_inset
+
+旋转向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，
+\begin_inset Formula $q=\left[\cos(\theta),\sin(\theta)\mathbf{u}\right]$
+\end_inset
+
+，其中
+\begin_inset Formula $\theta\rightarrow0,k\theta=2\pi$
+\end_inset
+
+，然后取出向量
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+进行分析，我们得到什么？
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+划过的轨迹是一个椭圆！
+\end_layout
+
+\begin_layout Standard
+回到本文开始所用的符号。向量
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+与旋转轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+正交(垂直
+\begin_inset Formula $\perp$
+\end_inset
+
+)，我们以
+\begin_inset Formula $\left|\mathbf{v}_{\perp}\right|$
+\end_inset
+
+为半径，以旋转轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+为圆心，可以得到一个圆柱面。
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+之间的叉乘得到的向量
+\begin_inset Formula $\mathbf{w}=\mathbf{u}\times\mathbf{v}$
+\end_inset
+
+，与向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+之间的张成的平面斜切上面的圆柱面，就得到了
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+划过的椭圆轨迹。很有趣吧。
+\end_layout
+
+\begin_layout Standard
+我们原本希望
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+划过的轨迹位于平行于
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+所在平面，距离是
+\begin_inset Formula $\left|\mathbf{v}_{\parallel}\right|$
+\end_inset
+
+，是一个圆。结果因为四元数乘法造成的
+\begin_inset Formula $\left|\mathbf{v}'_{\parallel}\right|$
+\end_inset
+
+变化，轨迹变成了另外的夹角为
+\begin_inset Formula $\phi$
+\end_inset
+
+的斜面上的椭圆。这是怎么回事？
+\end_layout
+
+\begin_layout Standard
+这就要回到四元数最基本的特性说起。四元数的四维空间(
+\begin_inset Formula $\mathbb{H}$
+\end_inset
+
+)与通常意义所说的四维向量构成的四维空间不一样，它是由一个一维空间和一个三维空间组合而成。单位四元数，用数学上的黑话来说，是一个位于四维空间(
+\begin_inset Formula $\mathbb{H}$
+\end_inset
+
+)内的三维球体，称为三维球体
+\begin_inset Formula $\mathbb{S}^{3}$
+\end_inset
+
+。这是一个群，只有乘法是封闭的。
+\end_layout
+
+\begin_layout Standard
+于是单位四元数乘法所代表的旋转，要同时旋转一维空间和三维空间，这就是所谓的存在两个正交的旋转。
+\end_layout
+
+\begin_layout Standard
+那么一维空间的旋转到底指的是什么？其实我们一直都有看见，只是不从这个角度想而已。
+\end_layout
+
+\begin_layout Standard
+我们复习最常见的复平面的画法。在一张纸上画横轴为实数坐标，纵轴为虚数坐标，以
+\begin_inset Formula $1$
+\end_inset
+
+为半径画一个圆，从圆心出发画一个向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+到圆边，向量在实数轴上的投影就是
+\begin_inset Formula $\cos(\theta)$
+\end_inset
+
+，在虚数轴上的投影就是
+\begin_inset Formula $\sin(\theta)$
+\end_inset
+
+。如果我们以
+\begin_inset Formula $\theta/s$
+\end_inset
+
+角速度等速旋转向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，求实数轴上的投影变化规律就是求导
+\begin_inset Formula $\cos'(\theta)=-\sin(\theta)$
+\end_inset
+
+，而
+\begin_inset Formula $qv_{\parallel}$
+\end_inset
+
+的实部是
+\begin_inset Formula $-\sin(\theta)\left(\mathbf{u}\cdot\mathbf{v}\right)$
+\end_inset
+
+，这就是我们所要的答案。我们把纸立起来看，就可以看见一维空间的旋转在实数轴上的投影了。
+\end_layout
+
+\begin_layout Standard
+其实，四元数的三维空间就只有一个，并且和向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+所在的三维空间是一一对应的。但是因为四元数的旋转要同时旋转它的一维空间和三维空间。它的一维空间和三维空间的两个正交旋转都会同时映射回向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+所在的三维空间。于是，我们原本希望
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+的轨迹平行于
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+的轨迹，结果因为
+\begin_inset Formula $qv_{\parallel}$
+\end_inset
+
+造成的一维旋转的影响，使得
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+的轨迹斜拉成一个椭圆。
+\end_layout
+
+\begin_layout Standard
+解决方法有一个。我们握起双手，伸出两个大拇指，手底相对。
+\begin_inset Formula $v'=qv$
+\end_inset
+
+，右手规则的旋转，
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+向前旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+角，但是因为一维旋转的原因，
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+斜拉了一个椭圆轨道，离开了原来的平面。接着
+\begin_inset Formula $v'=v'q^{*}$
+\end_inset
+
+，左手规则的旋转，因为
+\begin_inset Formula $q^{*}$
+\end_inset
+
+是共轭，
+\begin_inset Formula $\mathbf{v}'_{\perp}$
+\end_inset
+
+继续原来的方向旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+角，而原来的一维旋转被消除，于是
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+再走另外一个椭圆轨道被斜拉回原来的平面。这就是方程(1)所干的事情。如果将方程(1)看成是一个不可分割的算法，执行完毕
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+就在旋转平面上走了
+\begin_inset Formula $q$
+\end_inset
+
+所代表的旋转角度的两倍。如果观察单步执行结果，
+\begin_inset Formula $\mathbf{v}'$
+\end_inset
+
+的轨迹就是旋转平面上的长出的锯齿。
+\end_layout
+
+\begin_layout Section
+再进一步的思考
+\end_layout
+
+\begin_layout Standard
+单位四元数能很好地表达三维空间的旋转。但是，因为目标的不同，所需要的单位四元数旋转空间还不一样。
+\end_layout
+
+\begin_layout Standard
+如果需要旋转的是三维向量，则需要的是四元数三维空间的旋转，而希望消除的是一维空间的旋转，这样最直观，所以需要的是方程(1)。
+\end_layout
+
+\begin_layout Standard
+如果需要旋转的是三维坐标系，则需要的是四元数的一维空间和三维空间共同表达。这时候用的就是
+\begin_inset Formula $p'=qp$
+\end_inset
+
+这样类型的方程，三维向量扩展为四元数时不再是简单地实部写
+\begin_inset Formula $0$
+\end_inset
+
+，而是根据一些方程计算。最后得到的结果就很不直观了，需要将其转换为欧拉角才容易理解。之所以有这样的应用，是因为数学上已经证明了，要想全局非奇异姿态表示三维旋转，
+最低维数是
+\begin_inset Formula $4$
+\end_inset
+
+，也就是四元数。所有三维姿态表示对于某些姿态而言都是奇异的或不连续的，不论是欧拉角还是角轴表示。所以用四元数表示三维姿态是很常见的方法，但是使用者就得忍受不直观
+带来的问题。
+\end_layout
+
+\begin_layout Section
+参考资料
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "四元数与三维旋转"
+target "https://krasjet.github.io/quaternion/quaternion.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF - 2017"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Exact and Intuitive Geometry Explanation: Why Does a Half-angle-rotation in Spin or Quaternion Space Correspond to the Whole-angle-rotation in Normal 3D Space?"
+target "https://vixra.org/abs/1810.0324"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
