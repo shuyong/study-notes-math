@@ -1245,8 +1245,26 @@ roll和pitch可以精确预测，但不能预测yaw。这是预期的：加速�
 \end_layout
 
 \begin_layout Standard
-以下推导来自James M.Maley的优秀论文《Multiplicative Quaternion Extended Kalman Filtering
- for Nonspinning Guided Projectiles》，我对过程协方差矩阵的推导进行了一些更正。
+以下推导来自James M.Maley的优秀论文《
+\begin_inset CommandInset href
+LatexCommand href
+name "Multiplicative Quaternion Extended Kalman Filtering for Nonspinning Guided Projectiles"
+target "https://apps.dtic.mil/sti/pdfs/ADA588831.pdf"
+literal "false"
+
+\end_inset
+
+》，我对过程协方差矩阵的推导进行了一些更正
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：在附录中的证明使用的是机体坐标系中的方程，因为参考论文如此。而在前面正文中使用的是惯性坐标系中的方程。
+\end_layout
+
+\end_inset
+
+。
 \end_layout
 
 \begin_layout Paragraph
@@ -1500,7 +1518,7 @@ literal "false"
 )：
 \begin_inset Formula 
 \[
-R_{i}^{b}(q)=2\boldsymbol{q_{v}}\boldsymbol{q_{v}}^{T}+I_{3\times3}(q_{r}^{2}-\boldsymbol{q_{v}}^{T}\boldsymbol{q_{v}})-2q_{r}[\boldsymbol{q_{v}}\times]
+R_{i}^{b}(q)=2\boldsymbol{q_{v}}\boldsymbol{q_{v}}^{T}+\boldsymbol{I}_{3\times3}(q_{r}^{2}-\boldsymbol{q_{v}}^{T}\boldsymbol{q_{v}})-2q_{r}[\boldsymbol{q_{v}}\times]
 \]
 
 \end_inset
@@ -1513,7 +1531,7 @@ R_{i}^{b}(q)=2\boldsymbol{q_{v}}\boldsymbol{q_{v}}^{T}+I_{3\times3}(q_{r}^{2}-\b
 所以(忽略二阶误差项)：
 \begin_inset Formula 
 \[
-R_{i}^{b}(\delta q)=I-[\boldsymbol{\alpha}\times]
+R_{i}^{b}(\delta q)=\boldsymbol{I}-[\boldsymbol{\alpha}\times]
 \]
 
 \end_inset
@@ -1526,7 +1544,7 @@ R_{i}^{b}(\delta q)=I-[\boldsymbol{\alpha}\times]
 并且
 \begin_inset Formula 
 \[
-R_{i}^{b}(q)=R_{i}^{b}(\delta q)R_{i}^{b}(\hat{q})=(I-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})
+R_{i}^{b}(q)=R_{i}^{b}(\delta q)R_{i}^{b}(\hat{q})=(\boldsymbol{I}-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})
 \]
 
 \end_inset
@@ -1539,7 +1557,7 @@ R_{i}^{b}(q)=R_{i}^{b}(\delta q)R_{i}^{b}(\hat{q})=(I-[\boldsymbol{\alpha}\times
 所以
 \begin_inset Formula 
 \[
-\delta\boldsymbol{m}^{b}=\boldsymbol{m}^{b}-\hat{\boldsymbol{m}}^{b}=(I-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}+\boldsymbol{\beta_{m}}+\boldsymbol{\eta_{m}}-R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}
+\delta\boldsymbol{m}^{b}=\boldsymbol{m}^{b}-\hat{\boldsymbol{m}}^{b}=(\boldsymbol{I}-[\boldsymbol{\alpha}\times])R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}+\boldsymbol{\beta_{m}}+\boldsymbol{\eta_{m}}-R_{i}^{b}(\hat{q})\boldsymbol{m}^{i}
 \]
 
 \end_inset
