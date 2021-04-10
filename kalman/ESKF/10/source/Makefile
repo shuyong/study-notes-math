@@ -15,5 +15,5 @@ $(PDF_FILES) : $(TEX_FILES)
 all: $(PDF_FILES)
 
 clean :
-	@rm -f kinematics.aux kinematics.log kinematics.out kinematics.pdf kinematics.toc Abstract.log
+	@rm -f kinematics.aux kinematics.log kinematics.out kinematics.pdf kinematics.toc
 
