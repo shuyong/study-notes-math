@@ -43,6 +43,7 @@
 
 10. [Quaternion kinematics for the error-state KF - 2017](http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf)
     + 误差状态卡尔曼滤波器的四元数动力学
+    + [Lie theory for the roboticist - 2020](https://www.youtube.com/watch?v=nHOcoIyJj2o)
     + 潦草注释: https://github.com/TurtleZhong/msckf_mono/
     + 同一个人: http://www.xinliang-zhong.vip/msckf_notes/
 
@@ -62,13 +63,30 @@
     + [libeskf](https://git.orbitntnu.no/archive/adcs/libeskf)
 
 15. [The Multiplicative Extended Kalman Filter - 2020](https://matthewhampsey.github.io/blog/2020/07/18/mekf)
+    + [Multiplicative Quaternion Extended Kalman Filtering for Nonspinning Guided Projectiles - 2013](https://apps.dtic.mil/sti/pdfs/ADA588831.pdf)
 
-16. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
+16. [Relative multiplicative extended Kalman filter for observable GPS-denied navigation - 2020](https://scholarsarchive.byu.edu/facpub/1963/)
+    + [We’ve lost GPS! Now what?!](https://static1.squarespace.com/static/56e4a24bc6fc082c7577a416/t/5d2cbcc3e74fc50001b85bdf/1563213032555/Tim+McLain_ISAR2019+Presentation.pdf)
+    + [ROScopter](https://github.com/byu-magicc/roscopter)
+
+17. [Full-Order Solution to the Attitude Reset Problem for Kalman Filtering of Attitudes - 2020](https://arc.aiaa.org/doi/pdfplus/10.2514/1.G004134)
+
+18. [Integrating Generic Sensor Fusion Algorithms with Sound State Representations through Encapsulation of Manifolds - 2011](https://arxiv.org/pdf/1107.1119.pdf)
     + 通过封装流形将通用传感器融合算法与声音状态表示相结合
 
-17. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
+19. [Orientation Estimation by Means of Extended Kalman Filter, Quaternions, and Charts - 2017](https://rua.ua.es/dspace/bitstream/10045/67917/8/JoPhA_08_01_03.pdf)
+    + 用扩展卡尔曼滤波、四元数和图表估计方位
+    + [code](https://github.com/PBernalPolo/test_MKF)
+
+20. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
     + 四元数姿态估计的卡尔曼滤波及流形理论的概念
     + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
+
+21. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
+    + [Unscented Kalman Filtering on (Parallelizable) Manifolds](https://github.com/CAOR-MINES-ParisTech/ukfm)
+
+22. [Embedding manifold structures into Kalman filters - 2021](https://arxiv.org/abs/2102.03804)
+    + [IKFoM (Iterated Kalman Filters on Manifolds)](https://github.com/hku-mars/IKFoM)
 
 # 翻译：[方向四元数的扩展卡尔曼滤波方程](https://math.stackexchange.com/questions/2621677/extended-kalman-filter-equation-for-orientation-quaternion)
 
