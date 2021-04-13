@@ -1,0 +1,7156 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+\usepackage[title]{appendix}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "非自旋制导弹体的乘性四元数扩展卡尔曼滤波"
+\pdf_author "James M. Maley"
+\pdf_subject "Kalman filter, EKF, projectile, navigation, state estimation, inertial, magnetometers"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "非自旋制导弹体的乘性四元数扩展卡尔曼滤波"
+target "https://apps.dtic.mil/sti/pdfs/ADA588831.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+James M.
+ Maley
+\end_layout
+
+\begin_layout Date
+July 2013
+\end_layout
+
+\begin_layout Abstract
+本文利用扩展Kalman滤波器(EKF)解决了从慢速旋转到非自旋的炮射弹体姿态、速度和位置状态的估计问题。EKF是使用与传统惯性导航应用类似的误差状态机制构造的
+，尽管通过假设战术应用中使用的地球固定参考系是惯性的来简化运动学。本文讨论了用四元数代替欧拉角来表示弹体姿态的优点，并对乘性四元数误差状态的使用给予了详细的注意
+，因为这导致了与大多数其他扩展Kalman滤波实现(倾向于假设附加误差状态)的根本区别。大多数弹体应用中可用的测量和启发式信息被合并到EKF中。文中给出了两组直
+接火力系统和间接火力系统的仿真结果。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本项工作的主要动机是建立一个总体框架，用于估计横滚控制的制导弹体的姿态、速度和位置状态，对于这些弹体动力学的假设可能是无效的。制导弹体可以通过减少脱靶量、塑造末
+制导弹道和/或对运动目标进行制导，为作战人员提供一些潜在的战略优势。虽然存在鳍稳定和自旋稳定旋转弹体的制导方案，但非自旋弹体能够获得更多的横向加速度，从而比自旋
+弹体进行更有效的机动[1]。非自旋弹体的挑战在于，它们无法从可预测的自旋率提供的额外可观测性中获益。“慢变自旋率”假设通常用于校正传感器偏差，无论直接式[2,
+ 3]或间接式[4]。作为一个简单的例子，考虑径向磁强计的输出，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。由于输出信号是周期性的，因此圆周自旋可以很容易地将磁强计传感器的偏差从相对于磁场向量的横滚角中分离出来。这可以通过经验例程(如峰值查找)来实现，也可以通
+过线性状态估计器来实现，该估计器通过使用建模为常数的磁强计偏差状态来增加射弹状态向量。如果弹体停止横滚，这种连续可观测性就消失了，估计器必须更加依赖于过程模型来
+解释姿态和传感器误差的不确定性。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure1.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+磁场向量在惯性(i)坐标系中投影到机体固连(b)坐标系中，用磁强计测量横滚弹体
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了提高姿态估计器过程模型的保真度，在Kalman滤波过程的预测步骤中使用的传播方程是基于惯性测量单元(IMU)的输出，而不是基于特定于弹体的动力学模型。虽然动
+态模型预测可能仍然有用，作为一种启发式测量，动态模型通常是真实动态的近似值。预测质量的误差通常用高斯白噪声作为动态系统的随机输入来近似。由于这种噪声只是数学上方
+便的人工制品，而不是真正的物理现象，因此无法测量，通常用作调谐参数。当采用IMU输出驱动的运动学模型作为过程模型时，陀螺仪和加速度计噪声的统计特性是可测量的，并
+且可以很容易地融入到扩展的Kalman滤波框架中。由于传感器校准误差、非线性、交叉轴灵敏度、g-灵敏度、失调等，真实IMU通常有其自己的建模误差源，可以通过增加
+过程噪声的协方差来建模或近似。
+\end_layout
+
+\begin_layout Standard
+过去，动力学模型[5]和运动学模型[6]都被用作弹体Kalman滤波器的过程模型，以及两者的组合[7]。在弹体上使用IMU一直存在实际问题，其中第一个问题是是否
+有能够测量弹体自旋率的传感器。在
+\begin_inset Formula $300\:\mathrm{Hz}$
+\end_inset
+
+附近旋转的自旋稳定弹体上，情况仍然如此。然而，近年来，微机电系统(MEMS)陀螺仪已经能够测量尾翼稳定弹体(如迫击炮)的自旋速率，这些弹体的自旋速率通常在
+\begin_inset Formula $20\:\mathrm{Hz}$
+\end_inset
+
+左右。假设任何非自旋弹体都不会从比典型尾翼稳定弹体更高的速率脱旋，如果它确实需要脱旋的话。在炮射弹体上使用IMU的另一个问题是在可承受性、耐用性和性能之间进行权
+衡。汽车级MEMS组件已经在恶劣的火炮发射环境中使用多年，MEMS技术已经普遍证明了其生存能力和经济性。
+\end_layout
+
+\begin_layout Standard
+然而，MEMS组件仍然存在一些挑战。过去，在发射事件发生后，人们观察到了传感器偏差的变化，大多数惯性传感器在实际发射事件中要么饱和，要么暂时失灵，尽管它们在离开
+枪管几毫秒后恢复正常。这导致了一个惯性导航的挑战，特别是对炮射弹药：完全或部分失去初始条件后立即炮发射。最后一个问题是传感器质量。环境和成本限制禁止在其他应用中
+使用大多数导航级甚至战术级IMU。然而，制导弹药的飞行时间很短，因此由于相对较差的噪声性能而产生的随机游动与确定火炮发射所施加的校准和初始条件误差相比不那么重要
+。此外，MEMS行业在改善产品的噪声性能、线性度、温度稳定性、交叉轴灵敏度和振动抑制方面仍在取得进展，而且可能还会持续一段时间。因此，至少应该有一个框架来评估这
+些组件，以便在它们改进时进行射弹状态估计。
+\end_layout
+
+\begin_layout Standard
+姿态表示的选择是一个重要的问题。四元数和方向余弦矩阵(DCM)在航空航天应用中很常见。四元数似乎被用于大多数姿态估计器中，因为它们比DCM要存储在内存中的元素更
+少，而且更容易标准化。欧拉角通常在弹体应用之外看不到太多的用途，因为欧拉角在表示某些方向时可能变得不连续，其传播方程可能变得不确定[8]。由于炮射弹体通常不会经
+历大范围的航向角，这不是一个主要问题。与欧拉角相比，四元数(或DCM)的另一个主要优点是其传播方程相对于四元数是线性的，并且仅依赖于IMU的角速度。这使得角速度
+传感器的使用更加有效，如本报告第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3四元数与IMU积分"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述。
+\end_layout
+
+\begin_layout Standard
+编写本报告的第二个动机是提供乘法四元数误差状态Kalman滤波机制的详细解释。尽管这种形式的Kalman滤波器自20世纪60年代[9]和许多其他应用[10]以来
+就已在空间应用中使用，但在文献中很难找到明确的文献资料，特别是在制导弹体方面。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2约定"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了符号、坐标系和一些使本报告更具可读性的初步四元数信息。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4误差状态方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出了误差状态运动学方程的推导，该方程与Crassidis和Junkins[11]以及Roumeliotis等人[12]中给出的方程类似，尽管四元数定义的不
+同约定与MATLAB
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+MATLAB is a registered trademark of MathWorks, Inc., Natick, MA.
+\end_layout
+
+\end_inset
+
+软件以及Titterton和Weston[8]以及Stevens和Kerce[13]中使用的约定是一致的。
+\end_layout
+
+\begin_layout Standard
+位置和速度误差状态运动学包括完整性，虽然在一个非常简化的形式。在本文的工作范围内，将局部地球固定导航系统视为惯性导航系统，因此这里不涉及Coriolis加速度、
+Schuler调谐和铅垂重力等惯性导航的许多方面。
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5过程噪声测量"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了过程噪声的测量。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:6弹体测量模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了制导弹体常用的测量方法和误差状态到残差的映射，以及测量传感器输出和预测输出之间的差异。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:7Kalman滤波的实现"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了如何在微控制器上运行的具有处理延迟的Kalman滤波器中实现所有误差状态建模。模拟了两种不同的制导弹体任务，检验了Kalman波器的性能，该滤波器可以
+估计姿态、速度、位置、陀螺偏差、加速度计偏差和磁强计偏差误差。第一个任务是短程直接射击任务，其中一个非自旋弹被控制并引导到一个移动目标。第二个任务是迫击炮在远地
+点附近脱旋，并向地面目标机动。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:8模拟结果"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了模拟和滤波器性能。最后，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:9结论和今后的工作"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论了结论和未来的研究方向。
+\end_layout
+
+\begin_layout Section
+约定
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2约定"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量由小写粗体字母定义。术语参考帧和坐标系可以互换使用，所有坐标系由三个正交基向量组成；例如，坐标系
+\begin_inset Formula $a$
+\end_inset
+
+由向量
+\begin_inset Formula $\mathbf{x}_{a}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{y}_{a}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{z}_{a}$
+\end_inset
+
+组成。上标表示查看向量坐标的坐标系；例如，
+\begin_inset Formula $\mathbf{v}^{a}$
+\end_inset
+
+是向量
+\begin_inset Formula ${\bf v}$
+\end_inset
+
+在坐标系
+\begin_inset Formula $a$
+\end_inset
+
+中的坐标。在本项工作中有两个主要的参考帧。第一个是惯性参考系(
+\begin_inset Formula $i$
+\end_inset
+
+-frame)。在这项工作中使用的一个主要简化是，任何刚性固定在地球表面的参考系都可以被视为一个惯性参考系，用于炮射弹。这里使用的惯性系的
+\begin_inset Formula $z$
+\end_inset
+
+轴指向地球的中心，
+\begin_inset Formula $x$
+\end_inset
+
+轴沿着水平线从炮指向初始目标位置，
+\begin_inset Formula $y$
+\end_inset
+
+轴指向火线的右侧。使用的第二个坐标系是固定在弹体上的参考坐标系(
+\begin_inset Formula $b$
+\end_inset
+
+-frame)。出于惯性导航的目的，假设机体帧的原点位于IMU中加速计的位置。这样就不需要在积分过程中考虑向心和切向加速度项。然而，获得的速度和位置状态将是IM
+U的状态，而不是弹体重心(CG)的状态。两个坐标系如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure2.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+坐标系定义。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了将(
+\begin_inset Formula $b$
+\end_inset
+
+-frame)与(
+\begin_inset Formula $i$
+\end_inset
+
+-frame)联系起来，我们将使用四元数算法。这里使用的四元数定义的第一个元素是标量分量，第二到第四个元素是向量分量，即，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}=\left\{ \begin{array}{c}
+q_{1}\\
+\mathbf{q}_{2:4}
+\end{array}\right\} .
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转向量
+\begin_inset Formula $\boldsymbol{\mu}$
+\end_inset
+
+也可用于参数化四元数，如下所示：
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{c}
+q_{1}\\
+\mathbf{q}_{2:4}
+\end{array}\right\} =\left\{ \begin{array}{c}
+\cos\left(\dfrac{\|\boldsymbol{\mu}\|}{2}\right)\\
+\dfrac{\boldsymbol{\mu}}{\|\mathbf{\boldsymbol{\mu}}\|}\sin\left(\dfrac{\|\boldsymbol{\mu}\|}{2}\right)
+\end{array}\right\} .\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+任意两个四元数
+\begin_inset Formula ${\bf p}$
+\end_inset
+
+和
+\begin_inset Formula ${\bf q}$
+\end_inset
+
+的四元数乘积
+\begin_inset Formula $\otimes$
+\end_inset
+
+表示为[14]：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{p}\otimes\mathbf{q}=\left\{ \begin{array}{c}
+p_{1}q_{1}-\mathbf{p}_{2:4}\cdot\mathbf{q}_{2:4}\\
+p_{1}\mathbf{q}_{2:4}+q_{1}\mathbf{p}_{2:4}+\mathbf{p}_{2:4}\times\mathbf{q}_{2:4}
+\end{array}\right\} .\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数的逆被定义为标量分量相同而向量分量为负：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}^{-1}=\left[\begin{array}{c}
+q_{1}\\
+-\mathbf{q}_{2:4}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此四元数的逆乘以自身四元数等于特征四元数：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}^{-1}\otimes\mathbf{q}=\left[\begin{array}{c}
+1\\
+{\bf 0}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过四元数旋转，可以实现从惯性坐标系到机体坐标系的向量转换：
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+0\\
+{\bf v}^{b}
+\end{array}\right]=\mathbf{q}^{-1}\otimes\left[\begin{array}{c}
+0\\
+{\bf v}^{i}
+\end{array}\right]\otimes\mathbf{q}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样的旋转也可以通过将四元数转换为方向余弦矩阵来实现：
+\begin_inset Formula 
+\begin{equation}
+{\bf v}^{b}={\bf C}_{i}^{b}\left(\mathbf{q}\right){\bf v}^{i},
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{C}_{i}^{b}(\mathbf{q})=2\mathbf{q}_{2:4}\mathbf{q}_{2:4}^{\mathrm{T}}+\mathbf{I}_{3\times3}\left(q_{1}^{2}-\mathbf{q}_{2:4}^{\mathrm{T}}\mathbf{q}_{2:4}\right)-2q_{1}\left[\mathbf{q}_{2:4}\times\right].\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般的旋转矩阵算子
+\begin_inset Formula $\mathbf{C}_{i}^{b}(\mathbf{q})$
+\end_inset
+
+读作“由四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+参数化的
+\begin_inset Formula $i$
+\end_inset
+
+帧到
+\begin_inset Formula $b$
+\end_inset
+
+帧坐标的变换”。
+\begin_inset Formula $\left[\bullet\times\right]$
+\end_inset
+
+算子表示向量
+\begin_inset Formula $\mathbf{v}\in\mathbb{R}^{3}$
+\end_inset
+
+的斜对称矩阵，因此将向量乘以矩阵等于取两个向量的叉积，即，
+\begin_inset Formula 
+\begin{equation}
+\left[\mathbf{v}\times\right]=\left[\begin{array}{ccc}
+0 & -v_{3} & v_{2}\\
+v_{3} & 0 & -v_{1}\\
+-v_{2} & v_{1} & 0
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+因此
+\begin_inset Formula 
+\begin{equation}
+\left[\mathbf{v}\times\right]\mathbf{w}=\mathbf{v}\times\mathbf{w}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+四元数与IMU积分
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3四元数与IMU积分"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+积分陀螺输出获得弹体姿态是积分加速度获得速度和位置状态的前提。四元数的运动学方程如下：
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{q}}=\dfrac{1}{2}\mathbf{q}\otimes\left\{ \begin{array}{c}
+0\\
+\boldsymbol{\omega}_{ib}^{b}
+\end{array}\right\} .\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\boldsymbol{\omega}_{ib}^{b}$
+\end_inset
+
+由物体固定坐标组成，即物体相对于惯性参考系的角速度。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可用于将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)重新格式化为矩阵乘法：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dot{\mathbf{q}} & =\dfrac{1}{2}\left[\begin{array}{cc}
+0 & -\boldsymbol{\omega}_{ib}^{bT}\\
+\boldsymbol{\omega}_{ib}^{b} & -\left[\boldsymbol{\omega}_{ib}^{b}\times\right]
+\end{array}\right]\mathbf{q}\\
+ & =\dfrac{1}{2}\boldsymbol{\Omega}\left(\boldsymbol{\omega}_{ib}^{b}\right)\mathbf{q}
+\end{array}.\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+很明显，四元数传播方程相对于四元数是线性的。这里给出的算法与参考文献[8]中给出的用于计算采样系统中时间步长之间的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的解的算法相同，尽管解释略有不同。对于本节的其余部分，参考帧符号
+\begin_inset Formula $\boldsymbol{\omega}_{ib}^{b}$
+\end_inset
+
+将替换为迭代符号
+\begin_inset Formula $\boldsymbol{\omega}_{k}$
+\end_inset
+
+，这意味着在时间
+\begin_inset Formula $k$
+\end_inset
+
+处采样的
+\begin_inset Formula $\boldsymbol{\omega}_{ib}^{b}$
+\end_inset
+
+的值。在这种情况下，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的解由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{q}_{k+1}=\exp\left(\dfrac{1}{2}\boldsymbol{\Omega}(\overline{\boldsymbol{\omega}})\Delta t\right)\mathbf{q}_{k}.\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\overline{\boldsymbol{\omega}}$
+\end_inset
+
+的值通常取为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\overline{\boldsymbol{\omega}}=\dfrac{\boldsymbol{\omega}_{k}+\boldsymbol{\omega}_{k-1}}{2}.\label{eq:14}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+增量旋转向量可近似为
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+存在更高保真度的旋转向量表示。Bortz[15]从几何参数中导出了旋转向量、其动力学及其与DCM的关系。结果表明，旋转向量可以以很高的积分率进行积分，然后仅在需
+要时用于更新DCM，显著提高了算法效率。从那时起，特别是在Savage[16]中，已经创建了几种算法来计算数字处理器上的旋转向量，以及旋转向量与DCM和四元数姿
+态表示的关系。使用此处使用的梯形近似法的优点是，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:7Kalman滤波的实现"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中更详细的讨论，在对惯性传感器进行采样后，可以很容易地应用校准校正，而不需要在存储器中保留多个样本。缺点是这种近似需要更快的KF更新率。
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{\sigma}=\overline{\boldsymbol{\omega}}\Delta t$
+\end_inset
+
+。对于给定的旋转向量，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中矩阵指数的精确解由文献[8]给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\exp\left(\frac{1}{2}\boldsymbol{\Omega}(\boldsymbol{\sigma})\right)=\left[\begin{array}{c|c}
+\cos(\|\boldsymbol{\sigma}\|/2) & \dfrac{\sin(\|\boldsymbol{\sigma}\|/2)}{2}\boldsymbol{\sigma}^{\mathrm{T}}\\
+\hline \dfrac{\sin(\|\boldsymbol{\sigma}\|/2)}{2}\boldsymbol{\sigma} & \cos(\|\boldsymbol{\sigma}\|/2)\mathbf{I}_{3\times3}-\dfrac{\sin(\|\boldsymbol{\sigma}\|/2)}{2}\left[\boldsymbol{\sigma}\times\right]
+\end{array}\right].\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度动力学是由加速度计
+\begin_inset Formula $\mathbf{f}^{b}$
+\end_inset
+
+、重力向量
+\begin_inset Formula $\mathbf{g}^{i}$
+\end_inset
+
+和四元数测得的比力的函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{v}}^{i}=\mathbf{C}_{b}^{i}\left(\mathbf{q}\right)\mathbf{f}^{b}+\mathbf{g}^{i}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)–(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，可以根据角速度传感器数据预测当前时间步的四元数。速度和位置的估计是通过简单的梯形积分来实现，这需要首先估计
+\begin_inset Formula $k$
+\end_inset
+
+时刻的四元数。速度更新由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{k}=\left(\dfrac{\mathbf{C}_{b}^{i}\left(\mathbf{q}_{k}\right)\mathbf{f}_{k}^{b}+\mathbf{C}_{b}^{i}\left(\mathbf{q}_{k-1}\right)\mathbf{f}_{k-1}^{b}}{2}+\mathbf{g}^{i}\right)\Delta t+\mathbf{v}_{k-1}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位置更新由以下方程给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{r}_{k}^{i}=\dfrac{\mathbf{v}_{k}^{i}+\mathbf{v}_{k-1}^{i}}{2}\Delta t+\mathbf{r}_{k-1}^{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该算法假设惯性系中的比力在更新间隔内相当恒定。惯性比力
+\begin_inset Formula $\mathbf{f}^{i}=\mathbf{C}_{b}^{i}\left(\mathbf{q}\right)\mathbf{f}^{b}$
+\end_inset
+
+可根据弹体加速度
+\begin_inset Formula $\dot{\mathbf{v}}_{cg}^{i}$
+\end_inset
+
+和重心(CG)相对于机体帧
+\begin_inset Formula $\mathbf{r}_{cg}^{b}$
+\end_inset
+
+的位置进行计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{C}_{b}^{i}\left(\mathbf{q}\right)\mathbf{f}^{b}=\dot{\mathbf{v}}_{cg}^{i}-\mathbf{C}_{b}^{i}\left[\boldsymbol{\omega}\times\right]\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}-\mathbf{C}_{b}^{i}\left[\dot{\boldsymbol{\omega}}\times\right]\mathbf{r}_{cg}^{b}-\mathbf{g}^{i}
+\end{equation}
+
+\end_inset
+
+完整推导见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:A弹体重心偏移"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在制导弹体上，由于大多数弹体的控制权限有限，重心(CG)的加速度通常不会发生显著变化。将加速度计三轴安装在旋转轴上是非常可取的，因为离心加速度可能很大。文献中的
+算法通常不使用梯形积分方案，而是使用增量速度、旋转校正和动态积分项的组合，以及可能更先进的划船(sculling)和滚动(scrolling)补偿算法[8,
+ 16]。然而，对于我们的目的，该算法提供了一种后应用校准校正的方法，并且计算上是可处理的。
+\end_layout
+
+\begin_layout Section
+误差状态方程
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4误差状态方程"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数、速度和位置状态的积分实际上是由非理想陀螺仪和加速度计驱动的。因此，积分状态只是真实状态的估计。作为估计值的项由在字母上的
+\begin_inset Formula $\hat{\:}$
+\end_inset
+
+表示。估计的状态动态如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dot{\hat{\mathbf{q}}} & =\frac{1}{2}\hat{\mathbf{q}}\otimes\left\{ \begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}_{ib}^{b}
+\end{array}\right\} ,\label{eq:20}\\
+\dot{\hat{\mathbf{v}}}^{i} & =\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\hat{\mathbf{f}}^{b}+\hat{\mathbf{g}}^{i},\label{eq:21}\\
+\dot{\hat{\mathbf{r}}}^{i} & =\hat{\mathbf{v}}^{i}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从这里开始，为了简单起见，我们将删除上标和下标。IMU输出估计角速度和比力向量，其定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\omega} & =\hat{\boldsymbol{\omega}}+\delta\boldsymbol{\omega}.\label{eq:23}\\
+\mathbf{f} & =\hat{\mathbf{f}}+\delta\mathbf{f}.\label{eq:24}
+\end{align}
+
+\end_inset
+
+扰动项
+\begin_inset Formula $\delta\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\delta\mathbf{f}$
+\end_inset
+
+可由任何足以影响导航解的噪声和传感器校准误差参数化。
+\end_layout
+
+\begin_layout Standard
+真实四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+可描述为估计的四元数
+\begin_inset Formula $\hat{\mathbf{q}}$
+\end_inset
+
+和小误差四元数
+\begin_inset Formula $\delta\mathbf{q}$
+\end_inset
+
+的四元数乘法：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{q} & =\hat{\mathbf{q}}\otimes\delta\mathbf{q}.\\
+\delta\mathbf{q} & =\hat{\mathbf{q}}^{-1}\otimes\mathbf{q}.\label{eq:26}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种描述在其他扩展Kalman滤波问题中并不常见，这些问题通常将误差项视为加法，即
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\mathbf{q}=\hat{\mathbf{q}}+\delta\mathbf{q}$
+\end_inset
+
+。加法误差假设用于大多数Kalman滤波上下文，如Simon[17]和Gelb[18]。事实上，甚至有几个四元数估计使用这个假设[10]。将两个单位四元数相加不
+会产生另一个单位四元数，这会产生一个通常通过无偿重整化处理的问题。在误差协方差矩阵中正确解释这些计算方面是可能的，但相当复杂[19]。乘法误差方程还具有应用小旋
+转校正的物理解释。这很容易在复合DCM的配方中表现出来。使用本工作中的约定，总的DCM如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{C}_{i}^{b}\left(\mathbf{q}\right)=\mathbf{C}\left(\hat{\mathbf{q}}\otimes\delta\mathbf{q}\right)=\mathbf{C}\left(\delta\mathbf{q}\right)\mathbf{C}\left(\hat{\mathbf{q}}\right).\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+乘性误差四元数的另一个好处是，只需要三个项就可以参数化它，而不是四个项。由于误差四元数表示一个小的旋转，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的旋转向量
+\begin_inset Formula $\boldsymbol{\mu}$
+\end_inset
+
+的量级很小，这意味着
+\begin_inset Formula $\delta\mathbf{q}$
+\end_inset
+
+的标量分量约为
+\begin_inset Formula $1$
+\end_inset
+
+，不需要估计。唯一的缺点是过程和测量方程的线性化不能简单地通过计算Jacobians矩阵来实现。
+\end_layout
+
+\begin_layout Standard
+四元数误差状态动力学是通过微分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{q}}=\hat{\mathbf{q}}^{-1}\otimes\dot{\mathbf{q}}+\dot{\hat{\mathbf{q}}}^{-1}\otimes\mathbf{q}.\label{eq:28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\dot{\hat{\mathbf{q}}}^{-1}$
+\end_inset
+
+的代换可以由
+\begin_inset Formula $\hat{\mathbf{q}}^{-1}\otimes\hat{\mathbf{q}}$
+\end_inset
+
+始终产生特征四元数这一事实产生。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\left(\hat{\mathbf{q}}^{-1}\otimes\hat{\mathbf{q}}\right)}{\mathrm{d}t}=\dot{\hat{\mathbf{q}}}^{-1}\otimes\hat{\mathbf{q}}+\hat{\mathbf{q}}^{-1}\otimes\dot{\hat{\mathbf{q}}}=\mathbf{0}.
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\dot{\hat{\mathbf{q}}}^{-1} & =-\hat{\mathbf{q}}^{-1}\otimes\dot{\hat{\mathbf{q}}}\otimes\hat{\mathbf{q}}^{-1}\\
+ & =-\hat{\mathbf{q}}^{-1}\otimes\dfrac{1}{2}\hat{\mathbf{q}}\otimes\left\{ \begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}_{ib}^{b}
+\end{array}\right\} \otimes\hat{\mathbf{q}}^{-1}\\
+ & =-\dfrac{1}{2}\left\{ \begin{array}{c}
+0\\
+\hat{\boldsymbol{\omega}}_{ib}^{b}
+\end{array}\right\} \otimes\hat{\mathbf{q}}^{-1}
+\end{array}.\label{eq:30}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\delta\dot{\mathbf{q}}=\hat{\mathbf{q}}^{-1}\otimes\dfrac{1}{2}\mathbf{q}\otimes\left\{ \begin{array}{c}
+0\\
+\omega_{ib}^{b}
+\end{array}\right\} -\dfrac{1}{2}\left\{ \begin{array}{l}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right\} \otimes\hat{\mathbf{q}}^{-1}\otimes\mathbf{q}\\
+\delta\dot{\mathbf{q}}=\dfrac{1}{2}\delta\mathbf{q}\otimes\left\{ \begin{array}{l}
+0\\
+\boldsymbol{\omega}
+\end{array}\right\} -\dfrac{1}{2}\left\{ \begin{array}{l}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right\} \otimes\delta\mathbf{q}
+\end{array}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用估计角速度的定义(方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，它变为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{q}}=\dfrac{1}{2}\delta\mathbf{q}\otimes\left\{ \begin{array}{l}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right\} -\dfrac{1}{2}\left\{ \begin{array}{l}
+0\\
+\hat{\boldsymbol{\omega}}
+\end{array}\right\} \otimes\delta\mathbf{q}+\dfrac{1}{2}\delta\mathbf{q}\otimes\left\{ \begin{array}{c}
+0\\
+\delta\boldsymbol{\omega}
+\end{array}\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数乘法的定义现在可以与
+\begin_inset Formula $\delta q_{1}=1$
+\end_inset
+
+的事实一起应用，以实现进一步的简化：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\delta\dot{\mathbf{q}} & =\dfrac{1}{2}\left\{ \begin{array}{c}
+-\delta\mathbf{q}_{2:4}\cdot\hat{\boldsymbol{\omega}}\\
+\hat{\boldsymbol{\omega}}+\delta\mathbf{q}_{2:4}\times\hat{\boldsymbol{\omega}}
+\end{array}\right\} +\dfrac{1}{2}\left\{ \begin{array}{c}
+\hat{\boldsymbol{\omega}}\cdot\delta\mathbf{q}_{2:4}\\
+-\hat{\boldsymbol{\omega}}-\hat{\boldsymbol{\omega}}\times\delta\mathbf{q}_{2:4}
+\end{array}\right\} +\dfrac{1}{2}\left\{ \begin{array}{c}
+-\delta\mathbf{q}_{2:4}\cdot\delta\hat{\boldsymbol{\omega}}\\
+\delta\hat{\boldsymbol{\omega}}+\delta\mathbf{q}_{2:4}\times\delta\hat{\boldsymbol{\omega}}
+\end{array}\right\} \\
+\left\{ \begin{array}{c}
+0\\
+\delta\dot{\mathbf{q}}_{2:4}
+\end{array}\right\}  & =\left\{ \begin{array}{c}
+0\\
+-\hat{\boldsymbol{\omega}}\times\delta\mathbf{q}_{2:4}
+\end{array}\right\} +\dfrac{1}{2}\left\{ \begin{array}{c}
+-\delta\mathbf{q}_{2:4}\cdot\delta\hat{\boldsymbol{\omega}}\\
+\delta\hat{\boldsymbol{\omega}}+\delta\mathbf{q}_{2:4}\times\delta\hat{\boldsymbol{\omega}}
+\end{array}\right\} 
+\end{array}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于假设四元数误差状态的量级很小，因此误差状态动力学可近似为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{q}}_{2:4}\cong-\hat{\boldsymbol{\omega}}\times\delta\mathbf{q}_{2:4}+\dfrac{1}{2}\delta\boldsymbol{\omega}.\label{eq:34}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这一点上，用小角度向量代替四元数误差状态
+\begin_inset Formula $\delta\mathbf{q}_{2:4}$
+\end_inset
+
+是很方便的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\alpha}=2\delta\mathbf{q}_{2:4}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第一个便利是从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中去掉
+\begin_inset Formula $\dfrac{1}{2}$
+\end_inset
+
+的因子：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\boldsymbol{\alpha}}\cong-\hat{\boldsymbol{\omega}}\times\boldsymbol{\alpha}+\delta\boldsymbol{\omega}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第二个便利来自方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的简化。用
+\begin_inset Formula $\delta\mathbf{q}$
+\end_inset
+
+计算方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并假设
+\begin_inset Formula $\delta\mathbf{q}_{2:4}$
+\end_inset
+
+中的项的乘积在
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\mathbf{C}_{i}^{b}\left(\mathbf{\delta q}\right)\cong\left[\mathbf{I}-2\left[\delta\mathbf{q}_{2:4}\times\right]\right]$
+\end_inset
+
+中近似为零。因此，DCM及其逆方程可表示为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{C}_{i}^{b}\left(\mathbf{q}\right) & \cong\left[\mathbf{I}-\left[\boldsymbol{\alpha}\times\right]\right]\mathbf{C}_{i}^{b}(\hat{\mathbf{q}}).\label{eq:37}\\
+\mathbf{C}_{b}^{i}\left(\mathbf{q}\right) & \cong\mathbf{C}_{b}^{i}(\hat{\mathbf{q}})\left[\mathbf{I}+\left[\boldsymbol{\alpha}\times\right]\right].\label{eq:38}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度和位置误差状态动力学更容易推导，因为它们的误差状态是相加的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\delta\mathbf{v} & =\mathbf{v}-\hat{\mathbf{v}}.\\
+\delta\mathbf{r} & =\mathbf{r}-\hat{\mathbf{r}}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度误差状态的传播依据：
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{v}}=\dot{\mathbf{v}}-\dot{\hat{\mathbf{v}}}.\label{eq:41}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，可以导出速度误差状态动力学的表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{l}
+\delta\dot{\mathbf{v}}=\mathbf{C}_{b}^{i}\left(\mathbf{q}\right)\mathbf{f}^{b}+\mathbf{g}-\mathbf{C}_{b}^{i}(\hat{\mathbf{q}})\hat{\mathbf{f}}^{b}+\hat{\mathbf{g}}\\
+\delta\dot{\mathbf{v}}=\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\left[\mathbf{I}+\left[\boldsymbol{\alpha}\times\right]\right]\left(\hat{\mathbf{f}}^{b}+\delta\mathbf{f}\right)+\mathbf{g}-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\hat{\mathbf{f}}^{b}-\hat{\mathbf{g}}\\
+\delta\dot{\mathbf{v}}=\mathbf{C}_{b}^{i}(\hat{\mathbf{q}})\left[\boldsymbol{\alpha}\times\right]\hat{\mathbf{f}}^{b}+\mathbf{C}\left(\hat{\mathbf{q}}\right)_{b}^{i}\delta\mathbf{f}+\mathbf{C}\left(\hat{\mathbf{q}}\right)_{b}^{i}\left[\boldsymbol{\alpha}\times\right]\delta\mathbf{f}+\delta\mathbf{g}
+\end{array}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于小角度误差假设，假设
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{C}\left(\hat{\mathbf{q}}\right)_{b}^{i}\left[\mathbf{I}+\left[\boldsymbol{\alpha}\times\right]\right]\delta\mathbf{f}\cong\mathbf{C}\left(\hat{\mathbf{q}}\right)_{b}^{i}\delta\mathbf{f}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，假设重力误差
+\begin_inset Formula $\delta\mathbf{g}$
+\end_inset
+
+可忽略不计。因此，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以表示为关于误差状态的线性系统：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{v}}=-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\left[\hat{\mathbf{f}}^{b}\times\right]\boldsymbol{\alpha}+\mathbf{C}\left(\hat{\mathbf{q}}\right)_{b}^{i}\delta\mathbf{f}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位置误差状态动态为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{r}}=\dot{\mathbf{r}}-\dot{\hat{\mathbf{r}}}=\mathbf{v}-\hat{\mathbf{v}}=\delta\mathbf{v}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+角速度和比力误差状态
+\begin_inset Formula $\delta\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\delta\mathbf{f}$
+\end_inset
+
+是参数化的，可用于建立传感器校准或噪声项的模型。我们将在这里使用的角速度误差模型是偏差加噪声模型：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}=\hat{\boldsymbol{\omega}}-\boldsymbol{\beta}_{\omega}-\boldsymbol{\eta}_{\omega}\label{eq:46}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\dot{\boldsymbol{\beta}}_{\omega}=\boldsymbol{\nu}_{\omega},
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\eta}_{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\nu}_{\omega}$
+\end_inset
+
+是具有互相关的白色随机过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+E\left[\boldsymbol{\eta}_{\omega}\left(t\right)\boldsymbol{\eta}_{\omega}^{\mathrm{T}}\left(\tau\right)\right] & =\mathrm{diag}\left(\boldsymbol{\sigma}_{\omega}^{2}\right)\delta\left(t-\tau\right).\\
+E\left[\boldsymbol{\nu}_{\omega}\left(t\right)\boldsymbol{\nu}_{\omega}^{\mathrm{T}}\left(\tau\right)\right] & =\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)\delta\left(t-\tau\right).
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:46"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的角速度误差项变为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\delta\boldsymbol{\omega} & =-\boldsymbol{\beta}_{\omega}-\boldsymbol{\eta}_{\omega}.\\
+\delta\dot{\boldsymbol{\omega}} & =-\boldsymbol{\nu}_{\omega}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速计的比力测量值以类似方式处理：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{f} & =\hat{\mathbf{f}}-\boldsymbol{\beta}_{f}-\boldsymbol{\eta}_{f},\\
+\dot{\boldsymbol{\beta}}_{f} & =\boldsymbol{\nu}_{f},\\
+\delta\mathbf{f} & =-\boldsymbol{\beta}_{f}-\boldsymbol{\eta}_{f},
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\eta}_{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\nu}_{f}$
+\end_inset
+
+是具有互相关的白色随机过程：
+\begin_inset Formula 
+\begin{align}
+E\left[\boldsymbol{\eta}_{f}\left(t\right)\boldsymbol{\eta}_{f}^{\mathrm{T}}\left(\tau\right)\right] & =\mathrm{diag}\left(\boldsymbol{\sigma}_{f}^{2}\right)\delta\left(t-\tau\right).\\
+E\left[\boldsymbol{\nu}_{f}\left(t\right)\boldsymbol{\nu}_{f}^{\mathrm{T}}\left(\tau\right)\right] & =\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\delta\left(t-\tau\right).
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁强计将在最终的Kalman滤波实现中用作测量。磁强计不是惯性传感器，其误差动态与惯性导航状态不耦合，但由于Kalman滤波测量更新方程会引入一定的相关性，因此
+仍会在总误差状态向量中增加偏差项。这里的磁强计偏差向量
+\begin_inset Formula $\boldsymbol{\beta}_{m}$
+\end_inset
+
+被视为一个缓慢发散的随机游走过程，由噪声过程
+\begin_inset Formula $\boldsymbol{\nu}_{m}$
+\end_inset
+
+驱动，具有互相关：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+E\left[\boldsymbol{\nu}_{m}\left(t\right)\boldsymbol{\nu}_{m}^{\mathrm{T}}\left(\tau\right)\right] & =\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta m}^{2}\right)\delta\left(t-\tau\right).\\
+\dot{\boldsymbol{\beta}}_{m} & =\boldsymbol{\nu}_{m}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在的总的误差状态向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\mathbf{x}=\left\{ \begin{array}{llllll}
+\boldsymbol{\alpha}^{\mathrm{T}} & \delta\mathbf{v}^{\mathrm{T}} & \delta\mathbf{r}^{\mathrm{T}} & \boldsymbol{\beta}_{\omega}^{\mathrm{T}} & \boldsymbol{\beta}_{f}^{\mathrm{T}} & \boldsymbol{\beta}_{m}^{\mathrm{T}}\end{array}\right\} ^{\mathrm{T}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+误差状态动力学可以写成状态空间形式：
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{c}
+\dot{\boldsymbol{\alpha}}\\
+\delta\dot{\mathbf{v}}\\
+\delta\dot{\mathbf{r}}\\
+\dot{\boldsymbol{\beta}}_{\omega}\\
+\dot{\boldsymbol{\beta}}_{f}\\
+\dot{\boldsymbol{\beta}}_{m}
+\end{array}\right\} =\left[\begin{array}{cccccc}
+-\left[\hat{\boldsymbol{\omega}}\times\right] & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & -\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\left[\hat{\mathbf{f}}^{b}\times\right] & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & -\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right) & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\left\{ \begin{array}{c}
+\boldsymbol{\alpha}\\
+\delta\mathbf{v}\\
+\delta\mathbf{r}\\
+\boldsymbol{\beta}_{\omega}\\
+\boldsymbol{\beta}_{f}\\
+\boldsymbol{\beta}_{m}
+\end{array}\right\} +\left\{ \begin{array}{c}
+-\boldsymbol{\eta}_{\omega}\\
+-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\boldsymbol{\eta}_{f}\\
+\mathbf{0}_{3\times1}\\
+\boldsymbol{\nu}_{\omega}\\
+\boldsymbol{\nu}_{f}\\
+\boldsymbol{\nu}_{m}
+\end{array}\right\} .\label{eq:60}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这18个项的误差状态，状态空间模型将用于Kalman滤波在这项工作中的实施。一个重要的结果是，该模型是线性和时变的误差状态。这种方法的优点是，在实现实时Kalm
+an滤波时，可以根据IMU积分得到的信息构造状态转移矩阵，而不必知道最后测量时刻的误差状态。这种形式的另一个优点是它的计算不涉及三角运算。第三个优点是，该模型是
+一个真正的随机系统，由白噪声序列驱动，白噪声序列具有可测量或易于逼近的谱密度。
+\end_layout
+
+\begin_layout Section
+过程噪声测量
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5过程噪声测量"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，定义了以下矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{c}
+\mathbf{F}\left(\hat{\mathbf{q}},\hat{\boldsymbol{\omega}},\hat{\mathbf{f}}\right)=\left[\begin{array}{cccccc}
+-\left[\hat{\boldsymbol{\omega}}\times\right] & \mathbf{0} & \mathbf{0} & -\mathbf{I}_{3\times3} & \mathbf{0} & \mathbf{0}\\
+-\mathbf{C}_{b}^{i}(\hat{\mathbf{q}})\left[\hat{\mathbf{f}}^{b}\times\right] & \mathbf{0} & \mathbf{0} & \mathbf{0} & -\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right) & \mathbf{0}\\
+\mathbf{0} & \mathbf{I}_{3\times3} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}
+\end{array}\right].\end{array}\label{eq:61}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mathbf{G}\left(\hat{\mathbf{q}}\right)=\left[\begin{array}{cccccc}
+\mathrm{diag}\left(-\boldsymbol{\sigma}_{\omega}\right) & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & -\mathbf{C}_{b}^{i}(\hat{\mathbf{q}})\mathrm{diag}\left(\boldsymbol{\sigma}_{f}\right) & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta\omega}\right) & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta f}\right) & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta m}\right)
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用这些定义，误差状态动力学可由以下矩阵方程表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\dot{\mathbf{x}}=\mathbf{F}\delta\mathbf{x}+\mathbf{G}\mathbf{w}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+是一个单位方差零均值的白噪声序列。矩阵
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+将白噪声序列转化为干扰向量。因此，干扰向量的不确定性可以表示为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\left(\mathbf{G}\mathbf{w}\left(t\right)\right)\left(\mathbf{G}\mathbf{w}\left(\tau\right)\right)^{\mathrm{T}}\right]=\mathbf{Q}_{c}\delta\left(t-\tau\right),
+\end{equation}
+
+\end_inset
+
+可简化为：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{c}\delta(t-\tau)=\mathbf{GG}^{\mathrm{T}}\delta(t-\tau)=\left[\begin{array}{cccccc}
+\mathrm{diag}\left(\boldsymbol{\sigma}_{\omega}^{2}\right) & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{f}^{2}\right) & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right) & \boldsymbol{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta f}^{2}\right) & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathrm{diag}\left(\boldsymbol{\sigma}_{\beta m}^{2}\right)
+\end{array}\right]\delta(t-\tau).\label{eq:65}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将过程噪声表示为连续噪声过程，使其采样时间不可知，从而简化了滤波器调谐。然而，离散时间积分导致不同的方差增长比连续时间积分。考虑标量随机信号的积分。频谱振幅
+\begin_inset Formula $\sigma_{c}^{2}$
+\end_inset
+
+的连续白噪声信号的积分具有传递函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{y\left(s\right)}{u\left(s\right)}=G\left(s\right)=\dfrac{\sigma_{c}}{s}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，输出
+\begin_inset Formula $y$
+\end_inset
+
+在某一时刻t的方差由文献[17]给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[y^{2}\left(t\right)\right]=\sigma_{c}\int_{0}^{t}\int_{0}^{t}\delta\left(u-v\right)\mathrm{d}u\mathrm{d}v=\sigma_{c}^{2}t.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑离散白噪声序列
+\begin_inset Formula $x_{k}\sim N\left(0,\sigma_{d}\right)$
+\end_inset
+
+的积分。如果此序列与矩形积分相结合，则输出如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{k}=\Delta t\left(x_{k}+x_{k-1}\ldots+x_{0}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+输出方差由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+E\left[y_{k}^{2}\right] & =E\left[\Delta t\left[x_{k}+x_{k-1}\ldots+x_{0}\right]\Delta t\left[x_{k}+x_{k-1}\ldots+x_{0}\right]^{T}\right]\\
+E\left[y_{k}^{2}\right] & =\Delta t^{2}\left(E\left[x_{k}^{2}\right]+E\left[x_{k-1}^{2}\right]+\ldots E\left[x_{o}^{2}\right]\right)\\
+E\left[y_{k}^{2}\right] & =\Delta t^{2}k\sigma_{d}^{2}=t\Delta t\sigma_{d}^{2}
+\end{array}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+离散白噪声序列的标准差可以很容易地从传感器零输出的短样本中估计出来，并由此计算出等效连续噪声过程的频谱振幅。因此，在这项工作中，角速度传感器和加速计的噪声振幅
+\begin_inset Formula $\boldsymbol{\sigma}_{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\sigma}_{f}$
+\end_inset
+
+分别作为估计的离散时间方差和积分采样时间的函数进行计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma_{c}=\hat{\sigma}_{d}\sqrt{\Delta t}.\label{eq:70}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里不分析测量或模拟传感器偏差的漂移率项。Allan方差分析揭示了闪烁噪声的存在，但闪烁噪声的测量、仿真及其对制导弹体导航解的影响仍有待进一步研究。因此，在测量
+传感器噪声参数时，选择偏差漂移参数
+\begin_inset Formula $\boldsymbol{\sigma}_{\beta\omega}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{\sigma}_{\beta f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\sigma}_{\beta m}$
+\end_inset
+
+作为调谐参数。
+\end_layout
+
+\begin_layout Section
+弹体测量模型
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:6弹体测量模型"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+向量测量
+\end_layout
+
+\begin_layout Standard
+由于制导弹体的正常工作条件，只有几种不同的测量方法可用。最常见的是向量测量，其中向量的坐标是先验已知的，或者是在惯性系和物体固定系中测量的。由于磁强计可能是弹体
+团体最常用的向量测量，地球磁场向量
+\begin_inset Formula $\mathbf{m}$
+\end_inset
+
+将用于说明误差状态到向量测量残差的映射。假设比例因子和未对准项已知，由磁强计测量的磁场向量由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{m}}^{b}=\mathbf{C}_{i}^{b}\left(\mathbf{q}\right)\mathbf{m}^{i}+\boldsymbol{\beta}_{m}+\boldsymbol{\eta}_{m}.\label{eq:71}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也就是说，测量的
+\begin_inset Formula $\tilde{\mathbf{m}}^{b}$
+\end_inset
+
+是惯性坐标
+\begin_inset Formula $\mathbf{m}^{i}$
+\end_inset
+
+中的已知向量，转换成机体坐标，加上体固定偏差向量
+\begin_inset Formula $\boldsymbol{\beta}_{m}$
+\end_inset
+
+和加性零平均白噪声项
+\begin_inset Formula $\boldsymbol{\eta}_{m}$
+\end_inset
+
+。剩余
+\begin_inset Formula $\delta\mathbf{m}$
+\end_inset
+
+由实际测量值减去预测测量值
+\begin_inset Formula $\hat{\tilde{\mathbf{m}}}^{b}$
+\end_inset
+
+得到。
+\end_layout
+
+\begin_layout Standard
+预测的测量值是当前估计四元数的函数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{\tilde{\mathbf{m}}}^{b}=\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\mathbf{m}^{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以被代入到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{m}}^{b}\cong\left[\mathbf{I}-\left[\boldsymbol{\alpha}\times\right]\right]\mathbf{C}_{i}^{b}(\hat{\mathbf{q}})\mathbf{m}^{i}+\boldsymbol{\beta}_{m}+\boldsymbol{\eta}_{m}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后测量残差为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{m}}^{b}-\hat{\tilde{\mathbf{m}}}^{b}=\left[\mathbf{I}-\left[\boldsymbol{\alpha}\times\right]\right]\mathbf{C}_{i}^{b}(\hat{\mathbf{q}})\mathbf{m}^{i}+\boldsymbol{\beta}_{m}+\boldsymbol{\eta}_{m}-\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\mathbf{m}^{i},
+\end{equation}
+
+\end_inset
+
+其可简化为误差状态的线性映射：
+\begin_inset Formula 
+\begin{equation}
+\delta\tilde{\mathbf{m}}^{b}=\left[\begin{array}{cc}
+\left[\left(\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\mathbf{m}^{i}\right)\times\right] & \mathbf{I}_{3\times3}\end{array}\right]\left\{ \begin{array}{c}
+\boldsymbol{\alpha}\\
+\boldsymbol{\beta}_{m}
+\end{array}\right\} +\boldsymbol{\eta}_{m}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一个全天候向量测量是在惯性坐标
+\begin_inset Formula $\tilde{\mathbf{v}}^{i}$
+\end_inset
+
+中的弹体速度向量。这通常可以从板载GPS装置或参考轨迹或动态模型中获得，具体取决于任务规格。由于大多数弹体以相当低的攻角飞行，因此假定物体固定坐标为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{v}}^{b}=\left\{ \begin{array}{ccc}
+\left\Vert \tilde{\mathbf{v}}^{b}\right\Vert  & 0 & 0\end{array}\right\} ^{\mathrm{T}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度向量中的噪声通常更自然地用惯性坐标表示。测量残差由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\tilde{\mathbf{v}}^{i}=\tilde{\mathbf{v}}^{i}-\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\tilde{\mathbf{v}}^{b}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在惯性坐标系中测得的速度可以根据误差状态和噪声向量
+\begin_inset Formula $\boldsymbol{\eta}_{v}$
+\end_inset
+
+重写：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{v}}^{i}\cong\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\left[\mathbf{I}+\left[\boldsymbol{\alpha}\times\right]\right]\tilde{\mathbf{v}}^{b}+\boldsymbol{\eta}_{v}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这导致误差状态到速度向量残差的以下线性映射：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\tilde{\mathbf{v}}^{i}=-\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)\left[\tilde{\mathbf{v}}^{b}\times\right]\boldsymbol{\alpha}+\boldsymbol{\eta}_{v}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+角度测量
+\end_layout
+
+\begin_layout Standard
+一些测量源提供欧拉角的直接测量。例如，具有适当信号处理的热电堆传感器星座提供了从ZYX欧拉角旋转序列直接测量横滚角
+\begin_inset Formula $\phi$
+\end_inset
+
+的方法，但在特定天气条件下除外[2, 3]。某些计算机视觉算法可以使用地平线检测来测量俯仰角
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\phi$
+\end_inset
+
+ [20]。可以说，在这种情况下使用基于四元数的姿态表示可能没有意义，但如果四元数更适合任务要求，那么使用欧拉角测量仍然很简单。在这种情况下，将测量的欧拉角与根
+据当前四元数预测计算的欧拉角进行比较，以获得欧拉角误差残差。也就是说，对于典型的ZYX欧拉角旋转序列：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\delta\tilde{\phi} & =\tilde{\phi}-\hat{\tilde{\phi}}+\eta_{\phi},\\
+\delta\tilde{\theta} & =\tilde{\theta}-\hat{\tilde{\theta}}+\eta_{\theta},\\
+\delta\tilde{\psi} & =\tilde{\psi}-\hat{\tilde{\psi}}+\eta_{\psi},
+\end{align}
+
+\end_inset
+
+其中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\hat{\tilde{\phi}} & =\mathrm{atan2}\left(2\left(\hat{q}_{3}\hat{q}_{4}+\hat{q}_{1}\hat{q}_{2}\right),\hat{q}_{1}^{2}-\hat{q}_{2}^{2}-\hat{q}_{3}^{2}+\hat{q}_{4}^{2}\right).\\
+\hat{\tilde{\theta}} & =\left(-\sin^{-1}\left(2\left(\hat{q}_{2}\hat{q}_{4}-\hat{q}_{1}\hat{q}_{3}\right)\right)\right).\\
+\hat{\tilde{\psi}} & =\mathrm{atan2}\left(2\left(\hat{q}_{2}\hat{q}_{3}+\hat{q}_{1}\hat{q}_{4}\right),\hat{q}_{1}^{2}+\hat{q}_{2}^{2}-\hat{q}_{3}^{2}-\hat{q}_{4}^{2}\right).
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，四元数Kalman滤波器估计小的旋转角，因此必须在欧拉角残差和小旋转角误差状态之间使用映射。假设欧拉角残差和误差状态都是小角度，两者之间的映射与欧拉角时间
+导数和物体固定角速度向量之间的映射相同：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{c}
+\delta\tilde{\phi}\\
+\delta\tilde{\theta}\\
+\delta\tilde{\psi}
+\end{array}\right\} =\left[\begin{array}{ccc}
+1 & \sin\left(\hat{\tilde{\phi}}\right)\tan\left(\hat{\tilde{\theta}}\right) & \cos\left(\hat{\tilde{\phi}}\right)\tan\left(\hat{\tilde{\theta}}\right)\\
+0 & \cos\left(\hat{\tilde{\phi}}\right) & -\sin\left(\hat{\tilde{\phi}}\right)\\
+0 & \sin\left(\hat{\tilde{\phi}}\right)/\cos\left(\hat{\tilde{\theta}}\right) & \cos\left(\hat{\tilde{\phi}}\right)/\cos\left(\hat{\tilde{\theta}}\right)
+\end{array}\right]\boldsymbol{\alpha}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在实施欧拉角测量时，确保测量量和预测量在同一象限内是非常重要的。
+\end_layout
+
+\begin_layout Subsection
+位置和速度测量
+\end_layout
+
+\begin_layout Standard
+实际位置测量的可用性和来源在很大程度上取决于任务要求。从误差状态到直接位置或速度残差的映射很简单：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{r}}-\hat{\tilde{\mathbf{r}}} & =\left[\mathbf{I}\right]\delta\mathbf{r}+\boldsymbol{\eta}_{f}.\\
+\tilde{\mathbf{v}}-\hat{\tilde{\mathbf{v}}} & =\left[\mathbf{I}\right]\delta\mathbf{v}+\boldsymbol{\eta}_{v}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+实际上，测量通常更复杂。如果用户能够获得直接的GPS伪距和载波频率测量，那么使用包括用户时钟偏差的众所周知的GPS测量模型将更加精确。如果用户不能访问直接的接收
+机输出，而是提供了接收机的计算位置和速度估计，则可以更精确地测量误差，从而构建自回归或高斯-马尔可夫误差模型，而不是假设白噪声。在参考轨迹的情况下，将动态模型视
+为一个随机过程可能是有益的，以便参考轨迹“测量值”随着轨迹的时间推移得到的权重越来越小。一种简单的方法是将参考轨迹状态中的误差建模为随机噪声驱动的三个耦合位置-
+速度状态：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{l}
+\delta\dot{\tilde{r}}_{x-z}\\
+\delta\dot{\tilde{v}}_{x-z}
+\end{array}\right\} =\left[\begin{array}{ll}
+0 & 1\\
+0 & 0
+\end{array}\right]\left\{ \begin{array}{l}
+\delta\tilde{r}_{x-z}\\
+\delta\tilde{v}_{x-z}
+\end{array}\right\} +\boldsymbol{\eta}_{ref}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于未建模干扰(如风)导致的参考轨迹偏差将在噪声项
+\begin_inset Formula $\boldsymbol{\eta}_{ref}$
+\end_inset
+
+中进行解释，噪声项由调谐变量
+\begin_inset Formula $q_{ref}$
+\end_inset
+
+参数化：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\boldsymbol{\eta}_{ref}(t)\boldsymbol{\eta}_{ref}^{\mathrm{T}}(\tau)\right]=\left[\begin{array}{cc}
+0 & 0\\
+0 & q_{ref}^{2}
+\end{array}\right]\delta(t-\tau).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+稍后某个时间的测量协方差可根据初始值
+\begin_inset Formula $\mathbf{R}_{ref0}$
+\end_inset
+
+和调谐变量计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E\left[\left\{ \begin{array}{l}
+\delta\tilde{r}(t)_{x-z}\\
+\delta\tilde{v}(t)_{x-z}
+\end{array}\right\} \left\{ \begin{array}{l}
+\delta\tilde{r}(t)_{x-z}\\
+\delta\tilde{v}(t)_{x-z}
+\end{array}\right\} ^{\mathrm{T}}\right]=\left[\begin{array}{cc}
+1 & t\\
+0 & 1
+\end{array}\right]\mathbf{R}_{ref0}\left[\begin{array}{cc}
+1 & 0\\
+t & 1
+\end{array}\right]+\left[\begin{array}{cc}
+t^{3}/3 & t^{2}/2\\
+t^{2}/2 & t
+\end{array}\right]q_{ref}^{2}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当计算位置和速度测量的增益时，该测量协方差矩阵将用于EKF。
+\end_layout
+
+\begin_layout Section
+Kalman滤波的实现
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:7Kalman滤波的实现"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kalman滤波器最终将在嵌入式处理器上运行。在本项工作中，这是通过离散化误差状态动力学，使Kalman滤波方程可以更新在一个较低的频率比积分状态。集成陀螺仪和
+加速度计以获取四元数、速度和位置将以比EKF更快的速度更新，因为集成所需的计算能力将显著降低，延迟反馈会降低飞行控制器的性能。假设使用了某种类型的多任务处理，K
+alman滤波方程的运行速度较慢，优先级较低，如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:1"
+
+\end_inset
+
+Kalman滤波多任务调度。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="12" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IMU Integration Time 
+\begin_inset Formula $\mathrm{i}=$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+EKF Update Time 
+\begin_inset Formula $\mathrm{j}=$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Start at 
+\begin_inset Formula $\hat{\mathbf{x}}_{0}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Measurements 
+\begin_inset Formula $\mathbf{y}_{j=0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=0}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Kalman Filtering
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=1}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calculations
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=2}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Updated 
+\begin_inset Formula $\hat{\mathbf{x}}_{j=0}^{+}$
+\end_inset
+
+ known
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=3}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Predict 
+\begin_inset Formula $\hat{\mathbf{x}}_{j=1}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=4}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Measurements 
+\begin_inset Formula $\mathbf{y}_{j=0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=5}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Kalman Filtering
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=6}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Calculations
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=7}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Updated 
+\begin_inset Formula $\hat{\mathbf{x}}_{j=1}^{+}$
+\end_inset
+
+ known
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Integrate 
+\begin_inset Formula $\hat{\mathbf{x}}^{-}$
+\end_inset
+
+ from 
+\begin_inset Formula $\hat{\mathbf{x}}_{i=8}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Predict 
+\begin_inset Formula $\hat{\mathbf{x}}_{j=2}^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+—
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Etc.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+—
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+—
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5过程噪声测量"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的方程式和最著名的陀螺仪和加速度计标定完成全状态积分。实际的Kalman滤波计算是用来估计测量时的误差状态。每个Kalman滤波迭代包括以下五个步骤：
+\end_layout
+
+\begin_layout Paragraph
+1.
+ 测量/储存
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从任何可用来源记录测量值及其协方差值(如果随时间变化)。记录此时积分满状态的值，因为它们将用于形成残差。
+\end_layout
+
+\begin_layout Paragraph
+2.
+ 协方差预测
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+完整的状态预测来自于集成任务。先验误差状态估计为零：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\delta\hat{\mathbf{x}}_{j}^{-}=\mathbf{0}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+先验误差状态协方差矩阵
+\begin_inset Formula $\mathbf{P}_{j}^{-}$
+\end_inset
+
+的估计必须根据上一次迭代的后验误差状态协方差
+\begin_inset Formula $\mathbf{P}_{j-1}^{+}$
+\end_inset
+
+和误差状态动力学进行预测。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中先前定义的矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+可以离散化，以使用矩阵指数的二阶近似来形成状态转移矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Phi}=\mathbf{I}+\mathbf{F}\Delta t+\frac{1}{2}\mathbf{F}^{2}\Delta t^{2}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+进入
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+矩阵的值由当前的先验四元数估计和IMU输出以及上一次迭代的后验四元数估计和IMU输出确定。因此，
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+中的非零项为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+-\left[\hat{\boldsymbol{\omega}}\times\right] & =-\left[\left(\hat{\boldsymbol{\omega}}_{j-1}+\hat{\boldsymbol{\omega}}_{j}\right)/2\times\right]\\
+-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right)\left[\hat{\mathbf{f}}^{b}\times\right] & =-\dfrac{\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}_{j}^{-}\right)\left[\hat{\mathbf{f}}_{j}^{b}\times\right]+\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}_{j-1}^{+}\right)\left[\hat{\mathbf{f}}_{j+1}^{b}\times\right]}{2}\\
+-\mathbf{C}_{b}^{i}\left(\hat{\mathbf{q}}\right) & =-\mathbf{C}_{b}^{i}\left(\overline{\mathbf{q}}_{j-1}^{j}\right)
+\end{array}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，
+\begin_inset Formula $\overline{\mathbf{q}}_{j-1}^{j}$
+\end_inset
+
+项是根据附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:B平均四元数"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的算法确定的平均四元数，因为两个旋转变换矩阵的算术平均违反了正交约束。先验误差状态协方差计算如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}_{j}^{-}=E\left[\delta\mathbf{x}\delta\mathbf{x}^{\mathrm{T}}\right]=\boldsymbol{\Phi}\mathbf{P}_{j-1}^{+}\boldsymbol{\Phi}^{\mathrm{T}}+\mathbf{Q}_{d}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+离散时间过程噪声协方差矩阵
+\begin_inset Formula $\mathbf{Q}_{d}$
+\end_inset
+
+由以下方程确定：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{d}=\int_{0}^{\Delta t}e^{\mathbf{F}(t-\tau)}\mathbf{Q}_{c}e^{\mathbf{F}^{\mathrm{T}}(t-\tau)}\mathrm{d}\tau.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+矩阵在
+\begin_inset Formula $\hat{\boldsymbol{\omega}}=\hat{\mathbf{f}}=0$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{C}_{i}^{b}\left(\hat{\mathbf{q}}\right)=\mathbf{I}$
+\end_inset
+
+的条件下线性化，可以大大简化前面的方程。这在直觉上是有意义的，在实践中起作用，并在参考文献[11]中使用，但这一作用的分析原因仍将作为未来研究的主题。通过这种简
+化和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的
+\begin_inset Formula $\mathbf{Q}_{c}$
+\end_inset
+
+的定义，可以确定解析表达式。符号简写
+\begin_inset Formula $\Lambda\left(\mathbf{v}\right)$
+\end_inset
+
+表示向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+元素沿对角线的矩阵，解析表达式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{d}=\tiny\left[\begin{array}{cccccc}
+\Lambda\left(\boldsymbol{\sigma}_{\omega}^{2}\right)\Delta t+\Lambda\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)\frac{\Delta t^{3}}{3} & \mathbf{0} & \mathbf{0} & -\Lambda\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)\frac{\Delta t^{2}}{2} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \Lambda\left(\boldsymbol{\sigma}_{f}^{2}\right)\Delta t+\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{3}}{3} & \Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{4}}{8}+\Lambda\left(\boldsymbol{\sigma}_{f}^{2}\right)\frac{\Delta t^{2}}{2} & \mathbf{0} & -\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{2}}{2} & \mathbf{0}\\
+\mathbf{0} & \Lambda\left(\boldsymbol{\sigma}_{f}^{2}\right)\frac{\Delta t^{2}}{2}+\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{4}}{8} & \Lambda\left(\boldsymbol{\sigma}_{f}^{2}\right)\frac{\Delta t^{3}}{3}+\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{5}}{20} & \mathbf{0} & -\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{3}}{6} & \mathbf{0}\\
+-\Lambda\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)\frac{\Delta t^{2}}{2} & \mathbf{0} & \mathbf{0} & \Lambda\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)\frac{\Delta t^{2}}{2} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & -\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{2}}{2} & -\Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\frac{\Delta t^{3}}{6} & \mathbf{0} & \Lambda\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)\Delta t & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \mathbf{0} & \Lambda\left(\boldsymbol{\sigma}_{\beta m}^{2}\right)\Delta t
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+3.
+ 残差映射的估计
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:6弹体测量模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中从误差状态到残差的所有线性映射都是当前全状态向量的函数。在线性Kalman滤波器的情况下，如果所有测量值都不相关，则可以一次处理一个测量值，结果与一次处理
+所有测量值相同[17]。由于避免了矩阵求逆，这增加了方便性并减少了计算时间。为了获得与EKF相同的效果，必须使用相同的先验全状态估计来评估所有测量映射。
+\end_layout
+
+\begin_layout Paragraph
+4.
+ 序贯Kalman滤波创新步骤
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于每个可用的测量，采用以下步骤。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:6弹体测量模型"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的所有残差映射可以转换为以下形式：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\delta y=\mathbf{h}\delta\mathbf{x}+\eta,
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中
+\begin_inset Formula $\delta y$
+\end_inset
+
+等于实际测量值减去预测测量值。噪声
+\begin_inset Formula $\eta$
+\end_inset
+
+将具有一些已知的协方差
+\begin_inset Formula $\sigma_{y}^{2}$
+\end_inset
+
+。然后，Kalman增益为：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\mathbf{K}=\frac{\mathbf{P}_{j}^{-}\mathbf{h}^{\mathrm{T}}}{\left(\mathbf{h}\mathbf{P}_{j}^{-}\mathbf{h}^{\mathrm{T}}+\sigma_{y}^{2}\right)}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+误差状态向量用Kalman增益更新：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\delta\hat{\mathbf{x}}_{j}^{+}=\delta\hat{\mathbf{x}}_{j}^{-}+\mathbf{K}\delta y.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下一步更新误差状态协方差矩阵：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}_{j}^{+}=(\mathbf{I}-\mathbf{K}\mathbf{h})\mathbf{P}_{j}^{-}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果有更多的测量需要处理，那么先验误差状态和协方差矩阵被覆盖为
+\begin_inset Formula $\delta\hat{\mathbf{x}}_{j}^{-}=\delta\hat{\mathbf{x}}_{j}^{+}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{P}_{j}^{-}=\mathbf{P}_{j}^{+}$
+\end_inset
+
+，然后用于下一个测量重复创新步骤。
+\end_layout
+
+\begin_layout Paragraph
+5.
+ 更新完整状态和校准参数
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4误差状态方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中定义的每个误差状态的定义，可以用误差状态估计更新完整状态估计。对于四元数，这相当于：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{equation}
+\hat{\mathbf{q}}_{j}^{+}=\hat{\mathbf{q}}_{j}^{-}\otimes\left\{ \begin{array}{c}
+1\\
+\boldsymbol{\alpha}/2
+\end{array}\right\} .
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位置和速度估计更新为：
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Formula 
+\begin{align}
+\hat{\mathbf{r}}_{j}^{+} & =\hat{\mathbf{r}}_{j}^{-}+\delta\mathbf{r}.\\
+\hat{\mathbf{v}}_{j}^{+} & =\hat{\mathbf{v}}_{j}^{-}+\delta\mathbf{v}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+磁强计、陀螺仪和加速计的偏差估计用于校正每个传感器的校准，然后设置为零。此时，完整状态估计值在时间
+\begin_inset Formula $j$
+\end_inset
+
+处更新，该时间
+\begin_inset Formula $j$
+\end_inset
+
+在过去根据处理器的速度已经有一段距离了。利用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3四元数与IMU积分"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的IMU积分方程以及时间
+\begin_inset Formula $j$
+\end_inset
+
+和当前时间的陀螺仪和加速度计的输出，可以得到当前的全状态估计。注意，当应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来计算连续随机游动系数时，当该时间步长较大时，通常通过使用当前时间和时间
+\begin_inset Formula $j$
+\end_inset
+
+之间的时间差而不是积分时间步长来获得更好的性能。
+\end_layout
+
+\begin_layout Section
+模拟结果
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:8模拟结果"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了验证本文提出的一些模型和算法，在Matlab/Simulink环境下进行了仿真，包括弹体的六自由度(6-DOF)运动以及状态估计、制导和控制算法。模拟不是为
+了提供任何特定系统的性能指标，而是为了演示本报告中讨论的算法的基本功能，并讨论制导弹体应用中的一些问题。
+\end_layout
+
+\begin_layout Subsection
+直接火力应用
+\end_layout
+
+\begin_layout Standard
+第一个系统模拟是一个低射角(Quadrant Elevation, QE)的指南，以打击一个移动目标的任务。所使用的弹体是美国陆军/海军标准finner[21–
+24]，这是一种鳍稳定的非自旋弹，由四只鸭翼改装而成，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure3.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+U.S.
+ Army/Navy standard finner.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+弹体采用相称的导航作为制导规则与运动目标交战。自动驾驶仪是采用最优控制技术设计的状态反馈控制器[25]。模拟的初始条件如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:2"
+
+\end_inset
+
+直接开火初始条件。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Muzzle velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $200$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gun elevation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $8$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Projectile initial position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0 & 0 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Target initial position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+1000 & 0 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Target velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0 & 10 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Projectile initial angular velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+2 & 2 & 2\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{rad}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+状态估计器在这种情况下只是一种姿态估计，因为没有实际的位置或速度测量。虽然没有对闪烁或速度渐变进行建模，但陀螺受到白噪声的影响，并且由一些改进的ADXRS300
+角速度传感器测量到的参数相同。磁强计测量的噪声与HMC1043固态磁强计测量的噪声相同。假设由于弹体本身产生的固定静磁场，磁强计可能存在较大的初始偏差。电机的影
+响和涡流效应被忽略。对于任一传感器，均未建模失调、比例因子、非正交性或g-灵敏度误差。除了磁强计外，还假设计算机视觉视距检测算法在
+\begin_inset Formula $30\:\mathrm{Hz}$
+\end_inset
+
+时产生横滚和俯仰估计。同时，还假设计算机视觉和EKF处理需要80%的更新间隔(
+\begin_inset Formula $26.7\:\mathrm{ms}$
+\end_inset
+
+)才能完成。结果表明，偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+与这种结构不可观测(与
+\begin_inset Formula $x$
+\end_inset
+
+轴磁强计的偏差是不可区分的)。为了弥补这一点，在前
+\begin_inset Formula $0.5\:\mathrm{s}$
+\end_inset
+
+中使用启发式偏航角测量
+\begin_inset Formula $0^{\circ}$
+\end_inset
+
+，以使传感器偏差收敛。EKF参数如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ - 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中给出了误差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3"
+
+\end_inset
+
+直接开火EKF参数。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="12" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial attitude error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\alpha}\boldsymbol{\alpha}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+100 & 0 & 0\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial gyro bias error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\beta}_{\omega}\boldsymbol{\beta}_{\omega}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+10 & 10 & 10\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{deg/s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial magnetometer bias error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\beta}_{m}\boldsymbol{\beta}_{m}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gyro bias drift covariance 
+\begin_inset Formula $\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} \times1e-3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{rad/s/s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Magnetometer bias drift covariance diag 
+\begin_inset Formula $\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta m}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} \times1e-3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{Gauss}/\mathrm{s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gyroscope noise std.
+ 
+\begin_inset Formula $\boldsymbol{\sigma}_{\omega d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+2.0626 & 2.0626 & 2.0626\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Magnetometer noise std.
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\boldsymbol{\sigma}_{md}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0.0022 & 0.0022 & 0.0022\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Horizon roll/pitch measurement noise std.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quaternion integration rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $500$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Hz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Kalman filter update rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $30$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Hz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Earth's magnetic field in gun-target line coordinates
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0.5 & 0 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure4.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+Direct-fire small-angle errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure5.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+Direct-fire gyro-bias errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure6.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+Direct-fire magnetometer-bias errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+过滤后的误差并不是特别令人印象深刻，但它们可能非常适用于此类任务。滤波器有点过于自信，这表现为相对较高的误差量超出了由估计误差协方差矩阵计算的三个标准偏差范围。
+这在扩展Kalman滤波器中很常见，因为协方差估计是基于线性化的非线性映射函数。
+\end_layout
+
+\begin_layout Subsection
+间接火力应用
+\end_layout
+
+\begin_layout Standard
+第二个应用是导航一个81-mm迫击炮，配备四个独立控制的金丝雀部署在近远地点。假设弹体配备ADXRS300角速度传感器、HMC1043固态磁强计和ADXL278
+加速度计三坐标系，以及理想的位置和速度测量
+\begin_inset Formula $30\:\mathrm{s}$
+\end_inset
+
+。位置和速度测量仅在
+\begin_inset Formula $100\:\mathrm{Hz}$
+\end_inset
+
+时，由于存在加性白噪声而损坏。轨迹初始条件如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，轨迹图如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。在金丝雀部署之前，迫击炮沿着弹道飞行，这需要旋转到
+\begin_inset Formula $20\:\mathrm{Hz}$
+\end_inset
+
+。在这个理想化的例子中，实际的ADXRS300传感器会被钳制以忽略其自旋速度。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:4"
+
+\end_inset
+
+间接开火初始条件。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Muzzle velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $274$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gun elevation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $45$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Projectile initial position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0 & 0 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Target initial position
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+4900 & 100 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Target velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0 & 10 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Projectile initial angular velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0 & 4 & 4\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{rad}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure7.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+Indirect-fire trajectory.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+传感器和Kalman滤波器的参数如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。第三个理想化是加速度计位于弹体的重心。误差结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ - 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:5"
+
+\end_inset
+
+间接开火EKF参数。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="21" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Units
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial attitude error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\alpha}\boldsymbol{\alpha}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+100 & 1 & 1\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial gyro bias error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\beta}_{\omega}\boldsymbol{\beta}_{\omega}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+10 & 10 & 10\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{deg/s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial accelerometer bias error covariance
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $E\left(\boldsymbol{\beta}_{f}\boldsymbol{\beta}_{f}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+10 & 10 & 10\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{m}/\mathrm{s}^{2}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Initial magnetometer bias error covariance 
+\begin_inset Formula $E\left(\boldsymbol{\beta}_{m}\boldsymbol{\beta}_{m}^{\mathrm{T}}\right)\left(t=0\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} ^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gyro bias drift covariance 
+\begin_inset Formula $\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta\omega}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} \times1e-3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{rad/s/s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accelerometer bias drift covariance 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta f}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} \times1e-3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{m}/\mathrm{s}^{2}/s\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Magnetometer bias drift covariance diag 
+\begin_inset Formula $\mathrm{diag}\left(\boldsymbol{\sigma}_{\beta m}^{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{diag}\left\{ \begin{array}{ccc}
+1 & 1 & 1\end{array}\right\} \times1e-3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\mathrm{Gauss}/\mathrm{s}\right)^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Gyroscope noise std.
+ 
+\begin_inset Formula $\boldsymbol{\sigma}_{\omega d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+2.0626 & 2.0626 & 2.0626\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Accelerometer noise std.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\sigma}_{fd}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0.3556 & 0.3556 & 0.3556\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Magnetometer noise std.
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\boldsymbol{\sigma}_{md}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0.0022 & 0.0022 & 0.0022\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic yaw measurement noise std.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{deg}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic yaw measurement duration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $14$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Position measurement noise std.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Position measurement duration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $30$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Velocity measurement noise std.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{m}/\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Velocity measurement duration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $30$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Velocity vector as an attitude measurement duration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $14$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quaternion integration rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $500$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Hz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Kalman filter update rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $100$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Hz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Earth's magnetic field in gun-target line coordinates
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left\{ \begin{array}{ccc}
+0.5 & 0 & 0\end{array}\right\} ^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Gauss}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure8.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:8"
+
+\end_inset
+
+Indirect-fire angle errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure9.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Indirect-fire velocity errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure10.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Indirect-fire position errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure11.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Indirect-fire gyro-bias errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure12.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Indirect-fire accelerometer-bias errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ADA588831-Figure13.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:13"
+
+\end_inset
+
+Indirect-fire magnetometer-bias errors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从协方差界可以清楚地看出，当圆旋转时，某些参数更容易观察到，而另一些参数则不太容易观察到。在鸭翼以
+\begin_inset Formula $16\:\mathrm{s}$
+\end_inset
+
+的速度展开之前，磁强计的偏差和角度误差更容易观测到。然而，当弹体旋转时，径向加速计偏差和径向陀螺仪偏差几乎不可观测。这是因为这些项中的误差是“滚出来的(roll
+ed out)”；也就是说，它们的效果在自旋频率方向上旋转，并且在输出中不会产生明显的变化。在鸭式布局和启发式测量停止后，角度误差和磁强计误差变得无限大。有趣的
+是，当子弹在
+\begin_inset Formula $41\:\mathrm{s}$
+\end_inset
+
+时执行航向修正机动时，该运动提供了有关磁强计偏差的信息。
+\end_layout
+
+\begin_layout Section
+结论和今后的工作
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:9结论和今后的工作"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+介绍了乘性四元数误差状态建模的基本原理，讨论了在扩展Kalman滤波中使用误差状态模型的一些方法。利用四元数进行弹体姿态估计的主要优点是，误差状态传播方程只依赖
+于估计的陀螺输出，而不依赖于四元数的当前值。这为处理延迟测量和处理时间延迟提供了很大的灵活性。速度和位置误差状态不太方便，因为它们确实依赖于当前的姿态估计，但它
+们提供了姿态误差和位置和速度误差之间的映射。这在理论上为从位置或速度测量提供的信息中获得姿态误差提供了一些可观测性。
+\end_layout
+
+\begin_layout Standard
+本文给出了常见弹体测量的测量方程和启发式算法，以及误差状态和测量残差之间的映射关系。这些映射是线性的，但取决于姿态估计的当前值。正因为如此，扩展Kalman滤波
+器存在低估误差状态协方差的问题，特别是在滤波器收敛之前，或者当系统不强可观测时。
+\end_layout
+
+\begin_layout Standard
+仿真结果表明了误差状态建模的基本功能。直接开火模拟需要一个简单的启发式偏航测量来稳定姿态解。磁强计偏差误差、陀螺仪偏差误差和姿态误差是有界的，但滤波器的可信度稍
+高。然而，研究表明，仅需
+\begin_inset Formula $30\:\mathrm{Hz}$
+\end_inset
+
+的更新率就可以实现合理的姿态估计。间接开火模拟结果表明，在旋转过程中磁强计的偏差更容易观测到，而径向加速度计和陀螺仪的偏差在旋转过程中很难观测到。这并不一定会阻
+止人们结合启发式测量来估计这些偏差，但它们不是通过误差状态建模隐式观察到的。
+\end_layout
+
+\begin_layout Standard
+为任何实际系统开发一个功能性的辅助惯性导航系统还有很多工作要做。例如，偏差可能不是主要的传感器误差项，可能需要更复杂的误差建模。GPS测量通常有自己的误差模型，
+需要将其包含在滤波器中。在处理延迟测量方面也有很大的改进空间。姿态估计器的一个改进是以比测量值更高的更新率递归地更新总状态转移矩阵，并将其用于更精确的误差状态和
+协方差传播。由于矩阵划分，误差状态和协方差预测步骤的计算时间可以显著减少，这在许多情况下是一种可行的选择。姿态和位置/速度状态的解耦可能导致更好的结果，这取决于
+可用测量的更新率。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+Fresconi, F.; Celmins, I.; Fairfax, L.
+ Optimal Parameters for Maneuverability of Affordable Precision Munitions;
+ ARL-TR-5647; U.S.
+ Army Research Laboratory: Aberdeen Proving Ground, MD, 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Don, M.; Gzybowski, D.; Christian, R.
+ Roll Angle Estimation Using Thermopiles for a Mortar Flight Experiment.
+ 62 nd Aeroballistic Range Association Annual Meeting [DVD- ROM], Nasa Glenn
+ Research Center: Cleveland, OH, 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Rogers, J.; Costello, M.
+ A Low-Cost Orientation Estimator for Smart Projectiles Using Magnetometers
+ and Thermopiles Navigation Spring 2012, 59 (1), 9–24.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Maley, J.
+ Roll Orientation From Commercial Off-The-Shelf (COTS) Sensors in the Presence
+ of Inductive Actuators.
+ In Institute of Navigation Joint Navigation Conference, Colorado Springs,
+ 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Changey, S.; Beauvois, D.; Fleck, V.; A Mixed Extended-Unscented Filter for
+ Attitude Estimation With Magnetometer Sensor.
+ American Control Conference, 14–16 June 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Rogers, J.; Costello, M.; Harkins, T.; Hamaoui, M.
+ Effective Use of Magnetometer Feedback for Smart Projectile Applications.
+ Navigation, 2011, 58 (3), 203–220.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Fairfax, L.; Fresconi, F.
+ Position Estimation for Projectiles Using Low-cost Sensors and Flight Dynamics;
+ ARL-TR-5994; U.S.
+ Army Research Laboratory: Aberdeen Proving Ground, MD, 2012.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Titterton, D.
+ H.; Weston, J.
+ L.
+ Strapdown Inertial Navigation Technology, 2nd ed.; Progress in Astronautices
+ and Aeronautics, Volume 207; American Institute of Aeronautics and Astronautics
+ (AIAA): Reston, VA, 2004.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Toda, N.
+ F.; Heiss, J.
+ L.; Schlee, F.
+ H.
+ SPARS: The System, Algorithm, and Test Results.
+ Proceedings of the Symposium on Spacecraft Attitude Determination; Report
+ TR-0066 (5306)-12; Aerospace Corp., September–October 1969; pp 361–370,
+ Vol.1.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.
+ L.; Markley, F.
+ L.; Cheng, Y.
+ A Survey of Nonlinear Attitude Estimation Methods.
+ Journal of Guidance Control and Dynamics; American Institute of Aeronautics
+ and Astronautics (AIAA): Reston, VA, 2007, 30 (1), 12–28.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.
+ L.; Junkins, J.
+ L.
+ Optimal Estimation of Dynamic Systems; Chapman & Hall/CRC: Boca Raton,
+ FL, 2004.
+\end_layout
+
+\begin_layout Enumerate
+Roumeliotis, S.
+ I.; Sukhatme, G.
+ S.; Bekey, G.
+ A.
+ Smoother Based 3D Attitude Estimation for Mobile Robot Localization.
+ IEEE International Conference on Robotics and Automation 1999, 3, 1979–1986.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Stevens, B.; Kerce, C.
+ Guidance Navigation and Control.
+ Georgia Tech Professional Education: Guidance, Navigation, and Control:
+ Theory and Applications Class Notes, Georgia Instititue of Technology:
+ Atlanta, GA, 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Kuipers, J.
+ Quaternions and Rotation Sequences; Princeton University Press: Princeton,
+ NJ, 1999.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Bortz, J.
+ E.
+ A New Mathematical Formulation for Strapdown Inertial Navigation.
+ IEEE Transactions on Aerospace and Electronic Systems 1971, AES-7 (1).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Savage, P.
+ G.
+ Strapdown Analytics; Strapdown Associates Inc.: Maple Plain, MN, 2000.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Simon, D.
+ Optimal State Estimation; John Wiley & Sons Inc.: Hoboken, NJ, 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gelb, A.
+ Applied Optimal Estimation; MIT press: Cambridge, MA,1974.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.
+ L.
+ Multiplicative vs.
+ Additive Filtering for Spacecraft Attitude Determination.
+ Dynamics and Control of Systems and Structures in Space; NASA’s Goddard
+ Space Flight Center: Greenbelt, MD, 2004.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Fairfax, L.; Allik, B.
+ Vision-Based Roll and Pitch Estimation in Precision Projectiles.
+ AIAA Guidance Navigation and Control Conference, Minneapolis, MN, 13–16
+ August 2012.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Murphy, C.
+ H.
+ Free Flight Motion of Symmetric Missiles; BRL-1216; U.S.
+ Army Ballistic Research Laboratory: Aberdeen Proving Ground, MD, July 1963.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Uselton, B.
+ L.; Uselton, J.
+ C.
+ Test Mechanism for Measuring Pitch-Damping Derivatives of Missile Configuration
+s at High Angles of Attack; AEDC-TR-75-43; Arnold Engineering Development
+ Center: Arnold AFB, TN, May 1975.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Jenke, L.
+ M.
+ Experimental Roll-Damping, Magnus, and Static-Stability Characteristics
+ of Two Slender Missile Configurations at High Angles of Attack (0-90 deg)
+ and Mach Numbers 0.2 through 2.5; AEDC-TR-76-58; Arnold Engineering Development
+ Center: Arnold AFB, TN, July 1976.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Dupuis, A.
+ Aeroballistic Range and Wind Tunnel Tests of the Basic Finner Reference
+ Projectile from Subsonic to High Supersonic Velocities; TM 2002-136; Defense
+ R&D: Valcartier, Canada, October 2002.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Fresconi, F.
+ U.S.
+ Army Research Laboratory: Aberdeen Proving Ground, MD.
+ Personal communication, January 2013.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+弹体重心偏移
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:A弹体重心偏移"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定加速度计相对于惯性系
+\begin_inset Formula $\mathbf{r}_{a}^{i}$
+\end_inset
+
+的位置，以及弹体重心(CG)在机体固定坐标
+\begin_inset Formula $\mathbf{r}_{cg}^{b}$
+\end_inset
+
+中的位置，惯性系坐标中CG的位置可表示为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{r}_{cg}^{i}=\mathbf{r}_{a}^{i}+\mathbf{C}_{b}^{i}\mathbf{r}_{cg}^{b}.\label{eq:105}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速度计的输出将与加速度计相对于惯性参考系的加速度成正比，但弹体动力学通常是相对于重心来描述的。重心加速度可用双微分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)求出。假设重心在机体坐标中的位置是恒定的，从这里开始
+\begin_inset Formula $\boldsymbol{\omega}_{ib}^{b}$
+\end_inset
+
+将表示为
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dot{\mathbf{r}}_{cg}^{i} & =\dot{\mathbf{r}}_{a}^{i}+\dot{\mathbf{C}}_{b}^{i}\mathbf{r}_{cg}^{b}+\mathbf{C}_{b}^{i}\dot{\mathbf{r}}_{cg}^{b}=\dot{\mathbf{r}}_{a}^{i}+\mathbf{C}_{b}^{i}\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}.\\
+\mathbf{v}_{cg}^{i} & =\mathbf{v}_{a}^{i}+\mathbf{C}_{b}^{i}\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}.\\
+\dot{\mathbf{v}}_{cg}^{i} & =\dot{\mathbf{v}}_{a}^{i}+\mathbf{C}_{b}^{i}\left[\boldsymbol{\omega}\times\right]\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}+\mathbf{C}_{b}^{i}\left[\dot{\boldsymbol{\omega}}\times\right]\mathbf{r}_{cg}^{b}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+约束“弹簧”对验证质量的反作用力将与加速度计相对于惯性参考系的加速度减去重力加速度成比例。反作用力除以验证质量即为比作用力
+\begin_inset Formula $\mathbf{f}_{r}^{i}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}_{r}^{i}=\dfrac{1}{m}\left(m\dot{\mathbf{v}}_{a}^{i}-m\mathbf{g}^{i}\right)=\dot{\mathbf{v}}_{cg}^{i}-\mathbf{C}_{b}^{i}\left[\boldsymbol{\omega}\times\right]\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}-\mathbf{C}_{b}^{i}\left[\dot{\boldsymbol{\omega}}\times\right]\mathbf{r}_{cg}^{b}-\mathbf{g}^{i}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+加速计的输出是在机体帧中解析的特定力向量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}^{b}=\mathbf{C}_{i}^{b}\mathbf{f}_{r}^{i}=\mathbf{C}_{i}^{b}\dot{\mathbf{v}}_{cg}^{i}-\left[\boldsymbol{\omega}\times\right]\left[\boldsymbol{\omega}\times\right]\mathbf{r}_{cg}^{b}-\left[\dot{\boldsymbol{\omega}}\times\right]\mathbf{r}_{cg}^{b}-\mathbf{C}_{i}^{b}\mathbf{g}^{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+平均四元数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:B平均四元数"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定一个旧的四元数
+\begin_inset Formula $\mathbf{q}_{1}$
+\end_inset
+
+和一个新的四元数
+\begin_inset Formula $\mathbf{q}_{2}$
+\end_inset
+
+，计算平均四元数
+\begin_inset Formula $\overline{\mathbf{q}}$
+\end_inset
+
+的一种方法是计算将
+\begin_inset Formula $\mathbf{q}_{1}$
+\end_inset
+
+变换为
+\begin_inset Formula $\mathbf{q}_{2}$
+\end_inset
+
+的旋转向量
+\begin_inset Formula $\boldsymbol{\mu}$
+\end_inset
+
+，并使用具有一半大小的相同向量将
+\begin_inset Formula $\mathbf{q}_{1}$
+\end_inset
+
+变换为
+\begin_inset Formula $\overline{\mathbf{q}}$
+\end_inset
+
+。如果四元数
+\begin_inset Formula $\mathbf{r}$
+\end_inset
+
+由
+\begin_inset Formula $\mathbf{q}_{2}=\mathbf{q}_{1}\otimes\mathbf{r}$
+\end_inset
+
+定义，则可由
+\begin_inset Formula $\mathbf{r}=\mathbf{q}_{1}^{-1}\otimes\mathbf{q}_{2}$
+\end_inset
+
+求解。四元数和旋转向量之间的关系可用于求解旋转向量
+\begin_inset Formula $\boldsymbol{\mu}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\left\{ \begin{array}{c}
+r_{1}\\
+\mathbf{r}_{2:4}
+\end{array}\right\}  & =\left\{ \begin{array}{c}
+\cos\left(\left\Vert \boldsymbol{\mu}\right\Vert /2\right)\\
+\dfrac{\boldsymbol{\mu}}{\|\mathbf{\boldsymbol{\mu}}\|}\sin\left(\left\Vert \boldsymbol{\mu}\right\Vert /2\right)
+\end{array}\right\} .\\
+\left\Vert \boldsymbol{\mu}\right\Vert  & =\left|2\cos^{-1}\left(r_{1}\right)\right|.\\
+\boldsymbol{\mu} & =\mathbf{r}_{2:4}\dfrac{\left\Vert \boldsymbol{\mu}\right\Vert }{\sin\left(\left\Vert \boldsymbol{\mu}\right\Vert /2\right)}.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转向量可以看作是一个小时间间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+上平均角速度向量
+\begin_inset Formula $\overline{\boldsymbol{\omega}}$
+\end_inset
+
+的积分；
+\begin_inset Formula $\boldsymbol{\mu}=\overline{\boldsymbol{\omega}}\Delta t$
+\end_inset
+
+。因此，将旋转向量除以
+\begin_inset Formula $2$
+\end_inset
+
+，就得到了将角速度积分一半时间的物理解释。因此，新的旋转四元数
+\begin_inset Formula $\mathbf{r}_{n}$
+\end_inset
+
+为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{r}_{n}=\left\{ \begin{array}{c}
+\cos\left(\left\Vert \boldsymbol{\mu}\right\Vert /4\right)\\
+\dfrac{\boldsymbol{\mu}}{\|\mathbf{\boldsymbol{\mu}}\|}\sin\left(\left\Vert \boldsymbol{\mu}\right\Vert /4\right)
+\end{array}\right\} .
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则四元数的平均值为
+\begin_inset Formula $\overline{\mathbf{q}}=\mathbf{q}_{1}\otimes\mathbf{r}_{n}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

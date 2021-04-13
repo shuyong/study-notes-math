@@ -1,0 +1,6992 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{remark}{Remark}
+%\newtheorem{problem}{Problem}
+%\newtheorem{fact}{Fact}
+%\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{定理}
+\newtheorem{remark}{备注}
+\newtheorem{problem}{问题}
+\newtheorem{fact}{事实}
+\newtheorem{lemma}{引理}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{input:}}
+\renewcommand{\algorithmicensure}{\textbf{output:}}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "姿态卡尔曼滤波中姿态重置问题的全阶解"
+\pdf_author "Rajan Gill, Mark W. Mueller and Raffaello D’Andrea"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "姿态卡尔曼滤波中姿态重置问题的全阶解"
+target "https://arc.aiaa.org/doi/10.2514/1.G004134"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Rajan Gill, Mark W.
+ Mueller and Raffaello D’Andrea
+\end_layout
+
+\begin_layout Date
+11 May 2020
+\end_layout
+
+\begin_layout Abstract
+由于旋转流形的限制，包括姿态在内的状态Kalman滤波带来了挑战。标准方法之一是考虑一个偏差姿态，以简化的3元向量参数化的形式，到一些标称参考姿态，由卡尔曼滤波
+器跟踪。在对该偏差的统计信息进行更新之后，执行复位步骤来调整参考姿态。此复位步骤调整偏差的统计信息，这在文献中通常被忽略。本文提出了一种将偏差表示为旋转向量的算
+法。提出了复位操作后均值和协方差的调整，并用蒙特卡罗抽样进行了评估，并与文献中使用的其他方法进行了比较。最终的结果可能很容易实现，并且计算成本很低。与乘法扩展卡
+尔曼滤波(MEKF)、无迹四元数估计(USQUE)和李群卡尔曼滤波(LG-KF)进行了连接和比较，并以刚体为例进行了仿真。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+实时确定刚体的姿态是20世纪60年代太空竞赛期间研究的一个问题[1]，至今仍是一个研究课题[2–6]。由于其计算效率和鲁棒性，Kalman滤波器是许多应用的理想
+选择，并已被用于解决实时姿态估计问题。然而，如文献所示，应用卡尔曼滤波器估计姿态并不是一个简单的问题。这在很大程度上是由于缺乏一个向量空间结构的共同奇点自由姿态
+表示，如欧拉对称参数，今后称为单位四元数，或旋转矩阵。因此，在定义这样一个空间的概率描述时必须小心，更不用说应用Kalman滤波工具了。然而，许多工作[7–14
+]忽略了这一事实，直接应用卡尔曼滤波器来估计姿态的单位四元数参数化。其他人确实指出，这样做的实际后果是病态的，甚至是奇异协方差矩阵[15]。其他工作至少在使用特
+别解决方案的测量更新中规避了这个问题，即对已知产生次优估计的测量值进行预滤波[15–17]，或故意遵守奇异和高度非线性表示(即欧拉角)，以避免上述问题[18]。
+\end_layout
+
+\begin_layout Standard
+文献[19]提出了一种范数约束Kalman滤波器，它直接应用于姿态的单位四元数参数化估计。这是通过确定最小均方误差(MMSE)来进行测量更新的，该最小均方误差产
+生Kalman更新增益，并通过Lagrange乘数受状态的范数约束。这将产生对协方差更新的加性校正，并导致额外的理论和计算复杂性[20]。
+\end_layout
+
+\begin_layout Standard
+另一种方法是考虑将摄动姿态的低维参数化为某个确定性参考姿态，该姿态将由卡尔曼滤波器跟踪；这种方法可归因于1969年的[21]。这一想法引发了大量的研究[2,
+ 3, 22–56]，其中一些研究将这一总体想法扩展到了其他Bayesian推断方案，如粒子滤波。在文献中，这个架构通常被称为乘法(扩展)Kalman滤波器(M
+EKF)、间接Kalman滤波器、序贯Kalman滤波器和误差状态Kalman滤波器。在对该扰动状态的每次更新(通过过程模型和/或测量更新的预测)之后，执行所谓
+的复位步骤，其中调整后复位参考姿态，使得后复位扰动状态为零均值。该复位步骤确保参考姿态代表刚体的平均姿态(见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.2平均姿态"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节；不清楚该解释以前是否在文献中被理解)，但更重要的是，确保扰动姿态状态保持“小”以便远离奇点，可做为旋转的无奇点的自由三元向量参数化的存在[23]。
+\end_layout
+
+\begin_layout Standard
+已经注意到，关于复位步骤之后对统计数据的调整存在混淆[15, 20]。然而，当偏差姿态由Gibbs-Rodrigues向量
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+类似的调整在文献[34]中给出，但是有不同的平方根因子。
+\end_layout
+
+\end_inset
+
+的
+\begin_inset Formula $2$
+\end_inset
+
+倍表示时，文献[15]确实给出了正确的调整。在文献[20]中，通过制定复位问题，提出了旋转向量精确调整的一阶近似，更正式地解决了挥之不去的困惑。类似的一阶变换可
+以在文献[57]中找到。
+\end_layout
+
+\begin_layout Standard
+没有协方差调整(零阶)和一阶近似仍然可以在实践中工作，如文献所示，如果刚体相对于采样时间旋转得不太快，如果测量值与预测的测量值吻合，或者通过调整问题数据。然而，
+仍然会有精度上的损失。与先前的方法相比，使用本文使用全阶复位开发的算法的估计可以预期具有更高的质量(示例可以在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5刚体示例"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中找到)。
+\end_layout
+
+\begin_layout Standard
+在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2旋转"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，讨论了一些关于旋转和概率的预备知识。特别地，将使用旋转向量参数化来建模偏差姿态。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3问题设置和解题方法"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，讨论了一般的估计问题，给出了姿态复位问题的背景。文中还对刚体中常见的旋转运动学进行了详细的分析，并提出了相应的公式，该公式具有离散时间精确的特点。第
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4姿态复位问题及解决方案"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节介绍了全阶姿态复位方法，并与零阶和一阶方法进行了蒙特卡罗和奇异值比较。如果读者只想在MEKF[23]或USQUE[26]的测量更新上实现解决方案，或者在文献
+[20]的基础上升级EKF或UKF的姿态复位，他们可以跳到此节。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5刚体示例"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，考虑了一个示例刚体，提出了各种EKFs和UKFs，并通过仿真将其与文献中的其他方法(例如MEKF、LG-UKF[4]和USQUE)进行了比较。特别是，在
+备注 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "remark4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，为提议的EKF提出了一个计算效率高的方法。
+\end_layout
+
+\begin_layout Section
+旋转
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2旋转"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+参数化和运动学
+\end_layout
+
+\begin_layout Standard
+后面，旋转矩阵将用于表示姿态，以便于后续推导，但在实际实现中，将其替换为单位四元数对应项并不重要。无论哪种情况，只要扰动姿态表示为旋转向量，将要绘制的全阶姿态复
+位映射都保持不变。
+\end_layout
+
+\begin_layout Standard
+旋转集合用
+\begin_inset Formula $\mathcal{SO}(3)=\left\{ R\in\mathbb{R}^{3x3}\mid R^{\top}R=I_{3\times3},\mathrm{det}(R)=1\right\} $
+\end_inset
+
+标志。注意这个集合在矩阵加法下不是封闭的，在矩阵积下也不是交换的。然而，它确实形成了一个由它们的矩阵积构成的旋转组合群[58]。
+\end_layout
+
+\begin_layout Standard
+给定一个三元向量
+\begin_inset Formula $a=\left(a_{1},a_{2},a_{3}\right)\in\mathbb{R}^{3}$
+\end_inset
+
+，设其斜对称矩阵为
+\begin_inset Formula 
+\begin{equation}
+[a\times]:=\left[\begin{array}{ccc}
+0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{array}\right]\in\mathfrak{so}(3)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使得
+\begin_inset Formula $a$
+\end_inset
+
+和另外三元向量
+\begin_inset Formula $b$
+\end_inset
+
+的叉积是
+\begin_inset Formula $a\times b=[a\times]b$
+\end_inset
+
+，因此
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{3x3}$
+\end_inset
+
+中包含的一组斜对称矩阵。类似地，将斜对称矩阵
+\begin_inset Formula $A$
+\end_inset
+
+带到其组成的三元向量的映射用
+\begin_inset Formula $[A]^{\vee}$
+\end_inset
+
+表示，即
+\begin_inset Formula $[[a\times]]^{\vee}=a$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+斜对称矩阵集可以参数化任何旋转[59]，通过扩展，三元向量也可以参数化(因为斜对称矩阵和三元向量是同构的)。这是通过以下映射实现的
+\begin_inset Formula 
+\begin{align}
+\exp:\mathfrak{so}(3) & \rightarrow\mathcal{SO}(3)\\{}
+[a\times] & \mapsto\sum_{k\geq0}\frac{1}{k!}[a\times]^{k}=\begin{cases}
+I_{3\times3}+\frac{\sin(\|a\|)}{\|a\|}[a\times]+\frac{1-\cos(\|a\|)}{\|a\|^{2}}[a\times]^{2}: & \|a\|\neq0\\
+I_{3\times3}: & \text{ else }
+\end{cases}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\|\cdot\|$
+\end_inset
+
+表示向量参数的平方范数。上面的向量
+\begin_inset Formula $a$
+\end_inset
+
+被视为旋转向量。令
+\begin_inset Formula $\log\left(\cdot\right)$
+\end_inset
+
+表示相应的逆映射，得出
+\begin_inset Formula 
+\begin{align}
+\log:\mathcal{SO}(3) & \rightarrow\{[a\times]\in\mathfrak{so}(3)\mid\|a\|<\pi\}\\
+R & \mapsto\sum_{k\geq1}\frac{(-1)^{k+1}}{k}\left(R-I_{3\times3}\right)^{k}=\begin{cases}
+\frac{\theta(R)}{2\sin(\theta(R))}\left(R-R^{\top}\right): & \theta(R)\neq0\\
+0_{3x3}: & \text{ else }
+\end{cases}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta(R):=\cos^{-1}((\mathrm{Tr}(R)-1)/2)$
+\end_inset
+
+。注意，
+\begin_inset Formula $\log(\exp([a\times]))=a$
+\end_inset
+
+仅当
+\begin_inset Formula $\|a\|<\pi$
+\end_inset
+
+时有效，否则将发生回绕。
+\end_layout
+
+\begin_layout Standard
+如需更彻底的论述，请参见文献[58–61]。
+\end_layout
+
+\begin_layout Standard
+考虑姿态
+\begin_inset Formula $R\in\mathcal{SO}(3)$
+\end_inset
+
+的如下表示，表示物体从某个任意坐标系到某个固定坐标系的向前坐标系旋转
+\begin_inset Formula 
+\begin{equation}
+R:=R^{\mathrm{ref}}\exp([\delta\times])\label{eq:6}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\delta$
+\end_inset
+
+可以看作是某个参考旋转
+\begin_inset Formula $R^{\text{ref }}$
+\end_inset
+
+的扰动旋转向量。该旋转向量的动力学如下所示，忽略了对时间
+\begin_inset Formula $t$
+\end_inset
+
+的依赖性[60]：
+\begin_inset Formula 
+\begin{align}
+\dot{\delta} & =\omega+\frac{1}{2}[\delta\times]\omega+\frac{2-\|\delta\|\cot(\|\delta\|/2)}{2\|\delta\|^{2}}[\delta\times]^{2}\omega\label{eq:7}\\
+ & =:\Gamma(\delta)^{-1}\omega\label{eq:8}
+\end{align}
+
+\end_inset
+
+当
+\begin_inset Formula $\|\delta\|=2\pi$
+\end_inset
+
+时，
+\begin_inset Formula $\omega$
+\end_inset
+
+是物体在机体坐标系中的相对角速度，会产生奇异性，并且
+\begin_inset Formula 
+\begin{align}
+\Gamma & :\mathbb{R}^{3}\rightarrow\mathbb{R}^{3\times3}\\
+\delta & \mapsto\Gamma(\delta)=\begin{cases}
+I_{3\times3}-\frac{1-\cos(\|\delta\|)}{\|\delta\|^{2}}[\delta\times]+\frac{\|\delta\|-\sin(\|\delta\|)}{\|\delta\|^{3}}[\delta\times]^{2}: & \|\delta\|\neq0\\
+I_{3\times3}: & \text{ else }
+\end{cases}\label{eq:10}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+有趣的是，映射
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+也将用于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3问题设置和解题方法"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所示的EKF中的Jacobian矩阵，以及第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4姿态复位问题及解决方案"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的姿态复位步骤。此外，对于
+\begin_inset Formula $\|\delta\|\neq0$
+\end_inset
+
+的
+\begin_inset Formula $\Gamma(\delta)$
+\end_inset
+
+可以重写(见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:A"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+这个等价的映射似乎是最近在文献[62]中发现的，使用了一个非常不同的推导。
+\end_layout
+
+\end_inset
+
+)以产生
+\begin_inset Formula 
+\begin{equation}
+\Gamma(\delta)=\frac{1}{\|\delta\|^{2}}\left(\delta\delta^{\top}+[\delta\times]\left(\exp([\delta\times])^{\top}-I_{3\times3}\right)\right)\label{eq:11}
+\end{equation}
+
+\end_inset
+
+如果已经计算了
+\begin_inset Formula $\exp([\delta\times])$
+\end_inset
+
+，与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相比，这将减少计算量，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.2提议EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的情况。
+\end_layout
+
+\begin_layout Standard
+值得注意的是，对于一阶，
+\begin_inset Formula 
+\begin{align}
+\Gamma(\delta) & \approx I_{3\times3}-\frac{1}{2}[\delta\times]\\
+\Gamma(\delta)^{-1} & \approx I_{3\times3}+\frac{1}{2}[\delta\times]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，动力学可以直接在旋转流形上定义，并给出
+\begin_inset Formula 
+\begin{equation}
+\dot{R}=R[\omega\times]\label{eq:14}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+平均姿态
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.2平均姿态"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似于文献[15]中的讨论，如果
+\begin_inset Formula $\delta$
+\end_inset
+
+是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中概率分布函数(PDF)为
+\begin_inset Formula $p_{\delta}(\cdot)$
+\end_inset
+
+的随机三元向量，因此
+\begin_inset Formula $R$
+\end_inset
+
+也是分布为
+\begin_inset Formula $p_{R}(\cdot)$
+\end_inset
+
+的随机变量，则简单地取方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的期望值
+\begin_inset Formula 
+\begin{equation}
+\underset{(R)}{\mathrm{E}}[R]=\underset{(\delta)}{\mathrm{E}}\left[R^{\mathrm{ref}}\exp([\delta\times])\right]=\int_{\mathbb{R}^{3}}R^{\mathrm{ref}}\exp([x\times])p_{\delta}(x)\mathrm{d}x
+\end{equation}
+
+\end_inset
+
+在某种程度上是没有意义的，因为结果不会是一个旋转。这是因为
+\begin_inset Formula $\mathcal{SO}(3)$
+\end_inset
+
+不是向量空间。
+\end_layout
+
+\begin_layout Standard
+因此，给出
+\begin_inset Formula $\delta$
+\end_inset
+
+的概率描述(这将在下一节中由Kalman滤波器完成)，明确平均姿态的定义非常重要。首先考虑向量空间的情形：具有PDF为
+\begin_inset Formula $p_{z}(\cdot)$
+\end_inset
+
+的随机变量
+\begin_inset Formula $z$
+\end_inset
+
+的均值
+\begin_inset Formula $\mu_{z}\in\mathbb{R}^{n}$
+\end_inset
+
+被定义为满足文献[63]的值
+\begin_inset Formula 
+\begin{equation}
+0_{n\times1}=\underset{(z)}{\mathrm{E}}\left[z-\mu_{z}\right]=\int_{\mathbb{R}^{n}}\left(\bar{z}-\mu_{z}\right)p_{z}(\bar{z})\mathrm{d}\bar{z}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，这里的平均姿态被定义为满足以下条件的
+\begin_inset Formula $\mu_{R}\in\mathcal{SO}(3)$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+0_{3\times1}=\underset{(R)}{\mathrm{E}}\left[\left[\log\left(\mu_{R}^{\top}R\right)\right]^{\vee}\right]=\int_{\mathbb{R}^{3}}\left[\log\left(\mu_{R}^{\top}R^{\mathrm{ref}}\exp([x\times])\right)\right]^{\vee}p_{\delta}(x)\mathrm{d}x\label{eq:17}
+\end{equation}
+
+\end_inset
+
+其中无意识统计学家的法则[64]被用来得到右手边。如果
+\begin_inset Formula $\delta$
+\end_inset
+
+是零均值，并且在它的所有随机变量的范数小于
+\begin_inset Formula $\pi$
+\end_inset
+
+的意义上很小，那么
+\begin_inset Formula 
+\begin{equation}
+\int_{\mathbb{R}^{3}}\left[\log\left(\left(R^{\mathrm{ref}}\right)^{\top}R^{\mathrm{ref}}\exp([x\times])\right)\right]^{\vee}p_{\delta}(x)\mathrm{d}x=\int_{\mathbb{R}^{3}}xp_{\delta}(x)\mathrm{d}x=0_{3\times1}\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，在这种情况下，平均姿态是
+\begin_inset Formula $R^{\mathrm{ref}}$
+\end_inset
+
+。这在一定程度上推动了姿态复位步骤，其中
+\begin_inset Formula $\delta$
+\end_inset
+
+的统计信息将以这样的方式传输，以便后复位，平均姿态用
+\begin_inset Formula $R^{\mathrm{ref}}$
+\end_inset
+
+表示，后复位的扰动姿态在零均值意义上很小。例如，当
+\begin_inset Formula $\delta$
+\end_inset
+
+是一个高斯随机三元向量，因此无穷多个变量的范数等于或大于
+\begin_inset Formula $\pi$
+\end_inset
+
+时，那么方程(18)只是一个近似值，尽管如果尾部很小，它是一个很好的近似值。
+\end_layout
+
+\begin_layout Section
+问题设置和解题方法
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3问题设置和解题方法"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑一般的离散时间过程
+\begin_inset Formula 
+\begin{equation}
+\xi[k+1],R[k+1]=\bar{f}_{k}\left(\xi[k],R[k],\eta^{\mathrm{proc}}[k]\right)\label{eq:19}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\eta^{\mathrm{proc}}[k]$
+\end_inset
+
+是一个零均值白噪声过程，
+\begin_inset Formula $\xi[k]$
+\end_inset
+
+和
+\begin_inset Formula $R[k]$
+\end_inset
+
+构成了时间步长
+\begin_inset Formula $k$
+\end_inset
+
+处的系统状态(包括姿态)(两者都是随机变量)。如果系统的动力学本质上是连续的(如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出的
+\begin_inset Formula $R$
+\end_inset
+
+的运动学)，则可以通过适当的离散化方法得到上述结果。
+\end_layout
+
+\begin_layout Standard
+然而，使用旋转向量
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+进行旋转的局部参数化方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是很自然的：
+\begin_inset Formula 
+\begin{equation}
+R[k]:=R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])\label{eq:20}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $R_{k}^{\mathrm{ref}}$
+\end_inset
+
+是时间
+\begin_inset Formula $k$
+\end_inset
+
+处的确定参考姿态(随机序列的时间索引将使用方括号进行，确定性的时间索引将使用下标)。原因如下：
+\end_layout
+
+\begin_layout Itemize
+如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.2平均姿态"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述，在旋转向量存在于向量空间中的情况下，使用
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+的统计量来描述
+\begin_inset Formula $R[k]$
+\end_inset
+
+的统计量是方便的，特别是对于诸如EKF或UKF之类假定Euclidean状态的计算高效的Bayesian跟踪方案。但这并不排除旋转向量，例如Gibbs-Rodr
+igues向量可以如文献[23]所述使用。Gibbs-Rodrigues向量在编码大的不确定性方面也可能更好[15]。然而，使用旋转向量可能更直观，具有很好的特
+性，即
+\begin_inset Formula $\|\delta\|$
+\end_inset
+
+是旋转角度。
+\end_layout
+
+\begin_layout Itemize
+过程模型方程(19)通常涉及连续时间运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的数值积分方案。因此，为了确保数值积分格式不违反
+\begin_inset Formula $R[k]\in\mathcal{SO}(3)$
+\end_inset
+
+的约束，必须执行投影[65]，这增加了复杂性(尽管在单位四元数的情况下较小)。当积分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)时，这不再是一个问题，这可以通过使用旋转向量合成规则[60]通过以下方式来完成，以避免方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的奇异性：
+\begin_inset Formula 
+\begin{equation}
+\delta[k+1]=[\log(\exp([\delta[k]\times])\exp([\bar{\delta}(\Delta t)\times]))]^{\vee}=:f_{\mathrm{rv}}(\delta[k],\bar{\delta}(\Delta t))\label{eq:21}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\bar{\delta}(\Delta t)$
+\end_inset
+
+是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的解，在离散化步长
+\begin_inset Formula $\Delta t$
+\end_inset
+
+下计算，初始条件
+\begin_inset Formula $\bar{\delta}(0)=0$
+\end_inset
+
+。如果
+\begin_inset Formula $\omega(t)$
+\end_inset
+
+在时间间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+内是常数，可能是由于数字陀螺仪传感器的测量，那么
+\begin_inset Formula 
+\begin{equation}
+\delta[k+1]=f_{\mathrm{rv}}\left(\delta[k],\omega\left(t_{k}\right)\Delta t\right)\label{eq:22}
+\end{equation}
+
+\end_inset
+
+即Euler积分方案是精确的，其中
+\begin_inset Formula $t_{k}$
+\end_inset
+
+是对应于离散时间步长
+\begin_inset Formula $k$
+\end_inset
+
+的采样时间(即
+\begin_inset Formula $\omega[k]:=\omega\left(t_{k}\right)$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Itemize
+对于某些应用，如果旋转向量不基于运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，则使用旋转向量来描述传播方程可能更自然(参见例如文献[66, 67]，可以扩展到3D)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，通过使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)被转换为以下形式
+\begin_inset Formula 
+\begin{equation}
+x[k+1]=f_{k}\left(x[k],\eta^{\mathrm{proc}}[k]\right)\label{eq:23}
+\end{equation}
+
+\end_inset
+
+当
+\begin_inset Formula $x[k]:=(\xi[k],\delta[k])\in\mathbb{R}^{n}$
+\end_inset
+
+为新的系统状态时，
+\begin_inset Formula $R_{k}^{\text{ref }}$
+\end_inset
+
+被吸收到函数
+\begin_inset Formula $f_{k}(\cdot,\cdot)$
+\end_inset
+
+中。
+\end_layout
+
+\begin_layout Standard
+此外，假设以下通用测量模型：
+\begin_inset Formula 
+\begin{equation}
+y[k]=h_{k}\left(x[k],\eta^{\text{meas}}[k]\right)\label{eq:24}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $R_{k}^{\text{ref }}$
+\end_inset
+
+被吸收到函数
+\begin_inset Formula $h_{k}(\cdot,\cdot)$
+\end_inset
+
+中。
+\end_layout
+
+\begin_layout Standard
+现在，任何贝叶斯推断方案都可以使用模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来跟踪状态
+\begin_inset Formula $x[k]$
+\end_inset
+
+的统计信息，例如扩展卡尔曼滤波(EKF)或无迹卡尔曼滤波(UKF)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+也可以使用粒子滤波器。尽管如此，人们可以选择直接处理
+\begin_inset Formula $\mathcal{SO}(3)$
+\end_inset
+
+，而不是使用局部参数化方程(6)。然而，使用这种局部参数化和采用姿态复位的好处是通过
+\begin_inset Formula $R_{k}^{\text{ref }}$
+\end_inset
+
+获得(近似)平均姿态，可立即使用方程(30)，并将变换方程(31)应用于每个粒子。此外，本文中的方法可用于混合Kalman粒子滤波方案，参见例如文献[68–72
+]。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "remark1"
+
+\end_inset
+
+如果旋转向量的演化符合精确运动学映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，则EKF需要以下Jacobians矩阵：
+\begin_inset Formula 
+\begin{align}
+\left.\frac{\partial f_{\mathrm{rv}}(\delta,\Delta)}{\partial\delta}\right|_{\delta=0} & =\Gamma(\Delta)^{-1}\exp([\Delta\times])^{\top}\label{eq:25}\\
+\left.\frac{\partial f_{\mathrm{rv}}(\delta,\Delta)}{\partial\Delta}\right|_{\delta=0} & =I_{3\times3}\label{eq:26}
+\end{align}
+
+\end_inset
+
+推导见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。对于非零
+\begin_inset Formula $\delta$
+\end_inset
+
+，很难建立Jacobians矩阵的解析表达式。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来，介绍姿态复位的概念。在
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+的统计量被更新之后，通过先验使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和/或后验使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，然后引入新的确定性姿态
+\begin_inset Formula $R_{k}^{\mathrm{ref},\text{ post }}$
+\end_inset
+
+和随机变量
+\begin_inset Formula $\delta^{\text{post }}[k]$
+\end_inset
+
+，使得
+\begin_inset Formula 
+\begin{equation}
+R[k]=R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])=:R_{k}^{\mathrm{ref},\text{ post }}\exp\left(\left[\delta^{\mathrm{post}}[k]\times\right]\right)\label{eq:27}
+\end{equation}
+
+\end_inset
+
+要求
+\begin_inset Formula $\delta^{\text{post }}[k]$
+\end_inset
+
+为零均值。此后，后复位的变量
+\begin_inset Formula $R_{k}^{\mathrm{ref},\text{ post }}$
+\end_inset
+
+和
+\begin_inset Formula $\delta^{\text{post }}[k]$
+\end_inset
+
+取代前复位的变量
+\begin_inset Formula $R_{k}^{\mathrm{ref}}$
+\end_inset
+
+和
+\begin_inset Formula $δ[k]$
+\end_inset
+
+，Bayesian跟踪方案继续进行。执行这种姿态复位的原因如下：
+\end_layout
+
+\begin_layout Itemize
+如果
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+的传播是使用精确传播方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行的，那么如备注 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "remark1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所述，对于非零平均
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+，EKF中协方差传播所需的Jacobians矩阵很难评估。
+\end_layout
+
+\begin_layout Itemize
+同样，如果传播符合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的要求，那么对于较大的
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+，动力学变得非常非线性(见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ )。因此，对于像EKF或UKF这样的算法来说，最大限度地减小非线性，以便尽可能精确地跟踪统计数据，这是最有意义的文献[68, 73]。
+\end_layout
+
+\begin_layout Itemize
+如果根据连续时间运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的数值积分执行传播，则必须执行复位步骤，以避免
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+及其变量变得足够大以达到奇点。
+\end_layout
+
+\begin_layout Itemize
+如果
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+为零平均值，则根据第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.2平均姿态"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节，通过
+\begin_inset Formula $R_{k}^{\mathrm{ref}}$
+\end_inset
+
+可立即获得平均姿态，而不必使用平均姿态定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)求解。
+\end_layout
+
+\begin_layout Standard
+在任何情况下，滤波器设计者可以选择在任何时候执行姿态复位。然而，对于上面使用运动学进行预测的前两点，作者建议在每个预测和测量更新步骤之后执行姿态复位，如第
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5刚体示例"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节的示例所示。
+\end_layout
+
+\begin_layout Standard
+如文献[20]中所述，如何执行方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的问题可以在下一节中简洁地概括为问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。注意，由此产生的变换也会影响
+\begin_inset Formula $\delta[k]$
+\end_inset
+
+和
+\begin_inset Formula $\xi[k]$
+\end_inset
+
+的交叉统计量。
+\end_layout
+
+\begin_layout Section
+姿态复位问题及解决方案
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4姿态复位问题及解决方案"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{problem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "problem1"
+
+\end_inset
+
+设
+\begin_inset Formula $\delta$
+\end_inset
+
+是一个随机三元向量，其PDF已知，
+\begin_inset Formula $R^{\text{ref }}\in\mathcal{SO}(3)$
+\end_inset
+
+具有某种确定性姿态。确定一个可确定的
+\begin_inset Formula $R^{\mathrm{ref},\mathrm{post}}\in\mathcal{SO}(3)$
+\end_inset
+
+和随机变量
+\begin_inset Formula $\delta^{\mathrm{post}}\in\mathbb{R}^{3}$
+\end_inset
+
+，使得以下为真：
+\begin_inset Formula 
+\begin{align}
+R^{\mathrm{ref}}\exp([\delta\times]) & =R^{\mathrm{ref},\text{ post }}\exp\left(\left[\delta^{\mathrm{post}}\times\right]\right)\label{eq:28}\\
+\underset{\left(\delta^{\text{post }}\right)}{\mathrm{E}}\left[\delta^{\mathrm{post}}\right] & =0_{3\times1}\label{eq:29}
+\end{align}
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{problem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们给出了问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 在
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中一阶的解，即假设
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+很小，但在前复位
+\begin_inset Formula $\delta$
+\end_inset
+
+中为全阶。这是一个合理的假设，因为问题的一部分要求是
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+的均值为零，这是一个“小”的概念。注意，相关工作[20]和间接的工作[57]给出了问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的近似解，另外假设前复位向量
+\begin_inset Formula $\delta$
+\end_inset
+
+很小。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "theorem1"
+
+\end_inset
+
+对于
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中的一阶，问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的解是
+\begin_inset Formula 
+\begin{align}
+R^{\text{ref,post }} & =R^{\text{ref }}\exp([\mu\times])\label{eq:30}\\
+\delta^{\text{post }} & =\Gamma(\mu)(\delta-\mu)\label{eq:31}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mu:=\underset{\left(\delta\right)}{\mathrm{E}}\left[\delta\right]$
+\end_inset
+
+。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:C"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。当
+\begin_inset Formula $\delta$
+\end_inset
+
+代表单位四元数向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍时，类似的结果见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "remark2"
+
+\end_inset
+
+如果第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3问题设置和解题方法"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中提到的状态
+\begin_inset Formula $x[k]$
+\end_inset
+
+被EKF或UKF跟踪，则后复位协方差由下式给出
+\begin_inset Formula 
+\begin{equation}
+\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)\right)\underset{(x[k])}{\mathrm{Var}}[x[k]]\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)^{\top}\right)\label{eq:32}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{diag}(\cdot)$
+\end_inset
+
+通过其参数形成块对角矩阵。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+值得一提的是，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)只适用于前复位
+\begin_inset Formula $\delta$
+\end_inset
+
+(和
+\begin_inset Formula $\delta^{\text{post}}$
+\end_inset
+
+)中的一阶。事实证明，前复位
+\begin_inset Formula $\delta$
+\end_inset
+
+中的全阶也是如此。以往忽略调整后复位协方差的工作可视为将
+\begin_inset Formula $\Gamma(\mu)$
+\end_inset
+
+调整为零阶，即
+\begin_inset Formula 
+\begin{equation}
+\Gamma_{0}(\mu):=I_{3\times3}\approx\Gamma(\mu)\label{eq:33}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，文献[57]，[20]的工作提出的一阶解
+\begin_inset Formula 
+\begin{align}
+\Gamma_{1}(\mu) & :=I_{3\times3}-[\mu\times]/2\approx\Gamma(\mu)\label{eq:34}\\
+\Gamma_{\exp}(\mu) & :=\exp(-[\mu\times]/2)\approx\Gamma(\mu)\label{eq:35}
+\end{align}
+
+\end_inset
+
+分别等于
+\begin_inset Formula $\Gamma(\mu)$
+\end_inset
+
+最多至一阶。
+\end_layout
+
+\begin_layout Subsection
+蒙特卡罗评估
+\end_layout
+
+\begin_layout Standard
+所提出的复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的精确度可以通过蒙特卡罗抽样来量化。此后，规定的
+\begin_inset Formula $_{\mathrm{MC}}(\cdot)$
+\end_inset
+
+将用于表示蒙特卡罗特定变量。前复位
+\begin_inset Formula $_{\mathrm{MC}}\delta$
+\end_inset
+
+是从由
+\begin_inset Formula $l,c\in\mathbb{R}^{3}$
+\end_inset
+
+参数化的概率分布中选取的。后复位
+\begin_inset Formula $_{\mathrm{MC}}\delta^{\text{post }}$
+\end_inset
+
+可按方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算：
+\begin_inset Formula 
+\begin{equation}
+_{\mathrm{MC}}\delta^{\text{post }}:=\left[\log\left(\exp\left(\left[-_{\mathrm{MC}}\mu(l,c)\times\right]\right)\exp\left(\left[_{\mathrm{MC}}\delta\times\right]\right)\right)\right]^{\vee}\label{eq:36}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+_{\mathrm{MC}}\mu(l,c):=\underset{\left(_{\mathrm{MC}}\delta|l,c\right)}{\mathrm{E}}\left[_{\mathrm{MC}}\delta\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $\log(\cdot)$
+\end_inset
+
+算子的使用，
+\begin_inset Formula $_{\mathrm{MC}}\delta^{\text{post }}$
+\end_inset
+
+的所有变量的范数都小于
+\begin_inset Formula $\pi$
+\end_inset
+
+。使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算后复位样本均值和方差，以查看其符合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的程度(
+\begin_inset Formula $n=3$
+\end_inset
+
+)。通过随机生成参数
+\begin_inset Formula $l,c$
+\end_inset
+
+，对
+\begin_inset Formula $_{\mathrm{MC}}\delta$
+\end_inset
+
+的各种概率分布重复该过程，由此构造后复位均值和方差的误差分布。
+\end_layout
+
+\begin_layout Subsubsection
+误差度量
+\end_layout
+
+\begin_layout Standard
+给定
+\begin_inset Formula $l,c\in\mathbb{R}^{3}$
+\end_inset
+
+，
+\begin_inset Formula $_{\mathrm{MC}}\delta$
+\end_inset
+
+的每个分量
+\begin_inset Formula $i\in\{0,1,2\}$
+\end_inset
+
+的PDF给出为
+\begin_inset Formula 
+\begin{equation}
+p_{\mathrm{M}}\delta_{i}|l_{i},c_{i}(x):=U\left(x,c_{i}-l_{i}/2,c_{i}+l_{i}/2\right)
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+U(x,a,b):=\begin{cases}
+1/(b-a): & x\in[a,b]\\
+0: & \text{ else }
+\end{cases}
+\end{equation}
+
+\end_inset
+
+表示均匀分布。假设
+\begin_inset Formula $\|l\|$
+\end_inset
+
+足够小，使用均匀分布是为了避免
+\begin_inset Formula $\log(\cdot)$
+\end_inset
+
+引起的回绕。注意
+\begin_inset Formula $_{\mathrm{MC}}\mu(l,c)=c$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+给定参数
+\begin_inset Formula $l,c$
+\end_inset
+
+，进行
+\begin_inset Formula $2^{20}\approx10^{6}$
+\end_inset
+
+个粒子采样并通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的映射，计算后复位的样本均值
+\begin_inset Formula $_{\mathrm{MC}}\delta_{\text{s,mean}}^{\text{post }}(l,c)$
+\end_inset
+
+和样本协方差
+\begin_inset Formula $_{\mathrm{MC}}\delta_{\text{s,cov}}^{\text{post }}(l,c)$
+\end_inset
+
+，得出以下绝对误差度量
+\begin_inset Formula 
+\begin{align}
+\epsilon_{\text{mean}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\text{s,mean}}^{\text{post }}(l,c)\right\Vert \label{eq:40}\\
+\epsilon_{\text{cov}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\text{s,cov}}^{\text{post }}(l,c)-\Gamma\left(_{\mathrm{MC}}\mu(l,c)\underset{_{\left(_{\mathrm{MC}}\delta|l,c\right)}}{\mathrm{Var}}\left[_{\mathrm{MC}}\delta\right]\Gamma\left(_{\mathrm{MC}}\mu(l,c)\right)^{\top}\right)\right\Vert _{F}\label{eq:41}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\|\cdot\|_{F}$
+\end_inset
+
+表示其矩阵参数的Frobenius范数。
+\end_layout
+
+\begin_layout Subsubsection
+系综蒙特卡罗
+\end_layout
+
+\begin_layout Standard
+我们现在绘制各种
+\begin_inset Formula $l$
+\end_inset
+
+和
+\begin_inset Formula $c$
+\end_inset
+
+来创建平均误差均值
+\begin_inset Formula $\epsilon_{\text{mean}}(l,c)$
+\end_inset
+
+和协方差误差
+\begin_inset Formula $\epsilon_{\text{cov}}(l,c)$
+\end_inset
+
+的集合样本，如下所示：
+\begin_inset Formula 
+\begin{equation}
+p_{l_{i}}(x):=U(x,0,1),\quad i=0,1,2
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{align}
+c & :=\left[\begin{array}{c}
+r\cos(\theta)\cos(\phi)\\
+r\sin(\theta)\cos(\phi)\\
+r\sin(\phi)
+\end{array}\right]\label{eq:43}\\
+p_{\theta}(x) & :=U(x,-\pi,\pi)\\
+p_{\phi}(x) & :=\begin{cases}
+\cos(x)/2: & x\in[-\pi/2,\pi/2]\\
+0: & \text{ else }
+\end{cases}
+\end{align}
+
+\end_inset
+
+使用参数化方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)有效地均匀地对半径为
+\begin_inset Formula $r$
+\end_inset
+
+的球体进行采样。
+\end_layout
+
+\begin_layout Standard
+对于每一个
+\begin_inset Formula $r$
+\end_inset
+
+，为每个固定的
+\begin_inset Formula $r$
+\end_inset
+
+绘制
+\begin_inset Formula $2^{20}\approx10^{6}$
+\end_inset
+
+个
+\begin_inset Formula $l,c$
+\end_inset
+
+样本，因此图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中为每个
+\begin_inset Formula $r$
+\end_inset
+
+绘制了
+\begin_inset Formula $2^{20}$
+\end_inset
+
+个
+\begin_inset Formula $\epsilon_{\text{mean}}(l,c)$
+\end_inset
+
+， 
+\begin_inset Formula $\epsilon_{\text{cov}}(l,c)$
+\end_inset
+
+的值。还将协方差误差与复位映射
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+的零阶和一阶版本进行了比较。由于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在前复位变量中是精确的，所以无论前复位平均值
+\begin_inset Formula $r$
+\end_inset
+
+的大小，后复位平均值误差都非常小。例如，当
+\begin_inset Formula $r=0.1$
+\end_inset
+
+、
+\begin_inset Formula $1$
+\end_inset
+
+和
+\begin_inset Formula $10\,\text{rad}$
+\end_inset
+
+时，95%的样本的平均误差分别小于
+\begin_inset Formula $0.0011$
+\end_inset
+
+、
+\begin_inset Formula $0.0092$
+\end_inset
+
+和
+\begin_inset Formula $0.0060$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure1.jpeg
+	scale 95
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+蒙特卡罗评估：每列代表不同的
+\begin_inset Formula $r$
+\end_inset
+
+值，即平均前复位旋转向量的范数。顶行显示根据每个方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:40"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的绝对平均误差；底行使用近似和精确的
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+映射显示根据每个方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的绝对协方差误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于旋转，只报告角度取模
+\begin_inset Formula $\pi$
+\end_inset
+
+是有意义的，但是，例如，如果直接积分运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，或者如果旋转向量的演化不是基于运动学，则角度可能更大。
+\end_layout
+
+\begin_layout Standard
+全阶映射的协方差误差始终很小，并且明显优于零阶和一阶映射，尤其是在较大的前复位平均值情况下。例如，在
+\begin_inset Formula $95\%$
+\end_inset
+
+处误差见表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:1"
+
+\end_inset
+
+在
+\begin_inset Formula $95\%$
+\end_inset
+
+处的绝对协方差误差
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Formula 
+\[
+\begin{array}{lcll}
+\hline\hline  & \multicolumn{3}{c}{r,\mathrm{rad}}\\
+\cline{2-4} & 0.1 & 1.0 & 10\\
+\hline \Gamma_{0}(\cdot) & 0.0044 & 0.042 & 0.085\\
+\Gamma_{1}(\cdot) & 0.00034 & 0.028 & 2.1\\
+\Gamma_{\exp}(\cdot) & 0.00019 & 0.0069 & 0.086\\
+\Gamma(\cdot) & 0.00017 & 0.00018 & 0.000092
+\\\hline\hline \end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $0.1$
+\end_inset
+
+的小
+\begin_inset Formula $r$
+\end_inset
+
+，一阶映射和全阶映射有相同数量级的误差，全阶方法比
+\begin_inset Formula $\Gamma_{1}(\cdot)$
+\end_inset
+
+好
+\begin_inset Formula $2$
+\end_inset
+
+倍。然而，对于
+\begin_inset Formula $r=1$
+\end_inset
+
+和
+\begin_inset Formula $10$
+\end_inset
+
+，情况并非如此，因为全阶方法在数量级上优于其他方法。
+\end_layout
+
+\begin_layout Subsection
+封闭式比较
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:4.2封闭式比较"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过奇异值分析，可以将映射
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+与零阶和一阶方法进行比较。设
+\begin_inset Formula 
+\begin{align}
+\ensuremath{E_{0}(\mu)} & :=\Gamma(\mu)-\Gamma_{0}(\mu)\\
+ & =-\frac{1-\cos(\|\mu\|)}{\|\mu\|^{2}}[\mu\times]+\frac{\|\mu\|-\sin(\|\mu\|)}{\|\mu\|^{3}}[\mu\times]^{2}\\
+E_{1}(\mu) & :=\Gamma(\mu)-\Gamma_{1}(\mu)\\
+ & =\left(-\frac{1-\cos(\|\mu\|)}{\|\mu\|^{2}}+\frac{1}{2}\right)[\mu\times]+\frac{\|\mu\|-\sin(\|\mu\|)}{\|\mu\|^{3}}[\mu\times]^{2}\\
+E_{\exp}(\mu) & :=\Gamma(\mu)-\Gamma_{\exp}(\mu)\\
+ & =\left(-\frac{1-\cos(\|\mu\|)}{\|\mu\|^{2}}+\frac{\sin(\|\mu\|/2)}{\|\mu\|}\right)[\mu\times]+\left(\frac{\|\mu\|-\sin(\|\mu\|)}{\|\mu\|^{3}}-\frac{1-\cos(\|\mu\|/2)}{\|\mu\|^{2}}\right)[\mu\times]^{2}
+\end{align}
+
+\end_inset
+
+为误差矩阵，当
+\begin_inset Formula $\mu\neq0$
+\end_inset
+
+时，全阶复位矩阵
+\begin_inset Formula $\Gamma(\mu)$
+\end_inset
+
+与文献中使用的相应近似之间的差。一个合理的标量度量是谱范数(或最大奇异值)，由文献[74]给出
+\begin_inset Formula 
+\begin{equation}
+\epsilon_{i}(\mu):=\left\Vert E_{i}(\mu)\right\Vert :=\max_{\|x\|=1}\left\Vert E_{i}(\mu)x\right\Vert =\sqrt{\lambda_{\max}\left(E_{i}(\mu)^{\top}E_{i}(\mu)\right)},\quad i\in\{0,1,\exp\}\label{eq:52}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\lambda_{\max}(\cdot)$
+\end_inset
+
+表示其矩阵参数的最大特征值。
+\end_layout
+
+\begin_layout Standard
+观察到对于一些标量
+\begin_inset Formula $c_{1}$
+\end_inset
+
+和
+\begin_inset Formula $c_{2}$
+\end_inset
+
+，两个误差矩阵都具有
+\begin_inset Formula $c_{1}[\mu\times]+c_{2}[\mu\times]^{2}$
+\end_inset
+
+的结构，下面的事实将被证明是有用的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{fact}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fact1"
+
+\end_inset
+
+设
+\begin_inset Formula $\mu\in\mathbb{R}^{3}$
+\end_inset
+
+。形式为
+\begin_inset Formula 
+\begin{equation}
+\left(c_{1}[\mu\times]+c_{2}[\mu\times]^{2}\right)^{\top}\left(c_{1}[\mu\times]+c_{2}[\mu\times]^{2}\right)
+\end{equation}
+
+\end_inset
+
+的矩阵的特征值-特征向量对由表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 给出，其中
+\begin_inset Formula $\mu^{\perp}$
+\end_inset
+
+是满足
+\begin_inset Formula $\mu^{T}\mu^{\perp}=0$
+\end_inset
+
+的向量。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{fact}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:2"
+
+\end_inset
+
+方程(53)的特征值和特征向量
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\begin{array}{lc}
+\hline\hline \text{ Eigenvalue } & \text{ Eigenvector }\\
+\hline 0 & \mu\\
+\left(c_{1}\|\mu\|\right)^{2}+\left(c_{2}\|\mu\|^{2}\right)^{2} & \mu^{\perp}
+\\\hline\hline \end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+可通过直接替换进行验证。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此根据事实 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fact1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ ，
+\begin_inset Formula 
+\begin{align}
+\epsilon_{0}(\mu) & =\frac{1}{\|\mu\|}\sqrt{\|\mu\|^{2}-2\|\mu\|\sin(\|\mu\|)-2\cos(\|\mu\|)+2}\\
+\epsilon_{1}(\mu) & =\frac{1}{2\|\mu\|}\sqrt{\|\mu\|^{4}+4\|\mu\|^{2}\cos(\|\mu\|)-8\|\mu\|\sin(\|\mu\|)-8\cos(\|\mu\|)+8}\\
+\epsilon_{\exp}(\mu) & =1-\frac{2\sin(\|\mu\|/2)}{\|\mu\|}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，这些误差并不取决于参数
+\begin_inset Formula $\mu$
+\end_inset
+
+的方向，而只取决于其量级。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了上述误差项的曲线图。有趣的是，在某些领域，零阶映射比一阶方法更精确，这与图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的结果一致。值得注意的是，对于小
+\begin_inset Formula $\|\mu\|$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align}
+\epsilon_{0}(\mu) & \approx\|\mu\|/2\\
+\epsilon_{1}(\mu) & \approx\|\mu\|^{2}/6\\
+\epsilon_{\exp}(\mu) & \approx\|\mu\|^{2}/24
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure2.jpeg
+	scale 95
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+全阶姿态复位矩阵
+\begin_inset Formula $\Gamma(\mu)$
+\end_inset
+
+与其零阶/一阶近似(如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:52"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所定义)之间的差值在旋转向量变元的不同量级上的谱范数。放大的绘图显示在右侧。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+粗略地说，对于前复位平均值不大的Kalman滤波应用，即在预测步骤中，采样时间足够小或者运动本身很慢，并且在测量更新中由于测量而引起的校正很小，一阶映射
+\begin_inset Formula $\Gamma_{1}(\cdot)$
+\end_inset
+
+将是非常好的近似值。此外，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:112"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出的级数的附加项可用于更好的近似。然而，当计算开销不成问题时，应始终使用全阶映射
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+，其已经具有很小的复杂性(并且与
+\begin_inset Formula $\Gamma_{\exp}(\cdot)$
+\end_inset
+
+相同的复杂性)，以提高精度。对于已经在姿态复位中使用零阶或一阶映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的EKF/UKF的实现，用
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+进行简单的替换产生到全阶姿态复位的升级。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "remark3"
+
+\end_inset
+
+虽然EKF分别将平均值和协方差传播近似为一阶和三阶[73]，但低阶姿态复位(独立地)会增加额外的误差源。例如，测量更新仍可能导致估计状态的大幅跳变，因此全阶协方
+差复位将有助于减轻总体统计跟踪误差；示例见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5刚体示例"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节。这也可以在表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中看到，其中对于
+\begin_inset Formula $1\,\text{rad}$
+\end_inset
+
+的前复位平均值，
+\begin_inset Formula $\Gamma_{1}(\cdot)$
+\end_inset
+
+的在
+\begin_inset Formula $95\%$
+\end_inset
+
+处的协方差误差是全阶
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+的在
+\begin_inset Formula $95\%$
+\end_inset
+
+处的协方差误差的
+\begin_inset Formula $156$
+\end_inset
+
+倍。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+刚体示例
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5刚体示例"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+系统
+\end_layout
+
+\begin_layout Standard
+考虑以下刚体系统：
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:60"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\dot{p}(t) & =v(t)\label{eq:60a}\\
+\dot{v}(t) & =R(t)a(t)\label{eq:60b}\\
+\dot{R}(t) & =R(t)[\omega(t)\times]\label{eq:60c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中
+\begin_inset Formula $p(t)\in\mathbb{R}^{3}$
+\end_inset
+
+为位置，
+\begin_inset Formula $v(t)\in\mathbb{R}^{3}$
+\end_inset
+
+为速度，
+\begin_inset Formula $R(t)\in\mathcal{SO}(3),a(t):=(1|\cos(t)|,10|\sin(t)|,100|\cos(t)|)\mathrm{m}/\mathrm{s}^{2}$
+\end_inset
+
+为机体坐标系加速度向量，
+\begin_inset Formula $\omega(t):=(10|\sin(t)|,1|\cos(t)|,0.1|\sin(t)|)\mathrm{rad}/\mathrm{s}$
+\end_inset
+
+为机体坐标系角速度。采用“嵌入式Runge-Kutta Prince-Dormand”方法对系统进行了数值模拟[75]。初始条件设为
+\begin_inset Formula $p(0):=(100,100,100)\mathrm{m},v(0):=(10,10,10)\mathrm{m}/\mathrm{s}$
+\end_inset
+
+，并且
+\begin_inset Formula $R(0):=\exp([(0,0,\pi/2)\times])$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+每个估计器将有一个读取
+\begin_inset Formula $a(t)$
+\end_inset
+
+的无噪声加速计传感器和一个读取
+\begin_inset Formula $\omega(t)$
+\end_inset
+
+但被零平均白噪声破坏的陀螺仪传感器，每个轴的方差为
+\begin_inset Formula $0.01~\mathrm{rad}^{2}/\mathrm{s}^{2}$
+\end_inset
+
+。两个传感器都是数字的，以
+\begin_inset Formula $1000\mathrm{~Hz}$
+\end_inset
+
+的频率读取。此外，类似GPS的传感器提供
+\begin_inset Formula $10\mathrm{~Hz}$
+\end_inset
+
+的位置读数，并且还受到零平均白噪声的破坏，每个轴的方差为
+\begin_inset Formula $100\mathrm{~m}^{2}$
+\end_inset
+
+。可以证明系统是(局部)可观测的。所有的噪声都是由高斯分布产生的。所有的估计器被初始化为初始位置和速度为零，初始姿态由单位矩阵给出。
+\end_layout
+
+\begin_layout Standard
+模拟和测试的所有滤波器的源代码可在补充材料S1中找到。
+\end_layout
+
+\begin_layout Subsection
+提议EKF
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.2提议EKF"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用
+\begin_inset Formula $\Delta t=0.001\,s$
+\end_inset
+
+的采样率对系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行离散化。离散化模型使用简单欧拉积分和精确旋转传播方程(22)的组合：
+\begin_inset Formula 
+\begin{equation}
+\underbrace{\left[\begin{array}{l}
+p[k+1]\\
+v[k+1]\\
+\delta[k+1]
+\end{array}\right]}_{=:x[k+1]}=\underbrace{\left[\begin{array}{c}
+p[k]+v[k]\Delta t+R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])a_{k}\Delta t^{2}/2\\
+v[k]+R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])a_{k}\Delta t\\
+f_{\mathrm{rv}}\left(\delta[k],\left(\omega[k]+\eta_{\omega}[k]\right)\Delta t\right)
+\end{array}\right]}_{=:f_{k}\left(x[k],\eta_{\omega}[k]\right)}\label{eq:61}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{Var}\left[\eta_{\omega}[k]\right]=0.01I_{3\times3}$
+\end_inset
+
+，并且
+\begin_inset Formula $a_{k}$
+\end_inset
+
+是在时间步长
+\begin_inset Formula $k$
+\end_inset
+
+处测得的确定性机体坐标系加速度。现在应用标准EKF方程[73]，我们得到了平均预测步长：
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:62"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\hat{p}_{k+1\mid k} & =\hat{p}_{k\mid k}+\hat{v}_{k||k}\Delta t+R_{k}^{\text{ref }}a_{k}\Delta t^{2}/2\label{eq:62a}\\
+\hat{v}_{k+1\mid k} & =\hat{v}_{k\mid k}+R_{k}^{\text{ef }}a_{k}\Delta\tau\label{eq:62b}\\
+\hat{\delta}_{k+1\mid k} & =f_{rv}\left(\hat{\delta}_{k\mid k},\bar{\omega}_{k}^{\text{meas }}\Delta t\right)=\overline{\omega_{k}^{\text{meas }}}\Delta t\label{eq:62c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中，
+\begin_inset Formula $\overline{\omega_{k}^{\text{meas }}}$
+\end_inset
+
+是随机测量的实现(注意，如果没有关于角速度的先验知识，则给出先验平均值)，在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:62c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，假设
+\begin_inset Formula $\hat{\delta}_{k\mid k}=0$
+\end_inset
+
+，即刚在手之前进行了姿态复位。协方差传播由下式给出
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:63"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\hat{P}_{k+1\mid k} & =A_{k}\hat{P}_{k\mid k}A_{k}^{\top}+Q\label{eq:63a}\\
+A_{k} & =\left[\begin{array}{l|c|c}
+I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\right]\Delta t^{2}/2\\
+\hline 0_{3\times3} & I_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\right]\Delta t\\
+\hline 0_{3\times3} & 0_{3\times3} & \Gamma\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\text{meas }}}\Delta t\times\right]\right)
+\end{array}\right]\label{eq:63b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中，
+\begin_inset Formula $\hat{P}_{k+1\mid k}$
+\end_inset
+
+是状态
+\begin_inset Formula $x[k+1]$
+\end_inset
+
+的先验协方差的估计，其中
+\begin_inset Formula $\hat{P}_{0\mid0}:=\mathrm{diag}\left(I_{6\times6},0.1I_{3\times3}\right)$
+\end_inset
+
+表示该估计量和所有后续估计量，并且
+\begin_inset Formula $Q=\mathrm{diag}\left(0_{6\times6},0.01\Delta t^{2}I_{3\times3}\right)$
+\end_inset
+
+。接下来，按如下方式应用姿态复位：
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:64"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+R_{k+1}^{\mathrm{ref}} & =R_{k}^{\mathrm{ref}}\exp\left(\left[\hat{\delta}_{k+1\mid k}\times\right]\right)\label{eq:64a}\\
+\hat{P}_{k+1\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)\right)\hat{P}_{k+1\mid k}\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)^{\top}\right)\label{eq:64b}\\
+\hat{\delta}_{k+1\mid k} & \leftarrow0\label{eq:64c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "remark4"
+
+\end_inset
+
+可以组合传播方程方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:62"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，其中方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+与Jacobian矩阵
+\begin_inset Formula $A_{k}$
+\end_inset
+
+中的
+\begin_inset Formula $\Gamma(\cdot)^{-1}$
+\end_inset
+
+相消，得到以下合并传播方程：
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:65"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\hat{p}_{k+1\mid k} & =\hat{p}_{k\mid k}+\hat{v}_{k\mid k}\Delta t+R_{k}^{\mathrm{ref}}a_{k}\Delta t^{2}/2\label{eq:65a}\\
+\hat{v}_{k+1\mid k} & =\hat{v}_{k\mid k}+R_{k}^{\mathrm{ref}}a_{k}\Delta\tau\label{eq:65b}\\
+\hat{\delta}_{k+1\mid k} & =0\label{eq:65c}\\
+R_{k+1}^{\mathrm{ref}} & =R_{k}^{\mathrm{ref}}\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)\label{eq:65d}\\
+\hat{P}_{k+1\mid k} & =\bar{A}_{k}\hat{P}_{k\mid k}\bar{A}_{k}^{\top}+\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\right)Q\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{\top}\right)\label{eq:65e}\\
+\bar{A}_{k} & =\left[\begin{array}{c|c|c}
+I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t^{2}/2\\
+\hline 0_{3\times3} & I_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t\\
+\hline 0_{3\times3} & 0_{3\times3} & \exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)^{\top}
+\end{array}\right]\label{eq:65f}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了提高计算效率，应首先计算在
+\begin_inset Formula $\bar{A}_{k}$
+\end_inset
+
+中的
+\begin_inset Formula $\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)^{\top}$
+\end_inset
+
+项，接着是
+\begin_inset Formula $\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{\top}$
+\end_inset
+
+，对于
+\begin_inset Formula $Q$
+\end_inset
+
+上的变换，可以使用紧映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)有效地进行计算。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+后验，或测量更新，给出为
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:66"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\left[\begin{array}{r}
+\hat{p}_{k\mid k}\\
+\hat{v}_{k\mid k}\\
+\hat{\delta}_{k\mid k}
+\end{array}\right] & =\left[\begin{array}{c}
+\hat{p}_{k\mid k-1}\\
+\hat{v}_{k\mid k-1}\\
+0_{3\times1}
+\end{array}\right]+K_{k}\left(\overline{y_{k}^{\text{meas }}}-p_{k\mid k-1}\right)\label{eq:66a}\\
+\hat{P}_{k\mid k} & =\left(I_{9\times9}-K_{k}\right)\hat{P}_{k\mid k-1}\label{eq:66b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中，
+\begin_inset Formula $C=\left[\begin{array}{l|l|l}
+I_{3\times3} & 0_{3\times3} & 0_{3\times3}\end{array}\right]$
+\end_inset
+
+，并且
+\begin_inset Formula $K_{k}$
+\end_inset
+
+是使用标准KF方程的Kalman增益[73]。之后，再次应用姿态复位：
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:67"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+R_{k}^{\mathrm{ref}} & \leftarrow R_{k}^{\mathrm{ref}}\exp\left(\left[\hat{\delta}_{k\mid k}\times\right]\right)\label{eq:67a}\\
+\hat{P}_{k\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)\right)\hat{P}_{k\mid k}\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)^{\top}\right)\label{eq:67b}\\
+\hat{\delta}_{k\mid k} & \leftarrow0\label{eq:67c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该算法在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“ekf-zoh-reset-F”，因为它是基于角速度零阶保持假设的精确传播映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的EKF，并使用全阶(F)姿态复位。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "remark5"
+
+\end_inset
+
+可以表明，本文中提出的EKF在应用于提出的模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)时等效于文献[76]中的LG-EKF。不同之处在于推导，这里是直接在姿态的上下文中使用姿态复位的视角来完成的。这可能使得更容易为其他系统制定EKFs，例如，某
+些固有的离散时间过程模型直接用于旋转向量，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3问题设置和解题方法"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述，允许直接实现而无需进一步推导。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+其它EKF
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.3其它EKF"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一种常见的EKF方法是使用旋转向量运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的近似值来模拟
+\begin_inset Formula $\delta$
+\end_inset
+
+的传播[52, 54–56, 77]：
+\begin_inset Formula 
+\begin{equation}
+\delta[k+1]=\delta[k]+\left(I_{3\times3}+[\delta[k]\times]/2\right)\left(\left(\omega[k]+\eta_{\omega}[k]\right)\Delta t\right)\label{eq:68}
+\end{equation}
+
+\end_inset
+
+并且在预测方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中执行姿态复位步骤时，使用一阶近似
+\begin_inset Formula $\Gamma(\cdot)\approx\Gamma_{1}(\cdot)$
+\end_inset
+
+。这导致平均传播与方程(62)相同。协方差传播的不同之处在于，在方程方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:63"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中
+\begin_inset Formula $A_{k}$
+\end_inset
+
+的
+\begin_inset Formula $\Gamma\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\text{meas }}}\Delta t\times\right]\right)$
+\end_inset
+
+项被用近似
+\begin_inset Formula $I_{3\times3}-\left[\overline{\omega_{k}^{\text{meas }}}\times\right]\Delta t/2$
+\end_inset
+
+代替。测量更新与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同，应用测量更新后的姿态复位步骤方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，再次使用一阶近似
+\begin_inset Formula $\Gamma(\cdot)\approx\Gamma_{1}(\cdot)$
+\end_inset
+
+。该算法在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“ekf-euler-reset-1”，因为滤波方程相当于使用旋转向量方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的连续时间运动学的Euler离散化，并且使用协方差复位的一阶近似(在预测和测量更新期间)。
+\end_layout
+
+\begin_layout Standard
+另一个常见的变体是采用“ekf-euler-reset-1”滤波器并且省略测量后协方差复位步骤方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并且被称为“ekf-euler-reset-0”。
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了上述EKFs的估计器性能。两者都能够恢复系统状态，但很明显，完整的命令“ekf-zoh-reset-F”能够更快、更一致地完成这项工作，并且传播更少。有
+趣的是，如果初始速度误差增加，使得
+\begin_inset Formula $v(0)=(100,100,100)\mathrm{m}/\mathrm{s}$
+\end_inset
+
+，那么“ekf-euler-reset-1”完全失效；见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。这里发生的是协方差矩阵的条件变差，当应用协方差复位时，如果
+\begin_inset Formula $\delta$
+\end_inset
+
+在
+\begin_inset Formula $\Gamma_{1}(\delta)$
+\end_inset
+
+中变大，就会发生这种情况。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure3.png
+	scale 32
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.2提议EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ - 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.3其它EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的EKFs的位置、速度和姿态误差。进行了100次模拟，实线表示中值，阴影区域表示
+\begin_inset Formula $25\%$
+\end_inset
+
+到
+\begin_inset Formula $75\%$
+\end_inset
+
+的区域。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure4.png
+	scale 32
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.2提议EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ - 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.3其它EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的EKFs的位置、速度和姿态误差，但
+\begin_inset Formula $v(0)=(100,100,100)\mathrm{m}/\mathrm{s}$
+\end_inset
+
+。进行了100次模拟，实线表示中值，阴影区域表示
+\begin_inset Formula $25\%$
+\end_inset
+
+到
+\begin_inset Formula $75\%$
+\end_inset
+
+的区域。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+MEKF
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.4MEKF"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+原始设计
+\end_layout
+
+\begin_layout Standard
+文献[23]中的MEKF算法是在连续时间内制定的，适用于实例刚体系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。为了简单和一致，平均传播采用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65d"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)离散时间实现。协方差传播适应于系统，产生
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:69"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\dot{\hat{P}}(t) & =F(t)\hat{P}(t)+\hat{P}(t)F(t)^{\top}+Q_{c}\label{eq:69a}\\
+F(t) & =\left[\begin{array}{c|c|c}
+0_{3\times3} & I_{3\times3} & 0_{3\times3}\\
+\hline 0_{3\times3} & 0_{3\times3} & -R_{k}^{\mathrm{ref}}\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\left(t-t_{k}\right)\times\right]\right)\left[a_{k}\times\right]\\
+\hline 0_{3\times3} & 0_{3\times3} & \left[-\overline{\omega_{k}^{\mathrm{meas}}}\times\right]
+\end{array}\right]\label{eq:69b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+并且
+\begin_inset Formula $Q_{c}=\mathrm{diag}\left(0_{6\times6},0.01\Delta tI_{3\times3}\right)$
+\end_inset
+
+[73]。由于协方差传播是在连续时间内形成的，因此它们是使用Euler积分方案实现的，如文献[78]，在连续离散时间步长之间，步长为
+\begin_inset Formula $\Delta t_{\text{mekf }}$
+\end_inset
+
+(参见算法1)。计算和实现方面有利于使用这样一个简单的集成方案，更精确的集成将产生更准确的结果；参数
+\begin_inset Formula $\Delta t_{\text{mekf }}$
+\end_inset
+
+将被改变以探索这一点。注意，在预测步骤中没有显式的姿态复位步骤，因为这已经隐式地完成了。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:1"
+
+\end_inset
+
+MEKF协方差传播的Euler积分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:69"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+REQUIRE 协方差矩阵$
+\backslash
+hat{P}_{k
+\backslash
+mid k}$，采样加速度计和陀螺仪测量值$a_{k}$，$
+\backslash
+overline{
+\backslash
+omega_{k}^{
+\backslash
+mathrm{meas}}}$，参考姿态$R_{k}^{
+\backslash
+mathrm{ref}}$，积分步长$
+\backslash
+Delta t_{
+\backslash
+text{mekf }}$，离散化时间步长$
+\backslash
+Delta t$。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENSURE 先验协方差矩阵$
+\backslash
+hat{P}_{k+1
+\backslash
+mid k}$。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{P}_{k+1\mid k}\leftarrow\hat{P}_{k\mid k}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $N\leftarrow\Delta t/\Delta t_{\text{mekf }}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$j 
+\backslash
+leftarrow 1$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $F\leftarrow\left[\begin{array}{c|c|c}
+0_{3\times3} & I_{3\times3} & 0_{3\times3}\\
+\hline 0_{3\times3} & 0_{3\times3} & -R_{k}^{\mathrm{ref}}\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\left(t-t_{k}\right)\times\right]\right)\left[a_{k}\times\right]\\
+\hline 0_{3\times3} & 0_{3\times3} & \left[-\overline{\omega_{k}^{\mathrm{meas}}}\times\right]
+\end{array}\right]$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{P}_{k+1\mid k}\leftarrow\hat{P}_{k\mid k}+\left(F\hat{P}_{k\mid k}+\hat{P}_{k\mid k}F^{\top}+Q_{c}\right)\Delta t_{\text{mekf }}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量更新与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同。更新之后的姿态复位也与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同，只是协方差复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)没有发生。这个滤波器在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“mekf-0”。
+\end_layout
+
+\begin_layout Subsubsection
+提议的修改
+\end_layout
+
+\begin_layout Standard
+在测量更新之后的姿态复位中，执行步骤方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。此滤波器称为“mekf-F”。另一种变体是在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中使用一阶近似
+\begin_inset Formula $\Gamma(\cdot)\approx\Gamma_{1}(\cdot)$
+\end_inset
+
+，称为“mekf-1”。
+\end_layout
+
+\begin_layout Standard
+如文献[23]所述，由于用于导出滤波器的近似，MEKF中的偏差姿态
+\begin_inset Formula $\delta$
+\end_inset
+
+可以解释为迄今为止的旋转向量、Gibbs-Rodrigues向量的
+\begin_inset Formula $2$
+\end_inset
+
+倍或单位四元数的向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍。因此，在测量更新方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)之后，测试姿态复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的两个附加版本：第一个是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\exp(\cdot)$
+\end_inset
+
+映射替换为
+\begin_inset Formula $\exp^{\mathrm{G}}(\cdot)$
+\end_inset
+
+，将Gibbs-Rodrigues向量映射到旋转流形(参见例如文献[23, 方程(18b)]，在协方差复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+替换为
+\begin_inset Formula $\Gamma^{\mathrm{G}}(\cdot)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+\Gamma^{\mathrm{G}}(\delta)=\frac{1}{1+\|\delta\|^{2}/4}\left(I_{3\times3}-[\delta\times]/2\right)\label{eq:70}
+\end{equation}
+
+\end_inset
+
+其证明见文献[15]的附录。此滤波器变体称为“mekf-G”。
+\end_layout
+
+\begin_layout Standard
+类似地，另一个变体是用
+\begin_inset Formula $\exp^{\mathrm{qv}}(\cdot)$
+\end_inset
+
+替换方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\exp(\cdot)$
+\end_inset
+
+映射，将单位四元数的向量部分映射
+\begin_inset Formula $2$
+\end_inset
+
+倍到旋转流形(参见例如文献[23, 方程(18d)])，并且将协方差复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+替换为
+\begin_inset Formula $\Gamma^{\mathrm{qv}}(\cdot)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+\Gamma^{\mathrm{qv}}(\delta)=\frac{1}{\sqrt{1-\|\delta\|^{2}/4}}\left(I_{3\times3}+[\delta\times]^{2}/4\right)-[\delta\times]/2\label{eq:71}
+\end{equation}
+
+\end_inset
+
+其证明见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 。请注意，
+\begin_inset Formula $\Gamma^{\mathrm{qv}}(\cdot)$
+\end_inset
+
+具有奇点，且对于
+\begin_inset Formula $\left\Vert \delta\right\Vert \geq4$
+\end_inset
+
+定义不清，这可能会导致问题，因为在应用大复位的应用中，会创建病态协方差矩阵。这种滤波器变体称为“mekf-qv”。
+\end_layout
+
+\begin_layout Standard
+结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。MEKF对用于求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:69"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的积分方案很敏感，因为左图中使用较大的
+\begin_inset Formula $\Delta t_{\text{mekf }}$
+\end_inset
+
+会导致所有MEKF变体的性能比“ekf-zoh-reset-F”差。与图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中先前的结果类似，一阶“mekf-1”和“mekf-qv”导致条件较差的协方差矩阵，从而导致估计器失败，即使“mekf-0”仍然能够恢复状态轨迹(大体上)。“
+mekf-G”也有很好的表现，尽管它比“ekf-zoh-reset-F”有更多的传播。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure4.jpeg
+	scale 83
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.4MEKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述的各种姿态复位的MEKF的位置、速度和姿态误差。进行了
+\begin_inset Formula $100$
+\end_inset
+
+次模拟，实线表示中值，阴影区域表示
+\begin_inset Formula $25\%$
+\end_inset
+
+到
+\begin_inset Formula $75\%$
+\end_inset
+
+的区域。左图为
+\begin_inset Formula $\Delta t_{\text{mekf }}=\Delta t=0.001\,s$
+\end_inset
+
+；右图为
+\begin_inset Formula $\Delta t_{\text{mekf }}=\Delta t/100=0.00001\,s$
+\end_inset
+
+，计算时间约为
+\begin_inset Formula $100$
+\end_inset
+
+倍。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.2提议EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的“ekf-zoh-reset-F”仅供参考。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用连续时间运动学和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的四元数等价，导出了MEKF的协方差传播。这与“ekf-zoh-reset-F”的方法相反，“ekf-zoh-reset-F”使用精确的离散化映射直接在离散时
+间中导出协方差传播方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。因此，预计MEKF性能(使用正确的姿态复位)接近“ekf-zoh-reset-F”的性能，极限为
+\begin_inset Formula $\Delta t_{\text{mekf }}\rightarrow0$
+\end_inset
+
+，尽管对于MEKF来说这意味着计算复杂度的增加[26]。这正是图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 右侧较小的
+\begin_inset Formula $\Delta t_{\text{mekf }}$
+\end_inset
+
+所发生的情况，现在全阶变体“mekf-F”、“mekf-G”和“mekf-qv”在平均性能和一致性方面的表现与“ekf-zoh-reset-F”类似，同时优于“
+mekf-0”和“mekf-1”变体。
+\end_layout
+
+\begin_layout Subsection
+提议UKF
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.5提议UKF"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+首先，使用状态协方差
+\begin_inset Formula $\hat{P}_{k\mid k}$
+\end_inset
+
+和任何sigma点生成方法[73, 79]，为系统方程(61)生成sigma点
+\begin_inset Formula $x_{k\mid k}^{(i)}=\left(p_{k\mid k}^{(i)},v_{k\mid k}^{(i)},\delta_{k\mid k}^{(i)}\right),i=0,\ldots,2n$
+\end_inset
+
+(本例中
+\begin_inset Formula $n=9$
+\end_inset
+
+)。由于过程噪声在动力学映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中是非加性的，因此系统状态可以被增强以包括过程噪声，在这种情况下产生
+\begin_inset Formula $6$
+\end_inset
+
+个额外的sigma点。然而，为了简单和与后面讨论的其他UKFs保持一致，将使用标准EKF方法合并过程噪声。sigma点向前传播：
+\begin_inset Formula 
+\begin{equation}
+x_{k+1\mid k}^{(i)}:=f_{k}\left(x_{k\mid k}^{(i)},0\right),\quad i=0,\ldots,2n
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后取平均先验状态作为加权和
+\begin_inset Formula 
+\begin{equation}
+\hat{x}_{k+1\mid k}:=\sum_{i=0}^{2n}w_{m}^{(i)}x_{k+1\mid k}^{(i)}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $w_{m}^{(i)}$
+\end_inset
+
+是加权系数[73, 79]。类似地，估计先验协方差
+\begin_inset Formula 
+\begin{equation}
+\hat{P}_{k+1\mid k}:=\sum_{i=0}^{2n}w_{c}^{(i)}\left(x_{k+1\mid k}^{(i)}-\hat{x}_{k+1\mid k}\right)\left(x_{k+1\mid k}^{(i)}-\hat{x}_{k+1\mid k}\right)^{\top}+Q
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $Q=\mathrm{diag}\left(0_{6\times6},0.01\Delta t^{2}I_{3\times3}\right)$
+\end_inset
+
+与之前相同，
+\begin_inset Formula $w_{c}^{(i)}$
+\end_inset
+
+是加权系数[73, 79]。现在继续进行后预测姿态复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+这里提出的姿态复位是真正的一阶后复位偏差姿态。因此，对于预期姿态存在较大不确定性的情况，LG-UKF可能表现更好。然而，提议的UKF可以被看作是对文献[20,
+ 53]中方法的升级。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+由于测量模型在系统状态下是线性的，因此测量更新与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同。应用测量后姿态复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。此滤波器在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“ukf-zoh-reset-F”。
+\end_layout
+
+\begin_layout Subsection
+LG-UKF
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.6LG-UKF"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+文献[4]中的LG-UKF算法适用于实例刚体系统。传播方程与上一小节类似，只是旋转的sigma点直接在
+\begin_inset Formula $\mathcal{SO}(3)$
+\end_inset
+
+上计算，如下所示：
+\begin_inset Formula 
+\begin{equation}
+R_{k+1\mid k}^{(i)}=R_{k}^{\mathrm{ref}}\exp\left(\left[\delta_{k\mid k}^{(i)}\times\right]\right)\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right),\quad i=0,\ldots,2n
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+平均旋转
+\begin_inset Formula $R_{k}^{\mathrm{ref}}$
+\end_inset
+
+通过文献[4, 算法1]进行数值计算，写于附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:E"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的算法使用本文的约定。协方差传播计算如下：
+\begin_inset Formula 
+\begin{align}
+\hat{P}_{k+1\mid k} & :=\sum_{i=0}^{2n}w_{c}^{(i)}d^{(i)}d^{(i)^{\top}}+Q\\
+d^{(i)} & :=\left(p_{k+1\mid k}^{(i)}-\hat{p}_{k+1\mid k},v_{k+1\mid k}^{(i)}-\hat{v}_{k+1\mid k},\left[\log\left(\left(R_{k+1}^{\mathrm{ref}}\right)^{-1}R_{k+1\mid k}^{(i)}\right)\right]^{\vee}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+不执行姿态复位，因为这是隐式执行的。此外，请注意，过程噪声协方差矩阵
+\begin_inset Formula $Q$
+\end_inset
+
+未经变换，其中使用了近似值
+\begin_inset Formula $\Gamma\left(\bar{\omega}_{k}^{\text{meas }}\Delta t\right)\approx\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)$
+\end_inset
+
+，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:4.2封闭式比较"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所示，这是小
+\begin_inset Formula $\overline{\omega_{k}^{\mathrm{meas}}}\Delta t$
+\end_inset
+
+的一个非常好的近似值。这与
+\begin_inset Formula $Q$
+\end_inset
+
+是对角的(如文献[4]所示，在本例中也如此)，与这一事实相结合，得到了
+\begin_inset Formula $\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)\right)Q\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)\right)^{\top}=Q$
+\end_inset
+
+。但是，对于非各向同性过程噪声，这是不正确的。
+\end_layout
+
+\begin_layout Standard
+测量更新与之前的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同。此滤波器在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“lg-ukf”。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename gilJGCD20-figure6.png
+	scale 32
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.5提议UKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ - 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.7USQUE"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的UKFs的位置、速度和姿态误差。进行了100次模拟，实线表示中值，阴影区域表示
+\begin_inset Formula $25\%$
+\end_inset
+
+到
+\begin_inset Formula $75\%$
+\end_inset
+
+的区域。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:5.2提议EKF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的“ekf-zoh-reset-F”仅供参考。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+USQUE
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:5.7USQUE"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+原始设计
+\end_layout
+
+\begin_layout Standard
+文献[26]中给出的USQUE适用于示例刚体系统。如最初使用广义Rodrigues参数所示，本文将使用Gibbs-Rodrigues向量的
+\begin_inset Formula $2$
+\end_inset
+
+倍。因此，系统模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中用于传播位置和速度sigma点的
+\begin_inset Formula $\exp(\cdot)$
+\end_inset
+
+映射被
+\begin_inset Formula $\exp^{\mathrm{G}}(\cdot)$
+\end_inset
+
+映射替换。旋转sigma点传播如下：
+\begin_inset Formula 
+\begin{equation}
+R_{k+1\mid k}^{(i)}:=R_{k}^{\mathrm{ref}}\exp^{\mathrm{G}}\left(\left[\delta_{k\mid k}^{(i)}\times\right]\right)\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right),\quad i=0,\ldots,2n
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，根据文献[26]的方程(36)和方程(37a)，可以假定
+\begin_inset Formula $R_{k+1\mid k}^{(0)}$
+\end_inset
+
+代表平均先验姿态，因此
+\begin_inset Formula $R_{k+1}^{\mathrm{ref}}:=R_{k+1\mid k}^{(0)}$
+\end_inset
+
+。由于
+\begin_inset Formula $\hat{\delta}_{k\mid k}^{(0)}=0$
+\end_inset
+
+，这本质上意味着USQUE对平均姿态传播进行EKF近似(参见方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:65d"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))。协方差传播计算如下：
+\begin_inset Formula 
+\begin{align}
+\hat{P}_{k+1\mid k} & :=\sum_{i=0}^{2n}w_{c}^{(i)}d^{(i)}d^{(i)^{\top}}+Q\label{eq:79}\\
+d^{(i)} & :=\left(p_{k+1\mid k}^{(i)}-\hat{p}_{k+1\mid k},v_{k+1\mid k}^{(i)}-\hat{v}_{k+1\mid k},\left[\log^{\mathrm{G}}\left(\left(R_{k+1}^{\mathrm{ref}}\right)^{-1}R_{k+1\mid k}^{(i)}\right)\right]^{\vee}\right)
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\log^{\mathrm{G}}(\cdot)$
+\end_inset
+
+将
+\begin_inset Formula $\mathcal{SO}(3)$
+\end_inset
+
+上的旋转元素映射回Gibbs-Rodridgues向量的
+\begin_inset Formula $2$
+\end_inset
+
+倍(参见例如文献[26, 方程(20)])。因此，USQUE与LG-UKF非常相似，只是平均姿态传播使用EKF近似，并且偏差姿态
+\begin_inset Formula $\delta$
+\end_inset
+
+被视为Gibbs-Rodrigues向量(或广义Rodrigues参数)的
+\begin_inset Formula $2$
+\end_inset
+
+倍。同样，没有对过程噪声协方差矩阵
+\begin_inset Formula $Q$
+\end_inset
+
+应用变换(注意，文献[26]确实提出了一种使用梯形积分方案积分
+\begin_inset Formula $Q_{c}$
+\end_inset
+
+的方法，并且假设
+\begin_inset Formula $\omega\Delta t$
+\end_inset
+
+很小，这将导致在传播步骤中生成sigma点时向
+\begin_inset Formula $\hat{P}_{k\mid k}$
+\end_inset
+
+添加因子
+\begin_inset Formula $Q/2$
+\end_inset
+
+，在本例中用相同的因子替换方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $Q$
+\end_inset
+
+)。测量更新与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中之前相同，并且姿态复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\exp(\cdot)$
+\end_inset
+
+被
+\begin_inset Formula $\exp^{G}(\cdot)$
+\end_inset
+
+替换，只是协方差复位方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)没有发生。此滤波器在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中称为“usque-0”。
+\end_layout
+
+\begin_layout Subsubsection
+提议的修改
+\end_layout
+
+\begin_layout Standard
+一个明显的修改是在测量更新方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)后执行协方差调整，用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出的Gibbs版本
+\begin_inset Formula $\Gamma^{\mathrm{G}}(\cdot)$
+\end_inset
+
+替换
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+，将被称为“usque-G”。另一种方法是另外执行UKF平均传播，这可以通过使用LG-UKF之类的方法或使用所提议的UKF之类的姿态复位方法对传播的平均值进行数
+值求解来完成。然而，本文对此也没有进行探讨。
+\end_layout
+
+\begin_layout Standard
+上述UKFs的结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。使用文献[73, 第 14.2 节]中概述的方案生成sigma点，并应用文献[79]中
+\begin_inset Formula $\alpha=1$
+\end_inset
+
+和
+\begin_inset Formula $\beta=2$
+\end_inset
+
+的比例。“ekf-zoh-reset-F”、“ukf-zoh-reset-F”、“lg-ukf”和“usque-G”的行为相似，在平均误差和一致性方面都优于“u
+sque-0”。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 建立了前复位和后复位姿态误差状态之间的关系，前者为全阶，后者为一阶。这可以在EKF和UKF中用于涉及姿态的一般问题设置。所提出的全阶复位步骤和所提出的EKF和
+UKF算法计算效率高，易于实现。全命令复位还提供了免费升级到任何零或一阶变种在实践中使用。比较了MEKF和USQUE采用不同的姿态复位方案，表明全阶复位是有益的
+。
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+等价
+\begin_inset Formula $\Gamma(\cdot)$
+\end_inset
+
+映射
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:A"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据文献[74, 事实3.5.25]，
+\begin_inset Formula $[a\times]^{2}=aa^{\top}-\|a\|^{2}I_{3\times3}$
+\end_inset
+
+，因此方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以重写为
+\begin_inset Formula 
+\begin{equation}
+\Gamma(a)=\frac{\sin(\|a\|)}{\|a\|}I_{3\times3}-\frac{1-\cos(\|a\|)}{\|a\|^{2}}[a\times]+\frac{\|a\|-\sin(\|a\|)}{\|a\|^{3}}aa^{\top}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+重新排列，
+\begin_inset Formula 
+\begin{equation}
+\Gamma(a)=\frac{1}{\|a\|^{2}}aa^{\top}+\frac{\sin(\|a\|)}{\|a\|^{3}}\left(-aa^{\top}+\|a\|^{2}I_{3\times3}\right)-\frac{1-\cos(\|a\|)}{\|a\|^{2}}[a\times]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+再次根据文献[74, 事实3.5.25]，
+\begin_inset Formula $[a\times]^{3}=-\|a\|^{2}[a\times]$
+\end_inset
+
+，因此
+\begin_inset Formula 
+\begin{align}
+\Gamma(a) & =\frac{1}{\|a\|^{2}}aa^{\top}+\frac{\sin(\|a\|)}{\|a\|^{3}}\left(-[a\times]^{2}\right)+\frac{1-\cos(\|a\|)}{\|a\|^{4}}[a\times]^{3}\\
+ & =\frac{1}{\|a\|^{2}}aa^{\top}+\frac{1}{\|a\|^{2}}[a\times]\left(-\frac{\sin(\|a\|)}{\|a\|}[a\times]+\frac{1-\cos(\|a\|)}{\|a\|^{2}}[a\times]^{2}\right)\\
+ & =\frac{1}{\|a\|^{2}}aa^{\top}+\frac{1}{\|a\|^{2}}[a\times]\left(\exp([-a\times])-I_{3\times3}\right)\\
+ & =\frac{1}{\|a\|^{2}}aa^{\top}+\frac{1}{\|a\|^{2}}[a\times]\left(\exp([a\times])^{\top}-I_{3\times3}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的推导
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:B"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lemma}
+\end_layout
+
+\end_inset
+
+如果
+\begin_inset Formula $X,Y,Z\in\mathfrak{so}(3)$
+\end_inset
+
+有
+\begin_inset Formula 
+\begin{equation}
+\exp(Z)=\exp(X)\exp(Y)
+\end{equation}
+
+\end_inset
+
+则
+\begin_inset Formula 
+\begin{align}
+Z & =X+\frac{-\mathrm{ad}_{X}}{\exp\left(-\mathrm{ad}_{X}\right)-1}(Y)+O\left(Y^{2}\right)\label{eq:88}\\
+ & =Y+\frac{\mathrm{ad}_{Y}}{\exp\left(\mathrm{ad}_{Y}\right)-1}(X)+O\left(X^{2}\right)\label{eq:89}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+表示矩阵李群伴随映射
+\begin_inset Formula $\mathrm{ad}_{X}(Y):=XY-YX$
+\end_inset
+
+，
+\begin_inset Formula $\mathrm{ad}_{X}$
+\end_inset
+
+的
+\begin_inset Formula $k$
+\end_inset
+
+次幂表示其从
+\begin_inset Formula $\mathrm{ad}_{X}^{0}(Y)=Y$
+\end_inset
+
+以来第
+\begin_inset Formula $k$
+\end_inset
+
+次迭代，并且
+\begin_inset Formula $\exp(A)=\sum_{k\geq0}\frac{1}{k!}A^{k}$
+\end_inset
+
+。参见文献[61]进行更彻底的讨论。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:88"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可通过对文献[61]的Baker-Campbell-Hausdorff (BCH)方程(5.8)的积分形式进行直接操作而获得。
+\end_layout
+
+\begin_layout Standard
+对于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:89"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，从以下内容开始：
+\begin_inset Formula 
+\begin{equation}
+\exp(Z(t))=\exp(tX)\exp(Y)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+目标是使用
+\begin_inset Formula $Z(0)=Y$
+\end_inset
+
+确定
+\begin_inset Formula $Z(1)$
+\end_inset
+
+，注意
+\begin_inset Formula $Z$
+\end_inset
+
+对
+\begin_inset Formula $Z(t)$
+\end_inset
+
+的符号的轻微滥用。取导数，从文献[61, 方程(5.11)]我们得到
+\begin_inset Formula 
+\begin{align}
+\frac{\mathrm{d}\exp(Z(t))}{\mathrm{d}t}=\exp(Z(t))\frac{1-\exp\left(-\mathrm{ad}_{Z(t)}\right)}{\mathrm{ad}_{Z(t)}}(\dot{Z}(t)) & =X\exp(tX)\exp(Y)\\
+ & =X\exp(Z(t))
+\end{align}
+
+\end_inset
+
+因此，
+\begin_inset Formula 
+\begin{align}
+\frac{1-\exp\left(-\mathrm{ad}_{Z(t)}\right)}{\mathrm{ad}_{Z(t)}}(\dot{Z}(t)) & =\exp(-Z(t))X\exp(Z(t))\\
+ & =\mathrm{Ad}_{\exp(-Z(t))}(X)\\
+ & =\exp\left(-\mathrm{ad}_{Z(t)}\right)(X)
+\end{align}
+
+\end_inset
+
+其中使用了文献[61, 提案3.35]。因此，
+\begin_inset Formula 
+\begin{align}
+\dot{Z}(t) & =\frac{\mathrm{ad}_{Z(t)}}{1-\exp\left(-\mathrm{ad}_{Z(t)}\right)}\exp\left(-\mathrm{ad}_{Z(t)}\right)(X)\\
+ & =\frac{\mathrm{ad}_{Z(t)}}{\exp\left(\mathrm{ad}_{Z(t)}\right)-1}(X)\\
+ & =\frac{\log\left(\exp\left(\mathrm{ad}_{tX}\right)\exp\left(\mathrm{ad}_{Y}\right)\right)}{\exp\left(\mathrm{ad}_{tX}\right)\exp\left(\mathrm{ad}_{Y}\right)-1}(X)\\
+ & =\bar{g}\left(\exp\left(\mathrm{ad}_{tX}\right)\exp\left(\mathrm{ad}_{Y}\right)\right)(X)
+\end{align}
+
+\end_inset
+
+其中使用了文献[61, 定理3.28]，
+\begin_inset Formula $\log(A):=\sum_{k\geq1}\frac{(-1)^{k+1}}{k}(A-I)^{k}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{g}(A):=\sum_{k\geq0}\frac{(-1)^{k}}{k+1}(A-I)^{k}$
+\end_inset
+
+。因此，BCH的另一种积分形式为
+\begin_inset Formula 
+\begin{equation}
+Z=Y+\int_{0}^{1}\bar{g}\left(\exp\left(\mathrm{ad}_{tX}\right)\exp\left(\mathrm{ad}_{Y}\right)\right)(X)\mathrm{d}t
+\end{equation}
+
+\end_inset
+
+并因此通过执行直接的操作产生方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:89"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:89"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)变为
+\begin_inset Formula 
+\begin{equation}
+f_{\mathrm{rv}}(\delta,\Delta)=\Delta+[\underbrace{\frac{\mathrm{ad}_{[\Delta\times]}}{\exp\left(\mathrm{ad}_{[\Delta\times]}\right)-1}([\delta\times])}_{=:[\xi\times]}+O\left([\delta\times]^{2}\right)]^{\vee}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\Delta:=\bar{\delta}(\Delta t)$
+\end_inset
+
+为表示简洁。解中间项，
+\begin_inset Formula 
+\begin{align}
+\left(\frac{\left(\exp\left(\mathrm{ad}_{[\Delta\times]}\right)-1\right)}{\mathrm{ad}_{[\Delta\times]}}\right)[\xi\times] & =[\delta\times]\\
+\left(\exp\left(\mathrm{ad}_{[\Delta\times]}\right)\frac{\left(1-\exp\left(-\mathrm{ad}_{[\Delta x]}\right)\right)}{\mathrm{ad}_{[\Delta x]}}\right)[\xi\times] & =
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意到
+\begin_inset Formula 
+\begin{align}
+\left[\mathrm{ad}_{[x\times]}([y\times])\right]^{\vee} & =[([x\times][y\times]-[y\times][x\times])]^{\vee}\\
+ & =[x\times]y\\
+\Leftrightarrow\left[\mathrm{ad}_{[x\times]}^{k}([y\times])\right]^{\vee} & =[x\times]^{k}y
+\end{align}
+
+\end_inset
+
+其中第二个方程来自文献[74, 事实3.5.25]。因此，
+\begin_inset Formula 
+\begin{align}
+\left[\left(\exp\left(\mathrm{ad}_{[\Delta x]}\right)\frac{1-\exp\left(-\mathrm{ad}_{[\Delta x]}\right)}{\mathrm{ad}_{[\Delta x]}}\right)[\xi\times]\right]^{\vee} & =\delta\\
+\left(\exp([\Delta\times])\frac{1-\exp(-[\Delta\times])}{[\Delta\times]}\right)\xi & =\label{eq:108}\\
+\exp([\Delta\times])\Gamma(\Delta)\xi & =\label{eq:109}\\
+\Leftrightarrow\xi & =\Gamma(\Delta)^{-1}\exp(-[\Delta\times])\delta
+\end{align}
+
+\end_inset
+
+其中，对于从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:108"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:109"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的步骤，使用以下方程
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+类似的关系也可以在文献[80, 81]中找到，无需推导。
+\end_layout
+
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+\frac{1-\exp(-[\Delta x])}{[\Delta x]} & =\frac{I-\sum_{k\geq0}(-[\Delta\times])^{k}/k!}{[\Delta\times]}\\
+ & =\sum_{k\geq0}\frac{(-1)^{k}}{(k+1)!}[\Delta\times]^{k}\label{eq:112}\\
+ & =\sum_{k\geq0}\left(\frac{(-1)^{2k}}{(2k+1)!}[\Delta\times]^{2k}+\frac{(-1)^{2k+1}}{(2k+2)!}[\Delta x]^{2k+1}\right)\label{eq:113}\\
+ & =\left(I_{3\times3}+\sum_{k\geq1}\frac{(-1)^{3k-1}\|\Delta\|^{2k-2}}{(2k+1)!}[\Delta x]^{2}+\sum_{k\geq0}\frac{(-1)^{3k+1}\|\Delta\|^{2k}}{(2k+2)!}[\Delta\times]\right)\label{eq:114}\\
+ & =\left(I_{3\times3}+\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k}}{(2k+3)!}[\Delta x]^{2}+\sum_{k\geq1}\frac{(-1)^{k}\|\Delta\|^{2k-2}}{(2k)!}[\Delta\times]\right)\\
+ & ={\scriptstyle \left(I_{3\times3}+\frac{1}{\|\Delta\|^{2}}\left(1-\frac{1}{\|\Delta\|}\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k+1}}{(2k+1)!}\right)[\Delta\times]^{2}+\frac{1}{\|\Delta\|^{2}}\left(\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k}}{(2k)!}-1\right)[\Delta\times]\right)}\\
+ & =\left(I_{3\times3}+\frac{1}{\|\Delta\|^{2}}\left(1-\frac{1}{\|\Delta\|}\sin(\|\Delta\|)\right)[\Delta\times]^{2}+\frac{1}{\|\Delta\|^{2}}(\cos(\|\Delta\|)-1)[\Delta\times]\right)\\
+ & =\Gamma(\Delta)\label{eq:118}
+\end{align}
+
+\end_inset
+
+其中，以下步骤用于从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:113"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:114"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的步骤：
+\begin_inset Formula 
+\begin{align}
+[x\times]^{2k+1} & =(-1)^{k}\|x\|^{2k}[x\times],\quad k=0,1,2,\ldots\\{}
+[x\times]^{2k} & =(-1)^{k-1}\|x\|^{2k-2}[x\times]^{2},\quad k=1,2,\ldots
+\end{align}
+
+\end_inset
+
+因此，
+\begin_inset Formula 
+\begin{equation}
+f_{\mathrm{rv}}(\delta,\Delta)=\Delta+\Gamma(\Delta)^{-1}\exp([\Delta\times])^{\top}\delta+\left[O\left([\delta\times]^{2}\right)\right]^{\vee}\label{eq:121}
+\end{equation}
+
+\end_inset
+
+从中可得到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。注意，从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:121"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)开始，映射中的非线性随着
+\begin_inset Formula $\delta$
+\end_inset
+
+的增加而增加。
+\end_layout
+
+\begin_layout Section
+问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的解
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:C"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $R^{\text{ref }},R^{\text{ref,post }}\in\mathcal{S}O(3)$
+\end_inset
+
+，存在一些确定性的
+\begin_inset Formula $\mu\in\mathbb{R}^{3}$
+\end_inset
+
+，使得
+\begin_inset Formula 
+\begin{equation}
+R^{\mathrm{ref}}\exp([\mu\times])=R^{\mathrm{ref},\mathrm{post}}
+\end{equation}
+
+\end_inset
+
+因此，
+\begin_inset Formula 
+\begin{align}
+R^{\mathrm{ref}}\exp([\delta\times]) & =R^{\mathrm{ref},\mathrm{post}}\exp\left(\left[\delta^{\mathrm{post}}\times\right]\right)\\
+\Rightarrow\exp([\delta\times]) & =\exp([\mu\times])\exp\left(\left[\delta^{\mathrm{post}}\times\right]\right)\label{eq:124}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:88"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula 
+\[
+\begin{array}{l}
+[\delta\times]=[\mu\times]+\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\text{post }}\times\right]\right)+O\left(\left[\delta^{\text{post }}\times\right]^{2}\right)\\
+\Rightarrow\delta=\mu+\left[\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\mathrm{post}}\times\right]\right)+O\left(\left[\delta^{\mathrm{post}}\times\right]^{2}\right)\right]^{\vee}
+\end{array}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+[\delta\times] & =[\mu\times]+\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\text{post }}\times\right]\right)+O\left(\left[\delta^{\text{post }}\times\right]^{2}\right)\\
+\Rightarrow\delta & =\mu+\left[\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\mathrm{post}}\times\right]\right)+O\left(\left[\delta^{\mathrm{post}}\times\right]^{2}\right)\right]^{\vee}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+去掉
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中的高阶项，
+\begin_inset Formula 
+\begin{equation}
+\delta\approx\mu+\frac{[\mu\times]}{I-\exp([-\mu\times])}\delta^{\text{post }}
+\end{equation}
+
+\end_inset
+
+因此，
+\begin_inset Formula 
+\begin{align}
+\delta^{\text{post }} & \approx\frac{I-\exp([-\mu\times])}{[\mu\times]}(\delta-\mu)\\
+ & =\Gamma(\mu)(\delta-\mu)
+\end{align}
+
+\end_inset
+
+其中使用了方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:118"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。上述在随机变量
+\begin_inset Formula $\delta$
+\end_inset
+
+和
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中是线性的，因此约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)意味着
+\begin_inset Formula $\mu=\underset{(\delta)}{\mathrm{E}[\delta]}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+当
+\begin_inset Formula $\delta$
+\end_inset
+
+是单位四元数向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍时的问题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "problem1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的解
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:D"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+重新排列方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:124"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)并使用四元数代数[82]，
+\begin_inset Formula 
+\begin{equation}
+q\left(\delta^{\text{post }}\right)=q(-\mu)\odot q(\delta)
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula 
+\begin{align}
+q:\left\{ x\in\mathbb{R}^{3}\mid\|x\|\leq2\right\}  & \rightarrow\left\{ (a,v),a\in\mathbb{R},v\in\mathbb{R}^{3}\mid\left|a\right|^{2}+\|v\|^{2}=1\right\} \\
+x & \mapsto\left[\begin{array}{l}
+a\\
+v
+\end{array}\right]=\frac{1}{2}\left[\begin{array}{c}
+\sqrt{4-\|x\|^{2}}\\
+x
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+将一个单位四元数的向量部分的
+\begin_inset Formula $2$
+\end_inset
+
+倍映射到另一个单位四元数[23]，并且
+\begin_inset Formula 
+\begin{equation}
+q_{1}\odot q_{2}=\left(a_{1},v_{1}\right)\odot\left(a_{2},v_{2}\right)=\left[\begin{array}{c}
+a_{1}a_{2}-v_{1}^{\top}v_{2}\\
+a_{1}v_{2}+a_{2}v_{1}+v_{1}\times v_{2}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula 
+\begin{align}
+a_{\delta}^{\text{post }} & =a_{\mu}a_{\delta}+\mu^{\top}\delta/4\\
+\delta^{\text{post }} & =a_{\mu}\delta-a_{\delta}\mu+\delta\times\mu/2
+\end{align}
+
+\end_inset
+
+其中，
+\begin_inset Formula $a_{\mu}=\sqrt{1-\|\mu\|^{2}/4}$
+\end_inset
+
+和
+\begin_inset Formula $a_{\delta}=\sqrt{1-\|\delta\|^{2}/4}$
+\end_inset
+
+。继续，
+\begin_inset Formula 
+\begin{align}
+\delta^{\text{post }} & =\frac{a_{\mu}^{2}\delta-a_{\mu}a_{\delta}\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(a_{\delta}^{\text{post }}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(\sqrt{1-\left\Vert \delta^{\text{post }}\right\Vert ^{2}/4}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(1+O\left(\left\Vert \delta^{\text{post }}\right\Vert ^{2}\right)-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如同在附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:C"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的一样，去掉了
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中的高阶项，
+\begin_inset Formula 
+\begin{align}
+\delta^{\mathrm{post}} & \approx\frac{a_{\mu}^{2}\delta-\left(1-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{\left(1-\|\mu\|^{2}/4\right)\delta-\left(1-\mu^{\top}\delta/4\right)\mu}{\sqrt{1-\|\mu\|^{2}/4}}-\mu\times\delta/2
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用文献[74, 事实3.5.25]，
+\begin_inset Formula $[\mu\times]^{2}=\mu\mu^{\top}-\|\mu\|^{2}I_{3\times3}$
+\end_inset
+
+，并注意到
+\begin_inset Formula $[\mu\times]\mu=0$
+\end_inset
+
+，上述方程变换为
+\begin_inset Formula 
+\begin{equation}
+\delta^{\text{post }}\approx\Gamma^{\mathrm{qv}}(\mu)(\delta-\mu)
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\Gamma^{\mathrm{qv}}(\cdot)$
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出。上述在随机变量
+\begin_inset Formula $\delta$
+\end_inset
+
+和
+\begin_inset Formula $\delta^{\text{post }}$
+\end_inset
+
+中是线性的，因此约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)意味着
+\begin_inset Formula $\mu=\underset{(\delta)}{\mathrm{E}}[\delta]$
+\end_inset
+
+。作者想感谢其中一位审查者指出这个结果。
+\end_layout
+
+\begin_layout Section
+LG-UKF平均姿态的计算
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:E"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:2"
+
+\end_inset
+
+
+\begin_inset Formula $\mathcal{SO}(3)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+上的加权内禀均值。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+REQUIRE 旋转集合$R^{(i)}$具有相关权重，$w_{m}^{(i)},i=0,
+\backslash
+ldots,n$，并有整数$N>0$。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENSURE 加权平均$R^{
+\backslash
+text {ref }}$。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $R^{\text{ref }}\leftarrow R^{(0)}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$j 
+\backslash
+leftarrow 0$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{array}{l}
+\Delta\leftarrow\sum_{i=0}^{n}w_{m}^{(i)}\log\left(R^{\mathrm{ref}^{-1}}R^{(i)}\right)\end{array}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $R^{\mathrm{ref}}\leftarrow R^{\mathrm{ref}}\exp(\Delta)$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+;
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Grewal, M.
+ S., and Andrews, A.
+ P., “Applications of Kalman filtering in aerospace 1960 to the present [historic
+al perspectives],” IEEE Control Systems Magazine, Vol.
+ 30, No.
+ 3, 2010, pp.
+ 69–78.
+ doi:10.1109/MCS.2010.936465.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Stovner, B.
+ N., Johansen, T.
+ A., Fossen, T.
+ I., and Schjølberg, I., “Attitude estimation by multiplicative exogenous
+ Kalman filter,” Automatica, Vol.
+ 95, 2018, pp.
+ 347 – 355.
+ doi:10.1016/j.automatica.2018.05.038.
+\end_layout
+
+\begin_layout Enumerate
+Eliahu, D.
+ S., Elkaim, G.
+ H., and Curry, R.
+ E., “A Two-stage multiplicative Kalman filter for attitude estimation of
+ the human wrist,” IEEE/ION Position, Location and Navigation Symposium,
+ 2018, pp.
+ 666–672.
+ doi:10.1109/PLANS.2018.8373441.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Kang, D., Jang, C., and Park, F.
+ C., “Unscented Kalman Filtering for Simultaneous Estimation of Attitude
+ and Gyroscope Bias,” IEEE/ASME Transactions on Mechatronics, Vol.
+ 24, No.
+ 1, 2019, pp.
+ 350–360.
+ doi:10.1109/TMECH.2019.2891776.
+\end_layout
+
+\begin_layout Enumerate
+Chiella, A.
+ C.
+ B., Teixeira, B.
+ O.
+ S., and Pereira, G.
+ A.
+ S., “Quaternion-Based Robust Attitude Estimation Using an Adaptive Unscented
+ Kalman Filter,” Sensors, Vol.
+ 19, No.
+ 10, 2019.
+ doi:10.3390/s19102372.
+\end_layout
+
+\begin_layout Enumerate
+Bernal-Polo, P., and Martínez-Barberá, H., “Kalman Filtering for Attitude
+ Estimation with Quaternions and Concepts from Manifold Theory,” Sensors,
+ Vol.
+ 19, No.
+ 1, 2019.
+ doi:10.3390/s19010149.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Yun, X., and Bachmann, E.
+ R., “Design, implementation, and experimental results of a quaternion-based
+ Kalman filter for human body motion tracking,” IEEE Transactions on Robotics,
+ Vol.
+ 22, No.
+ 6, 2006, pp.
+ 1216–1227.
+ doi:10.1109/TRO.2006.886270.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Sabatini, A.
+ M., “Quaternion-based extended Kalman filter for determining orientation
+ by inertial and magnetic sensing,” IEEE Transactions on Biomedical Engineering,
+ Vol.
+ 53, No.
+ 7, 2006, pp.
+ 1346–1356.
+ doi:10.1109/TBME.2006.875664.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Kingston, D., and Beard, R., “Real-time attitude and position estimation for
+ small UAVs using Low-cost Sensors,” AIAA 3rd "Unmanned Unlimited" Technical
+ Conference, Workshop and Exhibit, 2004, p.
+ 6488.
+ doi:10.2514/6.2004-6488.
+\end_layout
+
+\begin_layout Enumerate
+de Marina, H.
+ G., Pereda, F.
+ J., Giron-Sierra, J.
+ M., and Espinosa, F., “UAV attitude estimation using unscented Kalman filter
+ and TRIAD,” IEEE Transactions on Industrial Electronics, Vol.
+ 59, No.
+ 11, 2012, pp.
+ 4465–4474.
+ doi:10.1109/TIE.2011.2163913.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Yun, X., Lizarraga, M., Bachmann, E.
+ R., and McGhee, R.
+ B., “An improved quaternion-based Kalman filter for real-time tracking of
+ rigid body orientation,” IEEE/RSJ International Conference on Intelligent
+ Robots and Systems, Vol.
+ 2, 2003, pp.
+ 1074–1079 vol.2.
+ doi:10.1109/IROS.2003.1248787.
+\end_layout
+
+\begin_layout Enumerate
+Bar-Itzhack, I., and Oshman, Y., “Attitude determination from vector observations:
+ quaternion estimation,” IEEE Transactions on Aerospace and Electronic Systems,
+ Vol.
+ AES-21, No.
+ 1, 1985, pp.
+ 128–136.
+ doi:10.1109/TAES.1985.310546.
+\end_layout
+
+\begin_layout Enumerate
+Marins, J.
+ L., Yun, X., Bachmann, E.
+ R., McGhee, R.
+ B., and Zyda, M.
+ J., “An extended Kalman filter for quaternion-based orientation estimation
+ using MARG sensors,” IEEE/RSJ International Conference on Intelligent Robots
+ and Systems., Vol.
+ 4, 2001, pp.
+ 2003–2011 vol.4.
+ doi:10.1109/IROS.2001.976367.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Feng, K., Li, J., Zhang, X., Shen, C., Bi, Y., Zheng, T., and Liu, J., “A New Quaternio
+n-Based Kalman Filter for Real-Time Attitude Estimation Using the Two-Step
+ Geometrically-Intuitive Correction Algorithm,” Sensors, Vol.
+ 17, No.
+ 9, 2017.
+ doi:10.3390/s17092146.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Markley, L., “Lessons learned,” The Journal of the Astronautical Sciences,
+ Vol.
+ 57, 2009.
+ doi:10.1007/BF03321491.
+\end_layout
+
+\begin_layout Enumerate
+Li, D., Landry, R., and Lavoie, P., “Low-cost MEMS sensor-based attitude determinat
+ion system by integration of magnetometers and GPS: A real-data test and
+ performance evaluation,” IEEE/ION Position, Location and Navigation Symposium,
+ 2008, pp.
+ 1190–1198.
+ doi:10.1109/PLANS.2008.4570005.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.
+ L., Markley, F.
+ L., and Cheng, Y., “Survey of nonlinear attitude estimation methods,” Journal
+ of Guidance, Control, and Dynamics, Vol.
+ 30, No.
+ 1, 2007, pp.
+ 12–28.
+ doi:10.2514/1.22452.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gross, J.
+ N., Gu, Y., Rhudy, M.
+ B., Gururajan, S., and Napolitano, M.
+ R., “Flight-test evaluation of sensor fusion algorithms for attitude estimation,
+” IEEE Transactions on Aerospace and Electronic Systems, Vol.
+ 48, No.
+ 3, 2012, pp.
+ 2128–2139.
+ doi:10.1109/TAES.2012.6237583.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Zanetti, R., Majji, M., Bishop, R.
+ H., and Mortari, D., “Norm-constrained Kalman Filtering,” Journal of Guidance,
+ Control, and Dynamics, Vol.
+ 32, No.
+ 5, 2009, pp.
+ 1458–1465.
+ doi:10.2514/1.43119.
+\end_layout
+
+\begin_layout Enumerate
+Mueller, M.
+ W., Hehn, M., and D’Andrea, R., “Covariance correction Step for Kalman filtering
+ with an attitude,” Journal of Guidance, Control, and Dynamics, Vol.
+ 40, No.
+ 9, 2016, pp.
+ 2301–2306.
+ doi:10.2514/1.G000848.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Toda, N., Heiss, J., and Schlee, F., “Spars: the system, algorithms, and test
+ results,” Proceedings of the Symposium on Spacecraft Attitude Determination,
+ Aerospace Corp.
+ Rept.
+ TR-0066 (6306)-12, Vol.
+ 1, 1969, pp.
+ 361–370.
+\end_layout
+
+\begin_layout Enumerate
+Lefferts, E.
+ J., Markley, F.
+ L., and Shuster, M.
+ D., “Kalman filtering for spacecraft attitude estimation,” Journal of Guidance,
+ Control, and Dynamics, Vol.
+ 5, No.
+ 5, 1982, pp.
+ 417–429.
+ doi:10.2514/3.56190.
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.
+ L., “Attitude error representations for Kalman filtering,” Journal of Guidance,
+ Control, and Dynamics, Vol.
+ 26, No.
+ 2, 2003, pp.
+ 311–317.
+ doi:10.2514/2.5048.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Axelrad, P., and Ward, L.
+ M., “Spacecraft attitude estimation using the global positioning system-methodol
+ogy and results for RADCAL,” Journal of Guidance, Control, and Dynamics,
+ Vol.
+ 19, No.
+ 6, 1996, pp.
+ 1201–1209.
+ doi:10.2514/3.21772.
+\end_layout
+
+\begin_layout Enumerate
+Shuster, M., “A simple Kalman filter and smoother for spacecraft attitude,”
+ Journal of the Astronautical Sciences, Vol.
+ 37, No.
+ 1, 1989, pp.
+ 89–106.
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.
+ L., and Markley, F.
+ L., “Unscented filtering for spacecraft attitude estimation,” Journal of
+ Guidance, Control, and Dynamics, Vol.
+ 26, No.
+ 4, 2003, pp.
+ 536–542.
+ doi:10.2514/2.5102.
+\end_layout
+
+\begin_layout Enumerate
+Jia, B., Xin, M., and Cheng, Y., “Sparse Gauss-Hermite quadrature filter with
+ application to spacecraft attitude estimation,” Journal of Guidance, Control,
+ and Dynamics, Vol.
+ 34, No.
+ 2, 2011, pp.
+ 367–379.
+ doi:10.2514/1.52016.
+\end_layout
+
+\begin_layout Enumerate
+Kim, S.-G., Crassidis, J.
+ L., Cheng, Y., Fosbury, A.
+ M., and Junkins, J.
+ L., “Kalman filtering for relative spacecraft attitude and position estimation,”
+ Journal of Guidance, Control, and Dynamics, Vol.
+ 30, No.
+ 1, 2007, pp.
+ 133–143.
+ doi:10.2514/1.22377.
+\end_layout
+
+\begin_layout Enumerate
+Pittelkau, M.
+ E., “Rotation vector in attitude estimation,” Journal of Guidance, Control,
+ and Dynamics, Vol.
+ 26, No.
+ 6, 2003, pp.
+ 855–860.
+ doi:10.2514/2.6929.
+\end_layout
+
+\begin_layout Enumerate
+Trawny, N., and Roumeliotis, S.
+ I., “Indirect Kalman filter for 3D attitude estimation,” University of Minnesota
+, Department of Computer Science & Engingeering, Technical Report, Vol.
+ 2, 2005, p.
+ 2005.
+ doi:10.1.1.304.6207.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Cheng, Y., and Crassidis, J.
+ L., “Particle filtering for attitude estimation using a minimal local-error
+ representation,” Journal of Guidance, Control, and Dynamics, Vol.
+ 33, No.
+ 4, 2010, pp.
+ 1305–1310.
+ doi:10.2514/1.47236.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.
+ L., “Sigma-point Kalman filtering for integrated GPS and inertial navigation,”
+ IEEE Transactions on Aerospace and Electronic Systems, Vol.
+ 42, No.
+ 2, 2006, pp.
+ 750–756.
+ doi:10.1109/TAES.2006.1642588.
+\end_layout
+
+\begin_layout Enumerate
+Hall, J.
+ K., Knoebel, N.
+ B., and McLain, T.
+ W., “Quaternion attitude estimation for miniature air vehicles using a multiplic
+ative extended Kalman filter,” IEEE/ION Position, Location and Navigation
+ Symposium, 2008, pp.
+ 1230–1237.
+ doi:10.1109/PLANS.
+ 2008.4570043.
+\end_layout
+
+\begin_layout Enumerate
+Reynolds, R.
+ G., “Asymptotically optimal attitude filtering with guaranteed convergence,”
+ Journal of Guidance, Control, and Dynamics, Vol.
+ 31, No.
+ 1, 2008, pp.
+ 114–122.
+ doi:10.2514/1.30381.
+\end_layout
+
+\begin_layout Enumerate
+Leishman, R.
+ C., and McLain, T.
+ W., “Multiplicative extended Kalman filter for relative rotorcraft navigation,”
+ Journal of Aerospace Information Systems, Vol.
+ 12, No.
+ 12, 2014, pp.
+ 728–744.
+ doi:10.2514/1.I010236.
+\end_layout
+
+\begin_layout Enumerate
+Gui, H., and Ruiter, A., “Quaternion invariant extended Kalman filtering for
+ spacecraft attitude estimation,” Journal of Guidance, Control, and Dynamics,
+ Vol.
+ 41, 2017, pp.
+ 1–16.
+ doi:10.2514/1.G003177.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Chang, L., Hu, B., and Li, K., “Iterated multiplicative extended kalman filter
+ for attitude estimation using vector observations,” IEEE Transactions on
+ Aerospace and Electronic Systems, Vol.
+ 52, No.
+ 4, 2016, pp.
+ 2053–2060.
+ doi:10.1109/TAES.2016.150237.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Seba, A., Hadri, A.
+ E., Benziane, L., and Benallegue, A., “Attitude estimation using line-based
+ vision and multiplicative extended Kalman filter,” International Conference
+ on Control Automation Robotics Vision, 2014, pp.
+ 456–461.
+ doi: 10.1109/ICARCV.2014.7064348.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Pham, M.
+ D., Low, K.
+ S., Goh, S.
+ T., and Chen, S., “Gain-scheduled extended kalman filter for nanosatellite
+ attitude determination system,” IEEE Transactions on Aerospace and Electronic
+ Systems, Vol.
+ 51, No.
+ 2, 2015, pp.
+ 1017–1028.
+ doi:10.1109/TAES.2014.130204.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Santos, D.
+ A., and Gonçalves, P.
+ F., “Attitude determination of multirotor aerial vehicles using camera vector
+ measurements,” Journal of Intelligent & Robotic Systems, Vol.
+ 86, No.
+ 1, 2017, pp.
+ 139–149.
+ doi:10.1007/s10846-016-0418-0.
+\end_layout
+
+\begin_layout Enumerate
+Yang, Y., Zhou, J., and Loffeld, O., “Quaternion-based Kalman filtering on
+ INS/GPS,” International Conference on Information Fusion, 2012, pp.
+ 511–518.
+\end_layout
+
+\begin_layout Enumerate
+Farsoni, S., Landi, C.
+ T., Ferraguti, F., Secchi, C., and Bonfè, M., “Compensation of load Dynamics
+ for admittance controlled interactive industrial robots using a quaternion-base
+d Kalman filter,” IEEE Robotics and Automation Letters, Vol.
+ 2, No.
+ 2, 2017, pp.
+ 672–679.
+ doi:10.1109/LRA.2017.2651393.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Setoodeh, P., Khayatian, A., and Frajah, E., “Attitude estimation by separate-bias
+ Kalman filter-based data fusion,” The Journal of Navigation, Vol.
+ 57, No.
+ 2, 2004, pp.
+ 261–273.
+ doi:10.1017/S037346330400270X.
+\end_layout
+
+\begin_layout Enumerate
+Le, H.
+ X., and Matunaga, S., “Real-time tuning separate-Bias extended Kalman filter
+ for attitude estimation,” Transactions of the Japan Society for Aeronautical
+ and Space Sciences, Vol.
+ 57, No.
+ 5, 2014, pp.
+ 299–307.
+ doi:10.2322/tjsass.57.299.
+\end_layout
+
+\begin_layout Enumerate
+Wilthil, E.
+ F., and Brekke, E.
+ F., “Compensation of navigation uncertainty for target tracking on a moving
+ platform,” International Conference on Information Fusion, 2016, pp.
+ 1616–1621.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Vinther, K., Jensen, K.
+ F., Larsen, J.
+ A., and Wisniewski, R., “Inexpensive cubesat attitude estimation using quaternion
+s and unscented Kalman filtering,” Automatic Control in Aerospace, Vol.
+ 4, No.
+ 1, 2011, pp.
+ 1–12.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Szcz esna, ˛ A., and Pruszowski, P., “Model-based extended quaternion Kalman
+ filter to inertial orientation tracking of arbitrary kinematic chains,”
+ Springerplus, Vol.
+ 5, No.
+ 1, 2016, p.
+ 1965.
+ doi:10.1186/s40064-016-3653-8.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hu, J., and Chen, M., “A sliding-window visual-IMU odometer based on tri-focal
+ tensor geometry,” IEEE International Conference on Robotics and Automation,
+ 2014, pp.
+ 3963–3968.
+ doi:10.1109/ICRA.2014.6907434.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Weiss, S., and Siegwart, R., “Real-time metric state estimation for modular
+ vision-inertial systems,” IEEE International Conference on Robotics and
+ Automation, 2011, pp.
+ 4531–4537.
+ doi:10.1109/ICRA.2011.5979982.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Mirzaei, F.
+ M., and Roumeliotis, S.
+ I., “A Kalman Filter-Based Algorithm for IMU-Camera Calibration: Observability
+ Analysis and Performance Evaluation,” IEEE Transactions on Robotics, Vol.
+ 24, No.
+ 5, 2008, pp.
+ 1143–1156.
+ doi: 10.1109/TRO.2008.2004486.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Mourikis, A.
+ I., and Roumeliotis, S.
+ I., “A Multi-State Constraint Kalman Filter for Vision-aided Inertial Navigation
+,” IEEE International Conference on Robotics and Automation, 2007, pp.
+ 3565–3572.
+ doi:10.1109/ROBOT.2007.364024.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Koch, D.
+ P., Wheeler, D.
+ O., Beard, R., McLain, T., and Brink, K.
+ M., “Relative multiplicative extended Kalman filter for observable GPS-denied
+ navigation,” BYU Ira A.
+ Fulton College of Engineering and Technology Report 1963, 2017.
+\end_layout
+
+\begin_layout Enumerate
+Tagliabue, A., Kamel, M., Siegwart, R., and Nieto, J., “Robust collaborative
+ object transportation using multiple MAVs,” The International Journal of
+ Robotics Research, Vol.
+ 38, No.
+ 9, 2019, pp.
+ 1020–1044.
+ doi:10.1177/0278364919854131.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hamer, M., and D’Andrea, R., “Self-Calibrating Ultra-Wideband Network Supporting
+ Multi-Robot Localization,” IEEE Access, Vol.
+ 6, 2018, pp.
+ 22292–22304.
+ doi:10.1109/ACCESS.2018.2829020.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Greiff, M., Robertsson, A., and Berntorp, K., “Performance Bounds in Positioning
+ with the VIVE Lighthouse System,” IEEE International Conference on Information
+ Fusion, 2019.
+\end_layout
+
+\begin_layout Enumerate
+Beffa, L., Ledergerber, A., and D’Andrea, R., “State Estimate Recovery for
+ Autonomous Quadcopters,” IEEE/RSJ International Conference on Intelligent
+ Robots and Systems, 2018, pp.
+ 1–7.
+ doi:10.1109/IROS.2018.8594332.
+\end_layout
+
+\begin_layout Enumerate
+Sola, J., “Quaternion kinematics for the error-state KF,” Laboratoire dAnalyse
+ et dArchitecture des Systemes-Centre national de la recherche scientifique
+ (LAAS-CNRS), Toulouse, France, Tech.
+ Rep IRI-TR-16-02, 2015.
+\end_layout
+
+\begin_layout Enumerate
+Chirikjian, G.
+ S., Stochastic models, information theory, and Lie groups, volume 2: analytic
+ methods and modern applications, Vol.
+ 2, Birkhäuser Basel, 2011.
+ doi:10.1007/978-0-8176-4944-9.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gallier, J., and Quaintance, J., “Notes on differential geometry and Lie groups,”
+ University of Pennsylvannia, Vol.
+ 4, 2012.
+\end_layout
+
+\begin_layout Enumerate
+Shuster, M.
+ D., “A survey of attitude representations,” Navigation, Vol.
+ 8, No.
+ 9, 1993, pp.
+ 439–517.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hall, B.
+ C., “Lie Groups, Lie Algebras, and Representations,” Quantum Theory for
+ Mathematicians, Springer, 2013, pp.
+ 333–366.
+ doi:10.1007/978-1-4614-7116-5_16.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gallego, G., and Yezzi, A., “A compact formula for the derivative of a 3-D
+ rotation in exponential coordinates,” Journal of Mathematical Imaging and
+ Vision, Vol.
+ 51, No.
+ 3, 2015, pp.
+ 378–384.
+ doi:10.1007/s10851-014-0528-x.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Chirikjian, G.
+ S., Stochastic models, information Theory, and Lie groups, volume 1: classical
+ results and geometric methods.
+ Applied and numerical harmonic analysis, Birkhäuser Basel, 2009.
+ doi:10.1007/978-0-8176-4803-9.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Ross, S.
+ M., Applied probability models with optimization applications, Courier Corporati
+on, 2013.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Andrle, M.
+ S., and Crassidis, J.
+ L., “Geometric Integration of Quaternions,” Journal of Guidance, Control,
+ and Dynamics, Vol.
+ 36, No.
+ 6, 2013, pp.
+ 1762–1767.
+ doi:10.2514/1.58558.
+\end_layout
+
+\begin_layout Enumerate
+Codling, E., and Hill, N., “Sampling rate effects on measurements of correlated
+ and biased random walks,” Journal of Theoretical Biology, Vol.
+ 233, No.
+ 4, 2005, pp.
+ 573 – 588.
+ doi:https://doi.org/10.1016/j.jtbi.2004.11.008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Ledergerber, A., and D’Andrea, R., “Ultra-Wideband Angle of Arrival Estimation
+ Based on Angle-Dependent Antenna Transfer Function,” Sensors, Vol.
+ 19, No.
+ 20, 2019.
+ doi:10.3390/s19204466.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Aggarwal, P., Syed, Z., and El-Sheimy, N., “Hybrid Extended Particle Filter
+ (HEPF) for integrated civilian navigation system,” IEEE/ION Position, Location
+ and Navigation Symposium, 2008, pp.
+ 984–992.
+ doi:10.1109/PLANS.2008.4570072.
+\end_layout
+
+\begin_layout Enumerate
+Wang, X., Li, T., Sun, S., and Corchado, J.
+ M., “A Survey of Recent Advances in Particle Filters and Remaining Challenges
+ for Multitarget Tracking,” Sensors, Vol.
+ 17, No.
+ 12, 2017.
+ doi:10.3390/s17122707.
+\end_layout
+
+\begin_layout Enumerate
+Doucet, A., De Freitas, N., Murphy, K., and Russell, S., “Rao-Blackwellised
+ particle filtering for dynamic Bayesian networks,” Proceedings of the Sixteenth
+ conference on Uncertainty in artificial intelligence, Morgan Kaufmann Publisher
+s Inc., 2000, pp.
+ 176–183.
+\end_layout
+
+\begin_layout Enumerate
+Shariati, H., Moosavi, H., and Danesh, M., “Application of particle filter
+ combined with extended Kalman filter in model identification of an autonomous
+ underwater vehicle based on experimental data,” Applied Ocean Research,
+ Vol.
+ 82, 2019, pp.
+ 32 – 40.
+ doi:10.1016/j.apor.2018.10.015.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Van Der Merwe, R., Doucet, A., De Freitas, N., and Wan, E., “The Unscented Particle
+ Filter,” International Conference on Neural Information Processing Systems,
+ MIT Press, Cambridge, MA, USA, 2000, pp.
+ 563–569.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Simon, D., Optimal State Estimation: Kalman, H infinity, and nonlinear approaches
+, John Wiley & Sons, 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Bernstein, D.
+ S., Matrix mathematics: theory, facts, and formulas with application to
+ linear systems theory, Vol.
+ 41, Princeton University Press, 2005.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Galassi, M., Davies, J., Theiler, J., Gough, B., Jungman, G., Alken, P., Booth,
+ M., Rossi, F., and Ulerich, R., GNU scientific library, Network Theory Limited,
+ 2002.
+\end_layout
+
+\begin_layout Enumerate
+Bourmaud, G., Mégret, R., Giremus, A., and Berthoumieu, Y., “Discrete extended
+ Kalman filter on Lie groups,” European Signal Processing Conference, 2013,
+ pp.
+ 1–5.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hamer, M., “Scalable Localization and Coordination of Robot Swarms,” Ph.D.
+ thesis, ETH Zurich, 2019.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hall, J.
+ K., Knoebel, N.
+ B., and McLain, T.
+ W., “Quaternion attitude estimation for miniature air vehicles using a multiplic
+ative extended Kalman filter,” IEEE/ION Position, Location and Navigation
+ Symposium, 2008, pp.
+ 1230–1237.
+ doi:10.1109/PLANS.
+ 2008.4570043.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Julier, S.
+ J., “The scaled unscented transformation,” American Control Conference,
+ Vol.
+ 6, 2002, pp.
+ 4555–4559 vol.6.
+ doi:10.1109/ACC.2002.1025369.
+\end_layout
+
+\begin_layout Enumerate
+Mäkinen, J., “Rotation manifold SO(3) and its tangential vectors,” Computational
+ Mechanics, Vol.
+ 42, No.
+ 6, 2008, p.
+ 907.
+ doi:10.1007/s00466-008-0293-z.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Barfoot, T.
+ D., and Furgale, P.
+ T., “Associating Uncertainty With Three-Dimensional Poses for Use in Estimation
+ Problems,” IEEE Transactions on Robotics, Vol.
+ 30, No.
+ 3, 2014, pp.
+ 679–693.
+ doi:10.1109/TRO.2014.2298059.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Sommer, H., Gilitschenski, I., Bloesch, M., Weiss, S., Siegwart, R., and Nieto,
+ J., “Why and How to Avoid the Flipped Quaternion Multiplication,” Aerospace,
+ Vol.
+ 5, No.
+ 3, 2018.
+ doi:10.3390/aerospace5030072.
+\end_layout
+
+\end_body
+\end_document
