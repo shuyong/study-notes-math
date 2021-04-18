@@ -66,7 +66,7 @@ MEKF 有一个特点，就是在一次循环迭代结束时，有一次 reset �
 
 12. [Orientation Estimation by Means of Extended Kalman Filter, Quaternions, and Charts - 2017](https://rua.ua.es/dspace/bitstream/10045/67917/8/JoPhA_08_01_03.pdf)
 
-13. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019]
+13. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149)
 
 14. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
 
