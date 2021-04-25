@@ -75,17 +75,19 @@
     + 通过封装流形将通用传感器融合算法与声音状态表示相结合
 
 19. [Orientation Estimation by Means of Extended Kalman Filter, Quaternions, and Charts - 2017](https://rua.ua.es/dspace/bitstream/10045/67917/8/JoPhA_08_01_03.pdf)
-    + 用扩展卡尔曼滤波、四元数和图表估计方位
+    + 用扩展卡尔曼滤波、四元数和图表估计方向
     + [code](https://github.com/PBernalPolo/test_MKF)
 
 20. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149/pdf)
     + 四元数姿态估计的卡尔曼滤波及流形理论的概念
     + [code](http://www.mdpi.com/1424-8220/19/1/149/s1)
 
-21. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
+21. [Kalman Filtering for Orientation Estimation using IMUs - 2020](https://digitum.um.es/digitum/bitstream/10201/95443/1/Pablo%20Bernal%20Polo%20Tesis%20Doctoral.pdf)
+
+22. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
     + [Unscented Kalman Filtering on (Parallelizable) Manifolds](https://github.com/CAOR-MINES-ParisTech/ukfm)
 
-22. [Embedding manifold structures into Kalman filters - 2021](https://arxiv.org/abs/2102.03804)
+23. [Embedding manifold structures into Kalman filters - 2021](https://arxiv.org/abs/2102.03804)
     + [IKFoM (Iterated Kalman Filters on Manifolds)](https://github.com/hku-mars/IKFoM)
 
 # 翻译：[方向四元数的扩展卡尔曼滤波方程](https://math.stackexchange.com/questions/2621677/extended-kalman-filter-equation-for-orientation-quaternion)

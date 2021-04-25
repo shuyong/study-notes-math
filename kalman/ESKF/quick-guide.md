@@ -68,7 +68,9 @@ MEKF 有一个特点，就是在一次循环迭代结束时，有一次 reset �
 
 13. [Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory - 2019](https://www.mdpi.com/1424-8220/19/1/149)
 
-14. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
+14. [Kalman Filtering for Orientation Estimation using IMUs - 2020](https://digitum.um.es/digitum/bitstream/10201/95443/1/Pablo%20Bernal%20Polo%20Tesis%20Doctoral.pdf)
 
-15. [Embedding manifold structures into Kalman filters - 2021](https://arxiv.org/abs/2102.03804)
+15. [A Code for Unscented Kalman Filtering on Manifolds (UKF-M) - 2020](https://arxiv.org/abs/2002.00878)
+
+16. [Embedding manifold structures into Kalman filters - 2021](https://arxiv.org/abs/2102.03804)
 
