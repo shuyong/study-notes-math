@@ -22,7 +22,7 @@
 
 11. [PX4 State Estimation Overview](https://youtu.be/HkYRJJoyBwQ)
 
-12. [Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements](https://www.researchgate.net/profile/Alireza-Khosravian/publication/277143039_Recursive_Attitude_Estimation_in_the_Presence_of_Multi-rate_and_Multi-delay_Vector_Measurements/links/556a5ea108aec22683035ed3/Recursive-Attitude-Estimation-in-the-Presence-of-Multi-rate-and-Multi-delay-Vector-Measurements.pdf)
+12. [Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements](http://users.cecs.anu.edu.au/~trumpf/pubs/khosravian_trumpf_mahony_hamel_ACC2015.pdf)
 
 13. [PX4 的 ECL EKF 公式推导及代码解析](https://blog.csdn.net/u010307048/article/details/100553475)
 

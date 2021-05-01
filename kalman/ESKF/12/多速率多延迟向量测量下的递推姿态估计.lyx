@@ -1,0 +1,3466 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{remark}{Remark}
+%\newtheorem{problem}{Problem}
+%\newtheorem{fact}{Fact}
+%\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{定理}
+\newtheorem{remark}{备注}
+\newtheorem{problem}{问题}
+\newtheorem{fact}{事实}
+\newtheorem{lemma}{引理}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{input:}}
+\renewcommand{\algorithmicensure}{\textbf{output:}}
+
+\usepackage[title]{appendix}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "多速率多延迟向量测量下的递推姿态估计"
+\pdf_author "Alireza Khosravian, Jochen Trumpf, Robert Mahony, Tarek Hamel"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "多速率多延迟向量测量下的递推姿态估计"
+target "http://users.cecs.anu.edu.au/~trumpf/pubs/khosravian_trumpf_mahony_hamel_ACC2015.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Alireza Khosravian, Jochen Trumpf, Robert Mahony, Tarek Hamel
+\end_layout
+
+\begin_layout Date
+30 July 2015
+\end_layout
+
+\begin_layout Abstract
+本文针对姿态传感器以不同的采样率和时延提供离散的向量测量样本的情况，提议了一种姿态估计方法。该方法基于输出预测器和姿态观测器或滤波器的级联组合。该预测器补偿了向
+量测量中采样和延迟的影响，并提供输出的连续时间预测。这些预测随后被用于观测器或滤波器中，以估计当前姿态。本文的主要贡献是利用姿态运动学的基本对称性，设计了一种计
+算简单、通用的递推预测器，它可以与任何渐近稳定的观测器或滤波器相结合。我们证明了该预测器能够再现连续的无时延向量测量。在一个仿真例子中，我们证明了即使存在测量噪
+声和延迟不确定性，组合预测器-观测器也具有良好的性能。
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+安装在机体上的姿态传感器以向量方向测量的形式测量机体姿态的部分信息。姿态估计器的目标是通过处理这些向量测量值来计算机体的方向。对随机姿态估计方法(如扩展卡尔曼滤
+波器[1]、[2]、无迹滤波器[3]等)以及确定性姿态观测器[4]–[16]都有大量的研究。在卫星姿态估计应用中，高精度传感器(如恒星跟踪器或地球传感器)以低采
+样率(
+\begin_inset Formula $0.5\sim10~\mathrm{Hz}$
+\end_inset
+
+)提供测量[17]。相比之下，机载陀螺仪可以很容易地以
+\begin_inset Formula $k\mathrm{Hz}$
+\end_inset
+
+速率提供高带宽测量，可能比获得方向信息快两个数量级。恒星跟踪器传感器内部的图像处理会导致数十毫秒量级的显著延迟，从而导致恒星跟踪器测量相对于陀螺仪测量的延迟。当
+使用基于视觉的传感器(如摄像机和地标)时，在空中机器人姿态估计中也会出现类似的采样和延迟问题。此外，在室内飞行环境中，来自诸如VICON或OptiTrack等设
+备的姿态数据被从这些传感器到机体的机载姿态估计系统的通信信道延迟。
+\end_layout
+
+\begin_layout Standard
+采样和延迟会对任何观测器或滤波器的稳定性和鲁棒性产生负面影响，如果它们没有得到适当补偿，则会降低其性能[18]–[24]。解决测量采样和延迟问题的典型估计器设计
+方法有：Lyapunov-Krasovskii修正估计器设计、带乱序测量的随机滤波(Out-Of-Sequence Measurements,
+ OOSM)和复合观测器预测器设计。解决传感器时延问题的经典方法是采用一个对无时延测量具有期望性能的估计器，并修改其新息项，以便将每个时延测量与其相应的后向时移
+估计进行比较。如果无延迟估计器具有Lyapunov稳定性证明，则可以使用Lyapunov-Krasovskii函数[25]，[26]对改进估计器进行稳定性分析。
+尽管这些改进的估计器在实践中普遍使用(参见文献[27]，[28])，但它们需要复杂的稳定性分析和谨慎保守的增益调整，导致产生的估计器的不良瞬态响应。OOSM随机
+滤波已经得到了广泛的研究[29]-[33]，尽管大多数文献都集中在目标跟踪应用上。尽管OOSM滤波方法灵活，易于处理采样和延迟数据以及乱序测量，但它们通常具有显
+著的内存和处理要求，这对于大多数嵌入式观测器设计应用来说是不切实际的，除非线性系统模型中有更简单的OOSM滤波器可用[20]、[29] 。针对具有采样和延迟测量
+的姿态估计问题，文献[34]中提议了一种改进的扩展卡尔曼滤波算法，并给出了一种新的实时实现结构。尽管该算法在实际应用中表现出了良好的性能，但由于需要与传感器延迟
+补偿相关的传播阶段，该算法存在收敛性不明确、计算量大等缺点。文献[19]、[24]、[35]提议了
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+非线性系统的组合观测器-预测器设计方法。这些方法采用具有连续无延迟测量所需稳定性的观测器，并将其与补偿传感器采样和延迟影响的适当预测器组合，使得组合的观测器预测
+器保持观测器的稳定性。本文的作者最近提议了一种级联观测器-预测器组合来处理姿态估计问题中的传感器延迟[36]。虽然结果观测器-预测器组合是稳定的，但这种方法要求
+传感器输出的连续可用性，不适用于采样测量情况。据作者所知，目前还没有考虑采样和延迟测量的具有稳定性证明的姿态估计方法。
+\end_layout
+
+\begin_layout Standard
+在本文中，我们考虑采样和延迟向量测量可用时的姿态估计问题。我们提议了一种由预测器和姿态观测器或滤波器级联而成的组合方法，其中预测器补偿采样和向量测量延迟的影响，
+滤波器或观测器处理预测输出并估计姿态。我们的设计是基于精确的连续时间非线性姿态运动学的李群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+，而不诉诸参数化，线性化，或离散化。本文的主要贡献是有效地利用姿态运动学和向量测量模型的对称性，设计了一个简单的通用预测器，它不依赖于观测器或滤波器的选择。也就
+是说，我们提议的预测器可以与任何在理想条件下(即当它被连续无时延向量测量馈送时)具有渐近稳定估计误差的观测器或滤波器组合，并且预测器-观测器组合在非理想条件下(
+即采样和延迟)保持这些稳定性测量)。所提议的预测器是递归的，只需要很小的计算能力，非常适合于实际应用中的嵌入式实现。我们假设每个传感器测量的延迟是已知的，也就是
+说我们需要数据的精确时间戳，然而，这是数据的唯一条件。在这种假设下，增益调谐过程和观测器的稳定性与时滞的大小无关，即使对于时变时滞或OOSM测量也是有效的，尽管
+本文没有明确考虑后者。该方法直接推广到多速率测量情况，无需进一步修改。通过一个仿真例子，我们证明了我们的预测器-观测器方法的性能明显优于Lyapunov-Kra
+sowskii方法。
+\end_layout
+
+\begin_layout Standard
+论文结构如下：背景和问题的表述在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中给出。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节描述了所提议的预测-观测器方法，其中定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 给出了本文的主要结果。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节通过仿真验证了该方法的性能。
+\end_layout
+
+\begin_layout Section
+问题表述
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+姿态确定传感器的目的是测量通常是连续时间物体的物理量。这些物理量的例子是分别由恒星传感器或太阳传感器感测的恒星或太阳的光强度、由地球传感器感测的地球表面的红外反
+射或由磁强计感测的地球磁场，所有这些都是连续时间物体。然而，实际上，姿态传感器只能以特定的采样率提供这些物理量的样本。此外，由于各种原因，例如传感器的物理部分的
+响应速度慢、传感器的内部处理时间和通信延迟，这些样本通常相对于所测量的物理量被延迟。在下面的两小节中，我们将对传感器中的采样和延迟建模进行一般性讨论。这些讨论将
+在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中应用于姿态传感器和向量测量的具体情况。
+\end_layout
+
+\begin_layout Subsection
+采样和延迟的物理模拟
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们提议图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的模型，包括采样和延迟对传感器输出的影响。该模型的灵感来自于传感器在测量物理量时发生的物理过程。该模型由零阶保持(zero-order-hold,
+ ZOH)块组成，分别对采样效果进行建模，并对采样前后的两个延迟块分别进行模型化，分别对采样前和后采样延迟进行建模。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 模型左侧的预采样延迟
+\begin_inset Formula $\rho_{i}$
+\end_inset
+
+秒的延迟，从物理量
+\begin_inset Formula $y_{i}\left(t\right)$
+\end_inset
+
+发生到当第
+\begin_inset Formula $i$
+\end_inset
+
+个传感器观测到时。对于所有
+\begin_inset Formula $t$
+\end_inset
+
+时刻我们有
+\begin_inset Formula $y_{i}^{\rho}\left(t\right)=y_{i}\left(t-\rho_{i}\right)$
+\end_inset
+
+。在实践中，这种延迟通常是由于环境或传感器的物理特性造成的。例如，恒星跟踪器要求其成像传感器暴露在恒星的光下一定时间，以便能够产生恒星的图像。这被称为曝光时间，
+可以大到数百毫秒[37]。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的ZOH块接收延迟信号，并在时间
+\begin_inset Formula $t_{k_{i}}$
+\end_inset
+
+生成样本。该样本锁定在ZOH的输出，直到在时间
+\begin_inset Formula $t_{k_{i}+1}$
+\end_inset
+
+处采集下一个样本。所以对于
+\begin_inset Formula $t\in\left[t_{k_{i}},t_{k_{i}+1}\right)$
+\end_inset
+
+我们有
+\begin_inset Formula $z_{i}^{\rho}\left(t\right)=y_{i}^{\rho}\left(t_{k_{i}}\right)=y_{i}\left(t_{k_{i}}-\rho_{i}\right)$
+\end_inset
+
+。为了清晰地表达，我们假设序列
+\begin_inset Formula $\left(t_{k_{i}}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+是有序单调递增序列，即
+\begin_inset Formula $t_{k_{i}-1}\leq t_{k_{i}}\leq t_{k_{i}+1}$
+\end_inset
+
+。然而，对于我们提议的方法，这种假设是不必要的，而且我们的方法也适用于测量乱序的情况，尽管对符号的必要修改相当繁琐。对于恒星跟踪器，序列
+\begin_inset Formula $\left(t_{k_{i}}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+对应于恒星跟踪器获得恒星图像的特定时间。对于实际的恒星跟踪器，这种采样频率可以低到
+\begin_inset Formula $0.5\ \mathrm{Hz}$
+\end_inset
+
+，高达
+\begin_inset Formula $10~\mathrm{Hz}$
+\end_inset
+
+。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 模型右侧的采样后延迟
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+从物理变量的样本对传感器可用到新输出
+\begin_inset Formula $z_{i}\left(t\right)$
+\end_inset
+
+对用户可用的延迟秒数。因此我们有
+\begin_inset Formula 
+\begin{equation}
+z_{i}\left(t\right)=z_{i}^{\rho}\left(t-\sigma_{i}\right)=y_{i}\left(t_{k_{i}}-\rho_{i}\right),t\in\left[t_{k_{i}}+\sigma_{i},t_{k_{i}+1}+\sigma_{i}\right)\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure1.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+姿态传感器中采样和延迟效应的建模
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在实践中，后采样延迟对由于传感器中的内部信号处理或由于从传感器向用户传输信息的通信延迟而引起的延迟进行建模。对于恒星跟踪器，采样后延迟主要是由于与图像处理算法相
+关联的处理时间，图像处理算法分析恒星跟踪器拍摄的图像以识别图像中的恒星，并将每个识别的恒星与其板载星表中相应的恒星相关联。在室内飞行环境中，后采样时延还可以用来
+模拟由VICON或OptiTrack系统到机体姿态估计系统的通信时延所引起的时延。它还可以模拟与GPS模块内部处理相关的测量延迟。
+\end_layout
+
+\begin_layout Subsection
+输入-输出等效模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+尽管图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的模型适合于在建模阶段仔细描述采样和各种延迟的影响，但是在设计阶段用于补偿延迟和采样影响可能并不方便。这种模型的主要缺点是，即使用户知道
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+，
+\begin_inset Formula $t_{k_{i}}$
+\end_inset
+
+的值也仅在
+\begin_inset Formula $t_{k_{i}}+\sigma_{i}$
+\end_inset
+
+时开始可用。也就是说，传感器通常不会通知用户何时准确获得测量样本。取而代之的是，当他们处理完样品并且处理结果(即传感器输出)准备好由用户收集时，他们会通知用户。
+这就是为什么我们在这里讨论一个更简单的模型，它的输入到输出等效于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ ，但更便于用于补偿采样和延迟的影响。在本节后面，我们将讨论这两个模型等价的条件。
+\end_layout
+
+\begin_layout Standard
+假设在时间
+\begin_inset Formula $t_{k_{i}}^{\prime},k_{i}=1,2,\ldots$
+\end_inset
+
+，我们接收到由
+\begin_inset Formula $z_{i}\left(t_{k_{i}}^{\prime}\right)$
+\end_inset
+
+表示的第
+\begin_inset Formula $i$
+\end_inset
+
+个传感器的最新输出。我们假设这个输出相对于测量的物理量
+\begin_inset Formula $y_{i}\left(t_{k_{i}}^{\prime}\right)$
+\end_inset
+
+被延迟了
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+秒。此输出被锁定，直到下一个输出到达
+\begin_inset Formula $t_{k_{i}+1}^{\prime}$
+\end_inset
+
+为止。如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，该过程等效于延迟算子和ZOH的级联组合。我们有
+\begin_inset Formula 
+\begin{equation}
+z_{i}\left(t\right)=z_{i}\left(t_{k_{i}}^{\prime}\right)=y_{i}\left(t_{k_{i}}^{\prime}-\tau_{i}\right),t\in\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure2.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+简单的如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的输入-输出模型
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+每个序列
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+是单调递增的(同样，这个假设对于我们的方法来说不是必需的，但是它是为了表达的清晰而强加的)。与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中讨论的模型相比的主要区别在于，这里的序列
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)$
+\end_inset
+
+是用户已知的，并且可以用于补偿采样和延迟的影响。显然，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 和图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的输出通常可以不同。然而，附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:A"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中提供的简单计算表明，两个模型的输入输出等效(即当两个模型测量相同的物理量
+\begin_inset Formula $y_{i}\left(t\right)$
+\end_inset
+
+时，两个模型的输出
+\begin_inset Formula $z_{i}\left(t\right)$
+\end_inset
+
+对于所有
+\begin_inset Formula $t$
+\end_inset
+
+都相等)，当且仅当
+\begin_inset Formula $\tau_{i}=\rho_{i}+\sigma_{i}$
+\end_inset
+
+并且
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}=\left(t_{k_{i}}+\sigma_{i}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+时。也就是说，当两个模型相等时，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的延迟
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+表示图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的延迟
+\begin_inset Formula $\rho_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+的组合以及图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的取样顺序
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+相当于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的用户接收输出
+\begin_inset Formula $z_{i}\left(t\right)$
+\end_inset
+
+的时间序列。给定一个图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 形式的模型，通过适当选择图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的延迟和采样序列，我们总是能够将该模型简化为图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的形式。这尤其意味着，就传感器的输入-输出特性而言，不需要分别知道预采样和后采样延迟的值。事实上，正如我们在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所展示的，只有知识的物理值
+\begin_inset Formula $y_{i}\left(t\right)$
+\end_inset
+
+和传感器输出之间的总延迟
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+足以从采样和延迟传感器输出再现物理量
+\begin_inset Formula $y_{i}\left(t\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+向量测量的姿态运动学和传感器模型
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑一个刚体，它有一个机体固连的参考系
+\begin_inset Formula $\{B\}$
+\end_inset
+
+和一个惯性参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+。用
+\begin_inset Formula $R\in\mathrm{SO}(3)$
+\end_inset
+
+表示刚体的姿态矩阵，对应于从
+\begin_inset Formula $\{B\}$
+\end_inset
+
+到
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的旋转。刚体姿态运动学由
+\begin_inset Formula 
+\begin{equation}
+\dot{R}(t)=R(t)\Omega(t)_{\times},\quad R(0)=R_{0}\label{eq:3}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\Omega$
+\end_inset
+
+是
+\begin_inset Formula $\{B\}$
+\end_inset
+
+相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的角速度向量，在
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中的表示。线性运算符
+\begin_inset Formula $(.)_{\times}$
+\end_inset
+
+将
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的任意向量映射到
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+中相应的斜对称矩阵，使得对于
+\begin_inset Formula $a,b\in\mathbb{R}^{3}$
+\end_inset
+
+，
+\begin_inset Formula $(a)_{\times}b$
+\end_inset
+
+等于叉积
+\begin_inset Formula $a\times b$
+\end_inset
+
+。我们假设
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+的无延迟测量在连续时间内可用。这是一个合理的假设，因为在实践中，
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+是用三轴陀螺仪在高采样率下测量的。
+\end_layout
+
+\begin_layout Standard
+附着在刚体上的理想姿态传感器以向量测量的形式提供部分姿态测量
+\begin_inset Formula 
+\begin{equation}
+y_{i}(t)=R(t)^{\top}\stackrel{\circ}{y}_{i},\;i=1,2,\ldots,n\label{eq:4}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $y_{i}\in S^{2}$
+\end_inset
+
+表示
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中的测量向量，而
+\begin_inset Formula $\stackrel{\circ}{y}_{i}\in\mathrm{S}^{2}$
+\end_inset
+
+表示
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中
+\begin_inset Formula $y_{i}$
+\end_inset
+
+的对应参考向量。可以将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到采样和延迟分别对应于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 和图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的姿态传感器模型。
+\end_layout
+
+\begin_layout Standard
+当前的问题是设计一种估计方法，该方法使用
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+的连续测量以及采样和延迟向量测量
+\begin_inset Formula $z_{i}(t)$
+\end_inset
+
+来提供姿态矩阵
+\begin_inset Formula $R(t)$
+\end_inset
+
+的连续估计。
+\end_layout
+
+\begin_layout Section
+预测器-观测器方法
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节讨论的原因，我们选择使用简化的传感器模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来设计一种算法，补偿采样和采样前后延迟的影响，并估计姿态。我们在这里提议的解决第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中所提出的问题的方法如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。我们首先提议一个预测器，它接受采样和延迟测量
+\begin_inset Formula $z_{i}(t)$
+\end_inset
+
+，并提供
+\begin_inset Formula $y_{i}^{p}(t)$
+\end_inset
+
+表示的
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+的连续时间预测。 预测器依赖于连续时间(或实际上在高频)的
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+和总延迟
+\begin_inset Formula $\tau_{i}=\rho_{i}+\sigma_{i}$
+\end_inset
+
+的知识来补偿输出中采样和延迟的影响，并预测输出，使得对于所有的
+\begin_inset Formula $t\geq t_{1_{i}}^{\prime}$
+\end_inset
+
+在无噪声条件下
+\begin_inset Formula $y_{i}^{p}(t)=y_{i}(t)$
+\end_inset
+
+(即当在
+\begin_inset Formula $z_{i}\left(t_{k_{i}}^{\prime}\right)$
+\end_inset
+
+或
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+中没有测量噪声，并且预测器内的积分过程也是精确的)。然后将预测输出
+\begin_inset Formula $y_{i}^{p}(t),i=1,\ldots,n$
+\end_inset
+
+连同角速度测量一起输入给观测器，以便计算由
+\begin_inset Formula $\hat{R}(t)$
+\end_inset
+
+表示的姿态估计。我们提议的预测器是通用的，因为它独立于所采用的观测器算法，即预测器可以与任何渐近稳定的姿态观测器或滤波器耦合来估计姿态。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure3.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+所提议的预测器-观测器方法的说明：方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们提议的预测采用
+\begin_inset Formula 
+\begin{align}
+\dot{\Delta}(t) & =\Delta(t)\Omega(t)_{\times},\Delta(0)=\Delta_{0}\label{eq:5}\\
+y_{i}^{p}(t) & =\Delta(t)^{\top}\Delta\left(t_{k_{i}}^{\prime}-\tau_{i}\right)z_{i}(t),\quad t\in\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)\label{eq:6}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\Delta\in\mathrm{SO}(3)$
+\end_inset
+
+是预测器的内部状态，而
+\begin_inset Formula $\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+是任意初始条件。预测器动力学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的轨迹
+\begin_inset Formula $\Delta(t)$
+\end_inset
+
+需要存储在前
+\begin_inset Formula $t_{k_{i}+1}^{\prime}-t_{k_{i}}^{\prime}+\tau_{i}$
+\end_inset
+
+秒的缓冲区中，以便每次计算预测方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的
+\begin_inset Formula $y_{i}^{p}(t)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+下面的定理总结了所提议的预测器的性质。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{theorem}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "theorem 1"
+
+\end_inset
+
+考虑姿态动力学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的预测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)并对传感器测量值方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。对于所有的
+\begin_inset Formula $t>t_{1_{i}}$
+\end_inset
+
+预测输出
+\begin_inset Formula $y_{i}^{p}(t)$
+\end_inset
+
+等于所有的
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+ 和
+\begin_inset Formula $\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+的所有选择的理想向量度量
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{theorem}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的证明在附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中给出。
+\end_layout
+
+\begin_layout Standard
+尽管所提议的预测器与观测器的选择无关，但为了具体起见，这里我们将预测器与以下几何姿态观测器耦合起来[10]。
+\begin_inset Formula 
+\begin{equation}
+\dot{\hat{R}}(t)=\hat{R}(t)\left(\Omega(t)-P(t)\sum_{i=1}^{n}\left(L_{i}\left(\hat{y}_{i}(t)-y_{i}^{p}(t)\right)\right)_{\times}\hat{y}_{i}(t)\right)_{\times}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\hat{R}(0)=\hat{R}_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+并且
+\begin_inset Formula $t\geq\underset{i=1,\ldots,n}{\max}t_{1_{i}}$
+\end_inset
+
+，其中
+\begin_inset Formula $\hat{R}(t)$
+\end_inset
+
+是
+\begin_inset Formula $R(t)$
+\end_inset
+
+的估计，
+\begin_inset Formula $\hat{y}_{i}(t):=\hat{R}(t)^{\top}\hat{y}_{i}$
+\end_inset
+
+，
+\begin_inset Formula $P(t)$
+\end_inset
+
+和
+\begin_inset Formula $L_{i},i=1,\ldots,n$
+\end_inset
+
+是正定增益矩阵。对于一般正定增益矩阵
+\begin_inset Formula $P(t)$
+\end_inset
+
+和
+\begin_inset Formula $L_{i},i=1,\ldots,n$
+\end_inset
+
+，纯观测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的稳定性如文献[38]所示。选择这些增益以获得期望的观测器性能。例如，
+\begin_inset Formula $P(t)$
+\end_inset
+
+可以使用Riccati微分方程递归更新，如在文献[1]，[2]中的扩展Kalman滤波器一样，或者可以使用几何近似最小能量滤波器如文献[10]中的改进Ricca
+ti微分方程来获得。选择常数正定增益矩阵将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)简化为文献[4]、[6]、[7]、[11]中提议的著名几何姿态观测器。在任何情况下，假设观测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以理想向量测量值
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+而不是预测输出
+\begin_inset Formula $y_{i}^{p}(t)$
+\end_inset
+
+(即用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+替换
+\begin_inset Formula $y_{i}^{p}(t)$
+\end_inset
+
+)产生稳定的估计误差动态，则定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 意味着组合预测器-观测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于
+\begin_inset Formula $\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+的所有选择保留观测器的稳定性属性。特别地，如果将文献[4]的常增益观测器用作方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，则对于所有
+\begin_inset Formula $\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+的选择，估计的姿态
+\begin_inset Formula $\hat{R}(t)$
+\end_inset
+
+几乎全局渐近且局部指数地收敛到真实姿态
+\begin_inset Formula $R(t)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+注意，为了实现所提议的预测-观测方法，只需要实现一个预测动态方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和一个观测动态方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，即使我们有几个向量测量
+\begin_inset Formula $z_{i}(t),i=1,\ldots,n$
+\end_inset
+
+具有可能不同的延迟
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+和可能不同的采样序列
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+。只有预测器状态的固定持续时间缓冲区
+\begin_inset Formula $\Delta(t)$
+\end_inset
+
+是需要的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+我们提议的方法也适用于延迟的情况
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+是时变的，可能会发生乱序测量。在这种情况下，我们应该替换符号
+\begin_inset Formula $\tau_{i}$
+\end_inset
+
+为
+\begin_inset Formula $\tau_{k_{i}}$
+\end_inset
+
+(形成序列
+\begin_inset Formula $\left(\tau_{k_{i}}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+)并且每个测量在
+\begin_inset Formula $t_{k_{i}}^{\prime}$
+\end_inset
+
+时刻给用户时，它的延迟
+\begin_inset Formula $\tau_{k_{i}}$
+\end_inset
+
+应该知道。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{remark}
+\end_layout
+
+\end_inset
+
+虽然本文提议的预测器-观测器思想主要集中在
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上的姿态运动学系统，但这一思想可以推广到一般李群上的运动学系统。对于基本李群是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的非常特殊的情况，运动系统就是线性积分
+\begin_inset Formula $\dot{x}(t)=u(t)$
+\end_inset
+
+，其中，
+\begin_inset Formula $x(t)\in\mathbb{R}^{n}$
+\end_inset
+
+是状态，
+\begin_inset Formula $u(t)\in\mathbb{R}^{n}$
+\end_inset
+
+是输入。输出由
+\begin_inset Formula $y(t)=Cx(t)\in\mathbb{R}^{m}$
+\end_inset
+
+给出，其中
+\begin_inset Formula $C\in\mathbb{R}^{m\times n}$
+\end_inset
+
+，传感器提供延迟测量
+\begin_inset Formula $z(t)=y(t-\tau)$
+\end_inset
+
+。本文提议的预测方法易于调整，并得到以下简单的预测值
+\begin_inset Formula 
+\begin{align}
+\dot{\delta}(t) & =u(t)\label{eq:8}\\
+y^{p}(t) & =C(\delta(t)-\delta(t-\tau))+z(t).\label{eq:9}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这种情况下，预测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对应于众所周知的Smith预测器[39]，该预测器最初设计用于具有延迟测量的线性系统的输出反馈控制。然而，请注意，在观测器上下文中，在存在延迟不确定性的情况下
+，该预测器似乎不会受到Smith预测器的充分证明的稳定性问题的影响(见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{remark}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+模拟结果
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这一节中，我们提供了一组仿真来说明我们提议的预测器-观测器方法的性能。为了生成
+\begin_inset Formula $R(t)$
+\end_inset
+
+的轨迹，我们实现了方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)使用
+\begin_inset Formula $\Omega(t)=\left[0;0;8\right]\ (\mathrm{deg/s})$
+\end_inset
+
+和与初始横滚角
+\begin_inset Formula $14\ (\mathrm{deg})$
+\end_inset
+
+、俯仰角
+\begin_inset Formula $0\ (\mathrm{deg})$
+\end_inset
+
+和偏航角
+\begin_inset Formula $0\ (\mathrm{deg})$
+\end_inset
+
+相对应的初始姿态
+\begin_inset Formula $R_{0}$
+\end_inset
+
+。我们假设姿态传感器提供与参考方向相对应的向量测量
+\begin_inset Formula $\mathring{y_{1}}=\left[\begin{array}{ccc}
+1 & 0 & 0\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathring{y_{2}}=\left[\begin{array}{ccc}
+0 & 1 & 0\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+。虽然在实践中，向量测量的数量可能很高，并且它们的方向不一定是成对垂直的(例如，对于恒星跟踪器)，但是这里我们只考虑两个垂直方向的向量测量，以避免对增益调谐的不
+必要讨论，并且只关注采样和延迟效应。对于模型
+\begin_inset Formula $z_{1}(t)$
+\end_inset
+
+和
+\begin_inset Formula $z_{2}(t)$
+\end_inset
+
+，通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)获得理想向量测量
+\begin_inset Formula $y_{1}(t)$
+\end_inset
+
+和
+\begin_inset Formula $y_{2}(t)$
+\end_inset
+
+，然后将其馈送到图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的框图中，采样前后的延迟为
+\begin_inset Formula $\rho_{1}=\rho_{2}=0.1\ (s)$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{1}=\sigma_{2}=0.3\ (s)$
+\end_inset
+
+，分别产生
+\begin_inset Formula $\tau_{1}=\tau_{2}=0.4\ (s)$
+\end_inset
+
+，采样率为
+\begin_inset Formula $5\ (\mathrm{Hz})$
+\end_inset
+
+。将标准偏差为
+\begin_inset Formula $0.01$
+\end_inset
+
+的零平均高斯噪声添加到向量测量
+\begin_inset Formula $z_{1}(t)$
+\end_inset
+
+和
+\begin_inset Formula $z_{2}(t)$
+\end_inset
+
+的每个轴上，这大约将标准偏差为
+\begin_inset Formula $1\ (\mathrm{deg})$
+\end_inset
+
+的扰动添加到
+\begin_inset Formula $z_{1}(t)$
+\end_inset
+
+和
+\begin_inset Formula $z_{2}(t)$
+\end_inset
+
+的方向上。角速度
+\begin_inset Formula $\Omega(t)$
+\end_inset
+
+以
+\begin_inset Formula $100\ (\mathrm{Hz})$
+\end_inset
+
+的频率采样，并在每个轴上受到
+\begin_inset Formula $0.05\ (\mathrm{deg/s})$
+\end_inset
+
+的附加噪声的干扰。
+\end_layout
+
+\begin_layout Standard
+对于模拟，我们将预测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)与文献[4]的几何观测器相结合。该观测器对应于在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中选择标量常数观测器增益
+\begin_inset Formula 
+\begin{equation}
+\dot{\hat{R}}(t)=\hat{R}(t)\left(\Omega(t)+l_{1}y_{1}^{p}(t)_{\times}\hat{y}_{1}(t)+l_{2}y_{2}^{p}(t)_{\times}\hat{y}_{2}(t)\right)
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\hat{y}_{i}(t):=\hat{R}(t)^{\top}\stackrel{o}{y}_{i}(t)$
+\end_inset
+
+并且
+\begin_inset Formula $l_{i}>0,i=1,2$
+\end_inset
+
+。我们将这种组合预测器-观测器的性能与文献[4]中常增益观测器的一种ad-hoc方法进行了比较，以适应采样和延迟向量测量的情况。ad-hoc观测器的动力学为
+\begin_inset Formula $\dot{\hat{R}}_{\mathrm{ad}}(t)=\hat{R}_{\mathrm{ad}}(t)(\Omega(t)+\alpha(t))\times$
+\end_inset
+
+，其中
+\begin_inset Formula $\hat{R}_{\mathrm{ad}}(t)$
+\end_inset
+
+是
+\begin_inset Formula $R(t)$
+\end_inset
+
+和
+\begin_inset Formula $\alpha(t)$
+\end_inset
+
+是新息项。当姿态传感器在时间
+\begin_inset Formula $t=t_{k_{1}}^{\prime}$
+\end_inset
+
+时刻提供测量样本
+\begin_inset Formula $z_{1}\left(t_{k_{1}}^{\prime}\right)$
+\end_inset
+
+时，ad-hoc观测器的新息项受恒定增益观测器的启发，如
+\begin_inset Formula $\alpha\left(t_{k_{1}}^{\prime}\right)=\bar{l}_{1}z_{1}\left(t_{k_{1}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}$
+\end_inset
+
+，其中
+\begin_inset Formula $\bar{l}_{1}>0$
+\end_inset
+
+。该新息项将新接收的测量
+\begin_inset Formula $z_{1}\left(t_{k_{1}}^{\prime}\right)$
+\end_inset
+
+与其估计
+\begin_inset Formula $\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}$
+\end_inset
+
+进行比较，其中测量延迟的影响
+\begin_inset Formula $\tau_{1}$
+\end_inset
+
+将被考虑
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+由于考虑了新息项中延迟的影响，可以将其视为Lyapunov-Krasovskii项[25]、[26]、[35]。
+\end_layout
+
+\end_inset
+
+。类似地，在时间
+\begin_inset Formula $t=t_{k_{2}}^{\prime}$
+\end_inset
+
+时刻，当测量
+\begin_inset Formula $z_{2}\left(t_{k_{2}}^{\prime}\right)$
+\end_inset
+
+由姿态传感器传送时，新息项为
+\begin_inset Formula $\alpha\left(t_{k_{2}}^{\prime}\right)=\bar{l}_{2}z_{2}\left(t_{k_{2}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{2}}^{\prime}-\tau_{2}\right)^{\top}\mathring{y}_{2}$
+\end_inset
+
+，其中
+\begin_inset Formula $\bar{l}_{2}>0$
+\end_inset
+
+。如果某对
+\begin_inset Formula $\left(k_{1},k_{2}\right)$
+\end_inset
+
+的
+\begin_inset Formula $t_{k_{2}}^{\prime}$
+\end_inset
+
+恰好等于
+\begin_inset Formula $t_{k_{1}}^{\prime}$
+\end_inset
+
+，那么新息项就是
+\begin_inset Formula $\bar{l}_{1}z_{1}\left(t_{k_{1}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}+\bar{l}_{2}z_{2}\left(t_{k_{2}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{2}}^{\prime}-\tau_{2}\right)^{\top}\mathring{y}_{2}$
+\end_inset
+
+。对于没有任何向量测量样本的时间(即对于所有
+\begin_inset Formula $t\notin\left(t_{k_{1}}\right)_{k_{i}=1}^{\infty}\cup\left(t_{k_{2}}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+)，新息项为零，将观测器简化为姿态运动学的正积分。这个新息项的数学公式如下
+\begin_inset Formula 
+\[
+\alpha(t)=\begin{cases}
+\bar{l}_{1}z_{1}\left(t_{k_{1}}^{\prime}\right)\times\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}, & t=t_{k_{1}}^{\prime}\neq t_{k_{2}}^{\prime}\\
+\bar{l}_{2}z_{2}\left(t_{k_{2}}^{\prime}\right)\times\hat{R}_{\mathrm{ad}}\left(t_{k_{2}}^{\prime}-\tau_{2}\right)^{\top}\mathring{y}_{2}, & t=t_{k_{2}}^{\prime}\neq t_{k_{1}}^{\prime}\\
+\sum_{i=1}^{2}\bar{l}_{i}z_{i}\left(t_{k_{i}}^{\prime}\right)\times R_{\mathrm{ad}}\left(t_{k_{i}}^{\prime}-\tau_{i}\right)^{\top}\mathring{y}_{i}, & t=t_{k_{1}}^{\prime}=t_{k_{2}}^{\prime}\\
+0 & t\neq t_{k_{i}}^{\prime}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种观测器的ad-hoc方法通常用于工程应用中，以处理传感器采样和延迟效应(例如EKF示例参见文献[27]、[28])。
+\end_layout
+
+\begin_layout Standard
+组合预测器-观测器的初始条件(即
+\begin_inset Formula $\hat{R}(0.4)$
+\end_inset
+
+和
+\begin_inset Formula $\Delta(0)$
+\end_inset
+
+)和ad-hoc观测器的初始条件(即
+\begin_inset Formula $\hat{R}_{\mathrm{ad}}(t),t\in[0,0.4]$
+\end_inset
+
+)设置为单位矩阵。组合预测器-观测器的姿态估计误差如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，其中观测器增益被选择为
+\begin_inset Formula $l_{1}=l_{2}=0.5$
+\end_inset
+
+。在这个图中，误差
+\begin_inset Formula $\tilde{\theta}$
+\end_inset
+
+是姿态估计误差
+\begin_inset Formula $\hat{R}(t)R(t)^{\top}$
+\end_inset
+
+在角轴表示中的旋转角，并给出为
+\begin_inset Formula $\tilde{\theta}(t)=\frac{180}{\pi}\arccos\left(1-0.5\mathrm{tr}\left(I-\hat{R}(t)R(t)^{\top}\right)\right)$
+\end_inset
+
+。请注意，在姿态传感器提供向量测量的第一个样本之后，观测器的轨迹可用。红色线条显示了稳态估计误差，这说明了即使在传感器高延迟、低采样率和高噪声的情况下，我们提议
+的方法仍然具有良好的性能。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 示出了估计误差
+\begin_inset Formula $\tilde{\theta}_{\mathrm{ad}}(t)=\frac{180}{\pi}\arccos\left(1-0.5\mathrm{tr}\left(I-\hat{R}_{\mathrm{ad}}(t)R(t)^{\top}\right)\right)$
+\end_inset
+
+，当其增益被选择为
+\begin_inset Formula $\bar{l}_{1}=\bar{l}_{2}=42.5$
+\end_inset
+
+时，使得该观测器的误差轨迹具有与图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 大致相同的瞬时收敛速度。比较图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 和图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ ，我们的预测器-观测器的稳态误差几乎比ad-hoc观测器的稳态误差小一个数量级。接下来，我们将传感器延迟增加到
+\begin_inset Formula $\rho_{1}=\rho_{2}=0.5(\mathrm{~s})$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{1}=\sigma_{2}=1.5(\mathrm{~s})$
+\end_inset
+
+，产生
+\begin_inset Formula $2~(\mathrm{s})$
+\end_inset
+
+的总传感器延迟。利用与先前模拟中相同的增益和初始条件，预测器-观测器和ad-hoc观测器的误差轨迹分别示于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 和图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中。这些图显示了我们所提议的预测器-观测器的估计误差收敛，而ad-hoc观测器的估计误差发散。与图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 相比，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的稳态估计误差的小幅度降低是由于预测器依赖于噪声陀螺测量来补偿向量测量中的延迟这一事实。因此，较大的延迟意味着较长的陀螺噪声积分，这增加了估计误差。然而，图
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的稳态估计误差小于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中相应误差的两倍，即使传感器延迟增加了五倍。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure4.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+组合预测器-观测器的姿态估计误差方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。红色线条是放大的稳态估计误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure5.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+ad-hoc观测器的姿态估计误差。红色线条是放大的稳态估计误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure6.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+大时延组合预测器-观测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的姿态估计误差。红色线条是放大的稳态估计误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure7.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+具有大传感器时延的ad-hoc观测器的姿态估计误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来，考虑与第一个模拟场景相同的条件，但是，假设延迟量的知识存在不确定性。为此，我们考虑图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的传感器模型，其参数与第一次模拟相同，但我们考虑两个示例，其中预测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中使用的总延迟量比模拟传感器模型中的总延迟量大
+\begin_inset Formula $10\%$
+\end_inset
+
+或
+\begin_inset Formula $50\%$
+\end_inset
+
+(即
+\begin_inset Formula $\tau_{1}=\tau_{2}=0.44\ (s)$
+\end_inset
+
+或
+\begin_inset Formula $\tau_{1}=\tau_{2}=0.6\ (s)$
+\end_inset
+
+，分别选取)。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 表明，尽管与图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 相比稳态估计误差增大，但是在这两种情况下估计误差实际上是稳定的。对于
+\begin_inset Formula $10\%$
+\end_inset
+
+和
+\begin_inset Formula $50\%$
+\end_inset
+
+的延迟不确定性，稳态估计误差分别小于
+\begin_inset Formula $0.5\ (\mathrm{deg})$
+\end_inset
+
+和
+\begin_inset Formula $1.8\ (\mathrm{deg})$
+\end_inset
+
+，考虑到噪声和延迟不确定性的高值，仍然表现出很好的性能。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 多速率多延迟向量测量下的递推姿态估计-Figure8.png
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:8"
+
+\end_inset
+
+具有时延不确定性的组合预测器-观测器方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的姿态估计误差。小图是稳态估计误差。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们提议了一种组合预测器-观测器的姿态估计方法，用于存在采样和延迟向量测量的姿态估计问题。利用姿态运动学和系统输出映射的对称性，我们提议的预测器能够重建向量测量
+的连续无时延预测。所提议的预测器是通用的，可以与任意观测器或滤波器相结合。当与几何姿态观测器相结合时，与Lyapunov-Krasovskii方法相比，本文提议
+的预测器-观测器方法在仿真中表现出了更好的性能。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+传感器模型的等价性
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:A"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+对于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所有的
+\begin_inset Formula $t$
+\end_inset
+
+令
+\begin_inset Formula $z_{i}(t)=w_{i}(t)$
+\end_inset
+
+，得到
+\begin_inset Formula $y_{i}\left(t_{k_{i}}\right)=y_{i}\left(t_{k_{i}}^{\prime}-\tau_{i}\right)$
+\end_inset
+
+和
+\begin_inset Formula $\left[t_{k_{i}}+\sigma_{i},t_{k_{i}+1}+\sigma_{i}\right)=\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)$
+\end_inset
+
+。当且仅当
+\begin_inset Formula $\tau_{i}=\rho_{i}+\sigma_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}=\left(t_{k_{i}}+\sigma_{i}\right)_{k_{i}=1}^{\infty}$
+\end_inset
+
+时，这些等式成立。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的证明
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:B"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+证明是基于以下引理的应用，该引理允许使用预测器的轨迹对姿态轨迹进行时移。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lemma}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "lemma 1"
+
+\end_inset
+
+对于所有的
+\begin_inset Formula $t_{1},t_{2}>0$
+\end_inset
+
+和所有的
+\begin_inset Formula $R_{0},\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+，姿态运动学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的轨迹
+\begin_inset Formula $R(t)$
+\end_inset
+
+和预测器动力学方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的轨迹
+\begin_inset Formula $\Delta(t)$
+\end_inset
+
+满足
+\begin_inset Formula $R\left(t_{2}\right)=R\left(t_{1}\right)\Delta\left(t_{1}\right)^{\top}\Delta\left(t_{2}\right)$
+\end_inset
+
+。此外，对于所有的
+\begin_inset Formula $t_{1},t_{2}>0$
+\end_inset
+
+和所有的
+\begin_inset Formula $R_{0},\Delta_{0}\in\mathrm{SO}(3)$
+\end_inset
+
+，假设方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $y_{i}(t)$
+\end_inset
+
+的轨迹满足
+\begin_inset Formula $y_{i}\left(t_{2}\right)=\Delta\left(t_{2}\right)^{\top}\Delta\left(t_{1}\right)y_{i}\left(t_{1}\right)$
+\end_inset
+
+。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}
+\end_layout
+
+\end_inset
+
+引理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lemma 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ ：利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对于所有的
+\begin_inset Formula $t\geq0$
+\end_inset
+
+，我们有
+\begin_inset Formula $\frac{\mathrm{d}}{\mathrm{d}t}\left(R(t)\Delta(t)^{\top}\right)=R(t)\Omega(t)_{\times}\Delta(t)^{\top}+R(t)\Omega(t)_{\times}^{\top}\Delta(t)^{\top}=0$
+\end_inset
+
+。这意味着
+\begin_inset Formula $R(t)\Delta(t)^{\top}$
+\end_inset
+
+对所有
+\begin_inset Formula $t\geq0$
+\end_inset
+
+都是常数，这尤其意味着，对于所有
+\begin_inset Formula $t_{1},t_{2}\geq0$
+\end_inset
+
+，
+\begin_inset Formula $R\left(t_{1}\right)\Delta\left(t_{1}\right)^{\top}=R\left(t_{2}\right)\Delta\left(t_{2}\right)^{\top}$
+\end_inset
+
+，这就证明了引理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lemma 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的第一个要求。利用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对于所有的
+\begin_inset Formula $t_{1},t_{2}\geq t_{1_{i}}$
+\end_inset
+
+，我们得到
+\begin_inset Formula $y_{i}\left(t_{2}\right)=R\left(t_{2}\right)^{\top}\stackrel{\circ}{y}_{i}=\Delta\left(t_{2}\right)^{\top}\Delta\left(t_{1}\right)R\left(t_{1}\right)^{\top}\stackrel{\circ}{y}_{i}=\Delta\left(t_{2}\right)^{\top}\Delta\left(t_{1}\right)y_{i}\left(t_{1}\right)$
+\end_inset
+
+。这就完成了证明。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+选择
+\begin_inset Formula $t_{1}=t_{k_{i}}^{\prime}-\tau_{i}$
+\end_inset
+
+和
+\begin_inset Formula $t_{2}=t$
+\end_inset
+
+，并调用引理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lemma 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ ，我们有
+\begin_inset Formula $y_{i}(t)=\Delta(t)^{\top}\Delta\left(t_{k_{i}}^{\prime}-\tau_{i}\right)y_{i}\left(t_{k_{i}}^{\prime}-\tau_{i}\right)$
+\end_inset
+
+。现在，选择
+\begin_inset Formula $t\in\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)$
+\end_inset
+
+并回调方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对于所有的
+\begin_inset Formula $t\in\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)$
+\end_inset
+
+，我们有
+\begin_inset Formula $y_{i}(t)=\Delta(t)^{\top}\Delta\left(t_{k_{i}}^{\prime}-\tau_{i}\right)z_{i}(t)$
+\end_inset
+
+，与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)一起意味着，对于所有的
+\begin_inset Formula $t\geq t_{1_{i}}$
+\end_inset
+
+，
+\begin_inset Formula $y_{i}^{p}(t)=y_{i}(t)$
+\end_inset
+
+。这就完成了定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "theorem 1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的证明。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+REFERENCES
+\end_layout
+
+\begin_layout Enumerate
+F.
+ L.
+ Markley, “Attitude error representations for kalman filtering,” Journal
+ of guidance, control, and dynamics, vol.
+ 26, no.
+ 2, pp.
+ 311– 317, 2003.
+\end_layout
+
+\begin_layout Enumerate
+E.
+ J.
+ Lefferts, F.
+ L.
+ Markley, and M.
+ D.
+ Shuster, “Kalman filtering for spacecraft attitude estimation,” Journal
+ of Guidance, Control, and Dynamics, vol.
+ 5, no.
+ 5, pp.
+ 417–429, 1982.
+\end_layout
+
+\begin_layout Enumerate
+J.
+ L.
+ Crassidis and F.
+ L.
+ Markley, “Unscented filtering for spacecraft attitude estimation,” Journal
+ of guidance, control, and dynamics, vol.
+ 26, no.
+ 4, pp.
+ 536–542, 2003.
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Mahony, T.
+ Hamel, and J.M.
+ Pflimlin, “Nonlinear complementary filters on the special orthogonal group,”
+ IEEE Trans.
+ Autom.
+ Control, vol.
+ 53, no.
+ 5, pp.
+ 1203–1218, 2008.
+\end_layout
+
+\begin_layout Enumerate
+H.
+ F.
+ Grip, T.
+ I.
+ Fossen, T.
+ A.
+ Johansen, and A.
+ Saberi, “Globally exponentially stable attitude and gyro bias estimation
+ with application to GNSS/INS integration,” Automatica, vol.
+ 51, pp.
+ 158–166, 2015.
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Vasconcelos, C.
+ Silvestre, and P.
+ Oliveira, “A nonlinear observer for rigid body attitude estimation using
+ vector observations,” in Proc.
+ IFAC World Congr., Korea, July 2008.
+\end_layout
+
+\begin_layout Enumerate
+S.
+ Bonnabel, P.
+ Martin, and P.
+ Rouchon, “Symmetry-preserving ob- servers,” IEEE Trans.
+ Autom.
+ Control, vol.
+ 53, no.
+ 11, pp.
+ 2514–2526, 2008.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Roberts and A.
+ Tayebi, “On the attitude estimation of accelerating rigid-bodies using
+ GPS and IMU measurements,” in IEEE Conf.
+ Decision and Control and European Control Conf.
+ (CDC-ECC), 2011, pp.
+ 8088–8093.
+\end_layout
+
+\begin_layout Enumerate
+M.
+ Izadi and A.
+ K.
+ Sanyal, “Rigid body attitude estimation based on the Lagrange–d’Alembert
+ principle,” Automatica, vol.
+ 50, no.
+ 10, pp.
+ 2570–2577, 2014.
+\end_layout
+
+\begin_layout Enumerate
+M.
+ Zamani, J.
+ Trumpf, and R.
+ Mahony, “Minimum-energy filtering for attitude estimation,” IEEE Transactions
+ on Automatic Control, vol.
+ 58, pp.
+ 2917–2921, 2013.
+\end_layout
+
+\begin_layout Enumerate
+H.
+ Rehbinder and B.
+ K.
+ Ghosh, “Pose estimation using line-based dynamic vision and inertial sensors,”
+ IEEE Trans.
+ Automatic Control, vol.
+ 48, no.
+ 2, pp.
+ 186–199, 2003.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Khosravian and M.
+ Namvar, “Globally exponential estimation of satellite attitude using a
+ single vector measurement and gyro,” in Proc.
+ 49th IEEE Conf.
+ Decision and Control, USA, Dec.
+ 2010.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Khosravian, J.
+ Trumpf, R.
+ Mahony, and C.
+ Lageman, “Bias estimation for invariant systems on Lie groups with homogeneous
+ outputs,” in Proc.
+ IEEE Conf.
+ on Decision and Control, December 2013.
+\end_layout
+
+\begin_layout Enumerate
+P.
+ Martin and E.
+ Salaün, “Design and implementation of a low- cost observer-based attitude
+ and heading reference system,” Control Engineering Practice, vol.
+ 18, no.
+ 7, pp.
+ 712–722, 2010.
+\end_layout
+
+\begin_layout Enumerate
+M.-D.
+ Hua, “Attitude estimation for accelerated vehicles using GPS/INS measurements,”
+ Control Engineering Practice, vol.
+ 18, no.
+ 7, pp.
+ 723–732, 2010.
+\end_layout
+
+\begin_layout Enumerate
+M.-D.
+ Hua, P.
+ Martin, and T.
+ Hamel, “Velocity-aided attitude esti- mation for accelerated rigid bodies,”
+ arXiv preprint arXiv:1411.3953, 2014.
+ 
+\end_layout
+
+\begin_layout Enumerate
+F.
+ L.
+ Markley and J.
+ L.
+ Crassidis, Fundamentals of Spacecraft Attitude Determination and Control.
+ Springer, 2014.
+\end_layout
+
+\begin_layout Enumerate
+M.
+ Arcak and D.
+ Nešić, “A framework for nonlinear sampled-data observer design via approximate
+ discrete-time models and emulation,” Automatica, vol.
+ 40, no.
+ 11, pp.
+ 1931–1938, 2004.
+\end_layout
+
+\begin_layout Enumerate
+T.
+ Ahmed-Ali, I.
+ Karafyllis, and F.
+ Lamnabhi-Lagarrigue, “Global exponential sampled-data observers for nonlinear
+ systems with delayed measurements,” Systems & Control Letters, vol.
+ 62, no.
+ 7, pp.
+ 539– 549, 2013.
+ 
+\end_layout
+
+\begin_layout Enumerate
+B.
+ Khaleghi, A.
+ Khamis, F.
+ O.
+ Karray, and S.
+ N.
+ Razavi, “Multisensor data fusion: A review of the state-of-the-art,” Informatio
+n Fusion, vol.
+ 14, no.
+ 1, pp.
+ 28–44, 2013.
+ 
+\end_layout
+
+\begin_layout Enumerate
+F.
+ Deza, E.
+ Busvelle, J.
+ Gauthier, and D.
+ Rakotopara, “High gain estimation for nonlinear systems,” Systems & control
+ letters, vol.
+ 18, no.
+ 4, pp.
+ 295–299, 1992.
+ 
+\end_layout
+
+\begin_layout Enumerate
+W.
+ H.
+ Heemels, A.
+ R.
+ Teel, N.
+ van de Wouw, and D.
+ Nesic, “Net- worked control systems with communication constraints: Tradeoffs
+ between transmission intervals, delays and performance,” IEEE Trans.
+ Automatic Control, vol.
+ 55, no.
+ 8, pp.
+ 1781–1796, 2010.
+\end_layout
+
+\begin_layout Enumerate
+H.
+ Hammouri, M.
+ Nadri, and R.
+ Mota, “Constant gain observer for continuous-discrete time uniformly observable
+ systems,” in Proc.
+ IEEE Conf.
+ Decision and Control, 2006, pp.
+ 5406–5411.
+\end_layout
+
+\begin_layout Enumerate
+I.
+ Karafyllis and C.
+ Kravaris, “From continuous-time design to sampled-data design of observers,”
+ IEEE Trans.
+ Automatic Control, vol.
+ 54, no.
+ 9, pp.
+ 2169–2174, 2009.
+ 
+\end_layout
+
+\begin_layout Enumerate
+T.
+ Ahmed-Ali, E.
+ Cherrier, and F.
+ Lamnabhi-Lagarrigue, “Cascade high gain predictors for a class of nonlinear
+ systems,” IEEE Trans.
+ Automatic Control, vol.
+ 57, no.
+ 1, pp.
+ 221–226, 2012.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ Bahrami and M.
+ Namvar, “Delay compensation in global estimation of rigid-body attitude
+ under biased velocity measurement,” in Proc.
+ IEEE Conf.
+ on Decision and Control, December 2014.
+ 
+\end_layout
+
+\begin_layout Enumerate
+P.
+ Riseborough, (visited on September 2014).
+ [Online].
+ Available: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/priseborough/InertialNav
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+“APM: Navigation extended Kalman filter overview,” (visited on September
+ 2014).
+ [Online].
+ Available: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://copter.ardupilot.com/wiki/common-apm-navigation-extended- kalman-filter-ove
+rview/ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Y.
+ Bar-Shalom, H.
+ Chen, and M.
+ Mallick, “One-step solution for the multistep out-of-sequence-measurement
+ problem in tracking,” IEEE Trans.
+ Aerospace and Electronic Systems, vol.
+ 40, no.
+ 1, pp.
+ 27–37, 2004.
+ 
+\end_layout
+
+\begin_layout Enumerate
+M.
+ Mallick, J.
+ Krant, and Y.
+ Bar-Shalom, “Multi-sensor multi-target tracking using out-of-sequence measureme
+nts,” in Proc.
+ IEEE Inter- national Conf.
+ Information Fusion, vol.
+ 1, 2002, pp.
+ 135–142.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ W.
+ Beard, private communication, 2014.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Zhang, X.
+ R.
+ Li, and Y.
+ Zhu, “Optimal update with out-of-sequence measurements,” IEEE Trans.
+ Signal Processing, vol.
+ 53, no.
+ 6, pp.
+ 1992–2004, 2005.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Y.
+ Bar-Shalom, “Update with out-of-sequence measurements in track- ing: exact
+ solution,” IEEE Trans.
+ Aerospace and Electronic Systems, vol.
+ 38, no.
+ 3, pp.
+ 769–777, 2002.
+ 
+\end_layout
+
+\begin_layout Enumerate
+D.
+ B.
+ Kingston and R.
+ W.
+ Beard, “Real-time attitude and position estimation for small UAVs using
+ low-cost sensors,” in AIAA 3rd Unmanned Unlimited Technical Conference,
+ Workshop and Exhibit, 2004.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Germani, C.
+ Manes, and P.
+ Pepe, “A new approach to state observation of nonlinear systems with delayed
+ output,” IEEE Trans.
+ Automatic Control, vol.
+ 47, no.
+ 1, pp.
+ 96–101, 2002.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Khosravian, J.
+ Trumpf, R.
+ Mahony, and T.
+ Hamel, “Velocity aided attitude estimation on SO(3) with sensor delay,”
+ in Proc.
+ IEEE Conf.
+ on Decision and Control, December 2014, (accepted for publication).
+ 
+\end_layout
+
+\begin_layout Enumerate
+T.
+ Sun, F.
+ Xing, Z.
+ You, and M.
+ Wei, “Motion-blurred star acquisition method of the star tracker under
+ high dynamic conditions,” Optics express, vol.
+ 21, no.
+ 17, pp.
+ 20 096–20 110, 2013.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Khosravian, J.
+ Trumpf, R.
+ Mahony, and C.
+ Lageman, “Observers for invariant systems on lie groups with biased input
+ measurements and homogeneous outputs,” Automatica, (to appear).
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Vasconcelos, C.
+ Silvestre, and P.
+ Oliveira, “A nonlinear observer for rigid body attitude estimation using
+ vector observations,” in Proc.
+ IFAC World Congr., Korea, July 2008.
+\end_layout
+
+\begin_layout Enumerate
+O.
+ J.
+ Smith, “A controller to overcome dead time,” ISA Journal of Instrument
+ Society of America, vol.
+ 6, no.
+ 2, pp.
+ 28–33, 1959.
+\end_layout
+
+\end_body
+\end_document
