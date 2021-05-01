@@ -34,7 +34,7 @@
 07. [Improving the Accuracy of EKF-Based Visual-Inertial Odometry - 2012](https://intra.ece.ucr.edu/~mourikis/papers/Li2012-ICRA.pdf)
     + 提高基于EKF的视觉惯性里程测量精度
 
-08. [High-precision, consistent EKF-based visual-inertial odometry - 2013](https://ee.ucr.edu/~mourikis/papers/Li2013IJRR.pdf)
+08. [High-precision, consistent EKF-based visual-inertial odometry - 2013](https://intra.ece.ucr.edu/~mourikis/papers/Li2013IJRR.pdf)
     + 基于EKF的高精度视觉惯性里程测量
     + [High-Precision, Consistent EKF-based Visual-Inertial Odometry](https://pdfs.semanticscholar.org/0be0/c13803cd08e81b7adaada537e91222eb1491.pdf)
 
