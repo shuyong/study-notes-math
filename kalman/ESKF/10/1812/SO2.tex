@@ -1,0 +1,124 @@
+% !TEX root = micro_Lie_theory.tex
+
+
+\section{二维旋转群 $S^1$ 和 $SO(2)$}
+\label{sec:S1_SO2}
+
+Lie群的 $S^1$ 是复数积下的单位复数群。
+它的拓扑是单位圆，或者单位一维球面，因此名为 $S^1$。
+群，Lie代数和向量元素的形式是，
+%
+\begin{align}
+\bfz&=\cos\theta+i\sin\theta, & \tau^\wedge&=i\theta, & \tau&=\theta
+~.
+\end{align}
+%
+求逆和组合是通过共轭 $\bfz\inv = \bfz^*$ 和乘积 $\bfz_a\circ\bfz_b = \bfz_a\,\bfz_b$ 达成的。
+
+群 $\SO(2)$ 是在矩阵乘法下平面上的特殊正交矩阵或旋转矩阵的群。
+群，Lie代数和向量元素的形式，
+%
+\begin{align}
+\bfR&= \begin{bsmallmatrix}
+  \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta 
+  \end{bsmallmatrix}
+, & \tau^\wedge&=\hatx{\theta}\te \begin{bsmallmatrix}
+0 & -\theta \\ \theta & 0
+\end{bsmallmatrix}, & \tau&=\theta
+~.
+\end{align}
+%
+求逆和组合是通过共轭 $\bfR\inv = \bfR\tr$ 和乘积 $\bfR_a\circ\bfR_b = \bfR_a\,\bfR_b$ 达成的。
+
+两个群都旋转$2$参数向量，并且它们具有同构的切空间。
+因此，我们一起研究它们。
+
+\subsection{Exp 和 Log 映射}
+
+Exp 和 Log 映射可以定义为复数 $S^1$ 和旋转矩阵 $SO(2)$ 。
+对于 $S^1$ 我们有，
+%
+\begin{align}
+\bfz = \Exp(\theta) &= \cos\theta+i\sin\theta && \in\bbC \label{equ:Euler_formula}\\
+\theta = \Log(\bfz) &= \arctan(\Im(\bfz),\Re(\bfz)) && \in\bbR
+~,
+%
+\intertext{其中方程 \eqRef{equ:Euler_formula} 是欧拉公式， 而对于 $SO(2)$ ，}
+%
+\bfR = \Exp(\theta) &= \begin{bmatrix}
+\cos\theta & -\sin\theta \\ \sin\theta & \cos\theta
+\end{bmatrix} &&\in\bbR^{2\tcross2}  \label{equ:R_SO2} \\
+\theta = \Log(\bfR) &= \arctan(r_{21},r_{11}) && \in\bbR
+~.
+\end{align}
+%
+
+
+\subsection{求逆、组合、指数映射}
+
+我们考虑通用的二维旋转元素，并用无衬线字体 $\sQ,\sR$ 来记录它们。 
+我们有
+%
+\begin{align}
+\sR(\theta)\inv &= \sR(-\theta) \\
+\sQ\circ\sR     &= \sR\circ\sQ 
+~,
+%
+\intertext{即，平面旋转是可交换的。
+因此，}
+%
+\Exp(\theta_1+\theta_2) &= \Exp(\theta_1)\circ\Exp(\theta_2) \\
+\Log(\sQ\circ\sR) &= \Log(\sQ)+\Log(\sR) \\
+\sQ\om\sR &= \theta_Q-\theta_R 
+~.
+\end{align}
+
+\subsection{Jacobian矩阵块}
+\label{sec:derivatives_SO2}
+
+由于我们定义的导数映射切向量空间，并且这些空间重叠于 $S^1$ 和 $SO(2)$ 的平面旋转流形，即，$\theta=\Log(\bfz)=\Log(\bfR)$，因此Jacobian矩阵独立于所使用的表示($\bfz$ 或 $\bfR$)。
+
+\subsubsection[Adjoint and other Jacobians]{伴随与其它平凡Jacobian矩阵}\label{sec:SO2_jacs}
+%
+从方程 \eqRef{equ:Jacobian}， \secRef{sec:jacs_elementary} 和上述性质，下面的标量导数块变得平凡，
+%
+\begin{align}
+\Ad[\SO(2)]{\sR} &= 1 && \in\bbR \\
+\mjac{\sR\inv}{\sR} 
+  &= -1 && \in \bbR\\
+\mjac{\sQ\circ\sR}{\sQ} 
+  = \mjac{\sQ\circ\sR}{\sR} 
+  &= 1 && \in \bbR\\
+\bfJ_r(\theta)
+  = \bfJ_l(\theta)
+  &= 1 && \in \bbR \\
+\mjac{\sR\op\theta}{\sR}    
+  =~~\,\mjac{\sR\op\theta}{\theta}     
+  & =1 && \in \bbR\\
+\mjac{\sQ\om\sR}{\sQ} 
+  = -\mjac{\sQ\om\sR}{\sR} 
+  &= 1 && \in \bbR
+\end{align}
+%
+%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsubsection{旋转作用}
+\label{sec:jac_SO2_action}
+
+对于作用  $\sR\cdot\bfv$ 我们有，
+%
+\begin{align}
+\mjac{\sR\cdot\bfv}{\sR}
+&= \lim_{\theta\to0}\frac{\bfR\Exp(\theta)\bfv-\bfR\bfv}{\theta} \notag \\
+&= \lim_{\theta\to0}\frac{\bfR(\bfI+\hatx{\theta})\bfv-\bfR\bfv}{\theta} \notag \\
+&= \lim_{\theta\to0}\frac{\bfR\hatx{\theta}\bfv}{\theta} 
+ = \bfR\hatx{1}\bfv && \in \bbR^{2\times 1} 
+%
+\intertext{并且}
+%
+\mjac{\sR\cdot\bfv}{\bfv} &= \ndpar{\bfR\bfv}{\bfv} = \bfR && \in\bbR^{2\times2}
+~.
+\end{align}
+%
+

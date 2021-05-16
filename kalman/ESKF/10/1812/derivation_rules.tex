@@ -1,0 +1,272 @@
+% !TEX root = micro_Lie_theory.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{流形上的微分法则}
+\label{sec:derivatives_M}
+
+对于我们所使用的所有经典流形 $\cM$ ，对于求逆(\emph{inversion})、组合(\emph{composition})、求幂(\emph{exponentiation})和作用(\emph{action})的初等Jacobian矩阵，我们可以确定封闭形式。
+此外，其中一些形式可能与伴随 $\Ad[\cM]{\cX}$ 有关，后者成为微分过程的中心块。
+$\Log$、 $\op$ 和 $\om$ 等其它形式可以很容易地从它们当中推导出来。
+一旦找到这些形式或“块”，所有其它Jacobian矩阵都遵循链式法则。
+除了我们下面介绍的所谓的左Jacobian矩阵(\emph{left Jacobian})，这里发展的所有Jacobian矩阵都是右Jacobian矩阵(\emph{right-Jacobian})，即由方程 \eqRef{equ:Jacobian} 所定义。
+通过遵循这里的提示，感兴趣的读者应该不会发现在发展左Jacobian矩阵时有什么特别的困难。
+对于不愿意这样做的读者，方程 \eqRef{equ:derivatives_lr_adjoints} 可用于此目的，因为
+
+
+%
+\begin{align}
+\ldpar{f(\cX)}{\cX} = \Ad[\cN]{f(\cX)}\rdpar{f(\cX)}{\cX} \Ad[\cM]{\cX}\inv
+~.
+\end{align}
+
+
+我们使用符号 $\mjac{f(\cX)}{\cX}\te\ndpar{f(\cX)}{\cX}$ 和 $\mjac{\cY}{\cX}\te\ndpar{\cY}{\cX}$ 。
+我们还注意到， $\Ad[\cM]{\cX}\inv$ 应该由 $\Ad[\cM]{\cX\inv}$ 实现 ---参见方程 \eqssRef{equ:Adj5,equ:Adj7} 以及下面的注释。
+
+
+
+\subsection{链式法则}
+\label{sec:jacs_chain_rule}
+
+对于 $\cY=f(\cX)$ 和 $\cZ=g(\cY)$ 我们有 $\cZ=g(f(\cX))$ 。
+链式法则简单地说，
+%
+\begin{align}
+\ndpar{\cZ}{\cX} = \ndpar{\cZ}{\cY}\,\ndpar{\cY}{\cX}
+\qquad \textrm{or} \qquad
+\mjac{\cZ}{\cX} = \mjac{\cZ}{\cY}\,\mjac{\cY}{\cX}
+~.
+\end{align}
+%
+我们为了右Jacobian矩阵在这里证明它，其中使用方程 \eqRef{equ:lin_approx} 三次，
+%
+\begin{align*}
+g(f(\cX))\op\mjac{\cZ}{\cX}\bftau \gets g(f(\cX\op\bftau)) &\to g(f(\cX)~\op\mjac{\cY}{\cX}\bftau) 
+  \\
+  &\to g(f(\cX))\op\mjac{\cZ}{\cY}\mjac{\cY}{\cX}\bftau
+\end{align*}
+%
+其中箭头表示极限为 $\bftau\to0$ ，因此 $\mjac{\cZ}{\cX}=\mjac{\cZ}{\cY}\mjac{\cY}{\cX}$ 。
+左Jacobian矩阵和交叉Jacobian矩阵的证明类似，分别使用方程 \eqssRef{equ:lin_approx_left,equ:lin_approx_rl,equ:lin_approx_lr} 。
+%
+注意，当混合右、左和交叉Jacobian矩阵时，我们还需要链接参考帧，如
+%
+\begin{align}
+\rldpar{\cZ}{\cX}
+  &= \rrdpar{\cZ}{\cY}\,\rldpar{\cY}{\cX}
+  = \rldpar{\cZ}{\cY}\,\lldpar{\cY}{\cX} \label{equ:chain_rule_cross_1}
+\\
+\lrdpar{\cZ}{\cX}
+  &= \lrdpar{\cZ}{\cY}\,\rrdpar{\cY}{\cX}
+  = \lldpar{\cZ}{\cY}\,\lrdpar{\cY}{\cX}\label{equ:chain_rule_cross_2}
+~,
+\end{align}
+%
+其中方程 \eqRef{equ:chain_rule_cross_1} 的第一个特征的证明通过写方程，
+%
+\begin{align*}
+g(f({^\cE\!\bftau}\op\cX)) 
+  &\xrightarrow[{^\cE\!\bftau}\to0]{\eqRef{equ:lin_approx_lr}} 
+  g(f(\cX))\op\rldpar{\cZ}{\cX}\,{^\cE}\!\bftau
+  ~; \\ 
+g(f({^\cE\!\bftau}\op\cX)) 
+  &\xrightarrow[{^\cE\!\bftau}\to0]{\eqRef{equ:lin_approx_lr}} 
+  g\left(f(\cX)~\op\rldpar{\cY}{\cX}\,{^\cE}\!\bftau\right) \to
+  \\
+  &\xrightarrow[{^\cE\!\bftau}\to0]{\eqRef{equ:lin_approx}} 
+  g(f(\cX))\op\rrdpar{\cZ}{\cY}\,\rldpar{\cY}{\cX}\,{^\cE}\!\bftau 
+~,
+\end{align*}
+%
+并在第一行和第三行中标识方程 \eqRef{equ:chain_rule_cross_1} 。
+
+
+\subsection{初等Jacobian块}
+\label{sec:jacs_elementary}
+
+\subsubsection{求逆(Inverse)}
+\label{sec:Jac_inversion}
+
+我们用方程 \eqRef{equ:Jacobian} 定义 
+%
+\begin{align}
+\mjac{\cX\inv}{\cX} 
+  &\te \rdpar{\cX\inv}{\cX} \Quad\in \bbR^{m\times m}
+  ~. \\
+%
+\intertext{这可以通过使用方程 \eqRef{equ:prop_exp} 和方程 \eqRef{equ:Adj4} 的伴随来确定,}
+%
+\mjac{\cX\inv}{\cX}\label{equ:Jac_inv}
+  &= \lim_{\bftau\to0}\frac{\Log((\cX\inv)\inv(\cX\Exp(\bftau))\inv)}{\bftau} \notag\\
+  &= \lim_{\bftau\to0}\frac{\Log(\cX\Exp(-\bftau)\cX\inv)}{\bftau} \notag \\
+  &= \lim_{\bftau\to0}\frac{(\cX(-\bftau)^\wedge\cX\inv)^\vee}{\bftau} 
+  = -\Ad[\cM]{\cX}
+~.
+\end{align}
+%
+
+
+\subsubsection{组合(Composition)}
+\label{sec:Jac_composition}
+
+我们用方程 \eqRef{equ:Jacobian} 定义
+%
+\begin{align}
+\mjac{\cX\circ\cY}{\cX} &\te \rdpar{\cX\circ\cY}{\cX} &&\in \bbR^{m\times m} \\
+\mjac{\cX\circ\cY}{\cY} &\te \rdpar{\cX\circ\cY}{\cY} &&\in \bbR^{m\times m}
+~,
+  \intertext{并如上面一样使用方程 \eqRef{equ:Adj4} 和方程 \eqRef{equ:Adj5},}
+\mjac{\cX\circ\cY}{\cX} &= \Ad[\cM]{\cY}\inv \label{equ:Jac_comp_1}\\
+\mjac{\cX\circ\cY}{\cY} &= \bfI \label{equ:Jac_comp_2}
+\end{align}
+
+
+\subsubsection[Right and left Jacobians]{Jacobians of $\cM$}
+
+我们定义流形的右Jacobian矩阵(\emph{right Jacobian of $\cM$}) 为 $\cX=\Exp(\bftau)$ 的右Jacobian矩阵，即，对于 $\bftau\in
+\bbR^m$ ，
+%
+\begin{align}
+\mjac{}{r}(\bftau) \te \rdpar{\Exp(\bftau)}{\bftau} \in \bbR^{m\times m} 
+~,
+\label{equ:M_Jr}
+\end{align}
+%
+这由方程 \eqRef{equ:Jacobian} 定义。 
+右Jacobian矩阵将参数 $\bftau$ 的变化映射到 $\Exp(\bftau)$处的局部(\emph{local})切空间中的变化。
+从方程 \eqRef{equ:Jacobian} 这很容易证明，对于小的 $\delta\bftau$ 值，以下近似值成立，
+%
+\begin{align}
+\Exp(\bftau+\delta\bftau) &\approx \Exp(\bftau)\Exp(\mjac{}{r}(\bftau)\delta\bftau) \label{equ:Jr_1} \\
+\Exp(\bftau)\Exp(\delta\bftau) &\approx \Exp(\bftau+\mjac{-1}{r}(\bftau)\,\delta\bftau) \label{equ:Jr_2} \\
+\Log(\Exp(\bftau)\Exp(\delta\bftau)) &\approx \bftau+\mjac{-1}{r}(\bftau)\,\delta\bftau  \label{equ:Jr_3}
+~.
+\end{align}
+%
+
+作为补充，流形的左Jacobian矩阵(\emph{left Jacobian of $\cM$})被定义为， 
+%
+\begin{align}
+\mjac{}{l}(\bftau) \te \ldpar{\Exp(\bftau)}{\bftau} \in \bbR^{m\times m} 
+~,
+\label{equ:M_Jl}
+\end{align}
+%
+使用左Jacobian矩阵方程 \eqRef{equ:left-Jacobian}，得出近似值
+%
+\begin{align}
+\Exp(\bftau+\delta\bftau) &\approx \Exp(\mjac{}{l}(\bftau)\delta\bftau)\Exp(\bftau)  \label{equ:Jl_1}\\
+\Exp(\delta\bftau)\Exp(\bftau) &\approx \Exp(\bftau+\mjac{-1}{l}(\bftau)\,\delta\bftau)  \label{equ:Jl_2}\\
+\Log(\Exp(\delta\bftau)\Exp(\bftau)) &\approx \bftau+\mjac{-1}{l}(\bftau)\,\delta\bftau  \label{equ:Jl_3}
+~.
+\end{align}
+% 
+左Jacobian矩阵将参数 $\bftau$ 的变化映射到全局(\emph{global})切空间或Lie代数中的变化。
+从方程 ~\eqssRef{equ:Jr_1,equ:Jl_1} 我们可以把左Jacobian矩阵和右Jacobian矩阵用伴随联系起来，
+%
+\begin{align}\label{equ:Jr_Jl_Adj}
+\Ad[\cM]{\Exp(\bftau)} = \mjac{}{l}(\bftau)\,\mjac{}{r}\inv(\bftau)
+~.
+\end{align}
+%
+此外，链式法则允许我们关联 $\mjac{}{r}$ 和 $\mjac{}{l}$，
+%
+\begin{align}\label{equ:Jr_minus}
+\mjac{}{r}(-\bftau) 
+  &\te \mjac{\Exp(-\bftau)}{-\bftau} 
+  = \mjac{\Exp(-\bftau)}{\bftau}\mjac{\bftau}{-\bftau} 
+  = \mjac{\Exp(\bftau)\inv}{\bftau}(-\bfI) 
+  \notag\\
+  &
+  = -\mjac{\Exp(\bftau)\inv}{\Exp(\bftau)}\mjac{\Exp(\bftau)}{\bftau} 
+  = \Ad{\Exp(\bftau)}\mjac{}{r}(\bftau)
+  \notag\\
+  &
+  = \mjac{}{l}(\bftau)
+  ~.
+\end{align}
+
+
+
+对于使用中的经典流形， $\mjac{}{r}$、 $\mjac{}{r}\inv$、 $\mjac{}{l}$ 和 $\mjac{}{l}\inv$ ，存在封闭形式。
+查询请参考附件。
+
+
+\subsubsection{群作用}
+
+
+对于 $\cX\in\cM$ 和 $v\in\cV$我们用方程 \eqRef{equ:Jacobian} 定义
+%
+\begin{align}
+\mjac{\cX\cdot v}{\cX} &\te \rdpar{\cX\cdot v}{\cX} \\
+\mjac{\cX\cdot v}{v}   &\te \rdpar{\cX\cdot v}{v} 
+~.
+\end{align}
+%
+由于群作用依赖于集合 $\cV$，因此这些表达式不能通用化。
+查询请参考附件。
+
+
+
+\subsection{有用的，但可推导的， Jacobian 矩阵块}
+
+\subsubsection[Log map]{$\Log$ 映射}
+
+对于 $\bftau=\Log(\cX)$ ，
+并从方程 \eqRef{equ:Jr_3} ，
+%
+\begin{align}\label{equ:Jac_log}
+\mjac{\Log(\cX)}{\cX} 
+&= \mjac{-1}{r}(\bftau) 
+~.
+\end{align}
+
+\subsubsection{加号和减号}
+
+我们有
+%
+\begin{align}
+\mjac{\cX\op\bftau}{\cX}
+  &= \mjac{\cX\circ(\Exp(\bftau))}{\cX} 
+  ~~~~~~~~~= \Ad[\cM]{\Exp(\bftau)}\inv \\
+\mjac{\cX\op\bftau}{\bftau}
+  &= \mjac{\cX\circ(\Exp(\bftau))}{\Exp(\bftau)}\mjac{\Exp(\bftau)}{\bftau}
+  = \mjac{}{r}(\bftau) 
+\end{align}
+%
+并得到 $\cZ=\cX\inv\circ\cY$ 和 $\bftau=\cY\om\cX=\Log(\cZ)$ ，
+%
+\begin{align}
+\mjac{\cY\om\cX}{\cX}
+  &= \mjac{\Log(\cZ)}{\cZ}\mjac{\cZ}{\cX\inv}\mjac{\cX\inv}{\cX} 
+   = -\mjac{-1}{l}(\bftau)
+  \\
+\mjac{\cY\om\cX}{\cY}
+  &= \mjac{\Log(\cZ)}{\cZ}\mjac{\cZ}{\cY} 
+  ~~~~~~~~~= \mjac{-1}{r}(\bftau)
+~.
+\end{align}
+%
+在这里证明前者
+%
+\begin{align*}
+\mjac{\cY\om\cX}{\cX}
+  &= \mjac{\Log(\cX\inv\circ\cY)}{(\cX\inv\circ\cY)}\,\mjac{(\cX\inv\circ\cY)}{\cX\inv}\,\mjac{\cX\inv}{\cX} 
+ \notag\\ 
+ (\ref{equ:Jac_log},\ref{equ:Jac_comp_1},\ref{equ:Jac_inv})
+  &= ~~\,\mjac{-1}{r}(\bftau)~~\Ad[\cM]{\cY}\inv~~(-\Ad[\cM]{\cX}) 
+ \notag\\ 
+ (\ref{equ:Adj5},\ref{equ:Adj7})
+  &= -\mjac{-1}{r}(\bftau)\,\Ad[\cM]{\cY\inv\cX} 
+ \notag\\ 
+  &= -\mjac{-1}{r}(\bftau)\,\Ad[\cM]{\Exp(\bftau)}\inv
+  \notag\\
+ (\ref{equ:Jr_Jl_Adj})
+  &
+  =  -\mjac{-1}{l}(\bftau)
+  ~.
+\end{align*}
+
+
+
+
