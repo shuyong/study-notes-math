@@ -1,0 +1,7511 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{remark}{Remark}
+%\newtheorem{problem}{Problem}
+%\newtheorem{fact}{Fact}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{definition}{Definition}
+\newtheorem{theorem}{定理}
+\newtheorem{remark}{备注}
+\newtheorem{problem}{问题}
+\newtheorem{fact}{事实}
+\newtheorem{lemma}{引理}
+\newtheorem{definition}{定义}
+
+\usepackage[title]{appendix}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "四元数姿态估计的卡尔曼滤波及流形理论的概念"
+\pdf_author "Pablo Bernal-Polo and Humberto Martínez-Barberá"
+\pdf_keywords "attitude; orientation; estimation; Kalman filter; quaternion; manifold"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+四元数姿态估计的卡尔曼滤波及流形理论的概念
+\end_layout
+
+\begin_layout Author
+Pablo Bernal-Polo and Humberto Martínez-Barberá
+\end_layout
+
+\begin_layout Date
+3 January 2019
+\end_layout
+
+\begin_layout Abstract
+利用Kalman滤波方法和单位四元数表示姿态，广泛地解决了姿态估计问题。本文也包含在这个框架中，但是引入了一个新的观点，从这个观点出发，“乘法更新”和“协方差校
+正步”的概念被自然地构思出来。流形理论中的概念被用来定义流形中概率分布的矩。特别地，定义了单位四元数概率分布的均值和协方差矩阵。非线性版本的卡尔曼滤波器开发应用
+这些定义。设计了一个仿真来验证所提出算法的正确性。对仿真结果进行了分析，并根据所采用的性能指标选择了最佳的姿态估计器。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+车辆的机械状态估计是一个令人感兴趣的领域。将车辆视为刚体，其运动状态由
+\begin_inset Formula $4$
+\end_inset
+
+个数学对象表示：其中
+\begin_inset Formula $2$
+\end_inset
+
+个表示车辆的位置和速度，另
+\begin_inset Formula $2$
+\end_inset
+
+个表示车辆的方向和角速度。本文主要研究由方向和角速度组成的角度状态估计问题。
+\end_layout
+
+\begin_layout Standard
+虽然还有其他数学工具用于估计这个问题[1]，但Kalman滤波器[2]已成为该领域最优秀的算法。由于它的简单性、数学推导的严密性和优雅性以及它的递归性，它在许多
+实际应用中非常有吸引力。它的非线性形式被广泛应用于方向估计：扩展Kalman滤波(EKF)和无迹Kalman滤波(UKF)[3]。然而，使用参数化来表示方向会产
+生一些问题。
+\end_layout
+
+\begin_layout Standard
+系统的方向由与
+\begin_inset Formula $2$
+\end_inset
+
+个参考坐标系相关的旋转变换表示：定位到该系统的参考坐标系和外部参考坐标系。参考文献[4]对态度表征进行了全面的综述。用于表示旋转变换的参数化可以是奇异的，也可以
+是不连续的。表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 总结了最常用的参数化的主要特征。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:1"
+
+\end_inset
+
+用于表示方向的最常用参数化的主要特征。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="5">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Representation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameters
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Non-Singular
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Linear Evolution Equation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Euler angles
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Axis-angle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3-4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $9$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit quaternion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checked$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑到特殊正交群SO(3)具有三维性，理想情况下，我们将寻求由3个参数表示的连续非奇异表示。然而，自1964年以来，我们知道“…在拓扑上不可能有一个全局三维参数
+化没有奇点的旋转群”[5]。知道了这一点，对于方向，我们可以说单位四元数是最方便的表示，并且我们是将要使用的。参考文献[6]回顾了1982年以前的姿态估计文献，
+当时欧拉角等其它参数化很常见，为基于现代四元数的姿态估计奠定了基础。在这项工作之后，许多其他人探索了这一观点，并证明了其优越性[7,8,9,10,11,12]。
+\end_layout
+
+\begin_layout Standard
+四元数是四维实体，但只有那些单位范数表示旋转变换。这一事实对于应用普通的Kalman滤波意味着一个问题，所以不同的方法出现了。由于四元数的维数是
+\begin_inset Formula $4$
+\end_inset
+
+，人们往往首先想到
+\begin_inset Formula $4\times4$
+\end_inset
+
+协方差矩阵，并在Kalman滤波中直接应用[13]。假设所有预测都包含在由单位约束定义的曲面中，协方差矩阵在与该曲面正交的方向上收缩，这导致在多次更新后产生奇异
+协方差矩阵。第二种观点在参考文献[6]中首次提出，并以“乘法扩展Kalman滤波器”[8,11,12]命名。在第二种方法中，我们定义了一个“误差四元数”，它被转
+换成一个
+\begin_inset Formula $3$
+\end_inset
+
+参数向量。我们用这个向量来建立协方差矩阵，我们说的是“
+\begin_inset Formula $3\times3$
+\end_inset
+
+四元数协方差矩阵的表示”。不过，目前仍在制定这一适应措施的细节。即，“协方差校正步骤”[14]。
+\end_layout
+
+\begin_layout Standard
+本文提出了用单位四元数表示姿态的Kalman滤波姿态估计问题的新观点。注意到单位四元数存在于流形(
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+中的单位球体)中，我们使用流形理论的基本概念来定义单位四元数概率分布的均值和协方差矩阵。根据这些定义，我们开发了两种基于Kalman滤波器的估计器(一种基于EK
+F，另一种基于UKF)，以自然和令人满意的方式得出了“乘法更新”和“协方差校正步骤”的概念。这些思想的自然兴起为通用导航算法的发展奠定了坚实的基础。最后，通过仿
+真分析了这两种估计器的估计精度。
+\end_layout
+
+\begin_layout Standard
+本文的组织结构如下。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，我们回顾四元数的基础知识。我们还提出了四元数均值和协方差矩阵定义的新观点。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，我们介绍了已开发的估计算法。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，我们定义了性能指标，描述了仿真方案，并给出了仿真结果。我们还讨论了结果。最后，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节对全文进行了总结。
+\end_layout
+
+\begin_layout Section
+描述方向的四元数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+四元数
+\end_layout
+
+\begin_layout Standard
+四元数是由实部和虚部组成的超复数。虚部用满足哈密顿公理的三个不同虚部
+\begin_inset Formula $\{\boldsymbol{i},\boldsymbol{j},\boldsymbol{k}\}$
+\end_inset
+
+表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{i}^{2}=\boldsymbol{j}^{2}=\boldsymbol{k}^{2}=\boldsymbol{i}\ast\boldsymbol{j}\ast\boldsymbol{k}=-1.\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+可以用4个实数表示，并使用这几个符号：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{q} & =q_{0}+q_{1}\boldsymbol{i}+q_{2}\boldsymbol{j}+q_{3}\boldsymbol{k}\equiv\label{eq:2a}\\
+ & \equiv\left(q_{0},q_{1},q_{2},q_{3}\right)^{\mathrm{T}}\equiv\label{eq:2b}\\
+ & \equiv\left(q_{0},\mathbf{q}\right)^{\mathrm{T}}.\label{eq:2c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们将用粗体斜体符号
+\begin_inset Formula $\left(\boldsymbol{q}\right)$
+\end_inset
+
+表示四元数，而向量将用粗体竖直符号
+\begin_inset Formula $\left(\mathbf{q}\right)$
+\end_inset
+
+表示。向量将以矩阵形式书写，并且矩阵
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的转置将表示为
+\begin_inset Formula $\mathbf{M}^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+四元数积由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义，它产生乘法规则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{p}\ast\boldsymbol{q}=\begin{pmatrix}p_{0}q_{0}-\mathbf{p}\cdot\mathbf{q}\\
+p_{0}\mathbf{q}+q_{0}\mathbf{p}+\mathbf{p}\times\mathbf{q}
+\end{pmatrix},\label{eq:3}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\left(\cdot\right)$
+\end_inset
+
+表示通常的点积，而
+\begin_inset Formula $\left(\times\right)$
+\end_inset
+
+表示3参数向量叉积。请注意，在参考文献[4]中四元数乘积
+\begin_inset Formula $\left(\ast\right)$
+\end_inset
+
+与表示为
+\begin_inset Formula $\left(\otimes\right)$
+\end_inset
+
+的乘积不同。给定这个乘法规则，四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+的逆(就是这个
+\begin_inset Formula $\boldsymbol{q}\ast\boldsymbol{q}^{-1}=\boldsymbol{q}^{-1}\ast\boldsymbol{q}=1$
+\end_inset
+
+)给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}^{-1}=\dfrac{1}{\left\Vert \boldsymbol{q}\right\Vert ^{2}}\boldsymbol{q}^{\ast}=\dfrac{1}{\left\Vert \boldsymbol{q}\right\Vert ^{2}}\left(q_{0},-\mathbf{q}\right)^{\mathrm{T}},\label{eq:4}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{q}^{\ast}$
+\end_inset
+
+表示复共轭四元数。注意，如果
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+是一个单位四元数(一个四元数有
+\begin_inset Formula $\left\Vert \boldsymbol{q}\right\Vert =1$
+\end_inset
+
+)，则
+\begin_inset Formula $\boldsymbol{q}^{-1}=\boldsymbol{q}^{\ast}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+表示旋转的四元数
+\end_layout
+
+\begin_layout Standard
+每个旋转变换映射一个旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+和两个单位四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\boldsymbol{q}$
+\end_inset
+
+，它们之间的关系为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}\left(\boldsymbol{q}\right)=\begin{pmatrix}1-2q_{2}^{2}-2q_{3}^{2} & 2(q_{1}q_{2}-q_{3}q_{0}) & 2(q_{1}q_{3}+q_{2}q_{0})\\
+2(q_{1}q_{2}+q_{3}q_{0}) & 1-2q_{1}^{2}-2q_{3}^{2} & 2(q_{2}q_{3}-q_{1}q_{0})\\
+2(q_{1}q_{3}-q_{2}q_{0}) & 2(q_{2}q_{3}+q_{1}q_{0}) & 1-2q_{1}^{2}-2q_{2}^{2}
+\end{pmatrix}.\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意这个
+\begin_inset Formula $\mathbf{R}\left(\boldsymbol{q}\right)=\mathbf{R}\left(-\boldsymbol{q}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+表示旋转的四元数的形式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\left(\cos\left(\theta/2\right),\hat{\mathbf{q}}\sin\left(\theta/2\right)\right)^{\mathrm{T}},\label{eq:6}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\hat{\mathbf{q}}$
+\end_inset
+
+表示定义旋转轴的单位向量，以及
+\begin_inset Formula $\theta$
+\end_inset
+
+旋转角度。有了这种形式，他们就满足了约束
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\Vert \boldsymbol{q}\right\Vert ^{2}=q_{0}^{2}+q_{1}^{2}+q_{2}^{2}+q_{3}^{2}=1.\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这意味着描述旋转的四元数存在于
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+中的
+\begin_inset Formula $S^{3}$
+\end_inset
+
+单位球体中。这个空间是一个流形，并且这些数学对象的一些概念在我们的正文中是有用的。特别是图表(chart)的概念特别有趣。
+\end_layout
+
+\begin_layout Subsection
+单位四元数概率分布
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在处理Kalman滤波器时，随机变量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的概率分布由其均值
+\begin_inset Formula $\bar{\mathbf{x}}=\mathrm{E}\left[\mathbf{x}\right]$
+\end_inset
+
+编码，并且协方差矩阵
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}=\mathrm{E}\left[\left(\mathbf{x}-\bar{\mathbf{x}}\right)\left(\mathbf{x}-\bar{\mathbf{x}}\right)^{\mathrm{T}}\right].\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当我们的随机变量在欧几里德空间中定义时，这个定义是有意义的。但是我们如何定义象我们一样生活在流形中的随机变量的协方差矩阵呢？如果
+\begin_inset Formula $\boldsymbol{q}-\bar{\boldsymbol{q}}$
+\end_inset
+
+不代表旋转，我们如何定义单位四元数的协方差？(单位四元数在乘法下形成一个群，但在加法下不形成。这意味着两个单位四元数相加可能不会产生另一个单位四元数。因此，两个
+单位四元数的相加可能不代表旋转。)如果每个四元数在单位球体中是等概率的，协方差矩阵是什么？我们不能重新定义协方差矩阵，因为Kalman滤波器在其推导方程中使用这
+种精确形式，但是我们可以利用流形的特性。让我们检索一些重要的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{definition}[
+\backslash
+textbf{同胚, Homeomorphism}]
+\end_layout
+
+\end_inset
+
+一个
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textup{
+\backslash
+textbf{同胚(homeomorphism)}}
+\end_layout
+
+\end_inset
+
+
+\series default
+是一个函数
+\begin_inset Formula $f:X\rightarrow Y$
+\end_inset
+
+ 在两个拓扑空间
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+之间满足下列性质：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $f$
+\end_inset
+
+是双射的，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $f$
+\end_inset
+
+是连续的，
+\end_layout
+
+\begin_layout Itemize
+其逆函数
+\begin_inset Formula $f^{−1}$
+\end_inset
+
+是连续的。
+\end_layout
+
+\begin_layout Standard
+如果这样一个函数存在，我们说
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+是
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textup{同胚(homeomorphism)}
+\end_layout
+
+\end_inset
+
+的。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{definition}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{definition}[
+\backslash
+textbf{流形, Manifold}]
+\end_layout
+
+\end_inset
+
+一个
+\begin_inset Formula $n$
+\end_inset
+
+维
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textup{
+\backslash
+textbf{流形(manifold)}}
+\end_layout
+
+\end_inset
+
+
+\series default
+
+\begin_inset Formula $M^{n}$
+\end_inset
+
+是一个拓扑空间，其中每个点局部同胚于欧几里德空间
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+。这就是，每个点
+\begin_inset Formula $x\in M^{n}$
+\end_inset
+
+有一个邻域(neighborhood)
+\begin_inset Formula $N\subset M^{n}$
+\end_inset
+
+，我们可以定义的一个同胚
+\begin_inset Formula $f:N\to B_{n}$
+\end_inset
+
+，其中
+\begin_inset Formula $B_{n}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的单位球。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{definition}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{definition}[
+\backslash
+textbf{图表, Chart}]
+\end_layout
+
+\end_inset
+
+流形
+\begin_inset Formula $M^{n}$
+\end_inset
+
+的
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textup{
+\backslash
+textbf{图表(chart)}}
+\end_layout
+
+\end_inset
+
+
+\series default
+是从开子集
+\begin_inset Formula $U\subset M^{n}$
+\end_inset
+
+ 到欧几里德空间的开子集
+\begin_inset Formula $V\subset\mathbb{R}^{n}$
+\end_inset
+
+的一个同胚
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 。也就是说，图表(chart)就是一个函数
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\varphi:U\subset M^{n}\rightarrow V\subset\mathbb{R}^{n},\label{eq:9}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 同胚。传统上，图表(chart)表示为一对
+\begin_inset Formula $\left(U,\varphi\right)$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{definition}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据这些定义，我们可以继续推理。
+\end_layout
+
+\begin_layout Standard
+参考文献[8]讨论了四种“姿态误差表示”。也就是说，我们称之为正交投影(
+\shape italic
+Orthographic
+\shape default
+, O)，Rodrigues参数(
+\shape italic
+Rodrigues Parameters
+\shape default
+, RP)，改进型Rodrigues参数(
+\shape italic
+Modified Rodrigues Parameters
+\shape default
+, MRP)和旋转向量(
+\shape italic
+Rotation Vector
+\shape default
+, RV)。前三种是我们所知道的球极平面投影(
+\shape italic
+stereographic projection
+\shape default
+){这三种投影分别具体称为正交投影(
+\shape italic
+Orthographic
+\shape default
+)、日晷投影(
+\shape italic
+Gnomonic
+\shape default
+)和球极平面投影(
+\shape italic
+Stereographic
+\shape default
+)}。最后一个是所谓的等距投影(
+\shape italic
+Equidistant
+\shape default
+)。但这四个都是图表(chart)，定义了从流形
+\begin_inset Formula $S^{3}$
+\end_inset
+
+到欧几里德空间
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+的同胚。这就是，它们把流形中的一个点
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+映射到
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的一个点
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+。表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 列出了这些图表定义以及它们的定义域(domain)和图像(image)。我们必须确保这些图是双射的，以便它们正确地定义同胚，并且确保它们不把
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\boldsymbol{q}$
+\end_inset
+
+映射为
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的不同点，因为它们表示相同的旋转。我们通过为每个图表指定定义域和图像的定义来实现这一点。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:2"
+
+\end_inset
+
+所研究图表(chart)的主要特征。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\begin{tabular}{ccccc}
+\hline  \mathbf{Chart}  &  \mathbf{Domain}  &  \mathbf{Image}  &  \ensuremath{\mathbf{e}=\varphi\left(\boldsymbol{q}\right)}  &  \ensuremath{\boldsymbol{q}=\varphi^{-1}\left(\mathbf{e}\right)} \\
+\hline  \\
+ \vspace{4mm} \mathrm{O}  &  \ensuremath{\left\{ \boldsymbol{q}\in S^{3}:q_{0}\geq0\right\} }  &  \ensuremath{\left\{ \mathbf{e}\in\mathbb{R}^{3}:\left\Vert \mathbf{e}\right\Vert \leq2\right\} }  &  \ensuremath{2\mathbf{q}}  &  \ensuremath{\left(\begin{array}{c}
+\sqrt{1-\dfrac{\left\Vert \mathbf{e}\right\Vert ^{2}}{4}}\\
+\mathbf{e}/2
+\end{array}\right)} \\
+ \vspace{4mm} \mathrm{RP}  &  \ensuremath{\left\{ \boldsymbol{q}\in S^{3}:q_{0}>0\right\} }  &  \ensuremath{\mathbb{R}^{3}}  &  \ensuremath{2\dfrac{\mathbf{q}}{q_{0}}}  &  \ensuremath{\dfrac{1}{\sqrt{4+\left\Vert \mathbf{e}\right\Vert ^{2}}}\left(\begin{array}{l}
+2\\
+\mathbf{e}
+\end{array}\right)} \\
+ \vspace{4mm} \mathrm{MRP}  &  \ensuremath{\left\{ \boldsymbol{q}\in S^{3}:q_{0}\geq0\right\} }  &  \ensuremath{\left\{ \mathbf{e}\in\mathbb{R}^{3}:\left\Vert \mathbf{e}\right\Vert \leq4\right\} }  &  \ensuremath{4\dfrac{\mathbf{q}}{1+q_{0}}}  &  \ensuremath{\dfrac{1}{16+\left\Vert \mathbf{e}\right\Vert ^{2}}\left(\begin{array}{c}
+16-\left\Vert \mathbf{e}\right\Vert ^{2}\\
+8\mathbf{e}
+\end{array}\right)} \\
+ \mathrm{RV}  &  \ensuremath{\left\{ \boldsymbol{q}\in S^{3}:q_{0}\geq0\right\} }  &  \ensuremath{\left\{ \mathbf{e}\in\mathbb{R}^{3}:\left\Vert \mathbf{e}\right\Vert \leq\pi\right\} }  &  \ensuremath{2\hat{\mathbf{q}}\arcsin\left(\left\Vert \mathbf{q}\right\Vert \right)}  &  \ensuremath{\left(\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \mathbf{e}\right\Vert }{2}\right)\\
+\hat{\mathbf{e}}\sin\left(\dfrac{\left\Vert \mathbf{e}\right\Vert }{2}\right)
+\end{array}\right)} \\
+ 
+\\\hline \end{tabular}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了如何通过每个命名的图表将球体
+\begin_inset Formula $S^{2}$
+\end_inset
+
+(四元数所在的球体
+\begin_inset Formula $S^{3}$
+\end_inset
+
+的子空间)中的点映射到
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+(包含图表图像的
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+的子空间)中的点。因为我们的图表是同胚的，所以可以求逆函数。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+中的点如何通过求逆图表映射到流形中的点。正如参考文献[8]所指出的，所有
+\begin_inset Formula $4$
+\end_inset
+
+个图表都为点
+\begin_inset Formula $\mathbf{e}\in\mathbb{R}^{3}$
+\end_inset
+
+原点附近映射到四元数
+\begin_inset Formula $\boldsymbol{q}\in S^{3}$
+\end_inset
+
+提供了相同的二阶近似值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\varphi^{-1}\left(\mathbf{e}\right)\approx\left(1-\dfrac{\left\Vert \mathbf{e}\right\Vert ^{2}}{8},\dfrac{\mathbf{e}}{2}\right)^{\mathrm{T}}.\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g001.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+流形中的
+\begin_inset Formula $q_{3}=0$
+\end_inset
+
+的点通过每个图表
+\begin_inset Formula $\varphi$
+\end_inset
+
+与欧几里德空间中的点进行映射： (a)
+\begin_inset Formula $S^{2}$
+\end_inset
+
+；(b) O；(c) RP；(d)MRP；(e)RV。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g002.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+欧几里德空间中的
+\begin_inset Formula $e_{3}=0$
+\end_inset
+
+的点通过每个图表
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+逆映射到流形中的点： (a)
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+；(b) O；(c) RP；(d)MRP；(e)RV。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们应该注意到，有了
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+和
+\begin_inset Formula $S^{3}$
+\end_inset
+
+不同的度量，图表
+\begin_inset Formula $\varphi$
+\end_inset
+
+必然会产生空间的变形。然而，对于特征四元数(球体顶部)邻域的四元数，我们的图表表现为这些四元数的虚部与
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+原点附近的点之间的特征变换，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示。这是一个理想的性质，因为这意味着特征四元数周围的空间与欧几里德空间非常相似，而欧几里德空间正是设计Kalman滤波器的空间。但这只发生在特征四元数附近。
+不论怎样，我们可以将这个性质推广到任何四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}\in S^{3}$
+\end_inset
+
+，注意任何四元数
+\begin_inset Formula $\boldsymbol{q}\in S^{3}$
+\end_inset
+
+通过四元数乘法可以表示为前者与一个“偏差”的乘积：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}},\label{eq:11}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+代表了这样的偏差(这个定义是任意的：我们可以选择通过
+\begin_inset Formula $\boldsymbol{q}=\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}\ast\bar{\boldsymbol{q}}$
+\end_inset
+
+来关联四元数，但重要的是要确立其中一个定义，然后依此类推。不论怎样，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的计算有一个计算优势。)然后，对于每个四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}\in S^{3}$
+\end_inset
+
+我们定义一个图表
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}$
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{q}}}=\varphi_{\bar{\boldsymbol{q}}}\left(\boldsymbol{q}\right)=\varphi\left(\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}\right),\label{eq:12}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\bar{\boldsymbol{q}}^{\ast}\ast\boldsymbol{q}$
+\end_inset
+
+，并且在这里我们把这记录为：通过图表
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}$
+\end_inset
+
+把四元数
+\begin_inset Formula $\boldsymbol{q}\in S^{3}$
+\end_inset
+
+映射为欧几里德空间的点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+。然后，我们会有一组图表
+\begin_inset Formula $\left\{ \varphi_{\bar{\boldsymbol{q}}}\right\} _{\bar{\boldsymbol{q}}}$
+\end_inset
+
+，每一个都类似于围绕四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}\in S^{3}$
+\end_inset
+
+的欧几里德空间，并把它最新的四元数映射到
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+的原点。我们将把与欧几里德空间相关联的图表
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}$
+\end_inset
+
+参考为以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表。因此，同胚
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}^{-1}$
+\end_inset
+
+在以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表中取一个点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+，并通过以下方程将其映射到流形中的
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\varphi_{\bar{\boldsymbol{q}}}^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)=\bar{\boldsymbol{q}}\ast\varphi^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right).\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+回顾这些概念之后，我们可以定义单位四元数概率分布的协方差矩阵。
+\end_layout
+
+\begin_layout Standard
+给定一个单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+和一个图表
+\begin_inset Formula $\varphi$
+\end_inset
+
+, 我们将定义在以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表中的单位四元数的概率分布期望值为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}=\mathrm{E}\left[\mathbf{e}^{\bar{\boldsymbol{q}}}\right],\label{eq:14}
+\end{equation}
+
+\end_inset
+
+并且它的协方差矩阵为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}^{\bar{\boldsymbol{q}}}=\mathrm{E}\left[\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)^{\mathrm{T}}\right],\label{eq:15}
+\end{equation}
+
+\end_inset
+
+并且每个单位四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+的概率密度通过同胚
+\begin_inset Formula $\boldsymbol{q}=\varphi_{\bar{\boldsymbol{q}}}^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+定义。然后，单位四元数的概率分布需要
+\begin_inset Formula $4$
+\end_inset
+
+参数数学对象编码：
+\begin_inset Formula $\left(\varphi,\bar{\boldsymbol{q}},\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}},\mathbf{P}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+。虽然给出这个定义后，单位四元数的概率分布是唯一的，但是它的期望值
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+及其协方差矩阵
+\begin_inset Formula $\mathbf{P}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+根据所选的四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+和图表
+\begin_inset Formula $\varphi$
+\end_inset
+
+可以取不同的值。不论怎样，知道Kalman滤波器是为欧几里德空间设计的，所以很方便地在概率分布中选择单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+的中心，以便围绕它的流形空间，对于在以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表中的协方差矩阵的最显著区域非常相似。选择
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}=\mathbf{0}$
+\end_inset
+
+这样的四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+特别方便，所以协方差矩阵在以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表的原点的中心。
+\end_layout
+
+\begin_layout Subsection
+过渡映射
+\end_layout
+
+\begin_layout Standard
+在Kalman滤波器的某个步骤中，我们有单位四元数的概率分布，在以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表中定义，并且我们对用另一个以
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+为中心的图表表示我们的概率分布感兴趣。过渡映射的概念与此相关。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{definition}[
+\backslash
+textbf{过渡映射, Transition map}]
+\end_layout
+
+\end_inset
+
+对于流形
+\begin_inset Formula $M$
+\end_inset
+
+给出两个图表
+\begin_inset Formula $\left(U_{\alpha},\varphi_{\alpha}\right)$
+\end_inset
+
+和
+\begin_inset Formula $\left(U_{\beta},\varphi_{\beta}\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $U_{\alpha\beta}=U_{\alpha}\cap U_{\beta}\neq\varnothing$
+\end_inset
+
+。我们可以定义一个函数
+\begin_inset Formula $\varphi_{\alpha\beta}:\varphi_{\alpha}\left(U_{\alpha\beta}\right)\rightarrow\varphi_{\beta}\left(U_{\alpha\beta}\right)$
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\varphi_{\alpha\beta}\left(x\right)=\varphi_{\beta}\left(\varphi_{\alpha}^{-1}\left(x\right)\right),\label{eq:16}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $x\in\varphi_{\alpha}\left(U_{\alpha\beta}\right)$
+\end_inset
+
+。函数
+\begin_inset Formula $\varphi_{\alpha\beta}$
+\end_inset
+
+称为
+\series bold
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+textup{
+\backslash
+textbf{过渡映射(transition map)}}
+\end_layout
+
+\end_inset
+
+
+\series default
+。因为
+\begin_inset Formula $\varphi_{\alpha}$
+\end_inset
+
+和
+\begin_inset Formula $\varphi_{\beta}$
+\end_inset
+
+是同胚，所以
+\begin_inset Formula $\varphi_{\alpha\beta}$
+\end_inset
+
+也是。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{definition}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于目前的情况，让我们考虑两个单位四元数
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+，两者通过下面方程相关联
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{p}}=\bar{\boldsymbol{q}}\ast\bar{\boldsymbol{\delta}}.\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这两个四元数定义了图表
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{p}}}$
+\end_inset
+
+和
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}$
+\end_inset
+
+。我们建立了以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表表示的点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+，和以
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+为中心的图表表示的点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}$
+\end_inset
+
+，两者之间相关联的过渡映射，这样执行
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{e}^{\bar{\boldsymbol{p}}} & =\varphi_{\bar{\boldsymbol{p}}}\left(\varphi_{\bar{\boldsymbol{q}}}^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)\right)=\label{eq:18a}\\
+ & =\varphi\left(\bar{\boldsymbol{p}}^{\ast}\ast\bar{\boldsymbol{q}}\ast\varphi^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)\right)=\label{eq:18b}\\
+ & =\varphi\left(\bar{\boldsymbol{\delta}}^{\ast}\ast\varphi^{-1}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)\right).\label{eq:18c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就是说，首先我们要考虑以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表的点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+，并且在流形中我们用
+\begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}^{-1}$
+\end_inset
+
+获得与其相关的四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+。然后，我们把这个四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+变换为以
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+为中心的图表的点
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}$
+\end_inset
+
+。尽管如此，已知四元数
+\begin_inset Formula $\bar{\boldsymbol{\delta}}$
+\end_inset
+
+，我们不需要显式地计算
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+。事实上，能够将相同的四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+表示为两个不同的偏差，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\begin{array}{c}
+\boldsymbol{q}=\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}\\
+\boldsymbol{q}=\bar{\boldsymbol{p}}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}
+\end{array}\right\} \Rightarrow\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\underset{\bar{\boldsymbol{\delta}}^{\ast}}{\underbrace{\bar{\boldsymbol{p}}^{\ast}\ast\bar{\boldsymbol{q}}}}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}.\label{eq:19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的等价性。
+\end_layout
+
+\begin_layout Standard
+表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了所研究图表的过渡映射。这些过渡映射的详细推导见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:A"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 试图提供一些关于如何通过每个图表的过渡映射变换点的见解。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3"
+
+\end_inset
+
+研究图表的过渡映射。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\begin{tabular}{cc}
+\hline  \ensuremath{\mathbf{Chart}}  &  \ensuremath{\mathbf{Transition\ Map}} \ensuremath{\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)} \\
+\hline  \\
+ \vspace{4mm} \ensuremath{\mathrm{O}}  &  \ensuremath{\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\sqrt{4-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}} \\
+ \vspace{4mm} \ensuremath{\mathrm{RP}}  &  \ensuremath{2\dfrac{\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}} \\
+ \vspace{4mm} \ensuremath{\mathrm{MRP}}  &  \ensuremath{4\dfrac{8\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\bar{\boldsymbol{\delta}}-8\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{16+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}+\bar{\delta}_{0}\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)+8\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}} \\
+ \ensuremath{\mathrm{RV}}  &  \ensuremath{2\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }\arcsin\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert ,\enskip}with\ensuremath{\enskip\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\delta}_{0}\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)-\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)}\\
+ 
+\\\hline \end{tabular}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g003.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+使用每个图表定义的过渡映射变换以
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+为中心的图表的点，并移动到在前面的图表中使用
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}=\left(1,1,0\right)^{\mathrm{T}}$
+\end_inset
+
+映射的四元数的图表中心：(a)
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+；(b) O；(c) RP；(d)MRP；(e)RV。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+流形卡尔曼滤波器
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在本节中我们提出流形卡尔曼滤波器(Manifold Kalman Filter, MKF)所采用的模型，并显示相应的算法。
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $t$
+\end_inset
+
+时刻的系统状态由方向定义，用单位四元数
+\begin_inset Formula $\boldsymbol{q}_{t}$
+\end_inset
+
+和角速度
+\begin_inset Formula $\boldsymbol{\omega}_{t}^{\prime}$
+\end_inset
+
+编码。我们将把它们看作随机变量，我们将尝试用卡尔曼滤波器估计它们的值。
+\end_layout
+
+\begin_layout Standard
+我们的单位四元数
+\begin_inset Formula $\left\{ \boldsymbol{q}_{t}\in\mathbb{H}:\left\Vert \boldsymbol{q}_{t}\right\Vert =1\right\} $
+\end_inset
+
+将定义一个旋转变换，它将在一个参考坐标系
+\begin_inset Formula $\mathcal{S}^{\prime}$
+\end_inset
+
+中表示的一个向量
+\begin_inset Formula $\mathbf{v}_{t}^{\prime}$
+\end_inset
+
+，该向量
+\begin_inset Formula $\mathbf{v}_{t}^{\prime}$
+\end_inset
+
+连接到我们要描述的状态的固体上，和在一个外部参考坐标系
+\begin_inset Formula $\mathcal{S}$
+\end_inset
+
+中表示的相同向量
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+相关联
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{t}=\mathbf{R}\left(\boldsymbol{q}_{t}\right)\mathbf{v}_{t}^{\prime}\quad\equiv\quad\boldsymbol{v}_{t}=\boldsymbol{q}_{t}\ast\boldsymbol{v}_{t}^{\prime}\ast\boldsymbol{q}_{t}^{\ast}.\label{eq:20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+例如，如果我们在参考系
+\begin_inset Formula $\mathcal{S}^{\prime}$
+\end_inset
+
+中测量加速度
+\begin_inset Formula $\boldsymbol{a}_{t}^{\prime}$
+\end_inset
+
+，惯性参考系
+\begin_inset Formula $\mathcal{S}$
+\end_inset
+
+中的加速度将由
+\begin_inset Formula $\mathbf{a}_{t}=\mathbf{R}\left(\boldsymbol{q}_{t}\right)\mathbf{a}_{t}^{\prime}$
+\end_inset
+
+给出。这个加速度将是我们必须积分的加速度，以获得由加速度计估计的位置。
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\boldsymbol{\omega}_{t}^{\prime}$
+\end_inset
+
+将定义在坐标系
+\begin_inset Formula $\mathcal{S}^{\prime}$
+\end_inset
+
+中测量的固体的角速度。注意，这里不包括在我们的系统状态中传感器的偏差。我们假设我们的传感器经过校准，所以偏差为零。
+\end_layout
+
+\begin_layout Standard
+我们可以通过以下运动方程预测描述系统状态的随机变量的值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\dfrac{\mathrm{d}\boldsymbol{\omega}^{\prime}\left(t\right)}{\mathrm{d}t} & =\mathbf{q}^{\boldsymbol{\omega}}\left(t\right),\label{eq:21}\\
+\dfrac{\mathrm{d}\boldsymbol{q}\left(t\right)}{\mathrm{d}t} & =\dfrac{1}{2}\boldsymbol{q}\left(t\right)\ast\boldsymbol{\omega}^{\prime}\left(t\right)=\dfrac{1}{2}\boldsymbol{q}\left(t\right)\ast\begin{pmatrix}0\\
+\boldsymbol{\omega}^{\prime}\left(t\right)
+\end{pmatrix},\label{eq:22}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{q}^{\boldsymbol{\omega}}\left(t\right)$
+\end_inset
+
+是表示过程噪声的随机变量，与作用在系统上的转矩及其惯性张量有关。其在给定时刻
+\begin_inset Formula $t$
+\end_inset
+
+的期望值将表示为
+\begin_inset Formula $\bar{\mathbf{q}}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+，并且它的协方差矩阵将表示为
+\begin_inset Formula $\mathbf{Q}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+我们假设我们有传感器测量角速度
+\begin_inset Formula $\boldsymbol{\omega}_{t}^{m}$
+\end_inset
+
+(其提供关于方向的相对变化的信息)，以及向量
+\begin_inset Formula $\mathbf{v}_{t}^{m}$
+\end_inset
+
+的值
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+(其在外部参考坐标系
+\begin_inset Formula $\mathcal{S}$
+\end_inset
+
+中表示)已知(其提供关于绝对方向的信息)。这种传感器的例子可以是提供角速度测量的陀螺仪，测量地球表面附近重力向量的加速计(
+\begin_inset Formula $\mathbf{v}_{t}:=-\mathbf{g}$
+\end_inset
+
+)，或测量地球磁场的磁强计(
+\begin_inset Formula $\mathbf{v}_{t}:=\mathbf{B}$
+\end_inset
+
+)。测量模型将这些测量与描述系统状态的变量相关联：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{v}_{t}^{m} & =\mathbf{R}^{\mathrm{T}}\left(\boldsymbol{q}_{t}\right)\left(\mathbf{q}_{t}^{\mathbf{v}}+\mathbf{v}_{t}\right)+\mathbf{r}_{t}^{\mathbf{v}},\label{eq:23}\\
+\boldsymbol{\omega}_{t}^{m} & =\boldsymbol{\omega}_{t}^{\prime}+\mathbf{r}_{t}^{\boldsymbol{\omega}},\label{eq:24}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{r}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{r}_{t}^{\mathbf{v}}$
+\end_inset
+
+是具有零均值的随机变量，并且协方差矩阵
+\begin_inset Formula $\mathbf{R}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{R}_{t}^{\mathbf{v}}$
+\end_inset
+
+分别表示测量噪声，
+\begin_inset Formula $\mathbf{q}_{t}^{\mathbf{v}}$
+\end_inset
+
+是另一个均值为
+\begin_inset Formula $\bar{\mathbf{q}}_{t}^{\mathbf{v}}$
+\end_inset
+
+的随机变量，并且协方差矩阵
+\begin_inset Formula $\mathbf{Q}_{t}^{\mathbf{v}}$
+\end_inset
+
+表示向量
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+测量中的外部干扰。例如，对于加速度计，它可以表示重力以外的加速度，对于磁强计，它可以表示由移动铁磁产生的磁干扰。
+\end_layout
+
+\begin_layout Standard
+我们假设测量值在离散时间
+\begin_inset Formula $\{t_{n}\}_{n}$
+\end_inset
+
+到达。格式
+\begin_inset Formula $x_{t\vert t_{n}}$
+\end_inset
+
+将用于表示时刻
+\begin_inset Formula $t$
+\end_inset
+
+的变量
+\begin_inset Formula $x$
+\end_inset
+
+，在时刻
+\begin_inset Formula $t>t_{n}$
+\end_inset
+
+包含了直至时刻
+\begin_inset Formula $t_{n}$
+\end_inset
+
+的测量值。对于在第
+\begin_inset Formula $n$
+\end_inset
+
+时刻到达的测量值，为了简单起见，我们将写为
+\begin_inset Formula $x_{t\vert n}$
+\end_inset
+
+。然后，我们对时刻
+\begin_inset Formula $t$
+\end_inset
+
+的状态的知识，
+\begin_inset Formula $t>t_{n}$
+\end_inset
+
+包括了直至时刻
+\begin_inset Formula $t_{n}$
+\end_inset
+
+的测量，由数学对象
+\begin_inset Formula $\left(\varphi,\bar{\boldsymbol{p}},\bar{\mathbf{x}}_{t|n}^{\bar{\boldsymbol{p}}},\mathbf{P}_{t|n}^{\bar{\boldsymbol{p}}}\right)$
+\end_inset
+
+收集的概率分布的编码来描述，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述。对于本例，
+\begin_inset Formula $\bar{\mathbf{x}}_{t|n}^{\bar{\boldsymbol{p}}}=\left(\bar{\mathbf{e}}_{t|n}^{\bar{\boldsymbol{p}}},\bar{\boldsymbol{\omega}}_{t|n}^{\prime}\right){}^{\mathrm{T}}$
+\end_inset
+
+是概率分布的预期值，
+\begin_inset Formula $\mathbf{P}_{t\vert n}^{\bar{\boldsymbol{p}}}$
+\end_inset
+
+是它的
+\begin_inset Formula $6\times6$
+\end_inset
+
+协方差矩阵，两者都表示为在以
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+为中心的图表中的四元数的概率分布。更好的是，
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+将是一个单位四元数的概率分布中心，这样在这种概率分布中，点的从以
+\begin_inset Formula $\bar{\boldsymbol{p}}$
+\end_inset
+
+为中心的图表到流形的映射，导致变形最小。单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}_{t|n}=\varphi_{\bar{\boldsymbol{p}}}^{-1}\left(\bar{\mathbf{e}}_{t|n}^{\bar{\boldsymbol{p}}}\right)$
+\end_inset
+
+将是我们对真实四元数
+\begin_inset Formula $\boldsymbol{q}_{t}$
+\end_inset
+
+的最佳估计，该
+\begin_inset Formula $\boldsymbol{q}_{t}$
+\end_inset
+
+定义了在
+\begin_inset Formula $t$
+\end_inset
+
+时刻系统相对于外部参考坐标系
+\begin_inset Formula $\mathcal{S}$
+\end_inset
+
+的方向。
+\end_layout
+
+\begin_layout Standard
+以下两小节介绍已开发的Kalman滤波器：一个基于EKF的版本而另一个基于UKF的版本。EKF基于非线性模型的线性化来计算预测协方差矩阵。也就是说，EKF使用非
+线性函数的Jacobian矩阵来逼近非线性函数。为了应用EKF，我们的函数必须是可微的。另一方面，UKF是基于确定性抽样来近似我们的随机变量的概率分布。我们选择
+一组最小样本，其均值和协方差矩阵是状态概率分布的均值和协方差矩阵。然后，用非线性模型对它们进行变换，得到的点集用于计算执行Kalman更新所需的均值和协方差矩阵
+。第二种方法不需要函数是可微的。
+\end_layout
+
+\begin_layout Subsection
+流形扩展卡尔曼滤波
+\end_layout
+
+\begin_layout Standard
+在本节中，我们将介绍基于EKF的估计器：流形扩展Kalman滤波器(Manifold Extended Kalman Filter, MEKF)。我们在这里提供
+附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中给出的更详细推导中的主要结果。
+\end_layout
+
+\begin_layout Standard
+一个测量
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{z}_{n}=\begin{pmatrix}\mathbf{v}_{n}^{m}\\
+\boldsymbol{\omega}_{n}^{m}
+\end{pmatrix}\label{eq:25}
+\end{equation}
+
+\end_inset
+
+在时刻
+\begin_inset Formula $t_{n}$
+\end_inset
+
+到达。我们对前一时刻
+\begin_inset Formula $t_{n-1}$
+\end_inset
+
+的方向的了解是用以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n-1\vert n-1}$
+\end_inset
+
+为中心的图表表示的概率分布来描述。我们假设这个概率分布具有均值
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\mathbf{x}}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-1}}=\begin{pmatrix}\bar{\mathbf{e}}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-1}}=\mathbf{0}\\
+\bar{\boldsymbol{\omega}}_{n-1\vert n-1}^{\prime}
+\end{pmatrix},\label{eq:26}
+\end{equation}
+
+\end_inset
+
+并有协方差矩阵
+\begin_inset Formula $\mathbf{P}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-1}}$
+\end_inset
+
+。这就是，我们有一个最初的
+\begin_inset Formula $4$
+\end_inset
+
+参数数学对象
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\varphi,\bar{\boldsymbol{q}}_{n-1|n-1},\bar{\boldsymbol{\omega}}_{n-1|n-1}^{\prime},\mathbf{P}_{n-1|n-1}^{\bar{\boldsymbol{q}}_{n-1|n-1}}\right).\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $t_{n}$
+\end_inset
+
+时刻的状态预测通过以下方程计算，给出了直至
+\begin_inset Formula $t_{n-1}$
+\end_inset
+
+时刻之前的所有信息
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\bar{\boldsymbol{\omega}}_{n\vert n-1}^{\prime} & =\bar{\boldsymbol{\omega}}_{n-1\vert n-1}^{\prime},\label{eq:28}\\
+\boldsymbol{\delta}_{n}^{\boldsymbol{\omega}} & =\left(\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}\right\Vert \Delta t_{n}}{2}\right)\\
+\dfrac{\bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}}{\left\Vert \bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}\right\Vert }\sin\left(\dfrac{\left\Vert \bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}\right\Vert \Delta t_{n}}{2}\right)
+\end{array}\right),\label{eq:29}\\
+\bar{\boldsymbol{q}}_{n\vert n-1} & =\bar{\boldsymbol{q}}_{n-1\vert n-1}\ast\boldsymbol{\delta}_{n}^{\boldsymbol{\omega}},\label{eq:30}\\
+\mathbf{F}_{n} & =\begin{pmatrix}\mathbf{R}^{\mathrm{T}}\left(\boldsymbol{\delta}_{n}^{\boldsymbol{\omega}}\right) & \mathbf{I}\Delta t_{n}\\
+\mathbf{0} & \mathbf{I}
+\end{pmatrix},\label{eq:31}\\
+\mathbf{P}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}} & =\mathbf{F}_{n}\left[\mathbf{P}_{n-1|n-1}^{\bar{\boldsymbol{q}}_{n-1|n-1}}+\mathbf{Q}_{n}\right]\mathbf{F}_{n}^{\mathrm{T}},\label{eq:32}
+\end{align}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Q}_{n}=\begin{pmatrix}\mathbf{Q}_{n}^{\boldsymbol{\omega}}\dfrac{\left(\Delta t_{n}\right)^{3}}{3} & -\mathbf{Q}_{n}^{\boldsymbol{\omega}}\dfrac{\left(\Delta t_{n}\right)^{2}}{2}\\
+-\mathbf{Q}_{n}^{\boldsymbol{\omega}}\dfrac{\left(\Delta t_{n}\right)^{2}}{2} & \mathbf{Q}_{n}^{\boldsymbol{\omega}}\Delta t_{n}
+\end{pmatrix}.\label{eq:33}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同时给出了测量预测
+\begin_inset Formula 
+\begin{align}
+\bar{\mathbf{v}}_{n|n-1}^{m} & =\mathbf{R}^{\mathrm{T}}\left(\bar{\boldsymbol{q}}_{n|n-1}\right)\left(\bar{\mathbf{q}}_{n}^{\mathbf{v}}+\mathbf{v}_{n}\right),\label{eq:34}\\
+\bar{\boldsymbol{\omega}}_{n|n-1}^{m} & =\bar{\boldsymbol{\omega}}_{n|n-1}^{\prime},\label{eq:35}\\
+\bar{\mathbf{z}}_{n\vert n-1} & =\begin{pmatrix}\bar{\mathbf{v}}_{n\vert n-1}^{m}\\
+\bar{\boldsymbol{\omega}}_{n\vert n-1}^{m}
+\end{pmatrix},\label{eq:36}\\
+\mathbf{H}_{n} & =\left(\begin{array}{cc}
+\left[\bar{\mathbf{v}}_{n|n-1}^{m}\right]_{\times} & \mathbf{0}\\
+\mathbf{0} & \mathbf{I}
+\end{array}\right),\label{eq:37}\\
+\mathbf{S}_{n\vert n-1} & =\mathbf{H}_{n}\mathbf{P}_{n\vert n-1}^{\bar{\boldsymbol{q}}_{n\vert n-1}}\mathbf{H}_{n}^{\mathrm{T}}+\begin{pmatrix}\mathbf{R}^{\mathrm{T}}\left(\bar{\boldsymbol{q}}_{n\vert n-1}\right)\mathbf{Q}_{n}^{\mathbf{v}}\mathbf{R}\left(\bar{\boldsymbol{q}}_{n\vert n-1}\right)+\mathbf{R}_{n}^{\mathbf{v}} & \mathbf{0}\\
+\mathbf{0} & \mathbf{R}_{n}^{\boldsymbol{\omega}}
+\end{pmatrix},\label{eq:38}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\left[\mathbf{v}\right]_{\times}$
+\end_inset
+
+代表
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\mathbf{v}\right]_{\times}=\begin{pmatrix}0 & -v_{3} & v_{2}\\
+v_{3} & 0 & -v_{1}\\
+-v_{2} & v_{1} & 0
+\end{pmatrix}.\label{eq:39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在此基础上，我们计算Kalman增益
+\begin_inset Formula $\mathbf{K}_{n}$
+\end_inset
+
+并使用它获得状态的最佳估计：
+\begin_inset Formula 
+\begin{align}
+\mathbf{K}_{n} & =\mathbf{P}_{n\vert n-1}^{\bar{\boldsymbol{q}}_{n\vert n-1}}\mathbf{H}_{n}^{\mathrm{T}}\mathbf{S}_{n\vert n-1}^{-1},\label{eq:40}\\
+\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}} & =\bar{\mathbf{x}}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}}+\mathbf{K}_{n}\left(\mathbf{z}_{n}-\bar{\mathbf{z}}_{n|n-1}\right),\label{eq:41}\\
+\mathbf{P}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}} & =\left(\mathbf{I}-\mathbf{K}_{n}\mathbf{H}_{n}\right)\mathbf{P}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}},\label{eq:42}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\bar{\mathbf{x}}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}}=\left(\bar{\mathbf{e}}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}}=\mathbf{0},\bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}\right){}^{\mathrm{T}}$
+\end_inset
+
+。最后，我们需要获得更新后的单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n}$
+\end_inset
+
+，并在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n}$
+\end_inset
+
+为中心的图表中计算均值和协方差矩阵，这样概率分布的表示条件与迭代开始时相同。点
+\begin_inset Formula $\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)产生，并且它在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
+\end_inset
+
+为中心的图表中定义，相当于流形中的单位四元数。这就是我们正在寻找的更新后的单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\bar{\boldsymbol{q}}_{n|n} & =\varphi_{\bar{\boldsymbol{q}}_{n|n-1}}^{-1}\left(\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}\right)=\label{eq:43a}\\
+ & =\bar{\boldsymbol{q}}_{n|n-1}\ast\varphi^{-1}\left(\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}\right)=\label{eq:43b}\\
+ & =\bar{\boldsymbol{q}}_{n\vert n-1}\ast\bar{\boldsymbol{\delta}}_{n}.\label{eq:43c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+知道Kalman更新方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以产生在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
+\end_inset
+
+为中心的图表中的任意点，我们需要“浸透(saturate)”到每个图表图像中包含的最接近点。在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
+\end_inset
+
+为中心的图表中的点
+\begin_inset Formula $\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+是以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n}$
+\end_inset
+
+为中心的图表的原点。然后，在迭代开始时，在这个新图表中的状态的期望值将由
+\begin_inset Formula $\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}=\left(\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}=\mathbf{0},\bar{\boldsymbol{\omega}}_{n|n}^{\prime}\right){}^{\mathrm{T}}$
+\end_inset
+
+给出。
+\end_layout
+
+\begin_layout Standard
+为了更新协方差矩阵，我们需要考虑协方差矩阵的定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。我们有
+\begin_inset Formula $\mathbf{P}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+想计算
+\begin_inset Formula $\mathbf{P}^{\bar{\boldsymbol{q}}_{n|n}}$
+\end_inset
+
+，并且由表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中提供的过渡映射了解
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的关系。继续EKF的哲学，通过围绕着大部分信息组成的点线性化
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+，找到协方差矩阵的更新(在我们的例子中，该点为
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+e_{i}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =e_{i}^{\bar{\boldsymbol{p}}}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\sum_{j}\left.\dfrac{\partial e_{i}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)}{\partial e_{j}^{\bar{\boldsymbol{q}}}}\right|_{\mathbf{e}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}\left(e_{j}^{\bar{\boldsymbol{q}}}-\bar{e}_{j}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right),\end{array}\label{eq:44}
+\end{equation}
+
+\end_inset
+
+这里我们用
+\shape italic
+大O
+\shape default
+符号来描述误差项的极限行为
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}\rightarrow\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+的近似。特别是，如果我们定义
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\mathbf{T}\right)_{ij}=\left.\dfrac{\partial e_{i}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)}{\partial e_{j}^{\bar{\boldsymbol{q}}}}\right|_{\mathbf{e}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}},\label{eq:45}
+\end{equation}
+
+\end_inset
+
+则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{p}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{p}}}\approx\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)-\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)\approx\mathbf{T}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right),\label{eq:46}
+\end{equation}
+
+\end_inset
+
+并且对于协方差矩阵的最终更新将通过以下方程计算
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{P}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}} & =\mathrm{E}\left[\left(\mathbf{x}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}-\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}\right)\left(\mathbf{x}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}-\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}\right)^{\mathrm{T}}\right]\approx\label{eq:47a}\\
+ & \approx\begin{pmatrix}\mathbf{T}(\bar{\boldsymbol{\delta}}_{n}) & \mathbf{0}\\
+\mathbf{0} & \mathbf{I}
+\end{pmatrix}\mathbf{P}_{n\vert n}^{\bar{\boldsymbol{q}}_{n\vert n-1}}\begin{pmatrix}\mathbf{T}(\bar{\boldsymbol{\delta}}_{n}) & \mathbf{0}\\
+\mathbf{0} & \mathbf{I}
+\end{pmatrix}^{\mathrm{T}}.\label{eq:47b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 总结了每个图表的
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵及其应用领域。这些
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵的详细推导见附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:C"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:4"
+
+\end_inset
+
+研究图表的过渡映射的
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\begin{tabular}{lcc}
+\hline  \ensuremath{\mathbf{Chart}}  &  \ensuremath{\mathbf{T}\left(\bar{\boldsymbol{\delta}}\right)\ \mathbf{Matrix}}  &  \ensuremath{\mathbf{Domain}} \\
+\hline  \\
+ \vspace{4mm} \ensuremath{\mathrm{O}}  &  \ensuremath{\bar{\delta}_{0}\mathbf{I}-[\bar{\boldsymbol{\delta}}]_{\times}+\dfrac{\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}}{\bar{\delta}_{0}}}  &  \ensuremath{\left\{ \bar{\boldsymbol{\delta}}\in S^{3}:\bar{\delta}_{0}>0\right\} } \\
+ \vspace{4mm} \ensuremath{\mathrm{RP}}  &  \ensuremath{\bar{\delta}_{0}\left(\bar{\delta}_{0}\mathbf{I}-[\bar{\boldsymbol{\delta}}]_{\times}\right)}  &  \ensuremath{\left\{ \bar{\boldsymbol{\delta}}\in S^{3}:\bar{\delta}_{0}\neq0\right\} } \\
+ \vspace{4mm} \ensuremath{\mathrm{MRP}}  &  \ensuremath{\dfrac{1}{2}\left[\left(1+\bar{\delta}_{0}\right)\left(\bar{\delta}_{0}\mathbf{I}-[\bar{\boldsymbol{\delta}}]_{\times}\right)+\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{T}\right]}  &  \ensuremath{\left\{ \bar{\boldsymbol{\delta}}\in S^{3}:\bar{\delta}_{0}\geq0\right\} } \\
+ \ensuremath{\mathrm{RV}}  &  \ensuremath{\left[\bar{\delta}_{0}\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\boldsymbol{\delta}}^{\mathrm{T}}\right)-[\bar{\boldsymbol{\delta}}]_{\times}\right]\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\hat{\boldsymbol{\delta}}\hat{\boldsymbol{\delta}}^{\mathrm{T}}}  &  \ensuremath{\left\{ \bar{\boldsymbol{\delta}}\in S^{3}:\bar{\delta}_{0}\geq0,\left\Vert \bar{\boldsymbol{\delta}}\right\Vert \neq0\right\} } \\
+ 
+\\\hline \end{tabular}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过最后的计算，我们得到了
+\begin_inset Formula $4$
+\end_inset
+
+参数数学对象
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\varphi,\bar{\boldsymbol{q}}_{n|n},\bar{\boldsymbol{\omega}}_{n|n}^{\prime},\mathbf{P}_{n|n}^{\bar{\boldsymbol{q}}_{n|n}}\right),\label{eq:48}
+\end{equation}
+
+\end_inset
+
+这等价于条件方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，在那里我们开始了迭代。
+\end_layout
+
+\begin_layout Subsection
+流形无迹卡尔曼滤波
+\end_layout
+
+\begin_layout Standard
+在本节中，我们将介绍基于UKF的估计器：流形无迹Kalman滤波器(Manifold Unscented Kalman Filter, MUKF)。
+\end_layout
+
+\begin_layout Standard
+测量
+\begin_inset Formula $\mathbf{z}_{n}$
+\end_inset
+
+在时刻
+\begin_inset Formula $t_{n}$
+\end_inset
+
+到达。我们对前一时刻
+\begin_inset Formula $t_{n-1}$
+\end_inset
+
+的方向的了解是用以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n-1\vert n-2}$
+\end_inset
+
+为中心的图表表示的概率分布来描述。这个概率分布编码为
+\begin_inset Formula $4$
+\end_inset
+
+参数数学对象
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\varphi,\bar{\boldsymbol{q}}_{n-1|n-2},\bar{\mathbf{x}}_{n-1|n-1}^{\bar{\boldsymbol{q}}_{n-1|n-2}},\mathbf{P}_{n-1|n-1}^{\bar{\boldsymbol{q}}_{n-1|n-2}}\right).\label{eq:49}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+UKF的第一步是创建增广
+\begin_inset Formula $N\times1$
+\end_inset
+
+的均值
+\begin_inset Formula $\tilde{\mathbf{x}}_{n}$
+\end_inset
+
+和
+\begin_inset Formula $N\times N$
+\end_inset
+
+的协方差矩阵
+\begin_inset Formula $\tilde{\mathbf{P}}_{n}$
+\end_inset
+
+。因为对于随机变量
+\begin_inset Formula $\mathbf{r}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{r}_{t}^{\mathbf{v}}$
+\end_inset
+
+的测量方程是线性的，我们可以把它们的协方差矩阵从增广矩阵中去掉，以后再加上它们：
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{x}}_{n} & =\begin{pmatrix}\bar{\mathbf{x}}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-2}}\\
+\bar{\mathbf{q}}_{n}^{\boldsymbol{\omega}}\\
+\bar{\mathbf{q}}_{n}^{\mathbf{v}}
+\end{pmatrix},\label{eq:50}\\
+\tilde{\mathbf{P}}_{n} & =\begin{pmatrix}\mathbf{P}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-2}} & \mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathbf{Q}_{n}^{\boldsymbol{\omega}} & \mathbf{0}\\
+\mathbf{0} & \mathbf{0} & \mathbf{Q}_{n}^{\mathbf{v}}
+\end{pmatrix}.\label{eq:51}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，我们获得满足
+\begin_inset Formula $\mathbf{L}_{n}\mathbf{L}_{n}^{\mathrm{T}}=\tilde{\mathbf{P}}_{n}$
+\end_inset
+
+的矩阵
+\begin_inset Formula $\mathbf{L}_{n}$
+\end_inset
+
+，并且我们用它来产生
+\begin_inset Formula $2N+1$
+\end_inset
+
+个sigma点
+\begin_inset Formula $\{\mathcal{X}_{j}\}_{j=0}^{2N}$
+\end_inset
+
+，如参考文献[15]所述：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathcal{X}_{i,0} & =\left(\tilde{\mathbf{x}}_{n}\right)_{i},\label{eq:52a}\\
+\mathcal{X}_{i,j} & =\left(\tilde{\mathbf{x}}_{n}\right)_{i}+\dfrac{\left(\mathbf{L}_{n}\right)_{ij}}{\sqrt{2W_{j}}}\quad\mathrm{for}\;j=1,\dots,N,\label{eq:52b}\\
+\mathcal{X}_{i,j+N} & =\left(\tilde{\mathbf{x}}_{n}\right)_{i}-\dfrac{\left(\mathbf{L}_{n}\right)_{ij}}{\sqrt{2W_{j}}}\quad\mathrm{for}\;j=1,\dots,N,\label{eq:52c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+对于
+\begin_inset Formula $j\neq0$
+\end_inset
+
+存在
+\begin_inset Formula $W_{j}=\left(1-W_{0}\right)/\left(2N\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $W_{0}$
+\end_inset
+
+控制均值计算中sigma点
+\begin_inset Formula $\mathcal{X}_{0}$
+\end_inset
+
+的重要性。这些sigma点
+\begin_inset Formula $\{\mathcal{X}_{j}\}_{j}$
+\end_inset
+
+用以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n-1\vert n-2}$
+\end_inset
+
+为中心的图表表示。在应用演变方程和测量方程之前，我们需要在流形中表示它们：
+\begin_inset Formula 
+\begin{align}
+\mathcal{X}_{j}^{\boldsymbol{q}} & =\varphi_{\bar{\boldsymbol{q}}_{n-1|n-2}}^{-1}\left(\mathcal{X}_{j}^{\mathbf{e}}\right)=\bar{\boldsymbol{q}}_{n-1|n-2}\ast\varphi^{-1}\left(\mathcal{X}_{j}^{\mathbf{e}}\right),\label{eq:53}\\
+\mathcal{Y}_{j}^{\boldsymbol{\omega}} & =\mathcal{X}_{j}^{\boldsymbol{\omega}}+\mathcal{X}_{j}^{\mathbf{q}^{\boldsymbol{\omega}}}\Delta t_{n},\label{eq:54}\\
+\mathcal{Y}_{j}^{\boldsymbol{q}} & =\mathcal{X}_{j}^{\boldsymbol{q}}\ast\left(\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \mathcal{Y}_{j}^{\boldsymbol{\omega}}\right\Vert \Delta t_{n}}{2}\right)\\
+\hat{\mathcal{Y}}_{j}^{\boldsymbol{\omega}}\sin\left(\dfrac{\left\Vert \mathcal{Y}_{j}^{\boldsymbol{\omega}}\right\Vert \Delta t_{n}}{2}\right)
+\end{array}\right),\label{eq:55}\\
+\mathcal{Z}_{j}^{\mathbf{v}} & =\mathbf{R}^{\mathrm{T}}\left(\mathcal{X}_{j}^{\boldsymbol{q}}\right)\left(\mathcal{X}_{j}^{\mathbf{v}}+\mathbf{v}_{t}\right),\label{eq:56}\\
+\mathcal{Z}_{j}^{\boldsymbol{\omega}} & =\mathcal{Y}_{j}^{\boldsymbol{\omega}},\label{eq:57}
+\end{align}
+
+\end_inset
+
+其中，对于第
+\begin_inset Formula $j$
+\end_inset
+
+个sigma点，
+\begin_inset Formula $\mathcal{X}_{j}^{\mathbf{e}}$
+\end_inset
+
+是它的图表点部分，并且
+\begin_inset Formula $\mathcal{X}_{j}^{\boldsymbol{q}}$
+\end_inset
+
+是它所映射的四元数，
+\begin_inset Formula $\mathcal{X}_{j}^{\boldsymbol{\omega}}$
+\end_inset
+
+是它的角速度部分，
+\begin_inset Formula $\mathcal{X}_{j}^{\mathbf{q}^{\boldsymbol{\omega}}}$
+\end_inset
+
+是它的角速度噪声部分，
+\begin_inset Formula $\mathcal{Y}_{j}^{\boldsymbol{\omega}}$
+\end_inset
+
+是它的角速度预测，
+\begin_inset Formula $\mathcal{Y}_{j}^{\boldsymbol{q}}$
+\end_inset
+
+是它预测的四元数部分(我们假设角速度
+\begin_inset Formula $\mathcal{Y}_{j}^{\boldsymbol{\omega}}$
+\end_inset
+
+在时间间隔
+\begin_inset Formula $[t_{n-1},t_{n})$
+\end_inset
+
+内是常数，因此我们可以使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，
+\begin_inset Formula $\mathcal{X}_{j}^{\mathbf{v}}$
+\end_inset
+
+是向量过程噪声部分，
+\begin_inset Formula $\mathcal{Z}_{j}^{\mathbf{v}}$
+\end_inset
+
+是其向量测量预测，
+\begin_inset Formula $\mathcal{Z}_{j}^{\boldsymbol{\omega}}$
+\end_inset
+
+是它的角速度测量预测，并且
+\begin_inset Formula $\Delta t_{n}=t_{n}-t_{n-1}$
+\end_inset
+
+。注意，当应用求逆图表
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+时，我们需要将
+\begin_inset Formula $\mathcal{X}_{j}^{\mathbf{e}}$
+\end_inset
+
+“浸透(saturate)”到在
+\begin_inset Formula $\varphi$
+\end_inset
+
+的图像中最接近的点。有了这些新的sigma点，我们可以得到UKF中概率分布的均值和协方差矩阵。首先，定义
+\begin_inset Formula $\mathcal{Z}_{j}:=\left(\mathcal{Z}_{j}^{\mathbf{v}},\mathcal{Z}_{j}^{\boldsymbol{\omega}}\right){}^{\mathrm{T}}$
+\end_inset
+
+，均值通过以下方程计算
+\begin_inset Formula 
+\begin{align}
+\bar{\boldsymbol{q}}_{n\vert n-1} & =\dfrac{\sum_{j}W_{j}\mathcal{Y}_{j}^{\boldsymbol{q}}}{\left\Vert \sum_{j}W_{j}\mathcal{Y}_{j}^{\boldsymbol{q}}\right\Vert },\label{eq:58}\\
+\bar{\boldsymbol{\omega}}_{n\vert n-1}^{\prime} & =\sum_{j}W_{j}\mathcal{Y}_{j}^{\boldsymbol{\omega}},\label{eq:59}\\
+\bar{\mathbf{x}}_{n\vert n-1}^{\bar{\boldsymbol{q}}_{n\vert n-1}} & =\begin{pmatrix}\varphi_{\bar{\boldsymbol{q}}_{n\vert n-1}}\left(\bar{\boldsymbol{q}}_{n\vert n-1}\right)=\mathbf{0}\\
+\bar{\boldsymbol{\omega}}_{n\vert n-1}^{\prime}
+\end{pmatrix},\label{eq:60}\\
+\bar{\mathbf{z}}_{n\vert n-1} & =\sum_{j}W_{j}\mathcal{Z}_{j}.\label{eq:61}
+\end{align}
+
+\end_inset
+
+其中我们使用了参考文献[16]中提供的结果的变体。也就是说，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{q}}\approx\dfrac{\sum_{j}\boldsymbol{q}_{j}}{\left\Vert \sum_{j}\boldsymbol{q}_{j}\right\Vert },\label{eq:62}
+\end{equation}
+
+\end_inset
+
+其中对于
+\begin_inset Formula $j,k=0,\dots,2N$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{q}_{j}\cdot\boldsymbol{q}_{k}>0$
+\end_inset
+
+。这个结果被证明是最小化距离的四阶近似，距离定义为每个四元数
+\begin_inset Formula $\boldsymbol{q}_{j}$
+\end_inset
+
+表示的旋转变换和
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+表示的旋转变换之间的角度平方之和。这种方法计算平均四元数是非常有效的，其推导是优雅和简单的。为了确保
+\begin_inset Formula $\boldsymbol{q}_{j}\cdot\boldsymbol{q}_{k}>0$
+\end_inset
+
+，记住
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\boldsymbol{q}$
+\end_inset
+
+表示相同的旋转是很有用的。这一性质也有助于引入四元数的定义域
+\begin_inset Formula $\varphi$
+\end_inset
+
+以执行过滤器的下一步。
+\end_layout
+
+\begin_layout Standard
+在此之后，我们使用得到的平均四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n\vert n-1}$
+\end_inset
+
+去表示在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n\vert n-1}$
+\end_inset
+
+为中心的图表中的每个sigma点，并计算协方差矩阵：
+\begin_inset Formula 
+\begin{align}
+\mathcal{Y}_{j}^{\mathbf{e}} & =\varphi_{\bar{\boldsymbol{q}}_{n|n-1}}\left(\mathcal{Y}_{j}^{\boldsymbol{q}}\right)=\varphi\left(\bar{\boldsymbol{q}}_{n|n-1}^{\ast}\ast\mathcal{Y}_{j}^{\boldsymbol{q}}\right),\label{eq:63}\\
+\mathbf{P}_{n\vert n-1}^{\bar{\boldsymbol{q}}_{n\vert n-1}} & =\sum_{j}W_{j}\mathcal{Y}_{j}\mathcal{Y}_{j}^{\mathrm{T}},\label{eq:64}\\
+\mathbf{P}_{n|n-1}^{yz} & =\sum_{j}W_{j}\mathcal{Y}_{j}\left(\mathcal{Z}_{j}-\bar{\mathbf{z}}_{n|n-1}\right)^{\mathrm{T}},\label{eq:65}\\
+\mathbf{S}_{n|n-1} & =\sum_{j}W_{j}\left(\mathcal{Z}_{j}-\bar{\mathbf{z}}_{n|n-1}\right)\left(\mathcal{Z}_{j}-\bar{\mathbf{z}}_{n|n-1}\right)^{\mathrm{T}}+\left(\begin{array}{cc}
+\mathbf{R}_{n}^{\mathbf{v}} & \mathbf{0}\\
+\mathbf{0} & \mathbf{R}_{n}^{\boldsymbol{\omega}}
+\end{array}\right),\label{eq:66}
+\end{align}
+
+\end_inset
+
+其中我们有标志
+\begin_inset Formula $\mathcal{Y}_{j}:=\left(\mathcal{Y}_{j}^{\mathbf{e}},\mathcal{Y}_{j}^{\boldsymbol{\omega}}-\bar{\boldsymbol{\omega}}_{n|n-1}^{\prime}\right){}^{\mathrm{T}}$
+\end_inset
+
+。最后，我们计算Kalman增益
+\begin_inset Formula $\mathbf{K}_{n}$
+\end_inset
+
+的UKF版本，并使用它来获得状态的最佳估计：
+\begin_inset Formula 
+\begin{align}
+\mathbf{K}_{n} & =\mathbf{P}_{n\vert n-1}^{yz}\mathbf{S}_{n\vert n-1}^{-1},\label{eq:67}\\
+\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}} & =\bar{\mathbf{x}}_{n|n-1}^{\bar{\boldsymbol{q}}_{n|n-1}}+\mathbf{K}_{n}\left(\mathbf{z}_{n}-\bar{\mathbf{z}}_{n|n-1}\right),\label{eq:68}\\
+\mathbf{P}_{n\vert n}^{\bar{\boldsymbol{q}}_{n\vert n-1}} & =\mathbf{P}_{n\vert n-1}^{\bar{\boldsymbol{q}}_{n\vert n-1}}-\mathbf{K}_{n}\mathbf{S}_{n\vert n-1}\mathbf{K}_{n}^{\mathrm{T}},\label{eq:69}
+\end{align}
+
+\end_inset
+
+到达相同的条件下，我们开始迭代，使用以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n\vert n-1}$
+\end_inset
+
+为中心的图表表示的概率分布，并编码为
+\begin_inset Formula $4$
+\end_inset
+
+参数数学对象
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\varphi,\bar{\boldsymbol{q}}_{n|n-1},\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}},\mathbf{P}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}\right).\label{eq:70}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这个时刻对于方向我们的最好估计是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{q}}_{n|n}=\varphi_{\bar{\boldsymbol{q}}_{n|n-1}}^{-1}\left(\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}\right)=\bar{\boldsymbol{q}}_{n|n-1}\ast\varphi^{-1}\left(\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}\right),\label{eq:71}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\bar{\mathbf{e}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+是均值
+\begin_inset Formula $\bar{\mathbf{x}}_{n|n}^{\bar{\boldsymbol{q}}_{n|n-1}}$
+\end_inset
+
+的一部分，该均值是在以
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
+\end_inset
+
+为中心的图表中表示的四元数。
+\end_layout
+
+\begin_layout Standard
+注意，在每次迭代开始时，设置
+\begin_inset Formula $\bar{\boldsymbol{q}}_{n-1\vert n-2}:=\bar{\boldsymbol{q}}_{n-1\vert n-1}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{\mathbf{e}}_{n-1\vert n-1}^{\bar{\boldsymbol{q}}_{n-1\vert n-2}}:=\mathbf{0}$
+\end_inset
+
+将产生算法的传统版本，在这里执行“重置操作”而不是协方差矩阵更新。
+\end_layout
+
+\begin_layout Section
+模拟结果
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节介绍用于测量每个估计器精度的模拟结果。选择模拟而不是真实实验，因为真实系统在测量真实姿态时会带来不确定性：用于与算法估计的姿态进行比较的姿态。误差的来源从测
+量系统的错误校准到另一个姿态估计器产生的“真实姿态”中的可能偏差，这使得定义一个适当的度量来测量算法的精度成为问题。基于这个原因，作者认为使用一个模拟是更可靠的
+，以避免可能的偏差，在结果中由于上述来源的误差。其他人也进行了类似类型的测试[7,17]。然而，结果似乎并不是统计上的结论：只显示了一些定向轨迹的估计。
+\end_layout
+
+\begin_layout Standard
+我们通过一个模拟来进行比较，在这个模拟中我们确实对系统的姿态有绝对的了解：一个真实的预言存在于一个模拟中。因此，我们可以比较真实的方向和由算法估计的姿态，这些算
+法只提供了我们从这些已知方向获得的模拟测量值。我们将从一系列广泛的方向轨迹中提取我们的性能指标，以获得统计上的结论性结果。
+\end_layout
+
+\begin_layout Standard
+我们试着用模拟测试来回答三个问题。第一个问题是，有没有一个图表，我们可以得到更准确的态度估计？第二个问题是，什么算法产生最精确的姿态估计，MEKF还是MUKF？
+最后一个问题源于这样一个事实，即以前的姿态估计算法，例如乘法扩展卡尔曼滤波器，没有考虑像MEKF中的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)那样将概率分布从一个图表更新到另一个图表。然而，他们的估计员表现良好[6,7,12]。第三个问题是，这种“图表更新”是否意味着姿态估计的准确性有所提高？
+\end_layout
+
+\begin_layout Standard
+虽然仿真已经被用来比较我们的算法，但这些算法也已经用一个实际的IMU进行了测试。在
+\begin_inset CommandInset href
+LatexCommand href
+name "辅助材料"
+target "https://www.mdpi.com/1424-8220/19/1/149/htm#app4-sensors-19-00149"
+literal "false"
+
+\end_inset
+
+中，可以找到演示视频、视频中使用的源代码、用于生成仿真的源代码以及用于获取各平台算法计算成本的源代码。
+\end_layout
+
+\begin_layout Subsection
+性能指标
+\end_layout
+
+\begin_layout Standard
+我们已经将一个四元数
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+描述为另一个四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+与偏差的乘积
+\begin_inset Formula $\boldsymbol{q}=\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}$
+\end_inset
+
+。现在我们定义估计姿态之间的瞬时误差，用单位四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+表示，并且真实的姿态，用单位四元数
+\begin_inset Formula $\overset{\ast}{\boldsymbol{q}}$
+\end_inset
+
+表示为角度，我们必须旋转其中一个来把它转换成另一个。这就是，旋转变换的角度由四元数定义为
+\begin_inset Formula $\boldsymbol{\delta}_{e}$
+\end_inset
+
+，使得
+\begin_inset Formula $\overset{\ast}{\boldsymbol{q}}=\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}_{e}$
+\end_inset
+
+。回想方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，该角度可计算为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:72"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\theta_{e} & =2\arccos\left[\left(\bar{\boldsymbol{q}}^{\ast}\ast\stackrel{\ast}{\boldsymbol{q}}\right)_{0}\right]=\label{eq:72a}\\
+ & =2\arccos\left(\bar{\boldsymbol{q}}\cdot\stackrel{\ast}{\boldsymbol{q}}\right),\label{eq:72b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+前面使用
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\boldsymbol{q}$
+\end_inset
+
+表示相同的旋转变换，保证过这个
+\begin_inset Formula $\bar{\boldsymbol{q}}\cdot\stackrel{\ast}{\boldsymbol{q}}\geq0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+角度
+\begin_inset Formula $\theta_{e}$
+\end_inset
+
+将沿方向轨迹变化。然后，我们将定义给定轨迹的方向估计的平均误差，从时间
+\begin_inset Formula $t=0$
+\end_inset
+
+开始，到时间
+\begin_inset Formula $t=T$
+\end_inset
+
+时结束，为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+e_{\theta}=\dfrac{1}{T}\int_{0}^{T}\theta_{e}\left(t\right)dt.\label{eq:73}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，
+\begin_inset Formula $e_{\theta}$
+\end_inset
+
+将取决于所遵循的轨迹，以及所采取的一系列措施。我们需要生成几个方向轨迹来获得平均值
+\begin_inset Formula $\bar{e}_{\theta}$
+\end_inset
+
+以及方差
+\begin_inset Formula $\sigma_{\bar{e}_{\theta}}^{2}$
+\end_inset
+
+，它对于每个算法描述了方向估计误差的概率分布
+\begin_inset Formula $e_{\theta}$
+\end_inset
+
+。我们将定义可计算的
+\begin_inset Formula $\bar{e}_{\theta}$
+\end_inset
+
+的置信区间为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\bar{e}_{\theta}-3\sigma_{\bar{e}_{\theta}}/\sqrt{N_{s}},\bar{e}_{\theta}+3\sigma_{\bar{e}_{\theta}}/\sqrt{N_{s}}\right],\label{eq:74}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $N_{s}$
+\end_inset
+
+是为
+\begin_inset Formula $\bar{e}_{\theta}$
+\end_inset
+
+的采样的样本数计算，所以
+\begin_inset Formula $\sigma_{\bar{e}_{\theta}}^{2}/N_{s}$
+\end_inset
+
+是样本均值概率分布的方差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\bar{e}_{\theta}$
+\end_inset
+
+的值越低越好，它给我们一个衡量算法估计方向的标准。我们将考虑如果
+\begin_inset Formula $\bar{e}_{\theta}(\mathrm{A})<\bar{e}_{\theta}(\mathrm{B})$
+\end_inset
+
+，算法A的性能比其他算法B的性能好，并且它们的置信区间不重叠。
+\end_layout
+
+\begin_layout Subsection
+模拟方案
+\end_layout
+
+\begin_layout Standard
+为了计算性能指标，我们需要生成大量的模拟。每个独立的模拟将包括三个步骤：初始化、收敛和估计。
+\end_layout
+
+\begin_layout Standard
+在初始化步骤中，我们根据所选的模拟参数设置初始条件。这包括生成初始单位四元数
+\begin_inset Formula $\stackrel{\ast}{\boldsymbol{q}_{0}}$
+\end_inset
+
+从
+\begin_inset Formula $S^{3}$
+\end_inset
+
+中均匀分布中设定初始角速度
+\begin_inset Formula $\overset{\ast}{\boldsymbol{\omega}}_{0}^{\prime}$
+\end_inset
+
+到0，设置更新频率
+\begin_inset Formula $f_{\mathrm{update}}$
+\end_inset
+
+生成过程噪声的方差
+\begin_inset Formula $\sigma_{\boldsymbol{\omega}}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{\mathbf{v}}^{2}$
+\end_inset
+
+，分别从均匀分布的间隔
+\begin_inset Formula $(0,Q_{\mathrm{max}}^{\boldsymbol{\omega}}]$
+\end_inset
+
+和
+\begin_inset Formula $(0,Q_{\mathrm{max}}^{\mathbf{v}}]$
+\end_inset
+
+中，初始化估计算法。MEKF的初始化包括设置
+\begin_inset Formula $\bar{\boldsymbol{q}}_{0|0}=1$
+\end_inset
+
+、
+\begin_inset Formula $\bar{\boldsymbol{\omega}}_{0|0}^{\prime}=\mathbf{0}\mathrm{rad}/\mathrm{s}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{P}_{0|0}^{\bar{\boldsymbol{q}}_{0|0}}=10^{2}\mathbf{I}$
+\end_inset
+
+。另一方面，MUKF的初始化包括设置
+\begin_inset Formula $\bar{\boldsymbol{q}}_{0|-1}=1$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{e}_{0|0}^{\bar{\boldsymbol{q}}_{0|-1}}=\mathbf{0}$
+\end_inset
+
+、 
+\begin_inset Formula $\bar{\boldsymbol{\omega}}_{0|0}^{\prime}=(1,1,1)^{\mathrm{T}}\mathrm{rad}/\mathrm{s}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{P}_{0|0}^{\bar{\boldsymbol{q}}_{0|0}}=10^{2}\mathbf{I}$
+\end_inset
+
+。在MUKF中，角速度没有初始化为
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+，因为观察到有时需要“打破对称性”才能使算法收敛；尤其是当我们没有为RV图表应用图表更新(当我们执行“重置操作”时)。两种算法中出现的协方差矩阵都初始化为
+\begin_inset Formula $\mathbf{Q}_{n}^{\boldsymbol{\omega}}=\mathbf{I}\mathrm{rads}^{2}/\mathrm{s}^{4}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{Q}_{n}^{\mathbf{v}}=10^{-2}\mathbf{I}\mathrm{p}.\mathrm{d}.\mathrm{u}.$
+\end_inset
+
+(“p.d.u.”代表“程序定义单位”。在本例中，它取决于向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的定义)，
+\begin_inset Formula $\mathbf{R}_{n}^{\boldsymbol{\omega}}=R^{\boldsymbol{\omega}}\mathbf{I}\mathrm{rads}^{2}/\mathrm{s}^{2}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{R}_{n}^{\mathbf{v}}=R^{\mathbf{v}}\mathbf{I}\mathrm{p}.\mathrm{d}.\mathrm{u}.$
+\end_inset
+
+，其中
+\begin_inset Formula $R^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $R^{\mathbf{v}}$
+\end_inset
+
+是将在模拟中使用的测量噪声的方差。我们将测量噪声的信息提供给算法，因为它可以离线获得，而过程噪声的信息则不能。假设我们无法预先知道系统的行为，
+\begin_inset Formula $\mathbf{Q}_{n}^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Q}_{n}^{\mathbf{v}}$
+\end_inset
+
+的值是根据我们理解的正常情况选择的。选择这些值，我们假设在一秒钟之后，角速度变化
+\begin_inset Formula $1\ \mathrm{rad/s}$
+\end_inset
+
+是正常的，并且发现
+\begin_inset Formula $10^{-1}\mathrm{p}.\mathrm{d}.\mathrm{u}.$
+\end_inset
+
+量级的
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+中添加的外部噪声也是常见的。对于均值我们设置
+\begin_inset Formula $\bar{\mathbf{q}}_{n}^{\boldsymbol{\omega}}=\mathbf{0}\mathrm{rads}/\mathrm{s}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{\mathbf{q}}^{\mathbf{v}}=\mathbf{0}\mathrm{p}.\mathrm{d}.\mathrm{u}.$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在收敛步骤，我们保持系统在初始方向
+\begin_inset Formula $\stackrel{\ast}{\boldsymbol{q}}_{0}$
+\end_inset
+
+使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)生成模拟测量。对于每个测量，从
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+单位球体的均匀分布中取样不同的
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+。
+\begin_inset Formula $\mathbf{q}_{t}^{\mathbf{v}}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{r}_{t}^{\mathbf{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{r}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+的每个分量的值ωt是由均值和方差为零的正态分布分别得到
+\begin_inset Formula $\sigma_{\mathbf{v}}^{2}R^{\mathbf{v}}$
+\end_inset
+
+和
+\begin_inset Formula $R^{\boldsymbol{\omega}}$
+\end_inset
+
+。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\mathbf{R}^{\mathrm{T}}\left(\mathbf{q}_{t}\right)$
+\end_inset
+
+项是从真实姿态
+\begin_inset Formula $\stackrel{\ast}{\boldsymbol{q}}_{t}$
+\end_inset
+
+得到的，在收敛步骤中取值
+\begin_inset Formula $\stackrel{\ast}{\boldsymbol{q}}_{t}=\stackrel{\ast}{\boldsymbol{q}}_{0}$
+\end_inset
+
+。在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\boldsymbol{\omega}_{t}^{\prime}$
+\end_inset
+
+项是真实角速度，在收敛步骤中取值
+\begin_inset Formula $\overset{\ast}{\boldsymbol{\omega}}_{t}^{\prime}=\mathbf{0}$
+\end_inset
+
+。被测试的算法更新其状态估计直到不等式满足
+\begin_inset Formula $\theta_{e}\left(t\right)<\theta_{e}^{0}$
+\end_inset
+
+，其中
+\begin_inset Formula $\theta_{e}\left(t\right)$
+\end_inset
+
+是误差方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的值，并且
+\begin_inset Formula $\theta_{e}^{0}$
+\end_inset
+
+是模拟中的参数。收敛步骤可以被算法
+\begin_inset Formula $\bar{\boldsymbol{q}}_{t}$
+\end_inset
+
+估计的姿态初始化值所代替的实际值
+\begin_inset Formula $\stackrel{\ast}{\boldsymbol{q}}_{t}$
+\end_inset
+
+，但如果是这样的话，还需要确定一个协方差矩阵。由于每个图表生成的空间度量不同，因此很难设置为每个图表提供相同信息的协方差矩阵。对于作者来说，更自然的做法是允许算
+法通过自己的方法找到真实的姿态，并且协方差矩阵在每种情况下都收敛到一个值。
+\end_layout
+
+\begin_layout Standard
+最后，在估计步骤中，我们使用角速度的维纳过程生成一个随机但连续的方向序列：
+\begin_inset Formula 
+\begin{align}
+\stackrel{\ast}{\boldsymbol{\omega}}{}_{t}^{\prime} & =\stackrel{\text{\ast}}{\boldsymbol{\omega}}{}_{t-\delta t}^{\prime}+\mathbf{n}_{t}\sqrt{\delta t},\label{eq:75}\\
+\stackrel{\ast}{\boldsymbol{q}}_{t} & =\stackrel{\ast}{\boldsymbol{q}}_{t-\delta t}\ast\left(\begin{array}{c}
+\cos\left(\dfrac{\parallel\stackrel{\ast}{\boldsymbol{\omega}}{}_{t}^{\prime}\parallel\delta t}{2}\right)\\
+\dfrac{\stackrel{\ast}{\boldsymbol{\omega}}{}_{t}^{\prime}}{\parallel\stackrel{\ast}{\boldsymbol{\omega}}{}_{t}^{\prime}\parallel}\sin\left(\dfrac{\parallel\stackrel{\ast}{\boldsymbol{\omega}}{}_{t}^{\prime}\parallel\delta t}{2}\right)
+\end{array}\right),\label{eq:76}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{n}_{t}$
+\end_inset
+
+是一个随机向量，其分量从均值和方差为零的正态分布中采样
+\begin_inset Formula $\sigma_{\boldsymbol{\omega}}^{2}$
+\end_inset
+
+，并且
+\begin_inset Formula $\delta t$
+\end_inset
+
+是与算法时间步长相关的模拟时间步长
+\begin_inset Formula $\Delta t$
+\end_inset
+
+通过
+\begin_inset Formula $\mathrm{dtdtsim}\delta t=\Delta t$
+\end_inset
+
+，
+\begin_inset Formula $\mathrm{dtdtsim}$
+\end_inset
+
+是一个整数参数，用于确定每次算法更新的模拟更新。注意，我们将
+\begin_inset Formula $\mathbf{n}_{t}$
+\end_inset
+
+乘以
+\begin_inset Formula $\sqrt{\delta t}$
+\end_inset
+
+而不是通过
+\begin_inset Formula $\delta t$
+\end_inset
+
+。我们这样做是为了
+\begin_inset Formula $k$
+\end_inset
+
+步之后的协方差矩阵不依赖于模拟时间步
+\begin_inset Formula $\delta t$
+\end_inset
+
+。事实上，经过一段时间
+\begin_inset Formula $T=k\delta t$
+\end_inset
+
+角速度的协方差矩阵将增长
+\begin_inset Formula $\Delta\mathbf{P}^{\boldsymbol{\omega}}=k\mathbf{I}\sigma_{\boldsymbol{\omega}}^{2}\delta t=\mathbf{I}\sigma_{\boldsymbol{\omega}}^{2}T$
+\end_inset
+
+而不是
+\begin_inset Formula $\left(\Delta\mathbf{P}^{\boldsymbol{\omega}}\right)^{\prime}=k\mathbf{I}\sigma_{\boldsymbol{\omega}}^{2}\left(\delta t\right)^{2}=\mathbf{I}\sigma_{\boldsymbol{\omega}}^{2}T\delta t$
+\end_inset
+
+。在每个
+\begin_inset Formula $\mathrm{dtdtsim}$
+\end_inset
+
+仿真更新之后，以与收敛步骤相同的方式生成一个仿真测量，并用它更新算法。模拟将运行一段时间
+\begin_inset Formula $\mathrm{Tsim}=k^{\prime}\Delta t$
+\end_inset
+
+，其中
+\begin_inset Formula $k^{\prime}$
+\end_inset
+
+是一个整数。这样，我们将在模拟结束时执行最后一次算法更新。在每次算法更新之后，将对误差方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行评估，并通过模拟将其相加以获得平均误差方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。在每次模拟之后，我们将获得一个用于计算
+\begin_inset Formula $\bar{e}_{\theta}$
+\end_inset
+
+的样本和
+\begin_inset Formula $\sigma_{\bar{e}_{\theta}}^{2}$
+\end_inset
+
+。我们将执行这些模拟的
+\begin_inset Formula $N_{s}$
+\end_inset
+
+以获得置信区间方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Subsection
+结果
+\end_layout
+
+\begin_layout Standard
+在本节中，我们将介绍模拟的结果。对算法的更新频率
+\begin_inset Formula $f_{\mathrm{update}}=1/\Delta t$
+\end_inset
+
+在
+\begin_inset Formula $\left[2,1000\right]\ \mathrm{Hz}$
+\end_inset
+
+间隔内进行了测试。选择这个范围是考虑到实际系统可能存在的局限性。例如，低成本IMU的最大数据速率约为
+\begin_inset Formula $1000\ \mathrm{Hz}$
+\end_inset
+
+。另一方面，更新频率可能受到过程的限制。每个估计器的计算成本在两个平台上进行了评估：Arduino MEGA 2560和Raspberry Pi
+ 3 Model B。代码是用c++编写的。得到的最大更新频率如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，这表明MEKF的执行速度大约是MUKF的
+\begin_inset Formula $3$
+\end_inset
+
+倍。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g004.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+每种方法的最大更新频率。顶部的线代表均值和偏差(
+\begin_inset Formula $3\sigma$
+\end_inset
+
+) 最大更新频率的概率分布。“CU”表示有图表更新，“NCU”表示无图表更新。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+虽然算法已经发展到对于每个更新允许不同的
+\begin_inset Formula $\Delta t_{n}$
+\end_inset
+
+，但模拟器使用一个常量
+\begin_inset Formula $\Delta t$
+\end_inset
+
+执行模拟，并且模拟参数如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:5"
+
+\end_inset
+
+模拟中使用的参数。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\begin{tabular}{cc}
+\hline  \ensuremath{\mathbf{Parameter}}  &  \ensuremath{\mathbf{Value}} \\
+\hline  \ensuremath{\theta_{e}^{0}}  &  \ensuremath{1^{\circ}} \\
+ \ensuremath{\mathrm{Tsim}}  &  \ensuremath{10\mathrm{~s}} \\
+ \ensuremath{\mathrm{dtdtsim}}  &  \text{100}\\
+ \ensuremath{N_{s}}  &  \text{1000}\\
+ \ensuremath{Q_{\max}^{\boldsymbol{\omega}}}  &  \ensuremath{10^{2}\ \mathrm{rads}^{2}/\mathrm{s}^{3}} \\
+ \ensuremath{Q_{\max}^{\mathbf{v}}}  &  1 p.d.u. \\
+ \ensuremath{R}  &  \ensuremath{\left\{ 10^{-2},10^{-4},10^{-6}\right\} } \\
+ \ensuremath{R^{\boldsymbol{\omega}}}  &  \ensuremath{R\ \mathrm{rads}^{2}/\mathrm{s}^{2}} \\
+ \ensuremath{R^{\mathbf{v}}}  &  \ensuremath{R}\ \ensuremath{\mathrm{p.d.u.}} \\
+ \ensuremath{W_{0}}  &  \ensuremath{1/25} \\
+\hline  
+\end{tabular}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+参数
+\begin_inset Formula $\theta_{e}^{0}$
+\end_inset
+
+、
+\begin_inset Formula $\mathrm{Tsim}$
+\end_inset
+
+、
+\begin_inset Formula $\mathrm{dtdtsim}$
+\end_inset
+
+和
+\begin_inset Formula $N_{s}$
+\end_inset
+
+的选择，试图在结果精度和模拟执行时间之间达成折衷。
+\begin_inset Formula $Q_{\mathrm{max}}^{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $Q_{\mathrm{max}}^{\mathbf{v}}$
+\end_inset
+
+的值的选择使得估计算法同时面对两种正常情况(
+\begin_inset Formula $\mathbf{Q}_{n}^{\boldsymbol{\omega}}\approx\sigma_{\boldsymbol{\omega}}^{2}\mathbf{I}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Q}_{n}^{\mathbf{v}}\approx\sigma_{\mathbf{v}}^{2}\mathbf{I}$
+\end_inset
+
+)和未预见的情况(
+\begin_inset Formula $\mathbf{Q}_{n}^{\boldsymbol{\omega}}\neq\sigma_{\boldsymbol{\omega}}^{2}\mathbf{I}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{Q}_{n}^{\mathbf{v}}\neq\sigma_{\mathbf{v}}^{2}\mathbf{I}$
+\end_inset
+
+)。一个典型的低成本IMU具有
+\begin_inset Formula $R^{\boldsymbol{\omega}}\approx10^{-4}\mathrm{rads}^{2}/\mathrm{s}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $R^{\mathbf{v}}\approx10^{-4}g^{2}$
+\end_inset
+
+。为
+\begin_inset Formula $R$
+\end_inset
+
+选择的值表示不精确的传感器(
+\begin_inset Formula $10^{-2}$
+\end_inset
+
+) ，一个正常的传感器(
+\begin_inset Formula $10^{-4}$
+\end_inset
+
+) ，以及精密传感器(
+\begin_inset Formula $10^{-6}$
+\end_inset
+
+).
+ 选择
+\begin_inset Formula $W_{0}$
+\end_inset
+
+的值是为了使所有的sigma点具有相同的重要性，但是对于
+\begin_inset Formula $W_{0}$
+\end_inset
+
+的其他选择，如果结果不相同，则会得到非常相似的结果。
+\end_layout
+
+\begin_layout Subsubsection
+图表选择
+\end_layout
+
+\begin_layout Standard
+模拟结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。性能度量的平均值与每个选定更新频率的置信区间一起显示。MEKF和MUKF的结果显示在不同的图表中，但绘制在同一个图表中的是每个图表和给定MKF的结果。这
+样我们就可以分辨出一个图表是否比其它图表有优势。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g005.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+每种方法的性能指标平均值。不同图表的结果绘制在同一图表中。不同MKF的结果绘制在不同的图表中。条形代表置信区间(
+\begin_inset Formula $3\sigma$
+\end_inset
+
+) 平均值计算。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们观察到没有特别有利的图表。在所有条件相同的情况下，我们会选择RP图。对于这个图表，不必担心定义域，因为它映射了
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\boldsymbol{q}$
+\end_inset
+
+具有相同的
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+点和相同的
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵；或相同的图像，因为它们都是
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+。此外
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+和MEKF的
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵对于RP图更简单。这些计算优势使我们更喜欢RP图。
+\end_layout
+
+\begin_layout Subsubsection
+MEKF对比MUKF
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 还显示了模拟的结果。这一次，当使用RP图表时，我们在同一个图表上显示MUKF和MEKF的结果性能度量。这样，我们就可以区分一个MKF是否比另一个MKF有优势。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g006.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+各MKF性能指标的平均值。只绘制RP图的结果。条形代表置信区间(
+\begin_inset Formula $3\sigma$
+\end_inset
+
+) 在平均计算中。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们注意到MEKF的性能与MUKF相同或更好。这与通常的经验不同，在传统的非线性估计应用中，UKF优于EKF。图表类似于原点附近的欧几里德空间(见第
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)这一事实可能有利于MEKF，因为用于逼近非线性函数的Jacobian矩阵是在该点定义的。然而，为MUKF生成的sigma点在远离图表原点的地方采样，在那里
+非线性变得臭名昭著。我们正面临一个非常特殊的场景，在这个场景中，模型对于MEKF是近似线性的，而对于MUKF则不是。此外，由于计算成本的差异(参见图
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，MUKF更新频率通常低于MEKF的更新频率，这意味着其估计的准确性较差。那么，带RP图的MEKF似乎是我们最好的选择。
+\end_layout
+
+\begin_layout Subsubsection
+图表更新对比无图表更新
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了每个MKF的结果，每个图表在不同的图表中，但在同一个图表中显示的是使用“图表更新”的结果和不使用它的结果。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename sensors-19-00149-g007.png
+	scale 13
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+每种方法的性能指标平均值。我们应用图表更新的方法的结果和不应用图表更新的方法的结果一起绘制。条形代表置信区间(
+\begin_inset Formula $3\sigma$
+\end_inset
+
+) 在平均计算中。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以观察到，使用“图表更新”和不使用它几乎没有区别。本文所使用的概念有助于我们理解MKF的机制，并最终得到
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵定义下的“乘法更新”和“协方差校正步”的概念。然而，没有必要在实践中应用最新的更新方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：我们将在我们的估计中获得基本相同的精度。
+\end_layout
+
+\begin_layout Section
+结论
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们使用流形理论中的概念来定义流形中概率分布的期望值和协方差矩阵。特别地，我们利用图的概念定义了
+\begin_inset Formula $S^{3}$
+\end_inset
+
+中单位四元数概率分布的期望值和协方差矩阵，
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+中的单位球体。这些定义帮助我们开发了用于方向估计的Kalman滤波器，其中姿态由单位四元数表示。它们还帮助我们解决了“协方差校正步骤”的问题。两个估计已经发展：
+一个基于EKF(MEKF)，另一个基于UKF(MUKF)。对MEKF和MUKF进行了仿真测试，得到了一些结果。模拟结果如下：
+\end_layout
+
+\begin_layout Itemize
+没有一个图表比其他图表有明显的优势，但是RP图表有一些促使我们更喜欢它的特征。
+\end_layout
+
+\begin_layout Itemize
+与MUKF相比，MEKF具有计算量小、方向估计精度高等优点。
+\end_layout
+
+\begin_layout Itemize
+在实践中，MKF不需要“图表更新”。
+\end_layout
+
+\begin_layout Standard
+然后，根据所采用的性能指标，在不使用“图更新”的情况下，使用RP图的MEKF是我们的最佳姿态估计器。该算法类似于传统的“乘法扩展Kalman滤波”，但是我们不必
+重新定义经典Kalman滤波的任何方面就可以得到MEKF。
+\end_layout
+
+\begin_layout Section*
+缩写
+\end_layout
+
+\begin_layout Standard
+本手稿中使用了以下缩写：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+EKF 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Extended Kalman Filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+UKF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unscented Kalman Filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MKF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Manifold Kalman Filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MEKF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Manifold Extended Kalman Filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MUKF
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Manifold Unscented Kalman Filter
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Orthographic
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rodrigues Parameters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MRP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Modified Rodrigues Parameters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation Vector
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{equation}{0}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+theequation}{A
+\backslash
+arabic{equation}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+过渡映射的推导
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:A"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本附录包含每个图表的过渡映射的推导。
+\end_layout
+
+\begin_layout Subsection
+正交投影
+\end_layout
+
+\begin_layout Standard
+使用定义图表的变换的逆运算，
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\begin{pmatrix}\sqrt{1-\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}{4}}\\
+\mathbf{e}^{\bar{\boldsymbol{q}}}/2
+\end{pmatrix}.\label{eq:A1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\boldsymbol{\delta}}^{\ast}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\begin{pmatrix}\bar{\delta}_{0}\sqrt{1-\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}{4}}+\bar{\boldsymbol{\delta}}\cdot\dfrac{\mathbf{e}^{\bar{\boldsymbol{q}}}}{2}\\
+\bar{\delta}_{0}\dfrac{\mathbf{e}^{\bar{\boldsymbol{q}}}}{2}-\sqrt{1-\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}{4}}\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\dfrac{\mathbf{e}^{\bar{\boldsymbol{q}}}}{2}
+\end{pmatrix}.\label{eq:A2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，应用图表定义，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\mathbf{\delta}^{\bar{\boldsymbol{p}}}=\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\sqrt{4-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}.\label{eq:A3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+罗德里格斯参数
+\end_layout
+
+\begin_layout Standard
+使用定义图表的变换的逆运算，
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\dfrac{1}{\sqrt{4+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}}\begin{pmatrix}2\\
+\mathbf{e}^{\bar{\boldsymbol{q}}}
+\end{pmatrix}.\label{eq:A4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\boldsymbol{\delta}}^{\ast}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\dfrac{1}{\sqrt{4+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}}\begin{pmatrix}2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}\\
+\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}
+\end{pmatrix}.\label{eq:A5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，应用图表定义，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\boldsymbol{\mathbf{\delta}}^{\bar{\boldsymbol{p}}}}{\delta_{0}^{\bar{\boldsymbol{p}}}}=2\dfrac{\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}.\label{eq:A6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+改进型罗德里格斯参数
+\end_layout
+
+\begin_layout Standard
+使用定义图表的变换的逆运算，
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\dfrac{1}{16+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\begin{pmatrix}16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\\
+8\mathbf{e}^{\bar{\boldsymbol{q}}}
+\end{pmatrix}.\label{eq:A7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\boldsymbol{\delta}}^{\ast}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\dfrac{1}{16+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\left(\begin{array}{c}
+\bar{\delta}_{0}\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)+8\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}\\
+8\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\bar{\boldsymbol{\delta}}-8\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}
+\end{array}\right).\label{eq:A8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，应用图表定义，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=4\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{1+\delta_{0}^{\bar{\boldsymbol{p}}}}=4\dfrac{8\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\bar{\boldsymbol{\delta}}-8\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{16+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}+\bar{\delta}_{0}\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)+8\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}.\label{eq:A9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+旋转向量
+\end_layout
+
+\begin_layout Standard
+使用定义图表的变换的逆运算，
+\begin_inset Formula $\varphi^{-1}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\left(\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\\
+\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)
+\end{array}\right).\label{eq:A10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\boldsymbol{\delta}}^{\ast}\ast\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\left(\begin{array}{c}
+\bar{\delta}_{0}\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)+\bar{\boldsymbol{\delta}}\cdot\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\\
+\bar{\delta}_{0}\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)-\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)
+\end{array}\right).\label{eq:A11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，应用图表定义，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\mathbf{\delta}^{\bar{\boldsymbol{p}}}}{\parallel\mathbf{\delta}^{\bar{\boldsymbol{p}}}\parallel}\arcsin\parallel\mathbf{\delta}^{\bar{\boldsymbol{p}}}\parallel,\label{eq:A12}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}} & =\bar{\delta}_{0}\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)-\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right).\end{array}\label{eq:A13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，所有过渡映射都使用
+\begin_inset Formula $\bar{\boldsymbol{\delta}}$
+\end_inset
+
+四元数。鉴于这个
+\begin_inset Formula $\bar{\mathbf{e}}=\varphi\left(\bar{\boldsymbol{\delta}}\right)$
+\end_inset
+
+，我们也可以用
+\begin_inset Formula $\bar{\mathbf{e}}$
+\end_inset
+
+，这就是我们在应用Kalman更新方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)之后得到的结果。但是，我们的选择使过渡映射采用更简单的形式。另外，还要计算四元数
+\begin_inset Formula $\bar{\boldsymbol{\delta}}$
+\end_inset
+
+以便执行方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，此选择并不意味着计算开销。
+\end_layout
+
+\begin_layout Section
+MEKF推导中的细节
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:B"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本附录详细介绍了本研究中使用的流形扩展卡尔曼滤波器的推导过程。
+\end_layout
+
+\begin_layout Subsection
+状态预测
+\end_layout
+
+\begin_layout Standard
+本小节包含状态预测方程的推导。
+\end_layout
+
+\begin_layout Subsubsection
+状态期望值的演变
+\end_layout
+
+\begin_layout Standard
+取方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的期望值，我们得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\bar{\boldsymbol{\omega}}^{\prime}}{\mathrm{d}t}=\bar{\mathbf{q}}^{\boldsymbol{\omega}}\Rightarrow\bar{\boldsymbol{\omega}}^{\prime}\left(t\right)=\bar{\boldsymbol{\omega}}_{0}^{\prime}+\bar{\mathbf{q}}_{t}^{\boldsymbol{\omega}}t,\label{eq:A14}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\bar{\mathbf{q}}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+是随机变量
+\begin_inset Formula $\mathbf{q}^{\boldsymbol{\omega}}$
+\end_inset
+
+在时间
+\begin_inset Formula $t$
+\end_inset
+
+时的期望值ω 。执行
+\begin_inset Formula $\bar{\boldsymbol{\omega}}_{0}^{\prime}=\bar{\boldsymbol{\omega}}_{n-1\vert n-1}^{\prime}$
+\end_inset
+
+我们获得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{\omega}}_{t\vert n-1}^{\prime}=\bar{\boldsymbol{\omega}}_{n-1\vert n-1}^{\prime}+\bar{\mathbf{q}}_{t}^{\boldsymbol{\omega}}t.\label{eq:A15}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，用泰勒级数逼近方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)到当前状态
+\begin_inset Formula $\left(\bar{\boldsymbol{q}},\bar{\boldsymbol{\omega}}^{\prime}\right)$
+\end_inset
+
+的一阶周围，取它的期望值
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{E}\left[\dfrac{\mathrm{d}\boldsymbol{q}\left(t\right)}{\mathrm{d}t}\right]\approx\dfrac{1}{2}\bar{\boldsymbol{q}}\left(t\right)\ast\bar{\boldsymbol{\omega}}^{\prime}\left(t\right).\label{eq:A16}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个微分方程没有一般的闭式解。但是如果我们假设过程噪声
+\begin_inset Formula $\bar{\mathbf{q}}^{\boldsymbol{\omega}}\left(t\right)$
+\end_inset
+
+的期望值为零，当
+\begin_inset Formula $t\in(t_{n-1},t_{n})$
+\end_inset
+
+时，因此
+\begin_inset Formula $\bar{\boldsymbol{\omega}}^{\prime}\left(t\right)$
+\end_inset
+
+在这个区间内是常数，那么我们就得到了矩阵微分方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\bar{\boldsymbol{q}}\left(t\right)}{\mathrm{d}t}=\overset{\text{ˇ}}{\Omega}_{n}\bar{\boldsymbol{q}}\left(t\right),\label{eq:A17}
+\end{equation}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\overset{\text{ˇ}}{\Omega}_{n}:=\dfrac{1}{2}\left(\begin{array}{cccc}
+0 & -\bar{\boldsymbol{\omega}}_{1}^{\prime} & -\bar{\boldsymbol{\omega}}_{2}^{\prime} & -\bar{\boldsymbol{\omega}}_{3}^{\prime}\\
+\bar{\boldsymbol{\omega}}_{1}^{\prime} & 0 & \bar{\boldsymbol{\omega}}_{3}^{\prime} & -\bar{\boldsymbol{\omega}}_{2}^{\prime}\\
+\bar{\boldsymbol{\omega}}_{2}^{\prime} & -\bar{\boldsymbol{\omega}}_{3}^{\prime} & 0 & \bar{\boldsymbol{\omega}}_{1}^{\prime}\\
+\bar{\boldsymbol{\omega}}_{3}^{\prime} & \bar{\boldsymbol{\omega}}_{2}^{\prime} & -\bar{\boldsymbol{\omega}}_{1}^{\prime} & 0
+\end{array}\right)_{n\vert n-1}.\label{eq:A18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个微分方程有解
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{q}}\left(t\right)=e^{\overset{\text{ˇ}}{\Omega}t}\bar{\boldsymbol{q}}_{0},\label{eq:A19}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\bar{\boldsymbol{q}}_{0}$
+\end_inset
+
+表示初始条件。取得
+\begin_inset Formula $\bar{\boldsymbol{q}}_{0}=\bar{\boldsymbol{q}}_{n-1|n-1}$
+\end_inset
+
+后，我们获得预测值
+\begin_inset Formula $\bar{\boldsymbol{q}}_{t|n-1}$
+\end_inset
+
+，这可以用四元数乘积表示
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{\boldsymbol{q}}_{t|n-1}=\bar{\boldsymbol{q}}_{n-1|n-1}\ast\boldsymbol{\delta}_{t}^{\boldsymbol{\omega}}=\bar{\boldsymbol{q}}_{n-1|n-1}\ast\left(\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \bar{\boldsymbol{\omega}}_{t|n-1}^{\prime}\right\Vert \Delta t}{2}\right)\\
+\dfrac{\bar{\boldsymbol{\omega}}_{t|n-1}^{\prime}}{\left\Vert \bar{\boldsymbol{\omega}}_{t|n-1}^{\prime}\right\Vert }\sin\left(\dfrac{\left\Vert \bar{\boldsymbol{\omega}}_{t|n-1}^{\prime}\right\Vert \Delta t}{2}\right)
+\end{array}\right),\label{eq:A20}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\Delta t=t-t_{n-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+状态协方差矩阵的演变
+\end_layout
+
+\begin_layout Standard
+对于一个连续的非线性系统
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\mathbf{x}}{\mathrm{d}t}=\mathbf{f}\left(\mathbf{x},t\right)+\mathbf{g}\left(\mathbf{q}\right),\label{eq:A21}
+\end{equation}
+
+\end_inset
+
+我们知道文献[18]协方差矩阵满足以下微分方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\mathbf{P}}{\mathrm{d}t}=\mathbf{F}\mathbf{P}+\mathbf{P}\mathbf{F}^{\mathrm{T}}+\mathbf{G}\mathbf{Q}\mathbf{G}^{\mathrm{T}},\label{eq:A22}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{F}=\dfrac{\partial\mathbf{f}}{\partial\mathbf{x}}$
+\end_inset
+
+、 并且
+\begin_inset Formula $\mathbf{G}=\dfrac{\partial\mathbf{g}}{\partial\mathbf{q}}$
+\end_inset
+
+。这是因为对于
+\begin_inset Formula $\Delta\mathbf{x}=\mathbf{x}-\bar{\mathbf{x}}$
+\end_inset
+
+，演变方程近似为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\mathbf{x}}{\mathrm{d}t}\approx\dfrac{\mathrm{d}\bar{\mathbf{x}}}{\mathrm{d}t}+\left.\dfrac{\partial\mathbf{f}}{\partial\mathbf{x}}\right|_{\mathbf{x}=\bar{\mathbf{x}}}\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\left.\dfrac{\partial\mathbf{g}}{\partial\mathbf{q}}\right|_{\mathbf{q}=\bar{\mathbf{q}}}\left(\mathbf{q}-\bar{\mathbf{q}}\right),\label{eq:A23}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+定义为
+\begin_inset Formula $\mathbf{P}=\mathrm{E}\left[\Delta\mathbf{x}\left(\Delta\mathbf{x}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+。但是，我们对
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+有不同的定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}=\mathrm{E}\left[\left(\begin{array}{c}
+\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\\
+\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}
+\end{array}\right)\left(\begin{array}{c}
+\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\\
+\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}
+\end{array}\right)^{\mathrm{T}}\right].\label{eq:A24}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后我们需要找到
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+的演变方程。回想我们在迭代开始时假设
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}=\mathbf{0}$
+\end_inset
+
+。知道单位球体中的任意四元数都可以表示为中心四元数
+\begin_inset Formula $\bar{\boldsymbol{q}}$
+\end_inset
+
+与偏差的乘积
+\begin_inset Formula $\boldsymbol{q}=\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}$
+\end_inset
+
+，利用微分方程方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们可以为四元数
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+找到微分方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{q} & =\bar{\mathbf{q}}\ast\boldsymbol{\delta}\Rightarrow\label{eq:A25a}\\
+\Rightarrow\dot{\boldsymbol{q}} & =\dot{\bar{\mathbf{q}}}\ast\boldsymbol{\delta}+\bar{\mathbf{q}}\ast\dot{\boldsymbol{\delta}}\Rightarrow\label{eq:A25b}\\
+\Rightarrow\dfrac{1}{2}\boldsymbol{q}\ast\boldsymbol{\omega}^{\prime} & \approx\dfrac{1}{2}\bar{\boldsymbol{q}}\ast\bar{\boldsymbol{\omega}}^{\prime}\ast\boldsymbol{\delta}+\bar{\boldsymbol{q}}\ast\dot{\boldsymbol{\delta}},\label{eq:A25c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中符号上的点表示时间导数，我们已经排除了时间依赖性。分离时间导数
+\begin_inset Formula $\dot{\boldsymbol{\delta}}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\dot{\boldsymbol{\delta}} & \approx\dfrac{1}{2}\overbrace{\bar{\boldsymbol{q}}^{\ast}\ast\boldsymbol{q}}^{\boldsymbol{\delta}}\ast\boldsymbol{\omega}^{\prime}-\dfrac{1}{2}\overbrace{\bar{\boldsymbol{q}}^{\ast}\ast\bar{\boldsymbol{q}}}^{1}\ast\bar{\boldsymbol{\omega}}^{\prime}\ast\boldsymbol{\delta}=\label{eq:A26a}\\
+ & =\dfrac{1}{2}\left[\boldsymbol{\delta}\ast\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\ast\boldsymbol{\delta}\right]=\label{eq:A26b}\\
+ & =\dfrac{1}{2}\left[\left(\begin{array}{c}
+\delta_{0}\\
+\boldsymbol{\mathbf{\delta}}
+\end{array}\right)\ast\left(\begin{array}{c}
+0\\
+\boldsymbol{\omega}^{\prime}
+\end{array}\right)-\left(\begin{array}{c}
+0\\
+\bar{\boldsymbol{\omega}}^{\prime}
+\end{array}\right)\ast\left(\begin{array}{c}
+\delta_{0}\\
+\boldsymbol{\mathbf{\delta}}
+\end{array}\right)\right]=\label{eq:A26c}\\
+ & =\dfrac{1}{2}\left(\begin{array}{c}
+-\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)\cdot\boldsymbol{\mathbf{\delta}}\\
+\delta_{0}\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)-\left(\boldsymbol{\omega}^{\prime}+\bar{\boldsymbol{\omega}}^{\prime}\right)\times\boldsymbol{\mathbf{\delta}}
+\end{array}\right)=\label{eq:A26d}\\
+ & =\dfrac{1}{2}\left(\begin{array}{c}
+-\Delta\boldsymbol{\omega}^{\prime}\cdot\boldsymbol{\mathbf{\delta}}\\
+\delta_{0}\Delta\boldsymbol{\omega}^{\prime}-\left(2\bar{\boldsymbol{\omega}}^{\prime}+\Delta\boldsymbol{\omega}^{\prime}\right)\times\boldsymbol{\mathbf{\delta}}
+\end{array}\right).\label{eq:A26e}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们知道，对于每个图表，
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+四元数可以用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)近似为
+\begin_inset Formula $\mathbf{e}\rightarrow\mathbf{0}$
+\end_inset
+
+，则对于在以
+\begin_inset Formula $\bar{\mathbf{q}}$
+\end_inset
+
+为中心的图表中表示的点
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+，我们可以获得一个近似微分方程。注意，我们没有明确表示
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+或
+\begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+。本附录中，这将被隐含地假定，因为这些量总是在以
+\begin_inset Formula $\bar{\mathbf{q}}$
+\end_inset
+
+为中心的图表中表示。使用时间导数和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A26e"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的链式法则，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\dot{e}_{i} & =\sum_{j}\stackrel{\approx2\delta_{ij}}{\overbrace{\dfrac{\partial e_{i}}{\partial\boldsymbol{\delta}_{j}}}}\stackrel{\dot{\boldsymbol{\delta}}_{j}}{\overbrace{\dfrac{\partial\boldsymbol{\delta}_{j}}{\partial t}}}\equiv\label{eq:A27a}\\
+\equiv\dot{\mathbf{e}} & \approx\boldsymbol{\delta}_{0}\Delta\boldsymbol{\omega}^{\prime}-\left(2\bar{\boldsymbol{\omega}}^{\prime}+\Delta\boldsymbol{\omega}^{\prime}\right)\times\boldsymbol{\delta}\approx\label{eq:A27b}\\
+ & \approx\left(1-\dfrac{\left\Vert \mathbf{e}\right\Vert ^{2}}{8}\right)\Delta\boldsymbol{\omega}^{\prime}-\left(2\bar{\boldsymbol{\omega}}^{\prime}+\Delta\boldsymbol{\omega}^{\prime}\right)\times\dfrac{\mathbf{e}}{2}.\label{eq:A27c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，微分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A27c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的一阶近似为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathbf{e}}\approx\Delta\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\times\mathbf{e}.\label{eq:A28}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\Delta\boldsymbol{\omega}^{\prime}}{\mathrm{d}t}=\dfrac{\mathrm{d}\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)}{\mathrm{d}t}=\mathbf{q}^{\boldsymbol{\omega}}-\bar{\mathbf{q}}^{\boldsymbol{\omega}}=\mathbf{q}^{\boldsymbol{\omega}}.\label{eq:A29}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+总结，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\begin{pmatrix}\mathbf{e}\\
+\Delta\boldsymbol{\omega}^{\prime}
+\end{pmatrix}\approx\begin{pmatrix}-\left[\bar{\boldsymbol{\omega}}^{\prime}\right]_{\times} & \mathbf{I}\\
+\mathbf{0} & \mathbf{0}
+\end{pmatrix}\begin{pmatrix}\mathbf{e}\\
+\Delta\boldsymbol{\omega}^{\prime}
+\end{pmatrix}+\begin{pmatrix}\mathbf{0}\\
+\Delta\mathbf{q}^{\boldsymbol{\omega}}
+\end{pmatrix},\label{eq:A30}
+\end{equation}
+
+\end_inset
+
+因此在我们的例子中，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Q}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align}
+\mathbf{F} & =\begin{pmatrix}-\left[\bar{\boldsymbol{\omega}}^{\prime}\right]_{\times} & \mathbf{I}\\
+\mathbf{0} & \mathbf{0}
+\end{pmatrix},\label{eq:A31}\\
+\mathbf{G} & =\mathbf{I},\label{eq:A32}\\
+\mathbf{Q} & =\begin{pmatrix}\mathbf{0} & \mathbf{0}\\
+\mathbf{0} & \mathrm{E}\left[\Delta\boldsymbol{q}^{\boldsymbol{\omega}}\left(\Delta\boldsymbol{q}^{\boldsymbol{\omega}}\right)^{\mathrm{T}}\right]
+\end{pmatrix}.\label{eq:A33}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在可以解微分方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。让我们先考虑一下它的同构版本：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\mathrm{d}\mathbf{P}_{H}}{\mathrm{d}t}=\mathbf{F}\mathbf{P}_{H}+\mathbf{P}_{H}\mathbf{F}^{\mathrm{T}},\label{eq:A34}
+\end{equation}
+
+\end_inset
+
+它有解
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}_{H}=e^{\mathbf{F}t}\mathbf{C}_{0}e^{\mathbf{F}^{\mathrm{T}}t}.\label{eq:A35}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑到矩阵指数的定义，计算出
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+的幂后，我们获得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+e^{\mathbf{F}t}=\begin{pmatrix}\sum_{n=0}^{\infty}\dfrac{\left(-\Omega\right)^{n}t^{n}}{n!} & \sum_{n=1}^{\infty}\dfrac{\left(-\Omega\right)^{n-1}t^{n}}{n!}\\
+\mathbf{0} & \mathbf{I}
+\end{pmatrix}\approx\begin{pmatrix}\mathbf{R}^{\mathrm{T}}\left(\boldsymbol{\delta}^{\boldsymbol{\omega}}\right) & \mathbf{I}t\\
+\mathbf{0} & \mathbf{I}
+\end{pmatrix},\label{eq:A36}
+\end{equation}
+
+\end_inset
+
+其中我们已经标记
+\begin_inset Formula $\Omega=\left[\bar{\boldsymbol{\omega}}^{\prime}\right]_{\times}$
+\end_inset
+
+，并且
+\begin_inset Formula $\boldsymbol{\delta}^{\boldsymbol{\omega}}=\left(\cos\dfrac{\left\Vert \bar{\boldsymbol{\omega}}^{\prime}\right\Vert t}{2},\dfrac{\bar{\boldsymbol{\omega}}^{\prime}}{\left\Vert \bar{\boldsymbol{\omega}}^{\prime}\right\Vert }\sin\dfrac{\left\Vert \bar{\boldsymbol{\omega}}^{\prime}\right\Vert t}{2}\right)$
+\end_inset
+
+。我们还假设
+\begin_inset Formula $t$
+\end_inset
+
+取很小的值，所以我们可以在第一项近似中截断无穷和。为了找到非齐次微分方程的解，我们使用常数变分法：
+\begin_inset Formula 
+\begin{align}
+\mathbf{P} & =e^{\mathbf{F}t}\mathbf{C}\left(t\right)e^{\mathbf{F}^{\mathrm{T}}t}\Rightarrow\label{eq:A37}\\
+\Rightarrow\dfrac{\mathrm{d}\mathbf{P}}{\mathrm{d}t} & =\mathbf{F}e^{\mathbf{F}t}\mathbf{C}\left(t\right)e^{\mathbf{F}^{\mathrm{T}}t}+e^{\mathbf{F}t}\mathbf{C}\left(t\right)e^{\mathbf{F}^{\mathrm{T}}t}\mathbf{F}^{\mathrm{T}}+e^{\mathbf{F}t}\dfrac{\mathrm{d}\mathbf{C}\left(t\right)}{\mathrm{d}t}e^{\mathbf{F}^{\mathrm{T}}t}=\label{eq:A38}\\
+ & =\mathbf{F}\mathbf{P}+\mathbf{P}\mathbf{F}^{\mathrm{T}}+e^{\mathbf{F}t}\dfrac{\mathrm{d}\mathbf{C}\left(t\right)}{\mathrm{d}t}e^{\mathbf{F}^{\mathrm{T}}t}.\label{eq:A39}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+标识方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的项，我们获得
+\begin_inset Formula 
+\begin{align}
+e^{\mathbf{F}t}\dfrac{\mathrm{d}\mathbf{C}\left(t\right)}{\mathrm{d}t}e^{\mathbf{F}^{\mathrm{T}}t} & =\mathbf{G}\mathbf{Q}\mathbf{G}^{\mathrm{T}}\Rightarrow\label{eq:A40}\\
+\Rightarrow\dfrac{\mathrm{d}\mathbf{C}\left(t\right)}{\mathrm{d}t} & =e^{-\mathbf{F}t}\mathbf{Q}e^{-\mathbf{F}^{\mathrm{T}}t}=\sum_{n=0}^{\infty}\sum_{m=0}^{\infty}\dfrac{\left(-\mathbf{F}\right)^{n}t^{n}}{n!}\mathbf{Q}\dfrac{\left(-\mathbf{F}^{\mathrm{T}}\right)^{m}t^{m}}{m!}\Rightarrow\label{eq:A41}\\
+\Rightarrow\mathbf{C}\left(t\right) & =\mathbf{C}_{0}+\sum_{n=0}^{\infty}\sum_{m=0}^{\infty}\dfrac{\left(-\mathbf{F}\right)^{n}}{n!}\mathbf{Q}\dfrac{\left(-\mathbf{F}^{\mathrm{T}}\right)^{m}}{m!}\dfrac{t^{n+m+1}}{n+m+1}.\label{eq:A42}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，截断方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中第一个非零元素的和，并将结果插入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们得到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，其中我们通过初始条件确定
+\begin_inset Formula $\mathbf{C}_{0}=\mathbf{P}(0)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+测量预测
+\end_layout
+
+\begin_layout Standard
+本小节包含测量预测方程的推导。
+\end_layout
+
+\begin_layout Subsubsection
+测量预测的期望值
+\end_layout
+
+\begin_layout Standard
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)上取预期值，并假设
+\begin_inset Formula $\bar{\mathbf{r}}_{t}^{\boldsymbol{\omega}}=\mathbf{0}$
+\end_inset
+
+我们获得方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。另一方面，在当前状态估计
+\begin_inset Formula $\left(\bar{\boldsymbol{q}},\bar{\boldsymbol{\omega}}^{\prime}\right)$
+\end_inset
+
+周围，用其泰勒级数逼近方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，取其期望值，并假设
+\begin_inset Formula $\bar{\mathbf{r}}_{t}^{\mathbf{v}}=\mathbf{0}$
+\end_inset
+
+我们得到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Subsubsection
+测量预测协方差矩阵
+\end_layout
+
+\begin_layout Standard
+为了找到测量预测的协方差矩阵，我们需要围绕点
+\begin_inset Formula $\mathbf{x}_{0}:=\left(\mathbf{e}=\mathbf{0},\mathbf{q}^{\mathbf{v}}=\bar{\mathbf{q}}^{\mathbf{v}},\mathbf{r}^{\mathbf{v}}=\bar{\mathbf{r}}^{\mathbf{v}}\right)$
+\end_inset
+
+周围向量测量的线性近似：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+\mathbf{v}^{m}\approx\bar{\mathbf{v}}^{m} & +\left.\dfrac{\partial\mathbf{v}^{m}}{\partial\mathbf{e}}\right|_{\mathbf{x}_{0}}\mathbf{e}+\left.\dfrac{\partial\mathbf{v}^{m}}{\partial\mathbf{q}^{\mathbf{v}}}\right|_{\mathbf{x}_{0}}\left(\mathbf{q}^{\mathbf{v}}-\bar{\mathbf{q}}^{\mathbf{v}}\right)+\left.\dfrac{\partial\mathbf{v}^{m}}{\partial\mathbf{r}^{\mathbf{v}}}\right|_{\mathbf{x}_{0}}\left(\mathbf{r}^{\mathbf{v}}-\bar{\mathbf{r}}^{\mathbf{v}}\right).\end{array}\label{eq:A43}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+它直接识别为
+\begin_inset Formula 
+\begin{align}
+\left.\dfrac{\partial\mathbf{v}^{m}}{\partial\mathbf{q}^{\mathbf{v}}}\right|_{\mathbf{x}_{0}} & =\mathbf{R}^{\mathrm{T}}\left(\bar{\boldsymbol{q}}\right),\label{eq:A44}\\
+\left.\dfrac{\partial\mathbf{v}^{m}}{\partial\mathbf{r}^{\mathbf{v}}}\right|_{\mathbf{x}_{0}} & =\mathbf{I}.\label{eq:A45}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，重写方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)为
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{v}^{m} & =\boldsymbol{\delta}^{\ast}\ast\bar{\boldsymbol{q}}^{\ast}\ast\left(\boldsymbol{q}^{\mathbf{v}}+\boldsymbol{v}\right)\ast\bar{\boldsymbol{q}}\ast\boldsymbol{\delta}+\mathbf{r}^{\mathbf{v}}\equiv\label{eq:A46}\\
+\equiv\mathbf{v}^{m} & =\mathbf{R}^{\mathrm{T}}\left(\boldsymbol{\delta}\right)\mathbf{R}^{\mathrm{T}}\left(\bar{\boldsymbol{q}}\right)\left(\mathbf{q}^{\mathbf{v}}+\mathbf{v}\right)+\mathbf{r}^{\mathbf{v}},\label{eq:A47}
+\end{align}
+
+\end_inset
+
+并且注意，设置
+\begin_inset Formula $\mathbf{e}=\mathbf{0}$
+\end_inset
+
+等于执行
+\begin_inset Formula $\boldsymbol{\delta}=1$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\dfrac{\partial v_{i}^{m}}{\partial e_{j}}\right|_{\mathbf{x}_{0}}=\sum_{k}\left.\dfrac{\partial v_{i}^{m}}{\partial\delta_{k}}\right|_{\mathbf{x}_{0}}\left.\dfrac{\partial\delta_{k}}{\partial e_{j}}\right|_{\mathbf{e}=\mathbf{0}}=\sum_{kl}\left.\dfrac{\partial R_{il}^{\mathrm{T}}\left(\boldsymbol{\delta}\right)}{\partial\boldsymbol{\delta}_{k}}\right|_{\boldsymbol{\delta}=1}\left[\mathbf{R}^{\mathrm{T}}\left(\bar{\boldsymbol{q}}\right)\left(\bar{\mathbf{q}}^{\mathbf{v}}+\mathbf{v}\right)\right]_{l}\left.\dfrac{\partial\delta_{k}}{\partial e_{j}}\right|_{\mathbf{e}=\mathbf{0}}.\label{eq:A48}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，回想方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\dfrac{\partial\mathbf{R}^{\mathrm{T}}\left(\boldsymbol{\delta}\right)}{\partial\delta_{k}}\right|_{\boldsymbol{\delta}=1}=2\left(\begin{array}{ccc}
+0 & \delta_{3k} & -\delta_{2k}\\
+-\delta_{3k} & 0 & \delta_{1k}\\
+\delta_{2k} & -\delta_{1k} & 0
+\end{array}\right)\equiv-2\sum_{n}\epsilon_{inl}\delta_{nk},\label{eq:A49}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\epsilon_{inl}$
+\end_inset
+
+是Levi-Civita符号，并且
+\begin_inset Formula $\delta_{nk}$
+\end_inset
+
+是Kronecker增量。回想方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们还有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial\boldsymbol{\delta}}{\partial e_{j}}=\left.\left(\begin{array}{c}
+-e_{j}/4\\
+\delta_{1j}/2\\
+\delta_{2j}/2\\
+\delta_{3j}/2
+\end{array}\right)\right|_{\mathbf{e}=\mathbf{0}}\equiv(1-\delta_{0k})\delta_{kj}/2.\label{eq:A50}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A48"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A49"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A50"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left.\dfrac{\partial v_{i}^{m}}{\partial e_{j}}\right|_{\mathbf{x}_{0}}\approx-\sum_{kln}\epsilon_{inl}\delta_{nk}\bar{v}_{l}^{m}(1-\delta_{0k})\delta_{kj}=\sum_{l}\epsilon_{ilj}\bar{v}_{l}^{m}\equiv\left[\bar{\mathbf{v}}^{m}\right]_{\times},\label{eq:A51}
+\end{equation}
+
+\end_inset
+
+其中我们使用过
+\begin_inset Formula $\epsilon_{ijl}=-\epsilon_{ilj}$
+\end_inset
+
+。最后，假设随机变量
+\begin_inset Formula $\mathbf{x}_{t}=\left(\mathbf{e}_{t},\boldsymbol{\omega}_{t}^{\prime}\right)^{\mathrm{T}}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{q}_{t}^{\mathbf{v}}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{r}_{t}^{\mathbf{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{r}_{t}^{\boldsymbol{\omega}}$
+\end_inset
+
+的独立性，并且使用
+\begin_inset Formula $\mathbf{z}_{t}=\left(\mathbf{v}_{t}^{m},\boldsymbol{\omega}_{t}^{m}\right)^{\mathrm{T}}$
+\end_inset
+
+和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算协方差矩阵
+\begin_inset Formula $\mathbf{S}_{t}=\mathrm{E}\left[\left(\mathbf{z}_{t}-\bar{\mathbf{z}}_{t}\right)\left(\mathbf{z}_{t}-\bar{\mathbf{z}}_{t}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+，我们获得方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵的推导
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:C"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本附录包含每个图表的
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵的推导。
+\end_layout
+
+\begin_layout Subsection
+正交投影
+\end_layout
+
+\begin_layout Standard
+我们的过渡映射方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以写成
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{cc}
+e_{i}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =\bar{\delta}_{0}e_{i}^{\bar{\boldsymbol{q}}}-\sqrt{4-\sum\nolimits _{k}\left(e_{k}^{\bar{\boldsymbol{q}}}\right)^{2}}\bar{\boldsymbol{\delta}}_{i}-\sum_{lm}\varepsilon_{ilm}\bar{\boldsymbol{\delta}}_{l}e_{m}^{\bar{\boldsymbol{q}}},\end{array}\label{eq:A52}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\varepsilon_{ilm}$
+\end_inset
+
+是Levi-Civita符号。为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A52"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)寻找方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们获得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\left(\mathbf{T}\right)_{ij} & =\left[\bar{\delta}_{0}\delta_{ij}-\dfrac{-\sum_{k}e_{k}^{\bar{\boldsymbol{q}}}\delta_{kj}}{\sqrt{4-\sum_{k}\left(e_{k}^{\bar{\boldsymbol{q}}}\right)^{2}}}\bar{\boldsymbol{\delta}}_{i}-\sum_{lm}\epsilon_{ilm}\bar{\boldsymbol{\delta}}_{l}\delta_{mj}\right]_{\mathbf{e}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}=\label{eq:A53a}\\
+ & =\bar{\delta}_{0}\delta_{ij}+\dfrac{\bar{e}_{j}^{\bar{\boldsymbol{q}}}}{\sqrt{4-\sum_{k}\left(\bar{e}_{k}^{\bar{\boldsymbol{q}}}\right)^{2}}}\bar{\delta}_{i}-\sum_{l}\varepsilon_{ilj}\bar{\delta}_{l},\label{eq:A53b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个表达式可以用矩阵形式重写为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}=\bar{\delta}_{0}\mathbf{I}+\dfrac{\bar{\boldsymbol{\delta}}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)^{\mathrm{T}}}{\sqrt{4-\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}.\label{eq:A54}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，回顾一下这个图表
+\begin_inset Formula $\bar{\delta}_{0}=\sqrt{1-\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}/4}$
+\end_inset
+
+以及
+\begin_inset Formula $\bar{\boldsymbol{\delta}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}/2$
+\end_inset
+
+，我们得出最后的表达式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}=\bar{\delta}_{0}\mathbf{I}+\dfrac{\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}}{\bar{\delta}_{0}}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}.\label{eq:A55}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+罗德里格斯参数
+\end_layout
+
+\begin_layout Standard
+首先，让我们把方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的分子表示为
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+，其分母为
+\begin_inset Formula $D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & :=\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}},\label{eq:A56}\\
+D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & :=2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}.\label{eq:A57}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+处评估方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{N}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)=\stackrel{\mathbf{0}}{\overbrace{\bar{\delta}_{0}\underset{2\bar{\boldsymbol{\delta}}/\bar{\delta}_{0}}{\underbrace{\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}}-2\bar{\boldsymbol{\delta}}}}-\stackrel{=\left(\bar{\boldsymbol{\delta}}\parallel\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)}{\overbrace{\bar{\boldsymbol{\delta}}\times\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}}=\mathbf{0}.\label{eq:A58}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的近似没有
+\begin_inset Formula $\mathcal{O}\left(1\right)$
+\end_inset
+
+阶项。这意味着我们只需要将
+\begin_inset Formula $D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+近似到零阶。在乘以
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的线性近似值之后，任何进一步的近似值都会产生一个高阶项。然后让我们计算每个近似值。
+\end_layout
+
+\begin_layout Standard
+我们可以重写方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{i}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)=\bar{\delta}_{0}e_{i}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}_{i}-\sum_{kl}\varepsilon_{ikl}\bar{\boldsymbol{\delta}}_{k}e_{l}^{\bar{\boldsymbol{q}}},\label{eq:A59}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\varepsilon_{ikl}$
+\end_inset
+
+是Levi-Civita符号。应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A59"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+N_{i}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & \approx\sum_{j}\left[\bar{\delta}_{0}\delta_{ij}-\sum_{kl}\epsilon_{ikl}\bar{\boldsymbol{\delta}}_{k}\delta_{lj}\right]_{\mathbf{e}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}\left(e_{j}^{\bar{\boldsymbol{q}}}-\bar{e}_{j}^{\bar{\boldsymbol{q}}}\right)=\label{eq:A60a}\\
+ & =\sum_{j}\left[\bar{\delta}_{0}\delta_{ij}-\sum_{k}\epsilon_{ikj}\bar{\boldsymbol{\delta}}_{k}\right]\left(e_{j}^{\bar{\boldsymbol{q}}}-\bar{e}_{j}^{\bar{\boldsymbol{q}}}\right),\label{eq:A60b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中
+\begin_inset Formula $\delta_{ij}$
+\end_inset
+
+是Kronecker增量。回到矩阵表示法，
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的线性近似是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)=\left[\bar{\delta}_{0}\mathbf{I}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A61}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+处评估方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们得到零阶近似：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+D\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right) & =2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot2\dfrac{\bar{\boldsymbol{\delta}}}{\bar{\delta}_{0}}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert \right)=\label{eq:A62a}\\
+ & =\dfrac{2}{\bar{\delta}_{0}}\underset{1}{\underbrace{\left(\bar{\delta}_{0}^{2}+\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}\right)}}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert \right)=\label{eq:A62b}\\
+ & =\dfrac{2}{\bar{\delta}_{0}}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert \right).\label{eq:A62c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A62c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们可以计算方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的线性近似值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =2\left\{ \left[\bar{\delta}_{0}\mathbf{I}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\right\} \left[\dfrac{\bar{\delta}_{0}}{2}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert \right)\right]=\label{eq:A63a}\\
+ & =\bar{\delta}_{0}\left[\bar{\delta}_{0}\mathbf{I}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A63b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+改进型罗德里格斯参数
+\end_layout
+
+\begin_layout Standard
+首先，让我们把方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的分子表示为
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+，其分母为
+\begin_inset Formula $D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =8\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\bar{\boldsymbol{\delta}}-8\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}},\label{eq:A64}\\
+D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =16+\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}+\bar{\delta}_{0}\left(16-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)+8\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}.\label{eq:A65}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+处评估方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{N}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right) & =8\bar{\delta}_{0}\stackrel{4\bar{\boldsymbol{\delta}}/\left(1+\bar{\delta}_{0}\right)}{\overbrace{\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}}-\left(16-\stackrel{16\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}/\left(1+\bar{\delta}_{0}\right)^{2}}{\overbrace{\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}}\right)\bar{\boldsymbol{\delta}}-8\stackrel{=\mathbf{0}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\parallel\bar{\boldsymbol{\delta}}\right)}{\overbrace{\bar{\boldsymbol{\delta}}\times\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}}=\label{eq:A66a}\\
+ & =\dfrac{16\bar{\boldsymbol{\delta}}}{1+\bar{\delta}_{0}}\left[2\bar{\delta}_{0}-\left(1+\bar{\delta}_{0}-\dfrac{\stackrel{1-\bar{\delta}_{0}^{2}}{\overbrace{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}}}}{1+\bar{\delta}_{0}}\right)\right]=\mathbf{0}.\label{eq:A66b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，与RP的图表一样，
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的近似值没有
+\begin_inset Formula $\mathcal{O}\left(1\right)$
+\end_inset
+
+阶项，我们只需要近似
+\begin_inset Formula $D\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+到零阶。
+\end_layout
+
+\begin_layout Standard
+我们可以把方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A64"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)写成
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{i}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)=8\bar{\delta}_{0}e_{i}^{\bar{\boldsymbol{q}}}-\left(16-\sum_{k}(e_{k}^{\bar{\boldsymbol{q}}})^{2}\right)\bar{\boldsymbol{\delta}}_{i}-8\sum_{lm}\epsilon_{ilm}\bar{\boldsymbol{\delta}}_{l}e_{m}^{\bar{\boldsymbol{q}}},\label{eq:A67}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\epsilon_{ilm}$
+\end_inset
+
+是Levi-Civita符号。应用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)至方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+N_{i}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & \approx\sum_{j}\left[8\bar{\delta}_{0}\delta_{ij}+\sum_{k}2e_{k}^{\bar{\boldsymbol{q}}}\delta_{kj}\bar{\boldsymbol{\delta}}_{i}-8\sum_{lm}\epsilon_{ilm}\bar{\boldsymbol{\delta}}_{l}\delta_{mj}\right]_{\mathbf{e}^{\bar{\boldsymbol{q}}}=\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}}\left(e_{j}^{\bar{\boldsymbol{q}}}-\bar{e}_{j}^{\bar{\boldsymbol{q}}}\right)=\label{eq:A68a}\\
+ & =\sum_{j}\left[8\bar{\delta}_{0}\delta_{ij}+2\bar{e}_{j}^{\bar{\boldsymbol{q}}}\bar{\boldsymbol{\delta}}_{i}-8\sum_{l}\epsilon_{ilj}\bar{\boldsymbol{\delta}}_{l}\right]\left(e_{j}^{\bar{\boldsymbol{q}}}-\bar{e}_{j}^{\bar{\boldsymbol{q}}}\right),\label{eq:A68b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中
+\begin_inset Formula $\delta_{ij}$
+\end_inset
+
+是Kronecker增量。回到矩阵表示法，
+\begin_inset Formula $\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+的线性近似是
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{N}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =\left[8\bar{\delta}_{0}\mathbf{I}+2\bar{\boldsymbol{\delta}}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)^{\mathrm{T}}-8\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A69a}\\
+ & =8\left[\bar{\delta}_{0}\mathbf{I}+\dfrac{\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}}{1+\bar{\delta}_{0}}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A69b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+处评估方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A65"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们得到零阶近似：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+D\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right) & \approx16+16\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}}{\left(1+\bar{\delta}_{0}\right)^{2}}+\bar{\delta}_{0}\left(16-16\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}}{\left(1+\bar{\delta}_{0}\right)^{2}}\right)+8\bar{\boldsymbol{\delta}}\cdot4\dfrac{\bar{\boldsymbol{\delta}}}{1+\bar{\delta}_{0}}=\label{eq:A70a}\\
+ & =\dfrac{16}{1+\bar{\delta}_{0}}\left[\left(1+\bar{\delta}_{0}\right)+\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}}{1+\bar{\delta}_{0}}+\bar{\delta}_{0}\left(\left(1+\bar{\delta}_{0}\right)-\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}}{1+\bar{\delta}_{0}}\right)+2\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}\right]=\label{eq:A70b}\\
+ & =\dfrac{16}{1+\bar{\delta}_{0}}\left[2+\bar{\delta}_{0}\left(2\bar{\delta}_{0}\right)+2\left(1-\bar{\delta}_{0}^{2}\right)\right]=\dfrac{64}{1+\bar{\delta}_{0}},\label{eq:A70c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+对于单位四元数我们使用等式
+\begin_inset Formula $\left\Vert \bar{\boldsymbol{\delta}}\right\Vert ^{2}=1-\bar{\delta}_{0}^{2}$
+\end_inset
+
+。最后，结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A69b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A70c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们可以计算方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的线性近似值：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right) & =4\left\{ 8\left[\bar{\delta}_{0}\mathbf{I}+\dfrac{\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}}{1+\bar{\delta}_{0}}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)\right\} \left[\dfrac{1+\bar{\delta}_{0}}{64}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert \right)\right]=\label{eq:A71a}\\
+ & =\dfrac{1+\bar{\delta}_{0}}{2}\left[\bar{\delta}_{0}\mathbf{I}+\dfrac{\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}}{1+\bar{\delta}_{0}}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A71b}\\
+ & =\dfrac{1}{2}\left[\left(1+\bar{\delta}_{0}\right)\left(\bar{\delta}_{0}\mathbf{I}-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right)+\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A71c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+旋转向量
+\end_layout
+
+\begin_layout Standard
+让我们在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+点处开始评估向量
+\begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)=\stackrel{=\mathbf{0}}{\overbrace{\bar{\delta}_{0}\underbrace{\hat{\bar{\mathbf{e}}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)}_{\bar{\boldsymbol{\delta}}}-\underset{\bar{\delta}_{0}}{\underbrace{\cos\left(\dfrac{\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)}}\bar{\boldsymbol{\delta}}}}-\stackrel{=\mathbf{0}}{\overbrace{\bar{\boldsymbol{\delta}}\times\underbrace{\hat{\bar{\mathbf{e}}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)}_{\bar{\boldsymbol{\delta}}}}}=\mathbf{0}.\label{eq:A72}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+周围的
+\begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}$
+\end_inset
+
+的一阶近似将有形式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\tilde{\mathbf{T}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right),\label{eq:A73}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula $\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert \rightarrow0$
+\end_inset
+
+当
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}\rightarrow\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+时。取
+\begin_inset Formula $\arcsin x$
+\end_inset
+
+的泰勒级数
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\arcsin\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }=\dfrac{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert +\mathcal{O}\left(\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert ^{3}\right)}{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }=1+\mathcal{O}\left(\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert ^{2}\right)=1+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right),\label{eq:A74}
+\end{equation}
+
+\end_inset
+
+所以方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)被线性化为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }\arcsin\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert =2\tilde{\mathbf{T}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A75}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们只缺少
+\begin_inset Formula $\tilde{\mathbf{T}}$
+\end_inset
+
+矩阵。我们需要
+\begin_inset Formula $\cos\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert /2\right)$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert /2\right)$
+\end_inset
+
+在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+周围的线性近似。为此，我们首先需要获得
+\begin_inset Formula $\left\Vert \bar{\mathbf{x}}\right\Vert $
+\end_inset
+
+的线性近似：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\left\Vert \mathbf{x}\right\Vert  & =\sqrt{\sum\nolimits _{k}x_{k}^{2}}=\label{eq:A76a}\\
+ & =\left\Vert \bar{\mathbf{x}}\right\Vert +\sum_{j}\left[\dfrac{\sum_{k}x_{k}\delta_{kj}}{\sqrt{\sum_{k}x_{k}^{2}}}\right]_{\mathbf{x}=\bar{\mathbf{x}}}\left(x_{j}-\bar{x}_{j}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right)=\label{eq:A76b}\\
+ & =\left\Vert \bar{\mathbf{x}}\right\Vert +\sum_{j}\left[\dfrac{\bar{x}_{j}}{\sqrt{\sum_{k}\bar{x}_{k}^{2}}}\right]\left(x_{j}-\bar{x}_{j}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right)=\label{eq:A76c}\\
+ & =\left\Vert \bar{\mathbf{x}}\right\Vert +\hat{\bar{\mathbf{x}}}^{\mathrm{T}}\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right).\label{eq:A76d}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意这个
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial\left\Vert \mathbf{x}\right\Vert }{\partial\mathbf{x}}=\hat{\bar{\mathbf{x}}}^{\mathrm{T}}+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert \right),\label{eq:A77}
+\end{equation}
+
+\end_inset
+
+我们的计算很简单：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\cos\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right) & =\cos\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)-\left[\sin\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)\dfrac{1}{2}\left[\hat{\bar{\mathbf{x}}}^{\mathrm{T}}+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert \right)\right]\right]_{\mathbf{x}=\bar{\mathbf{x}}}\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right)=\label{eq:A78a}\\
+ & =\cos\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)-\dfrac{1}{2}\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)\hat{\bar{\mathbf{x}}}^{\mathrm{T}}\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right).\label{eq:A78b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于我们的特殊情况，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)=\bar{\delta}_{0}-\dfrac{1}{2}\bar{\boldsymbol{\delta}}^{\mathrm{T}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A79}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\begin{array}{c}
+\end{array} & \dfrac{\sin\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)}{\left\Vert \mathbf{x}\right\Vert }=\label{eq:A80a}\\
+ & =\dfrac{\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert }+\left[\left(\dfrac{\cos\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)}{\left\Vert \mathbf{x}\right\Vert }\dfrac{1}{2}-\dfrac{\sin\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)}{\left\Vert \mathbf{x}\right\Vert ^{2}}\right)\left[\hat{\bar{\mathbf{x}}}^{\mathrm{T}}+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert \right)\right]\right]_{\mathbf{x}=\bar{\mathbf{x}}}\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right)=\label{eq:A80b}\\
+ & =\dfrac{\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert }+\left[\left(\dfrac{\cos\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert }\dfrac{1}{2}-\dfrac{\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert ^{2}}\right)\hat{\bar{\mathbf{x}}}^{\mathrm{T}}\right]\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right).\label{eq:A80c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，取
+\begin_inset Formula $\mathbf{x}=\bar{\mathbf{x}}+\left(\mathbf{x}-\bar{\mathbf{x}}\right)$
+\end_inset
+
+我们获得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+ & \dfrac{\mathbf{x}}{\left\Vert \mathbf{x}\right\Vert }\sin\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)=\left[\bar{\mathbf{x}}+\left(\mathbf{x}-\bar{\mathbf{x}}\right)\right]\dfrac{\sin\left(\dfrac{\left\Vert \mathbf{x}\right\Vert }{2}\right)}{\left\Vert \mathbf{x}\right\Vert }=\label{eq:A81a}\\
+ & =\hat{\bar{\mathbf{x}}}\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)+\left[\dfrac{\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert }+\dfrac{1}{2}\cos\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)\hat{\bar{\mathbf{x}}}\hat{\bar{\mathbf{x}}}^{\mathrm{T}}-\dfrac{\sin\left(\dfrac{\left\Vert \bar{\mathbf{x}}\right\Vert }{2}\right)}{\left\Vert \bar{\mathbf{x}}\right\Vert }\hat{\bar{\mathbf{x}}}\hat{\bar{\mathbf{x}}}^{\mathrm{T}}\right]\left(\mathbf{x}-\bar{\mathbf{x}}\right)+\mathcal{O}\left(\left\Vert \mathbf{x}-\bar{\mathbf{x}}\right\Vert ^{2}\right).\label{eq:A81b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于我们的特殊情况，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\dfrac{\mathbf{e}^{\bar{\boldsymbol{q}}}}{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right) & =\bar{\boldsymbol{\delta}}+\left[\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{2\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\dfrac{\bar{\delta}_{0}}{2}\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}-\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{2\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A82a}\\
+ & =\bar{\boldsymbol{\delta}}+\dfrac{1}{2}\left[\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right)\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\bar{\delta}_{0}\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A82b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中我们只需用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:A82b"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)替换即可得到所需的线性近似值。回到原始符号我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\begin{array}{c}
+\end{array} & 2\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert }\arcsin\left\Vert \boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\right\Vert =2\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A83a}\\
+ & =2\bar{\delta}_{0}\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)-2\cos\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)\bar{\boldsymbol{\delta}}-2\bar{\boldsymbol{\delta}}\times\hat{\mathbf{e}}^{\bar{\boldsymbol{q}}}\sin\left(\dfrac{\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert }{2}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A83b}\\
+ & \begin{array}{l}
+=2\bar{\delta}_{0}\bar{\boldsymbol{\delta}}+\bar{\delta}_{0}\left[\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right)\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\bar{\delta}_{0}\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)-\left(2\bar{\delta}_{0}-\bar{\boldsymbol{\delta}}^{\mathrm{T}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)\right)\bar{\boldsymbol{\delta}}+\\
+\quad-\bar{\boldsymbol{\delta}}\times\left\{ 2\bar{\boldsymbol{\delta}}+\left[\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right)\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\bar{\delta}_{0}\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)\right\} +\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=
+\end{array}\label{eq:A83c}\\
+ & =\left[\left(\bar{\delta}_{0}\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right)-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right)\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\bar{\delta}_{0}^{2}\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}+\bar{\boldsymbol{\delta}}\bar{\boldsymbol{\delta}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right)=\label{eq:A83d}\\
+ & =\left[\left(\bar{\delta}_{0}\left(\mathbf{I}-\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right)-\left[\bar{\boldsymbol{\delta}}\right]_{\times}\right)\dfrac{\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }{\arcsin\left\Vert \bar{\boldsymbol{\delta}}\right\Vert }+\hat{\bar{\boldsymbol{\delta}}}\hat{\bar{\boldsymbol{\delta}}}^{\mathrm{T}}\right]\left(\mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)+\mathcal{O}\left(\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}-\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}\right).\label{eq:A83e}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，我们的过渡映射的线性近似对于在
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+附近的
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+是有效的。无论怎样，我们没有对
+\begin_inset Formula $\bar{\boldsymbol{\delta}}$
+\end_inset
+
+四元数做任何假设。这意味着我们的线性近似，在每个
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵的定义域中，对于任意
+\begin_inset Formula $\bar{\boldsymbol{\delta}}=\varphi^{-1}\left(\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}\right)$
+\end_inset
+
+，提供的
+\begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+已经足够接近
+\begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{appendices}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.L.; Markley, F.L.; Cheng, Y.
+ Survey of nonlinear attitude estimation methods.
+ J.
+ Guid.
+ Control Dyn.
+ 2007, 30, 12–28.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Kalman, R.E.
+ A new approach to linear filtering and prediction problems.
+ J.
+ Basic Eng.
+ 1960, 82, 35–45.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Julier, S.J.; Uhlmann, J.K.
+ New Extension of the Kalman Filter to Nonlinear Systems; AeroSense’97;
+ International Society for Optics and Photonics: Bellingham, WA, USA, 1997;
+ pp.
+ 182–193.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+Shuster, M.D.
+ A survey of attitude representations.
+ Navigation 1993, 8, 439–517.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+Stuelpnagel, J.
+ On the parametrization of the three-dimensional rotation group.
+ SIAM Rev.
+ 1964, 6, 422–430.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Lefferts, E.J.; Markley, F.L.; Shuster, M.D.
+ Kalman filtering for spacecraft attitude estimation.
+ J.
+ Guid.
+ Control Dyn.
+ 1982, 5, 417–429.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.L.; Markley, F.L.
+ Unscented filtering for spacecraft attitude estimation.
+ J.
+ Guid.
+ Control Dyn.
+ 2003, 26, 536–542.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.L.
+ Attitude error representations for Kalman filtering.
+ J.
+ Guid.
+ Control Dyn.
+ 2003, 26, 311–317.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Hall, J.K.; Knoebel, N.B.; McLain, T.W.
+ Quaternion attitude estimation for miniature air vehicles using a multiplicativ
+e extended Kalman filter.
+ In Proceedings of the 2008 IEEE/ION Position, Location and Navigation Symposium
+, Monterey, CA, USA, 5–8 May 2008; IEEE: Piscataway, NJ, USA; pp.
+ 1230–1237.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+VanDyke, M.C.; Schwartz, J.L.; Hall, C.D.
+ Unscented Kalman filtering for spacecraft attitude state and parameter
+ estimation.
+ Adv.
+ Astronaut.
+ Sci.
+ 2004, 118, 217–228.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+Markley, F.L.
+ Multiplicative vs.
+ additive filtering for spacecraft attitude determination.
+ Dyn.
+ Control Syst.
+ Struct.
+ Space 2004, 6, 311–317.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+Crassidis, J.L.; Markley, F.L.
+ Attitude Estimation Using Modified Rodrigues Parameters.
+ Available online: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19960035754.pdf
+\end_layout
+
+\end_inset
+
+ (accessed on 1 January 2019).
+\end_layout
+
+\begin_layout Enumerate
+Bar-Itzhack, I.; Oshman, Y.
+ Attitude determination from vector observations: Quaternion estimation.
+ IEEE Trans.
+ Aerosp.
+ Electr.
+ Syst.
+ 1985, AES-21, 128–136.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Mueller, M.W.; Hehn, M.; D’Andrea, R.
+ Covariance correction step for kalman filtering with an attitude.
+ J.
+ Guid.
+ Control Dyn.
+ 2016, 40, 2301–2306.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Julier, S.J.; Uhlmann, J.K.
+ Unscented filtering and nonlinear estimation.
+ Proc.
+ IEEE 2004, 92, 401–422.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+Gramkow, C.
+ On averaging rotations.
+ J.
+ Math.
+ Imag.
+ Vision 2001, 15, 7–16.
+ [Google Scholar] [CrossRef]
+\end_layout
+
+\begin_layout Enumerate
+LaViola, J.J.
+ A comparison of unscented and extended Kalman filtering for estimating
+ quaternion motion.
+ In Proceedings of the American Control Conference, Denver, CO, USA, 4–6
+ June 2003; IEEE: Piscataway, NJ, USA, 2003; Volume 3, pp.
+ 2435–2440.
+ [Google Scholar]
+\end_layout
+
+\begin_layout Enumerate
+Xie, L.; Popa, D.; Lewis, F.L.
+ Optimal and Robust Estimation: With an Introduction to Stochastic Control
+ Theory; CRC Press: Boca Raton, FL, USA, 2007.
+ [Google Scholar]
+\end_layout
+
+\end_body
+\end_document
