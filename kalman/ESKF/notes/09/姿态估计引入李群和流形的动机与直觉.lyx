@@ -1,0 +1,4600 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+姿态估计引入李群和流形的动机与直觉
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+— 题记：谎言理论绝不简单(Lie theory is by no means simple)。
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+人们对于姿态估计问题的认识，是一步步发展的。如今为了更高精度的计算结果，把李理论和流形引入进来，取得了相当好的效果。不过对于大多数工程技术人员来说，李理论和流形
+很陌生，以前在大学里在工作中都没有接触过。临时急忙拿起一本数学书，里面是概念套概念，公式连公式，真是应了某位著名科学家所说的那句话：这世上就只有两种数学书，一种
+是你看了第一页就看不下去的，另一种是你看了第一行就看不下去的。
+\end_layout
+
+\begin_layout Standard
+幸运的是，在姿态估计问题中引入李理论和流形，其实只使用了它们当中很简单很初始的概念，并不需要去看专业的数学书。在参考文献中的论文对此有过总结。并且相关概念在以前
+做姿态估计的时候也都接触到，采用李理论和流形再次解释，只是从数学上更深入地理解旋转这个问题的本质。熟读参考论文之后基本上就可以在相关领域中应用李理论和流形去解决
+旋转相关的问题了。
+\end_layout
+
+\begin_layout Standard
+本文试图做一个入门前的介绍，让初学者了解李理论和流形在相关领域中所要表达的概念和直觉。
+\end_layout
+
+\begin_layout Section
+指数映射
+\end_layout
+
+\begin_layout Standard
+在李理论和流形的应用中，会大量使用指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+。对于指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，我们既熟悉又陌生。在这里复习一下，重新建立几何上的直觉。
+\end_layout
+
+\begin_layout Standard
+指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+用泰勒级数展开是这样子的
+\begin_inset Formula 
+\[
+e^{x}=\sum_{n=0}^{\infty}\dfrac{x^{n}}{n!}=1+x+\dfrac{x^{2}}{2!}+\dfrac{x^{3}}{3!}+\dfrac{x^{4}}{4!}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们对该映射分别在二维空间和三维空间中进行分析。
+\end_layout
+
+\begin_layout Subsection
+二维空间
+\end_layout
+
+\begin_layout Standard
+我们将复数
+\begin_inset Formula $\mathbf{z}=r+\theta\mathbf{i}$
+\end_inset
+
+代入并整理各项，最后得到
+\begin_inset Formula 
+\begin{align*}
+e^{\mathbf{z}} & =e^{\left(r+\theta\mathbf{i}\right)}\\
+ & =e^{r}\cdot e^{\theta\mathbf{i}}\\
+ & =e^{r}\left(\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{i}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们用
+\begin_inset Formula $\left(r,\theta\right)$
+\end_inset
+
+和
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+建立两个二维坐标系，可以查看函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+的映射结果。注意：为方便显示，左边的图的
+\begin_inset Formula $r$
+\end_inset
+
+轴为
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+对数坐标。
+\end_layout
+
+\begin_layout Standard
+首先，固定
+\begin_inset Formula $r$
+\end_inset
+
+轴，变化
+\begin_inset Formula $\theta$
+\end_inset
+
+轴的结果如下(fig2d-map-01.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-map-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里直线变成了弧线。
+\end_layout
+
+\begin_layout Standard
+其次，固定
+\begin_inset Formula $\theta$
+\end_inset
+
+轴，变化
+\begin_inset Formula $r$
+\end_inset
+
+轴的结果如下(fig2d-map-02.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-map-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一个射线。
+\end_layout
+
+\begin_layout Standard
+如果在
+\begin_inset Formula $\left(r,\theta\right)$
+\end_inset
+
+坐标系中是一个矩形，则在
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+坐标系中映射为一个扇形(fig2d-map-03.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-map-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从上面结果可以看出实部
+\begin_inset Formula $r$
+\end_inset
+
+为缩放系数，如果
+\begin_inset Formula $r\in(-\infty,0]$
+\end_inset
+
+则映射为圆半径
+\begin_inset Formula $(0,1]$
+\end_inset
+
+，如果
+\begin_inset Formula $r\in[1,+\infty)$
+\end_inset
+
+则映射为圆半径
+\begin_inset Formula $[1,+\infty)$
+\end_inset
+
+。我们其实是对
+\begin_inset Formula $r=0$
+\end_inset
+
+的纯虚向量经过函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+变换后的结果更感兴趣。我们把上面图形的左边的坐标系重叠到右边的单位圆上的切点
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+处，看看结果(fig2d-01.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里，函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+将向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+精确地缠绕(wrap)到圆弧上，就像把一段琴弦缠绕到一个圆筒一样，起点是切点
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+处，弧长就是向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的模长。其反函数
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+则将一段圆弧展开(unwrap)为向量。这就是函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+和函数
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+最直观的映射结果。
+\end_layout
+
+\begin_layout Standard
+在上图中，向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+所在的切线又被称为切点
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+处的切空间(tangent space)。我们对这点的导数感兴趣。假设向量
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+以角速度
+\begin_inset Formula $\omega$
+\end_inset
+
+匀速旋转，则在圆上任意点的导数为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{z}\cdot\mathbf{z}^{\ast} & =1\\
+\dot{\mathbf{z}}\cdot\mathbf{z}^{\ast}+\mathbf{z}\cdot\dot{\mathbf{z}}^{\ast} & =0\\
+\dot{\mathbf{z}}\cdot\mathbf{z}^{\ast} & =-\mathbf{z}\cdot\dot{\mathbf{z}}^{\ast}\\
+ & =-\left(\dot{\mathbf{z}}\cdot\mathbf{z}^{\ast}\right)^{\ast}=\mathbf{i}\,\omega\in\mathbf{i}\,\mathbb{R}\\
+\dot{\mathbf{z}} & =\begin{cases}
+\mathbf{i}\,\omega & \text{if }\mathbf{z}=1\\
+\mathbf{z}\cdot\mathbf{i}\,\omega & \text{exp map}
+\end{cases}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+结果如下图所示(fig2d-02.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+三维空间
+\end_layout
+
+\begin_layout Standard
+对于三维空间旋转，和二维空间效果类似，但要复杂很多。我们可以将四元数
+\begin_inset Formula $q$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+q & =r+x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\\
+ & =r+\mathbf{q}
+\end{align*}
+
+\end_inset
+
+代入函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+并整理各项，最后得到
+\begin_inset Formula 
+\begin{align*}
+e^{q} & =e^{\left(r+x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\right)}\\
+ & =e^{r}\cdot e^{\left(x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\right)}\\
+ & =e^{r}\cdot\left(\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{u}\right)
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\theta=\left\Vert \mathbf{q}\right\Vert $
+\end_inset
+
+为旋转角度，并且
+\begin_inset Formula $\mathbf{u}=\mathbf{q}/\left\Vert \mathbf{q}\right\Vert $
+\end_inset
+
+为旋转轴。
+\end_layout
+
+\begin_layout Standard
+在这里，四元数
+\begin_inset Formula $q$
+\end_inset
+
+由一个一维空间和一个三维空间组合而成，其中实部
+\begin_inset Formula $r$
+\end_inset
+
+同样为缩放系数。我们同样是对
+\begin_inset Formula $r=0$
+\end_inset
+
+的纯虚四元数经过函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+变换后的结果更感兴趣。结果如下图(fig3d-03.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig3d-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里，函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+同样将向量
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+精确地缠绕(wrap)到球面上，这个弧段有一个专业术语叫测地线(geodesic)。同样，其反函数
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+则将一段测地线(geodesic)展开(unwrap)为向量。
+\end_layout
+
+\begin_layout Standard
+切点
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+处的切空间(tangent space)同样需要计算导数。假设球面上的向量以角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+匀速旋转，在球面上任意点的旋转矩阵有性质为
+\begin_inset Formula 
+\[
+\boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}=\boldsymbol{I}
+\]
+
+\end_inset
+
+两边取导数
+\begin_inset Formula 
+\[
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left\{ \boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}\right\} =\dfrac{\mathrm{d}}{\mathrm{d}t}\boldsymbol{I}\rightarrow\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}+\boldsymbol{R}\dot{\boldsymbol{R}}^{\mathrm{T}}=0
+\]
+
+\end_inset
+
+这就是一个斜对称矩阵
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}=-\left(\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}\right)^{\mathrm{T}}
+\]
+
+\end_inset
+
+定义
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\times\right]=\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}
+\]
+
+\end_inset
+
+则旋转矩阵的导数(旋转运动的基本方程)为：
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}=\left[\boldsymbol{\omega}\times\right]\boldsymbol{R}
+\]
+
+\end_inset
+
+当
+\begin_inset Formula $\boldsymbol{R}\left(0\right)=\boldsymbol{I}$
+\end_inset
+
+时的解为
+\begin_inset Formula 
+\[
+\boldsymbol{R}=e^{\left[\boldsymbol{\omega}\times\right]t}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+表示在切空间中的角速度。
+\end_layout
+
+\begin_layout Standard
+我们在笛卡尔空间测量得到的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为向量
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\left[\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]
+\]
+
+\end_inset
+
+关连到
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+这个斜对称矩阵则为
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\times\right]=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+这个斜对称矩阵
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+有特性：
+\end_layout
+
+\begin_layout Itemize
+斜对称：
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]=-\left[\boldsymbol{\omega}\times\right]^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+交叉积：
+\begin_inset Formula $\boldsymbol{\omega}\times\mathbf{p}=\left[\boldsymbol{\omega}\times\right]\mathbf{p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+斜对称矩阵
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+在和旋转相关的方程中随处可见。例如四元数的乘积方程。有两个四元数
+\begin_inset Formula $p$
+\end_inset
+
+和
+\begin_inset Formula $q$
+\end_inset
+
+，两者矩阵形式的乘积可以表示为
+\begin_inset Formula 
+\begin{align*}
+p*q & =\left[\begin{array}{cc}
+p_{0} & -\boldsymbol{p}\\
+\boldsymbol{p} & p_{0}\boldsymbol{I}+\left[\boldsymbol{p}\times\right]
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+\boldsymbol{q}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+q_{0} & -\boldsymbol{q}\\
+\boldsymbol{q} & q_{0}\boldsymbol{I}-\left[\boldsymbol{q}\times\right]
+\end{array}\right]\left[\begin{array}{c}
+p_{0}\\
+\boldsymbol{p}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+小结
+\end_layout
+
+\begin_layout Standard
+指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+可以将切空间中的向量精确地缠绕(wrap)到球面上的测地线(geodesic)上。其反函数
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+则将一段测地线(geodesic)展开(unwrap)为切空间中的向量。
+\end_layout
+
+\begin_layout Standard
+旋转在切空间中的导数，也就是在切空间中的角速度，对于二维空间为
+\begin_inset Formula 
+\[
+\dot{\mathbf{z}}=\begin{cases}
+\mathbf{i}\,\omega & \text{if }\mathbf{z}=1\\
+\mathbf{z}\cdot\mathbf{i}\,\omega & \text{exp map}
+\end{cases}
+\]
+
+\end_inset
+
+对于三维空间为
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}=\begin{cases}
+\left[\boldsymbol{\omega}\times\right] & \text{if }\boldsymbol{R}=\boldsymbol{I}\\
+\left[\boldsymbol{\omega}\times\right]\boldsymbol{R} & \text{exp map}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+需要注意的是，上面三维旋转的图中的球面只是一个示意图。因为一个纯虚四元数经过函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+变换后得到的是一个单位四元数，这是一个嵌入四维空间
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+的三维
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面，无法在三维空间中画出。只能如下图这样示意(fig3d-11.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig3d-11.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外，因为表示三维空间旋转的单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+有一个约束
+\begin_inset Formula 
+\[
+r^{2}+x^{2}+y^{2}+z^{2}=1
+\]
+
+\end_inset
+
+所以单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+有三个自由度。因为切空间和其流形有相同的自由度，所以单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+的切空间是三维空间。同样因为方便显示的原因，一般示意图中都将单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+表示为三维球面，而将其切空间表示为(超)平面。
+\end_layout
+
+\begin_layout Section
+引入李群和流形的动机
+\end_layout
+
+\begin_layout Subsection
+李群和流形的基本概念
+\end_layout
+
+\begin_layout Standard
+对于李群的一个简短定义是：李群是一个群，也是一个光滑流形。李群以前又被称为 "连续变换群"。
+\end_layout
+
+\begin_layout Standard
+群是代数结构概念。流形是几何拓扑概念。李群连接了两者，具有两者的特性。李群做为一个群，同样有“封结幺逆”的特性。很容易验证，单位四元数和旋转矩阵的集合与乘法构成
+群。另外，和运动相关的变换矩阵的乘法也构成群。这些都是李群的一种：
+\end_layout
+
+\begin_layout Itemize
+特殊正交群
+\begin_inset Formula $\mathrm{SO}(n)$
+\end_inset
+
+：也就是旋转群。
+\end_layout
+
+\begin_layout Itemize
+特殊欧氏群
+\begin_inset Formula $\mathrm{SE}(n)$
+\end_inset
+
+：也就是运动群。其中包含了旋转和平移运动。
+\end_layout
+
+\begin_layout Standard
+在这里我们只关注在二维和三维空间中的旋转群
+\begin_inset Formula $\mathrm{SO}(2)/\mathrm{SO}(3)$
+\end_inset
+
+和运动群
+\begin_inset Formula $\mathrm{SE}(2)/\mathrm{SE}(3)$
+\end_inset
+
+。对于流形，有两个特性需要关注：
+\end_layout
+
+\begin_layout Itemize
+局部(local)
+\end_layout
+
+\begin_layout Itemize
+收回(retraction)
+\end_layout
+
+\begin_layout Standard
+前面所讨论的指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+就是收回(retraction)操作。它允许我们精确地将局部(local)的切空间的元素变换到群上。直观地说，
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+将切空间的元素缠绕(wrap)在测地线(geodesic)所在的流形上 (就像将琴弦缠绕在球面上一样)。反向映射是
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+，即展开(unwrap)操作。在我们的案例中，所谓流形就只局限在二维的圆和三维的球面上。在参考文献[1-3]这里，流形的收回(retraction)操作选择指数
+映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，而在参考文献[4]里面，给出了流形的收回(retraction)操作的其它4种选择。
+\end_layout
+
+\begin_layout Standard
+前面讨论过，切空间中的导数，也就是在切空间中的角速度，对于二维空间为
+\begin_inset Formula 
+\[
+\dot{\mathbf{z}}=\begin{cases}
+\mathbf{i}\,\omega & \text{if }\mathbf{z}=1\\
+\mathbf{z}\cdot\mathbf{i}\,\omega & \text{exp map}
+\end{cases}
+\]
+
+\end_inset
+
+对于三维空间为
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}=\begin{cases}
+\left[\boldsymbol{\omega}\times\right] & \text{if }\boldsymbol{R}=\boldsymbol{I}\\
+\left[\boldsymbol{\omega}\times\right]\boldsymbol{R} & \text{exp map}
+\end{cases}
+\]
+
+\end_inset
+
+这是在全局(global)坐标系中的表示。对于局部(local)坐标系的表示为
+\begin_inset Formula 
+\begin{align*}
+\dot{\mathbf{z}} & =\mathbf{i}\,\omega\quad\mathbf{z}\in\mathrm{SO}(2)\\
+\dot{\boldsymbol{R}} & =\left[\boldsymbol{\omega}\times\right]\quad\boldsymbol{R}\in\mathrm{SO}(3)
+\end{align*}
+
+\end_inset
+
+也就是，一个流形的所有切空间的结构都相同，都是在幺元处的结构。因此，在幺元处的切空间被称为流形的李代数(Lie algebra)。对于二维复平面，幺元为
+\begin_inset Formula $\left(1,0\right)$
+\end_inset
+
+，对于三维空间的幺元，单位四元数表示为
+\begin_inset Formula $\left(1,0,0,0\right)$
+\end_inset
+
+，旋转矩阵表示为
+\begin_inset Formula $\boldsymbol{R}=\boldsymbol{I}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+流形的切空间具有这样的性质：
+\end_layout
+
+\begin_layout Itemize
+一个李群的切空间的结构在任何地方都是相同的。
+\end_layout
+
+\begin_layout Itemize
+切空间是一个向量空间。
+\end_layout
+
+\begin_layout Itemize
+切空间的维度和所属的流形的自由度相同。
+\end_layout
+
+\begin_layout Itemize
+在原点或幺元处的切空间被称为李代数。
+\end_layout
+
+\begin_layout Standard
+我们更熟悉的三维向量空间是笛卡尔空间
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+。李代数空间和笛卡尔空间是同构的(isomorphism)，它们之间有如下变换关系(fig3d-12.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig3d-12.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，流形局部的切空间的切点是一个很特殊的地方。它既属于流形又属于切空间，在此建立原点的切空间有向量空间性质，并且切空间的元素既可以变换到笛卡尔空间也可以变换到
+流形空间中。
+\end_layout
+
+\begin_layout Standard
+具体到姿态估计中的例子。我们在运动物体中放置IMU传感器测量角速度。所获得的角速度向量
+\begin_inset Formula $\boldsymbol{\omega}=\left[\omega_{x},\omega_{y},\omega_{z}\right]^{\mathrm{T}}$
+\end_inset
+
+位于局部坐标系中的笛卡尔空间，经过Hat(
+\begin_inset Formula $\wedge$
+\end_inset
+
+)算子的变换到切空间的角速度矩阵
+\begin_inset Formula $\boldsymbol{\omega}^{\wedge}=\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+，再通过指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+作用(action)到切点处的流形的元素上，于是在一定的时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+里，流形中的元素就发生了旋转(对于旋转群来说)，或者伴随有位移(对于运动群来说)。反之，Vee(
+\begin_inset Formula $\vee$
+\end_inset
+
+)算子则是反向变换，将切空间的角速度向量变换回笛卡尔空间的向量，
+\begin_inset Formula $\boldsymbol{\omega}=\left[\boldsymbol{\omega}\times\right]^{\vee}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子
+\end_layout
+
+\begin_layout Standard
+我们通过复习二维复平面的一些属性来理解引入加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子的几何意义。
+\end_layout
+
+\begin_layout Standard
+对于单位复数构成的圆
+\begin_inset Formula $\mathrm{S}^{1}$
+\end_inset
+
+有如下性质(fig2d-11.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-11.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从二维旋转矩阵
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+构成的圆
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+的角度可以这样理解(fig2d-12.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-12.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+圆
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+的指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+有这样的性质(fig2d-13.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-13.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+及其反函数
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+的作用(action)如下图所示(fig2d-14.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-14.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，上两张图中的增量角度为切空间的增量角度
+\begin_inset Formula $\left[\theta\times\right]=\left[\omega\times\right]\Delta t$
+\end_inset
+
+，而我们用IMU测量得到的是局部的笛卡尔空间的角速度
+\begin_inset Formula $\omega$
+\end_inset
+
+。我们需要一个直接使用
+\begin_inset Formula $\omega$
+\end_inset
+
+的简单快捷的函数，就是大写的指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+和对数映射函数
+\begin_inset Formula $\mathrm{Log}\left(\:\right)$
+\end_inset
+
+，如下图所示，对比上两张图，切点所在的空间变换成笛卡尔空间(fig2d-15.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-15.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来我们引入加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+\text{Plus operator:} & \mathcal{X}\oplus\boldsymbol{\theta} & \triangleq\mathcal{X}\cdot\mathrm{Exp}\left(\boldsymbol{\theta}\right)\\
+\text{Minus operator:} & \mathcal{Y}\ominus\mathcal{X} & \triangleq\mathrm{Log}\left(\mathcal{X}^{-1}\cdot\mathcal{Y}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+变换效果如下图所示(fig2d-16.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-16.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为群只对乘法封闭，而估计和优化问题需要使用加减法，例如卡尔曼滤波器。引入加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子的目的是能对群元素进行加减法运算，例如使用卡尔曼滤波器估计姿态。这样对于群元素除了能使用加减法，还可以应用更复杂的导数运算，使得在向量空间中成熟有效的优化算
+法可以应用到旋转群和运动群中，例如机器人的状态估计和运动规划。这是这些领域引入李群的最重要动机之一。
+\end_layout
+
+\begin_layout Subsection
+引入李群的动机
+\end_layout
+
+\begin_layout Standard
+根据参考文献[1-3]的总结，引入李群的动机主要有这几方面：
+\end_layout
+
+\begin_layout Itemize
+它是适当的：在旋转和运动的非线性空间上进行严格的微积分(导数和积分)演算。
+\end_layout
+
+\begin_layout Itemize
+它是强大的：在最小的空间里适当地处理不确定性、优化步骤、增量。
+\end_layout
+
+\begin_layout Itemize
+它是抽象的：在不同的方案中(2D/3D、四元数与旋转矩阵、IMU预集成与里程表)，实施统一的概念。
+\end_layout
+
+\begin_layout Itemize
+它是优美的！具有数学上的简洁统一的美感。
+\end_layout
+
+\begin_layout Standard
+实际上最重要动机就是能对群元素能进行加减法运算，从而能复用向量空间中成熟的算法。因为群存在约束，非线性约束以及约束所定义的作用，使得有些算法直接在群元素上进行运
+算很困难，甚至违反了约束。
+\end_layout
+
+\begin_layout Standard
+举一个最简单的例子。在流形空间中因为只有乘法，旋转角度的加减运算就很麻烦，而在向量空间中的加减法就很简单。如下图所示(fig2d-03.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个例子看似简单，但是在将卡尔曼滤波器应用到姿态估计时就碰到了这个大麻烦。卡尔曼滤波器的核心就是协方差矩阵，而协方差必须用到减法'-'。但是，对于表示旋转的单位
+四元数来说，协方差
+\begin_inset Formula $\mathrm{E}\left[\left(q-\bar{q}\right)\left(q-\bar{q}\right)^{\mathrm{T}}\right]$
+\end_inset
+
+，其中的
+\begin_inset Formula $\left(q-\bar{q}\right)$
+\end_inset
+
+代表什么意义？它的结果大概率不是单位四元数，那在数学上就有问题。
+\end_layout
+
+\begin_layout Standard
+引入李群和流形，就是要从数学原理上较为完美地解决或解释这个问题。具体见后面例子中的解释。
+\end_layout
+
+\begin_layout Section
+收回(retraction)操作的选择
+\end_layout
+
+\begin_layout Standard
+在参考文献[1-3]这里，流形的收回(retraction)操作所选择指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，或大写指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+的运算为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Exp}\left(\theta\right) & =\exp\left(\left[\theta\times\right]\right)\\
+ & =\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{u}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。这往往体现了不同理论之间，还有理论和工程之间的差异。
+\end_layout
+
+\begin_layout Standard
+首先，因为在工程中IMU的取样间隔时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+很小，所以一般增量角度
+\begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\Delta t$
+\end_inset
+
+都很小，所以都会应用三角函数小角度近似的方法。同时，经过四元数微分方程的启发，也经过工程中的各种摸索，(NASA)大佬们认为计算数值大概是
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+的量级。严格地说，他们选择了流形的不同的收回(retraction)操作，于是在不同的论文出现了下面几种映射方法，(正式的是前4种，后两种为近似值，参考文献[4
+])：
+\end_layout
+
+\begin_layout Enumerate
+正交投影 (Orthographic, O)
+\end_layout
+
+\begin_layout Enumerate
+Rodrigues 参数 (Rodrigues Parameters, RP)
+\end_layout
+
+\begin_layout Enumerate
+改进型 Rodrigues 参数 (Modified Rodrigues Parameters, MRP) 
+\end_layout
+
+\begin_layout Enumerate
+旋转向量 (Rotation Vector, RV)
+\end_layout
+
+\begin_layout Enumerate
+二阶近似值(second-order approximation)。上述4种方法的二阶近似值。
+\end_layout
+
+\begin_layout Enumerate
+一阶近似值(first-order approximation)。上述4种方法的一阶近似值。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+\sqrt{1-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}/4}\\
+\boldsymbol{\theta}/2
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dfrac{1}{\sqrt{4+\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}}\left(\begin{array}{c}
+2\\
+\boldsymbol{\theta}
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MRP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dfrac{1}{16+\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}\left(\begin{array}{c}
+16-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}\\
+8\boldsymbol{\theta}
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+\cos\left(\boldsymbol{\theta}/2\right)\\
+\left(\boldsymbol{\theta}/\left\Vert \boldsymbol{\theta}\right\Vert \right)\sin\left(\boldsymbol{\theta}/2\right)
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2nd
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+1-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}/8\\
+\boldsymbol{\theta}/2
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1st
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+1\\
+\boldsymbol{\theta}/2
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为是操作半角
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+，区别于前面定义的加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子，另外定义有两个类似的半角加减操作算子：
+\begin_inset Formula $\boxplus$
+\end_inset
+
+和
+\begin_inset Formula $\boxminus$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+首先，需要注意的是，在很多论文里，通过指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+将向量
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+做为纯虚四元数直接一步映射为单位四元数，也用算子
+\begin_inset Formula $\wedge:\mathbb{R}^{3}\rightarrow\mathbb{H}$
+\end_inset
+
+表示，相应的逆映射用算子
+\begin_inset Formula $\vee:\mathbb{H}\rightarrow\mathbb{R}^{3}$
+\end_inset
+
+表示。两者定义从上述1~4#方法选取，例如选择旋转向量(RV)映射：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\theta}^{\wedge} & \triangleq\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right)=\left[\begin{array}{c}
+\cos\left(\dfrac{\left\Vert \boldsymbol{\theta}\right\Vert }{2}\right)\\
+\dfrac{\boldsymbol{\theta}}{\left\Vert \boldsymbol{\theta}\right\Vert }\sin\left(\dfrac{\left\Vert \boldsymbol{\theta}\right\Vert }{2}\right)
+\end{array}\right]\\
+q^{\vee} & \triangleq\log\left(q\right)=2\mathrm{atan2}\left(\left\Vert \boldsymbol{q}\right\Vert ,q_{0}\right)\dfrac{\boldsymbol{q}}{\left\Vert \boldsymbol{q}\right\Vert }
+\end{align*}
+
+\end_inset
+
+这个定义与文献[1-3]的分步定义不一样。这里的定义更像文献[1-3]定义的大写的指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+和对数映射函数
+\begin_inset Formula $\mathrm{Log}\left(\:\right)$
+\end_inset
+
+，但是增量角度为
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+。(这也是看相关论文的一个麻烦事，看文章前先看看作者是哪个门派的。另外一个类似的麻烦就是看公式前先要看看作者选择的四元数的约定，是Hamilton约定还是JPL
+约定，否则推导公式就是一头雾水。最后还得出论文论证哪种表示方法更好，给人造成麻烦的同时还给人制造了灌水的机会。)
+\end_layout
+
+\begin_layout Standard
+这时，这两个半角加减操作算子
+\begin_inset Formula $\boxplus$
+\end_inset
+
+和
+\begin_inset Formula $\boxminus$
+\end_inset
+
+定义为：
+\begin_inset Formula 
+\[
+\begin{array}{rlll}
+q^{\prime} & =q*\boldsymbol{\theta}^{\wedge} & =q*\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right) & =q\boxplus\boldsymbol{\theta}\\
+\boldsymbol{\theta} & =\left(q^{-1}*q^{\prime}\right)^{\vee} & =\log\left(q^{-1}*q^{\prime}\right) & =q^{\prime}\boxminus q
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+例子
+\end_layout
+
+\begin_layout Standard
+在这一节中，将从李群和流形的角度重新解释误差状态卡尔曼滤波中的一些操作步骤。为了和常见的误差状态卡尔曼滤波器的方程一致，在这里的收回(retraction)操作
+，对于精度要求高的运算，选择上一节的第2种收回(retraction)操作，半角的Rodrigues参数(RP)映射，有些论文是选择第4种收回(retracti
+on)操作，半角的旋转向量(RV)映射；对于精度要求不高的运算，选择第6种收回(retraction)操作，半角的一阶近似(1st)映射。
+\end_layout
+
+\begin_layout Standard
+在误差状态卡尔曼滤波器迭代前，滤波器的状态是，在
+\begin_inset Formula $n-1$
+\end_inset
+
+时刻的迭代结束时，我们已经获得该时刻的姿态的最佳估计值
+\begin_inset Formula $\hat{q}_{n-1}$
+\end_inset
+
+。见下图的相应位置(fig2d-04.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-04.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $n$
+\end_inset
+
+时刻到达，我们通过IMU获得当前角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，根据时间间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+，获得当前的增量角度
+\begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}*\Delta t$
+\end_inset
+
+。这是局部坐标系的值。则当前时刻的姿态的估计值
+\begin_inset Formula $\bar{q}_{n}$
+\end_inset
+
+根据上一时刻的最佳估计值
+\begin_inset Formula $\hat{q}_{n-1}$
+\end_inset
+
+外推得到
+\begin_inset Formula 
+\begin{align*}
+\bar{q}_{n} & =\hat{q}_{n-1}\boxplus\boldsymbol{\theta}\\
+ & =\hat{q}_{n-1}*\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right)\\
+ & =\hat{q}_{n-1}*\left(\begin{array}{c}
+\cos\left(\boldsymbol{\theta}/2\right)\\
+\left(\boldsymbol{\theta}/\left\Vert \boldsymbol{\theta}\right\Vert \right)\sin\left(\boldsymbol{\theta}/2\right)
+\end{array}\right)
+\end{align*}
+
+\end_inset
+
+如果对运算速度有要求，不想进行三角函数运算，则可以选择二阶近似
+\begin_inset Formula 
+\[
+\bar{q}_{n}=\hat{q}_{n-1}*\left(\begin{array}{c}
+1-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}/8\\
+\boldsymbol{\theta}/2
+\end{array}\right)
+\]
+
+\end_inset
+
+更多的时候，这一步对精度要求不高，则可以选择一阶近似
+\begin_inset Formula 
+\[
+\bar{q}_{n}=\hat{q}_{n-1}*\left(\begin{array}{c}
+1\\
+\boldsymbol{\theta}/2
+\end{array}\right)
+\]
+
+\end_inset
+
+在另外一些论文里，这一步采用的是欧拉零阶积分公式
+\begin_inset Formula 
+\begin{align*}
+\bar{q}_{n} & =\hat{q}_{n-1}+\hat{q}_{n-1}\Delta q\\
+ & =\hat{q}_{n-1}\cdot\left(\begin{array}{c}
+1\\
+0
+\end{array}\right)+\hat{q}_{n-1}\cdot\left(\begin{array}{c}
+0\\
+\boldsymbol{\theta}/2
+\end{array}\right)\\
+ & =\hat{q}_{n-1}*\left(\begin{array}{c}
+1\\
+\boldsymbol{\theta}/2
+\end{array}\right)
+\end{align*}
+
+\end_inset
+
+这实际上就是流形的收回(retraction)操作的一阶近似。所以类似李群和流形的思想以前也在使用，只是没有从这方面解释而已。
+\end_layout
+
+\begin_layout Standard
+下一步，计算当前姿态的最佳估计值
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+。但是，表示姿态的单位四元数是群而不是向量，不能直接用卡尔曼滤波器直接估计。不过既然这个当前的姿态的估计值
+\begin_inset Formula $\bar{q}_{n}$
+\end_inset
+
+和当前真实的姿态值
+\begin_inset Formula $q_{n}$
+\end_inset
+
+之间有误差，而且误差通常很小，一般在零点附近抖动，远离奇点，可以用轴-角形式的向量表示，这个误差向量就可以用卡尔曼滤波器直接估计。但是因为真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+不可知，我们只可以估计距离
+\begin_inset Formula $q_{n}$
+\end_inset
+
+最近的点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+。那么什么是距离
+\begin_inset Formula $q_{n}$
+\end_inset
+
+最近的点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+呢？其实点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+就是在真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+的概率分布的中心的点，因此从概率的角度看，位于概率分布中心的点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+自然距离真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+最近。但是在流形上直接计算真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+的概率分布很困难。这时候就需要李群和流形的思想解决问题。
+\end_layout
+
+\begin_layout Standard
+在文献[4]中证明，真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+的概率分布，和以
+\begin_inset Formula $\bar{q}_{n}$
+\end_inset
+
+为切点建立的切空间中的点
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+的概率分布同胚 (homeomorphism)。因为切空间是向量空间，于是就可以用卡尔曼滤波器在切空间中解决这个问题。点
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+代表点
+\begin_inset Formula $\bar{q}_{n}$
+\end_inset
+
+到点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+之间在切空间中的误差，切空间是向量空间，因此可以用协方差矩阵在切空间中估计概率分布中心的点
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+，这是卡尔曼滤波器最擅长的事。估计出来的点
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+通过收回(retraction)操作映射到流形上的点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+上，于是点
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+就是在流形上的真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+的概率分布的中心，也就是真实的姿态
+\begin_inset Formula $q_{n}$
+\end_inset
+
+的最佳估计。
+\end_layout
+
+\begin_layout Standard
+上述的解题思路见下面的示意图。如何估计点
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+参见具体的误差状态卡尔曼滤波器的资料。在每次迭代结束时的重置操作，需要将误差
+\begin_inset Formula $\boldsymbol{\delta}$
+\end_inset
+
+注入到估计值
+\begin_inset Formula $\bar{q}_{n}$
+\end_inset
+
+以获得当前时可的最佳估计值
+\begin_inset Formula $\hat{q}_{n}$
+\end_inset
+
+。所谓注入操作，就是流形的收回(retraction)操作(fig3d-04.pdf)
+\begin_inset Formula 
+\begin{align*}
+\hat{\boldsymbol{q}}_{n} & =\bar{\boldsymbol{q}}_{n}\boxplus\boldsymbol{\delta}\\
+ & =\bar{\boldsymbol{q}}_{n}*\left(\begin{array}{c}
+1-\left\Vert \boldsymbol{\delta}\right\Vert ^{2}/8\\
+\boldsymbol{\delta}/2
+\end{array}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig3d-04.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，上图中的球面是嵌入
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+空间中的单位四元数的
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面，因此，切空间是三维向量空间，而在向量空间中的概率分布的形状，是由协方差矩阵的三个正交的特征值张成的一个椭球。
+\end_layout
+
+\begin_layout Standard
+最后在执行误差状态卡尔曼滤波器的重置操作时，除了误差注入操作，还需要修正协方差矩阵，这一操作，在文献[4]中被称为流形的图表更新(Chart Update)。进
+行图表更新(Chart Update)有利于提高估计精度，在文献[5]中进行了全面的讨论。
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+对姿态估计问题的理解，是一步步深入理解和发展的。最早，当卡尔曼滤波器被发明出来后，是直接估计的表示姿态的四元数的，这类卡尔曼滤波器，被称为加性滤波器。很快，NA
+SA里的聪明人发现不对，旋转是群而不是向量，于是他们发明了乘性滤波器，就是误差状态卡尔曼滤波器，又称间接卡尔曼滤波器。但是长久以来，加性滤波器和乘性滤波器在实际
+项目中都工作正常。不得不说卡尔曼滤波器真是神奇的东西，够能容纳异类的。
+\end_layout
+
+\begin_layout Standard
+这也因此没人说得清到底谁对谁错，直到本世纪初，
+\begin_inset CommandInset href
+LatexCommand href
+name "Dr. F. Landis Markley"
+target "http://www.acsu.buffalo.edu/~johnc/markley/"
+literal "false"
+
+\end_inset
+
+ 这位白胡子老爷爷用几篇论文明确地揭示了问题所在，才在姿态估计问题中确立了误差状态卡尔曼滤波器的正统地位。在姿态估计问题里，又是乘法又是群的，李群的应用自然浮出
+水面。过了一些年，就有人用李群重新解释和推导了误差状态卡尔曼滤波器。再过些年，Joan Solà 在写博士论文时，顺带写了一份教材，这就是有名的《Quatern
+ion kinematics for the error-state Kalman filter》。如今他再战江湖，挑战李理论难懂不会用的困难，写出了最短小最易
+懂的入门教材，就是参考文献[1]，
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+。本文就是他的教材的学习笔记。
+\end_layout
+
+\begin_layout Standard
+近些年，对姿态估计问题的研究又有新的发展，或者说有新的灌水田地。前面应用李群，偏向应用群方面的知识，现在开始偏向应用流形方面的知识。参考文献[4]就是代表。
+\end_layout
+
+\begin_layout Standard
+但是，姿态估计问题，包括卡尔曼滤波器，本质上是工程问题。工程上的一个小问题，就能轻易地让数学上的努力变得毫无作用。而加性滤波器似乎也没那么不堪。PX4
+ 项目里的 ECL2 姿态估计器，就是对姿态四元数直接用EKF做估计，估计精度不输于其它间接的估计器，也成功地在成千上万个无人机里得到应用。卡尔曼滤波器既神奇又
+有黑暗的角落，例如Q & R矩阵，调参似乎比数学更重要。所以在这个世界里，始终还是调参侠的天下。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie theory for the roboticist"
+target "https://www.youtube.com/watch?v=nHOcoIyJj2o"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Joan Solà - Lie theory for the Roboticist"
+target "https://www.youtube.com/watch?v=QR1p0Rabuww"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory"
+target "https://www.mdpi.com/1424-8220/19/1/149"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Full-Order Solution to the Attitude Reset Problem for Kalman Filtering of Attitudes"
+target "https://arc.aiaa.org/doi/10.2514/1.G004134"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+文摘
+\end_layout
+
+\begin_layout Standard
+It is proper: Perform rigorous calculus (derivatives and integrals) on the
+ nonlinear spaces of rotation and motion.
+\end_layout
+
+\begin_layout Standard
+It is powerful: Properly handle uncertainties, optimization steps, increments,
+ in the minimal space.
+\end_layout
+
+\begin_layout Standard
+It is abstract: Unify concepts across different implementation options (2D
+ / 3D, quaternion vs.
+ rotation matrix, IMU pre-integration vs.
+ odometry).
+\end_layout
+
+\begin_layout Standard
+It is beautiful !
+\end_layout
+
+\begin_layout Standard
+The Lie Group is a group that is also a smooth manifold.
+\end_layout
+
+\begin_layout Standard
+Lie groups were formerly known as 
+\begin_inset Quotes eld
+\end_inset
+
+Continuous Transformation groups
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The tangent space
+\end_layout
+
+\begin_layout Itemize
+Unique tangent space at each point.
+\end_layout
+
+\begin_layout Itemize
+All tangent spaces of a group are equal (though ont the same).
+\end_layout
+
+\begin_layout Itemize
+The tangent space is a vector space.
+\end_layout
+
+\begin_layout Itemize
+The dimentsion of the tangent space is the number of degrees of freedom
+ of the manifold.
+\end_layout
+
+\begin_layout Itemize
+The tangent space at the origion is called the 
+\begin_inset Quotes eld
+\end_inset
+
+Lie Algebra
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lie Algebra and Cartesian tangent space
+\end_layout
+
+\begin_layout Itemize
+Two isomorhpic representations of the tangent space
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Lie algebra:
+\begin_inset Formula $T_{E}M$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Cartesian:
+\begin_inset Formula $R^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+One linear isomorphism:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+hat:
+\begin_inset Formula $R^{m}\rightarrow T_{E}M$
+\end_inset
+
+;
+\begin_inset Formula $w\rightarrow w^{\wedge}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+vee:
+\begin_inset Formula $T_{E}M\rightarrow R^{m}$
+\end_inset
+
+;
+\begin_inset Formula $w^{\wedge}\to\left(w^{\wedge}\right)^{\vee}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+We write 
+\begin_inset Formula $T_{E}M\sim R^{m}$
+\end_inset
+
+ and 
+\begin_inset Formula $w\sim w^{\wedge}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Example:SO(3)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Lie algebra: so(3)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $w^{\wedge}=\left[\boldsymbol{\omega}\right]_{\times}=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Cartesian:
+\begin_inset Formula $R^{3}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{\omega}=\left(\omega_{x},\omega_{y},\omega_{z}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left[\boldsymbol{\omega}\right]_{\times}=\omega_{x}\mathbf{E}_{x}+\omega_{y}\mathbf{E}_{y}+\omega_{z}\mathbf{E}_{z}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{E}_{x}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right],\mathbf{E}_{y}=\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right],\mathbf{E}_{z}=\left[\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The exponential map
+\end_layout
+
+\begin_layout Itemize
+INTERACTIVE SESSION
+\end_layout
+
+\begin_layout Itemize
+exp: From tangent to manifold
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+wrap on the geodesic
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+log: from manifold to tangent
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+unwrap
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{X}\oplus\boldsymbol{\omega}\triangleq\boldsymbol{X}*\mathrm{Exp}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{Y}\ominus\boldsymbol{X}\triangleq\mathrm{Log}\left(\boldsymbol{X}^{-1}*\boldsymbol{Y}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Plus and minus operators
+\end_layout
+
+\begin_layout Itemize
+Expressing in Cartesian form:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Perturbations, errors, increments
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+And define easily:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Jacobians of functions 
+\begin_inset Formula $f:M\rightarrow N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Covariances
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+Exponential Coordinates
+\end_layout
+
+\begin_layout Standard
+Derivative of a Rotation Matrix
+\end_layout
+
+\begin_layout Standard
+For all rotaion matrices: 
+\begin_inset Formula 
+\[
+\boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}=\boldsymbol{I}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Taking the derivative
+\begin_inset Formula 
+\[
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left\{ \boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}\right\} =\dfrac{\mathrm{d}}{\mathrm{d}t}\boldsymbol{I}\rightarrow\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}+\boldsymbol{R}\dot{\boldsymbol{R}}^{\mathrm{T}}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Skew-symmetric matrix
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}=-\left(\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}\right)^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+definition
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\times\right]=\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Derivative of the rotation matrix (fundamental equation of the rotation
+ motion):
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}=\left[\boldsymbol{\omega}\times\right]\boldsymbol{R}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Solution when 
+\begin_inset Formula $\boldsymbol{R}\left(0\right)=\boldsymbol{I}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{R}=e^{\left[\boldsymbol{\omega}\times\right]t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Remark: 
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+represents the angular velocity
+\end_layout
+
+\begin_layout Standard
+Skew-symmetric matrix
+\end_layout
+
+\begin_layout Standard
+- Consider a vector 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\left[\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- The skew-symmetric matrix associated with 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+ is :
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\times\right]=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Properties of the skew-symmetric matrix:
+\end_layout
+
+\begin_layout Standard
+– Skew-symmetry: 
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]=-\left[\boldsymbol{\omega}\times\right]^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+– Cross product: 
+\begin_inset Formula $\boldsymbol{\omega}\times\mathbf{p}=\left[\boldsymbol{\omega}\times\right]\mathbf{p}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout Standard
+A rotation matrix 
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+represents a rotation of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ about axis 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+.
+ Find the angular velocity associated with this rotation
+\end_layout
+
+\begin_layout Standard
+Solution:
+\end_layout
+
+\begin_layout Standard
+- The angular velocity is represented by the skew-symmetric matrix 
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]=\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\times\right]=\dot{\boldsymbol{R}}\boldsymbol{R}^{\mathrm{T}}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -\theta\sin\theta & -\theta\cos\theta\\
+0 & \theta\cos\theta & -\theta\sin\theta
+\end{array}\right]\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & \sin\theta\\
+0 & -\sin\theta & \cos\theta
+\end{array}\right]=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -\theta\\
+0 & \theta & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- From the skew-symmetric matrix, the angular velocity is :
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\left[\begin{array}{c}
+\theta\\
+0\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Matrix Exponential
+\end_layout
+
+\begin_layout Standard
+Objective: compute 
+\begin_inset Formula $\boldsymbol{R}=e^{\left[\boldsymbol{\omega}\times\right]t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Procedure
+\end_layout
+
+\begin_layout Standard
+- Taylor expansion:
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]t+\dfrac{\left(\left[\boldsymbol{\omega}\times\right]t\right)^{2}}{2!}+\dfrac{\left(\left[\boldsymbol{\omega}\times\right]t\right)^{3}}{3!}+\dfrac{\left(\left[\boldsymbol{\omega}\times\right]t\right)^{4}}{4!}+\dfrac{\left(\left[\boldsymbol{\omega}\times\right]t\right)^{5}}{5!}+\dfrac{\left(\left[\boldsymbol{\omega}\times\right]t\right)^{6}}{6!}+\cdots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Properties: (proof: expanding terms)
+\begin_inset Formula 
+\[
+\begin{array}{lll}
+\left[\boldsymbol{\omega}\times\right]^{2}=\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\boldsymbol{I} & \left[\boldsymbol{\omega}\times\right]^{4}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{7}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right]\\
+\left[\boldsymbol{\omega}\times\right]^{3}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{5}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{8}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right]^{2}\\
+ & \left[\boldsymbol{\omega}\times\right]^{6}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{9}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{llll}
+\left[\boldsymbol{\omega}\times\right]^{2}=\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\boldsymbol{I}\\
+\left[\boldsymbol{\omega}\times\right]^{3}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{4}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{5}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{6}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right]^{2}\\
+\left[\boldsymbol{\omega}\times\right]^{7}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{8}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{9}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{10}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right]^{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Using the properties:
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]\left(t-\dfrac{t^{3}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}{3!}+\dfrac{t^{5}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}}{5!}-\cdots\right)+\left[\boldsymbol{\omega}\times\right]^{2}\left(\dfrac{t^{2}}{2!}-\dfrac{t^{4}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}{4!}+\dfrac{t^{6}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}}{6!}-\cdots\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Using the Taylor expansion of sine and cosine:
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)+\dfrac{\left[\boldsymbol{\omega}\times\right]^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Generic interpretation:
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)+\dfrac{\left[\boldsymbol{\omega}\times\right]^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- The generic matrix exponential represents a rotaion with an angular velocity
+ vector 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+ for a time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Analysis of the components:
+\end_layout
+
+\begin_layout Standard
+- Angular velocity vector represents the axis of rotaion
+\end_layout
+
+\begin_layout Standard
+– The unit axis of ratation is: 
+\begin_inset Formula $\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+– Speed of rotation: 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+– Angle of ratation with speed 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert $
+\end_inset
+
+ for 
+\begin_inset Formula $t$
+\end_inset
+
+ seconds: 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Alternative interpretation:
+\end_layout
+
+\begin_layout Standard
+– Ratation of an angle 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert t$
+\end_inset
+
+ about the unix axis 
+\begin_inset Formula $\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+Consider a vector of angular velocity 
+\begin_inset Formula $\boldsymbol{\omega}=\left(2,1,3\right)$
+\end_inset
+
+ , and a value 
+\begin_inset Formula $t=1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+a) Compute the matrix exponential 
+\begin_inset Formula $e^{\left[\boldsymbol{\omega}\times\right]t}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+b) Verify that it is a rotation matrix.
+\end_layout
+
+\begin_layout Standard
+Solution
+\end_layout
+
+\begin_layout Standard
+- Matrix exponential: 
+\begin_inset Formula $e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)+\dfrac{\left[\boldsymbol{\omega}\times\right]^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Needed terms: 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert ^{2}=2^{2}+1^{2}+3^{2}=14\quad\left[\boldsymbol{\omega}\times\right]=\left[\begin{array}{ccc}
+0 & -3 & 1\\
+3 & 0 & -2\\
+-1 & 2 & 0
+\end{array}\right]\quad\left[\boldsymbol{\omega}\times\right]^{2}=\left[\begin{array}{ccc}
+-10 & 2 & 6\\
+2 & -13 & 3\\
+6 & 3 & -5
+\end{array}\right]$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+- Replacing:
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]+\dfrac{\sin\left(\sqrt{14}t\right)}{\sqrt{14}}\left[\begin{array}{ccc}
+0 & -3 & 1\\
+3 & 0 & -2\\
+-1 & 2 & 0
+\end{array}\right]+\dfrac{1-\cos\left(\sqrt{14}t\right)}{14}\left[\begin{array}{ccc}
+-10 & 2 & 6\\
+2 & -13 & 3\\
+6 & 3 & -5
+\end{array}\right]=\left[\begin{array}{ccc}
+-0.3 & 0.71 & 0.63\\
+-0.19 & -0.69 & 0.69\\
+0.93 & 0.09 & 0.35
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Verify that 
+\begin_inset Formula $\det\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)=1$
+\end_inset
+
+, and 
+\begin_inset Formula $\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)^{\mathrm{T}}=1$
+\end_inset
+
+.
+ Then, it is a rotation matrix.
+\end_layout
+
+\begin_layout Standard
+Rodrigues' Formula (Exponentail Form)
+\end_layout
+
+\begin_layout Standard
+Generic matrix exponential:
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]t}=\boldsymbol{I}+\dfrac{\left[\boldsymbol{\omega}\times\right]}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)+\dfrac{\left[\boldsymbol{\omega}\times\right]^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert t\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Simplification:
+\end_layout
+
+\begin_layout Standard
+- Use unit angular velocity: 
+\begin_inset Formula $\left\Vert \boldsymbol{\omega}\right\Vert =1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Total angular displacement: 
+\begin_inset Formula $\theta=t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Rodrigues' Formula (exponential form)
+\begin_inset Formula 
+\[
+e^{\left[\boldsymbol{\omega}\times\right]\theta}=\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]\sin\left(\theta\right)+\left[\boldsymbol{\omega}\times\right]^{2}\left(1-\cos\left(\theta\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Interpretation:
+\end_layout
+
+\begin_layout Standard
+The Rodrigues' formula is a rotation matrix that represents a ratation of
+ an angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+ about the unit axis 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+.
+\begin_inset Formula 
+\[
+\boldsymbol{R}\left(\boldsymbol{\omega},\theta\right)=e^{\left[\boldsymbol{\omega}\times\right]\theta}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+Determine the rotation matrix that represents a ratation of an angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+ about the axis 
+\begin_inset Formula $\left(1,0,0\right)$
+\end_inset
+
+ using the Rodrigues' formula
+\end_layout
+
+\begin_layout Standard
+Solution
+\end_layout
+
+\begin_layout Standard
+- Rodrigues' formula: 
+\begin_inset Formula $\boldsymbol{R}\left(\boldsymbol{\omega},\theta\right)=e^{\left[\boldsymbol{\omega}\times\right]\theta}=\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]\sin\left(\theta\right)+\left[\boldsymbol{\omega}\times\right]^{2}\left(1-\cos\left(\theta\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Needed terms: 
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right]\quad\left[\boldsymbol{\omega}\times\right]^{2}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & -1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Replacing:
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{R}\left(\boldsymbol{\omega},\theta\right) & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right]\sin\left(\theta\right)+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & -1
+\end{array}\right]\left(1-\cos\left(\theta\right)\right)\\
+\boldsymbol{R}\left(\boldsymbol{\omega},\theta\right) & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -\sin\left(\theta\right)\\
+0 & \sin\left(\theta\right) & 0
+\end{array}\right]+\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -\left(1-\cos\left(\theta\right)\right) & 0\\
+0 & 0 & -\left(1-\cos\left(\theta\right)\right)
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\left(\theta\right) & -\sin\left(\theta\right)\\
+0 & \sin\left(\theta\right) & \cos\left(\theta\right)
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+Determaine the rotation matrix that represents a rotation of 
+\begin_inset Formula $30^{\circ}$
+\end_inset
+
+ about 
+\begin_inset Formula $\left(2,1,2\right)$
+\end_inset
+
+ using the Rodrigues' formula
+\end_layout
+
+\begin_layout Standard
+Solution
+\end_layout
+
+\begin_layout Standard
+- Rodrigues' formula: 
+\begin_inset Formula $\boldsymbol{R}\left(\boldsymbol{\omega},\theta\right)=e^{\left[\boldsymbol{\omega}\times\right]\theta}=\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]\sin\left(\theta\right)+\left[\boldsymbol{\omega}\times\right]^{2}\left(1-\cos\left(\theta\right)\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Needed terms: 
+\begin_inset Formula $\boldsymbol{\omega}=\dfrac{1}{3}\left[\begin{array}{c}
+2\\
+1\\
+2
+\end{array}\right]\quad\left[\boldsymbol{\omega}\times\right]=\dfrac{1}{3}\left[\begin{array}{ccc}
+0 & -2 & 1\\
+2 & 0 & -2\\
+-1 & 2 & 0
+\end{array}\right]\quad\left[\boldsymbol{\omega}\times\right]^{2}=\dfrac{1}{9}\left[\begin{array}{ccc}
+-5 & 2 & 4\\
+2 & -8 & 2\\
+4 & 2 & -5
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Replacing:
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{R} & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{array}\right]+\dfrac{1}{3}\left[\begin{array}{ccc}
+0 & -2 & 1\\
+2 & 0 & -2\\
+-1 & 2 & 0
+\end{array}\right]\sin\left(30^{\circ}\right)+\dfrac{1}{9}\left[\begin{array}{ccc}
+-5 & 2 & 4\\
+2 & -8 & 2\\
+4 & 2 & -5
+\end{array}\right]\left(1-\cos\left(30^{\circ}\right)\right)\\
+\boldsymbol{R} & =\left[\begin{array}{ccc}
+0.926 & -0.304 & 0.226\\
+0.363 & 0.881 & -0.304\\
+-0.107 & 0.363 & 0.926
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Verify that it is a rotation matrix, that 
+\begin_inset Formula $\det\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)=1$
+\end_inset
+
+, and 
+\begin_inset Formula $\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)\left(e^{\left[\boldsymbol{\omega}\times\right]t}\right)^{\mathrm{T}}=1$
+\end_inset
+
+.
+ Then, it is a ratation matrix.
+\end_layout
+
+\begin_layout Standard
+Objective:
+\end_layout
+
+\begin_layout Standard
+Find the rotation of a vector 
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+ an angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+ about the unit axis 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Procedure:
+\end_layout
+
+\begin_layout Standard
+- Apply the rotation matrix to rotate the vector: 
+\begin_inset Formula $\boldsymbol{v}_{rot}=\boldsymbol{R}\boldsymbol{v}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Use the Rodrigues' formula (exponential form) to compute 
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{v}_{rot} & =\boldsymbol{R}\boldsymbol{v}=e^{\left[\boldsymbol{\omega}\times\right]\theta}\boldsymbol{v}\\
+ & =\left(\boldsymbol{I}+\left[\boldsymbol{\omega}\times\right]\sin\left(\theta\right)+\left[\boldsymbol{\omega}\times\right]^{2}\left(1-\cos\left(\theta\right)\right)\right)\boldsymbol{v}\\
+ & =\boldsymbol{v}+\left[\boldsymbol{\omega}\times\right]\boldsymbol{v}\sin\left(\theta\right)+\left[\boldsymbol{\omega}\times\right]\left[\boldsymbol{\omega}\times\right]\boldsymbol{v}\left(1-\cos\left(\theta\right)\right)\\
+ & =\boldsymbol{v}+\left(\boldsymbol{\omega}\times\boldsymbol{v}\right)\sin\left(\theta\right)+\boldsymbol{\omega}\times\left(\boldsymbol{\omega}\times\boldsymbol{v}\right)\left(1-\cos\left(\theta\right)\right)\\
+ & =\boldsymbol{v}+\left(\boldsymbol{\omega}\times\boldsymbol{v}\right)\sin\left(\theta\right)+\left[\boldsymbol{\omega}\left(\boldsymbol{\omega}\cdot\boldsymbol{v}\right)-\boldsymbol{v}\left(\boldsymbol{\omega}\cdot\boldsymbol{\omega}\right)\right]\left(1-\cos\left(\theta\right)\right)\\
+ & =\boldsymbol{v}+\left(\boldsymbol{\omega}\times\boldsymbol{v}\right)\sin\left(\theta\right)+\boldsymbol{\omega}\left(\boldsymbol{\omega}\cdot\boldsymbol{v}\right)\left(1-\cos\left(\theta\right)\right)-\boldsymbol{v}\left(1-\cos\left(\theta\right)\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Rodrigues' formula (vector form) 
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{rot}=\boldsymbol{v}\cos\left(\theta\right)+\left(\boldsymbol{\omega}\times\boldsymbol{v}\right)\sin\left(\theta\right)+\boldsymbol{\omega}\left(\boldsymbol{\omega}\cdot\boldsymbol{v}\right)\left(1-\cos\left(\theta\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+Consider the position vector 
+\begin_inset Formula $\mathbf{p}=\left(3,1,1\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+a) Find the position vector after applying a rotation of 
+\begin_inset Formula $30^{\circ}$
+\end_inset
+
+ about 
+\begin_inset Formula $\left(2,1,2\right)$
+\end_inset
+
+ using the vector form of the Rodrigues' formula
+\end_layout
+
+\begin_layout Standard
+b) Verify the result using a rotation matrix explicitly
+\end_layout
+
+\begin_layout Standard
+Solution 
+\end_layout
+
+\begin_layout Standard
+Part a): Rodrigues' formula in vector form:
+\begin_inset Formula 
+\begin{align*}
+\mathbf{p}_{f} & =\mathbf{p}\cos\left(30^{\circ}\right)+\left(\boldsymbol{\omega}\times\mathbf{p}\right)\sin\left(30^{\circ}\right)+\boldsymbol{\omega}\left(\boldsymbol{\omega}\cdot\mathbf{p}\right)\left(1-\cos\left(30^{\circ}\right)\right)\\
+ & =\mathbf{p}\cos\left(30^{\circ}\right)+\left[\boldsymbol{\omega}\times\right]\mathbf{p}\sin\left(30^{\circ}\right)+\boldsymbol{\omega}\left(\boldsymbol{\omega}^{\mathrm{T}}\mathbf{p}\right)\left(1-\cos\left(30^{\circ}\right)\right)\\
+ & =\left[\begin{array}{c}
+3\\
+1\\
+1
+\end{array}\right]\cos\left(30^{\circ}\right)+\dfrac{1}{3}\left[\begin{array}{ccc}
+0 & -2 & 1\\
+2 & 0 & -2\\
+-1 & 2 & 0
+\end{array}\right]\left[\begin{array}{c}
+3\\
+1\\
+1
+\end{array}\right]\sin\left(30^{\circ}\right)+\dfrac{1}{3}\left[\begin{array}{c}
+2\\
+1\\
+2
+\end{array}\right]\left(\dfrac{1}{3}\left[\begin{array}{ccc}
+2 & 1 & 2\end{array}\right]\left[\begin{array}{c}
+3\\
+1\\
+1
+\end{array}\right]\right)\left(1-\cos\left(30^{\circ}\right)\right)\\
+ & =\left[\begin{array}{c}
+3\\
+1\\
+1
+\end{array}\right]\cos\left(30^{\circ}\right)+\dfrac{1}{3}\left[\begin{array}{c}
+-1\\
+4\\
+-1
+\end{array}\right]\sin\left(30^{\circ}\right)+\dfrac{1}{3}\left[\begin{array}{c}
+2\\
+1\\
+2
+\end{array}\right]3\left(1-\cos\left(30^{\circ}\right)\right)=\left[\begin{array}{c}
+2.699\\
+1.667\\
+0.967
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Part b): Using a rotation matrix:
+\end_layout
+
+\begin_layout Standard
+- The rotation matrix was computed in a prior example:
+\begin_inset Formula 
+\[
+\boldsymbol{R}=\left[\begin{array}{ccc}
+0.926 & -0.304 & 0.226\\
+0.363 & 0.881 & -0.304\\
+-0.107 & 0.363 & 0.926
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- The product of the rotation matrix with the given position vector gives:
+\begin_inset Formula 
+\[
+\mathbf{p}_{f}=\left[\begin{array}{ccc}
+0.926 & -0.304 & 0.226\\
+0.363 & 0.881 & -0.304\\
+-0.107 & 0.363 & 0.926
+\end{array}\right]\left[\begin{array}{c}
+3\\
+1\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+2.699\\
+1.667\\
+0.967
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- The result is the same as in part a (within rounding errors)
+\end_layout
+
+\begin_layout Standard
+Lie Algebra: so(3)
+\end_layout
+
+\begin_layout Standard
+The Lie group associated with rotation SO(3) (which defines rotation matrices)
+ has the associated Lie algebra so(3)
+\end_layout
+
+\begin_layout Standard
+Lie algebra so(3):
+\end_layout
+
+\begin_layout Standard
+- It is the tangent space of SO(3) at the identity element
+\end_layout
+
+\begin_layout Standard
+- It represents the angular velocity
+\end_layout
+
+\begin_layout Standard
+- It is given by skew-symmetric matrices
+\end_layout
+
+\begin_layout Standard
+Definition of so(3):
+\begin_inset Formula 
+\[
+so(3)=\left\{ \boldsymbol{S}\in\mathbb{R}^{3\times3}:\boldsymbol{S}^{\mathrm{T}}=-\boldsymbol{S}\right\} \subset\mathbb{R}^{3\times3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ll}
+\text{Action:} & \text{rotate}\\
+ & \text{Multiple operator: Lie group}\\
+\text{Constraint:} & \mathbf{z}^{\ast}\cdot\mathbf{z}=1\\
+\text{Topology:} & \text{unit circle }\mathrm{S}^{1}\\
+\text{Elements} & \mathbf{z}=\cos\left(\theta\right)+\mathbf{i}\sin\left(\theta\right)\\
+\text{Inverse:} & \mathbf{z}^{\ast}\\
+\text{Composition:} & \mathbf{z}_{1}\cdot\mathbf{z}_{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{ll}
+\text{Action:} & \text{rotate}\\
+ & \text{Multiple operator: Lie group}\\
+\text{Constraint:} & \mathbf{R}^{\mathrm{T}}\mathbf{R}=\mathbf{I}\\
+\text{Topology:} & \text{"circle" }\mathrm{SO(2)}\\
+\text{Elements} & \mathbf{R}=\mathbf{I}\cos\left(\theta\right)+[1\times]\sin\left(\theta\right)=\left[\begin{array}{cc}
+\mathrm{c}\theta & -\mathrm{s}\theta\\
+\mathrm{s}\theta & \mathrm{c}\theta
+\end{array}\right]\\
+\text{Inverse:} & \mathbf{R}^{\mathrm{T}}\\
+\text{Composition:} & \mathbf{R}_{1}\cdot\mathbf{R}_{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{l}
+*\ \text{Lie algebra }\mathfrak{so}(3):\\
+\begin{array}{crl}
+\quad & \left[\boldsymbol{\omega}\times\right] & =\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]\in\mathfrak{so}(3)\\
+\quad &  & =\omega_{x}\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right]+\omega_{y}\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right]+\omega_{z}\left[\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]
+\end{array}\\
+*\ \text{Cartesian }\mathbb{R}^{3}\\
+\begin{array}{crl}
+\quad & \boldsymbol{\omega} & =\left[\omega_{x},\omega_{y},\omega_{z}\right]^{\mathrm{T}}\quad\in\mathbb{R}^{3}\\
+\quad &  & =\omega_{x}\left[1,0,0\right]^{\mathrm{T}}+\omega_{y}\left[0,1,0\right]^{\mathrm{T}}+\omega_{z}\left[0,0,1\right]^{\mathrm{T}}
+\end{array}\\
+*\ \text{Isomorphism: }\mathfrak{so}(3)\simeq\mathbb{R}^{3}\\
+\begin{array}{crl}
+\quad & \text{-- Hat:} & \boldsymbol{\omega}^{\wedge}=\left[\boldsymbol{\omega}\times\right]\\
+\quad & \text{-- Vee:} & \boldsymbol{\omega}=\left[\boldsymbol{\omega}\times\right]^{\vee}
+\end{array}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{l}
+*\ \text{Write ODE and integrate :}\\
+\begin{array}{crl}
+\quad & \mathbf{R}^{\mathrm{T}}\dot{\mathbf{R}} & =\left[\omega\times\right]\Rightarrow\dot{\mathbf{R}}=\mathbf{R}\cdot\left[\omega\times\right]\\
+\quad & \mathbf{R}\left(t\right) & =\mathbf{R}_{0}\cdot\exp\left(\left[\omega\times\right]t\right)
+\end{array}\\
+*\ \text{If }\mathbf{R}_{0}=\mathbf{R}\left(0\right)=\mathbf{I}\text{ and }\left[\omega\times\right]t=\left[\theta\times\right]=\left[1\times\right]\cdot\theta\\
+\begin{array}{crl}
+\quad & \mathbf{R}\left(t\right) & =\exp\left(\left[\omega\times\right]t\right)=\exp\left(\left[\theta\times\right]\right)\end{array}\\
+*\ \text{Taylor expansion, with }\left[1\times\right]^{0}=\mathbf{I}\text{ and }\left[1\times\right]^{3}=-\left[1\times\right]\\
+\begin{array}{crl}
+\quad & \exp\left(\left[\theta\times\right]\right) & =\mathbf{I}+\left[1\times\right]\cdot\theta+\left(\left[1\times\right]\cdot\theta\right)^{2}/2!+\left(\left[1\times\right]\cdot\theta\right)^{3}/3!+\cdots\\
+\quad &  & =\mathbf{I}\cdot\left(1-\theta^{3}/3!+\cdots\right)+\left[1\times\right]\cdot\left(\theta-\theta^{2}/2!+\cdots\right)\\
+\quad &  & =\mathbf{I}\cdot\cos\left(\theta\right)+\left[1\times\right]\cdot\sin\left(\theta\right)\\
+\quad &  & =\left[\begin{array}{cc}
+\mathrm{c}\theta & -\mathrm{s}\theta\\
+\mathrm{s}\theta & \mathrm{c}\theta
+\end{array}\right]
+\end{array}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+\text{Plus operator:} & \mathcal{X}\oplus\boldsymbol{\theta} & \triangleq\mathcal{X}\cdot\mathrm{Exp}\left(\boldsymbol{\theta}\right)\\
+\text{Minus operator:} & \mathcal{Y}\ominus\mathcal{X} & \triangleq\mathrm{Log}\left(\mathcal{X}^{-1}\cdot\mathcal{Y}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="11">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Lie group 
+\begin_inset Formula $\mathcal{M},\circ$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+size
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+dim
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Constraint
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\tau}^{\wedge}\in\frak{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\tau}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Comp.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Action
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\end_body
+\end_document

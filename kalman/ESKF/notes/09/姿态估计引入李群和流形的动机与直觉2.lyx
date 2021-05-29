@@ -1,0 +1,785 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+姿态估计与李群和流形
+\begin_inset Newline newline
+\end_inset
+
+收回(retraction)操作的选择
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+在姿态估计的计算过程中，第一个要解决的问题就是，当我们在一段时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+内测量得到角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，得到物体变化的增量角度
+\begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\Delta t$
+\end_inset
+
+，它和物体姿态的变化量
+\begin_inset Formula $\Delta q$
+\end_inset
+
+之间的关系，也就是所谓的映射关系，是什么？看多了书，会发现这种映射关系居然不是唯一的，可以有好几种。
+\end_layout
+
+\begin_layout Standard
+这种映射关系在流形中被称为收回(retraction)操作。在引入流形之后，就会发觉，存在有多种映射关系，其实是我们的选择。流形不只是完美的球面一种，我们相信底
+下的流形是什么样子，我们才选择了什么样的收回(retraction)操作。
+\end_layout
+
+\begin_layout Section
+形象理解映射关系
+\end_layout
+
+\begin_layout Subsection
+单位四元数的形象化
+\end_layout
+
+\begin_layout Standard
+单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+q & =r+x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\\
+ & =r+\mathbf{q}
+\end{align*}
+
+\end_inset
+
+可以表示三维空间的姿态。但是单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+要想用图形表示出来，也是一个困难的事情，因为单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+所在的球面是嵌入
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+空间中的
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面。所以有一种方法是用类似复平面的方式表示(fig2d-20.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-20.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，实数轴做为南北轴。因为单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+表示旋转是两倍覆盖，所以一般选择
+\begin_inset Formula $r\geq0$
+\end_inset
+
+的北半球表示一个三维旋转。另外，图中的角度
+\begin_inset Formula $\theta$
+\end_inset
+
+代表的是
+\begin_inset Formula 
+\[
+\tan\left(\theta\right)=\dfrac{\left\Vert \mathbf{q}\right\Vert }{r}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+映射关系的类型
+\end_layout
+
+\begin_layout Standard
+在参考文献[1-3]这里，流形的收回(retraction)操作所选择指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，或大写指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+的运算为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Exp}\left(\theta\right) & =\exp\left(\left[\theta\times\right]\right)\\
+ & =\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{u}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。在参考文献[4]中，总结了常见的4种：
+\end_layout
+
+\begin_layout Enumerate
+正交投影 (Orthographic, O)
+\end_layout
+
+\begin_layout Enumerate
+Rodrigues 参数 (Rodrigues Parameters, RP)
+\end_layout
+
+\begin_layout Enumerate
+改进型 Rodrigues 参数 (Modified Rodrigues Parameters, MRP) 
+\end_layout
+
+\begin_layout Enumerate
+旋转向量 (Rotation Vector, RV)
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+\sqrt{1-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}/4}\\
+\boldsymbol{\theta}/2
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dfrac{1}{\sqrt{4+\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}}\left(\begin{array}{c}
+2\\
+\boldsymbol{\theta}
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MRP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dfrac{1}{16+\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}\left(\begin{array}{c}
+16-\left\Vert \boldsymbol{\theta}\right\Vert ^{2}\\
+8\boldsymbol{\theta}
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+\cos\left(\boldsymbol{\theta}/2\right)\\
+\left(\boldsymbol{\theta}/\left\Vert \boldsymbol{\theta}\right\Vert \right)\sin\left(\boldsymbol{\theta}/2\right)
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[1]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\begin{array}{c}
+\cos\left(\boldsymbol{\theta}\right)\\
+\left(\boldsymbol{\theta}/\left\Vert \boldsymbol{\theta}\right\Vert \right)\sin\left(\boldsymbol{\theta}\right)
+\end{array}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+前三种是我们所知道的球极平面投影 (stereographic projection){这三种投影分别具体称为正交投影 (Orthographic)、日晷投影
+ (Gnomonic) 和球极平面投影 (Stereographic)}。最后是所谓的等距投影 (Equidistant)。下面我们通过图形理解这些映射。
+\end_layout
+
+\begin_layout Standard
+第一种，正交投影 (Orthographic)，其中
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间在
+\begin_inset Formula $r\in\left[0,1\right]$
+\end_inset
+
+之间截取投影(fig2d-21.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-21.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第二种，Rodrigues 参数 (Rodrigues Parameters, RP)，又称Gibbs向量。这是
+\begin_inset CommandInset href
+LatexCommand href
+name "Dr. F. Landis Markley"
+target "http://www.acsu.buffalo.edu/~johnc/markley/"
+literal "false"
+
+\end_inset
+
+的最爱，因为它是单映射，
+\begin_inset Formula $+q$
+\end_inset
+
+和
+\begin_inset Formula $-q$
+\end_inset
+
+都映射到同一个Gibbs向量，对于同一个旋转来说，这是
+\begin_inset Formula $1:1$
+\end_inset
+
+表示。并且因为
+\begin_inset Formula $\tan\left(\:\right)$
+\end_inset
+
+函数和高斯分布有一点点相像，就是两端有无限长尾。所以(NASA)大佬们的论文里更喜欢选择这个映射。在文献[4]里也偏向采用这种映射。这种映射属于日晷投影
+ (Gnomonic)，
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间位于
+\begin_inset Formula $r=1$
+\end_inset
+
+，通过圆心的两个单位四元数投影到同一个Gibbs向量 (fig2d-22.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-22.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第三种，改进型 Rodrigues 参数 (Modified Rodrigues Parameters, MRP)。这种映射与旋转向量映射有许多共同的特点，包括
+离散跳跃的需求，但又避免了超越函数。这种映射属于球极平面投影 (Stereographic)，
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间位于
+\begin_inset Formula $r=0$
+\end_inset
+
+，
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+的一个半球在三维
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+空间中投射到单位球体的内部，而
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+的另一个半球则投射到单位 
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+−sphere 的外部。(fig2d-23.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-23.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第四种，旋转向量 (Rotation Vector, RV)。实际上就是指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，只是旋量选择
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+。这种映射属于等距投影 (Equidistant)，
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间位于幺元处，并且向量的模长和测地线(geodesic)的弧长是
+\begin_inset Formula $2:1$
+\end_inset
+
+关系(fig2d-24.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-24.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第五种，参考文献[1-3]所选择的指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，实际上和旋转向量 (Rotation Vector, RV)一样，只是旋量选择
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+。这种映射属于等距投影 (Equidistant)，
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间位于幺元处，并且向量的模长和测地线(geodesic)的弧长是
+\begin_inset Formula $1:1$
+\end_inset
+
+关系(fig2d-24.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-25.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+映射关系的选择
+\end_layout
+
+\begin_layout Standard
+同时存在这么多种映射关系，这往往体现了不同理论之间，还有理论和工程之间的差异。
+\end_layout
+
+\begin_layout Standard
+如果说前三种映射关系是第四种的某种近似，因为这四种映射关系在零点附近的小角度情况下数值很接近，但大角度之后就明显不再是球面，如果球面是完美模型，选择前三种映射关
+系可能是因为某种原因，例如选择正交投影 (Orthographic)是因为它可以简单地把单位四元数转换为轴-角向量，选择Rodrigues参数(RP)是因为它是
+单映射，选择改进型Rodrigues参数(MRP)是因为它避免了超越函数的运算，那么第四种映射关系和第五种的差异就是一个
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+的系数的关系。
+\end_layout
+
+\begin_layout Standard
+这个
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+的系数怎么来的呢？首先，因为在工程中IMU的取样间隔时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+很小，所以一般增量角度
+\begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\Delta t$
+\end_inset
+
+都很小，所以都会应用三角函数小角度近似的方法。同时，经过四元数微分方程的启发，也经过工程中的各种摸索，(NASA)大佬们认为计算数值大概是
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+的量级。或者说，假如机体的姿态位于单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+所在的
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面，也就是大家的半径
+\begin_inset Formula $r=1$
+\end_inset
+
+都保持不变，都表示同一个增量角度
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，那么
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+的系数在
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间里就是
+\begin_inset Formula $2$
+\end_inset
+
+倍的放大系数，数值精度会高一点，对变化会更敏感一些，并且原来是在
+\begin_inset Formula $\pi/2$
+\end_inset
+
+处的奇点，被推迟到了
+\begin_inset Formula $\pi$
+\end_inset
+
+处，这可以表示更大的增量旋转。严格地说，大佬们他们各自选择了流形的不同的收回(retraction)操作。一切都是人为选择。
+\end_layout
+
+\begin_layout Standard
+难道就没有一个高下么？在一些论文里，例如在文献[4]中，做过模拟检验，前四种映射关系在数值精度上其实没有一个有特别优势。如果加入第五种映射关系经行对比，我估计结
+果也类似。因为都是在卡尔曼滤波器中采用这些映射关系，而卡尔曼是一个神奇的东西。虽然物理模型有差异，在测量更新阶段的残差增大，那首先影响的是协方差矩阵，接着是卡尔
+曼增益系数，但是最后的状态输出会趋向于类似的稳定数值上，因为测量校正发挥了影响力。最后可能只是内部的协方差矩阵的数量级从
+\begin_inset Formula $10^{-9}$
+\end_inset
+
+变成了
+\begin_inset Formula $10^{-8}$
+\end_inset
+
+，虽然差了一个数量级，但都是一个很小的数值，而且协方差矩阵和卡尔曼增益等比例稳定之后，输出结果也会稳定趋同。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+大佬选啥我跟啥。城门失火，殃及池鱼。神仙打架，小鬼遭殃。最后还得等大佬们吵架吵出一个结果之后我们好跟随。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie theory for the roboticist"
+target "https://www.youtube.com/watch?v=nHOcoIyJj2o"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Joan Solà - Lie theory for the Roboticist"
+target "https://www.youtube.com/watch?v=QR1p0Rabuww"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Kalman Filtering for Attitude Estimation with Quaternions and Concepts from Manifold Theory"
+target "https://www.mdpi.com/1424-8220/19/1/149"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Full-Order Solution to the Attitude Reset Problem for Kalman Filtering of Attitudes"
+target "https://arc.aiaa.org/doi/10.2514/1.G004134"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
