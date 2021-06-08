@@ -1,0 +1,5117 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "刚体运动与欧几里德群"
+\pdf_author "Vijay Kumar"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "刚体运动与欧几里德群"
+target "https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Vijay Kumar"
+target "http://www.seas.upenn.edu/~kumar/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在上一章中，我们讨论了三维空间中的点和线，它们的表示，以及它们在刚体作用下的变换。在本章中，我们将发展必要的基本概念，以了解刚体运动，并分析瞬时运动和有限螺杆运
+动。刚体运动就是刚体位移，它是时间的函数。运动的一阶导数将给我们一个刚体速度的表达式，这将使我们得到瞬时螺旋的概念。同样地，高阶导数将产生加速度和急动度的表达式
+。
+\end_layout
+
+\begin_layout Section
+欧几里德群
+\end_layout
+
+\begin_layout Standard
+在第二章中，我们看到刚体
+\begin_inset Formula $B$
+\end_inset
+
+的位移可以在参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中描述，通过在
+\begin_inset Formula $B$
+\end_inset
+
+上建立参考系
+\begin_inset Formula $\{B\}$
+\end_inset
+
+，并通过齐次变换矩阵描述
+\begin_inset Formula $\{B\}$
+\end_inset
+
+在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的位置和方向：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{A}_{B}=\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+是参考帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的原点
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+的位置向量，并且
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+是将
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中的向量的分量变换成
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的分量的旋转矩阵。回想第二章，两个位移的合成，从
+\begin_inset Formula $\{A\}$
+\end_inset
+
+到
+\begin_inset Formula $\{B\}$
+\end_inset
+
+，从
+\begin_inset Formula $\{B\}$
+\end_inset
+
+到
+\begin_inset Formula $\{C\}$
+\end_inset
+
+，是通过
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{A}_{C}$
+\end_inset
+
+的矩阵乘法实现的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+^{A}\mathbf{A}_{C} & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{C} & ^{A}\mathbf{r}^{O^{\prime\prime}}\\
+\hline \mathbf{0} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0} & 1
+\end{array}\right]\times\left[\begin{array}{c|c}
+^{B}\mathbf{R}_{C} & ^{B}\mathbf{r}^{O^{\prime\prime}}\\
+\hline \mathbf{0} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B}\times{}^{B}\mathbf{R}_{C} & ^{A}\mathbf{R}_{B}\times{}^{B}\mathbf{r}^{O^{\prime\prime}}+{}^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0} & 1
+\end{array}\right]
+\end{array}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中“
+\begin_inset Formula $\times$
+\end_inset
+
+” 指矩阵(和向量)之间的标准乘法操作。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所有位移的集合或具有上述组合规则的所有此类矩阵的集合称为
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+，三维刚体位移的特殊欧几里德群(
+\shape italic
+special Euclidean group
+\shape default
+)：
+\begin_inset Formula 
+\begin{equation}
+\mathrm{SE}(3)=\left\{ \mathbf{A}\mid\mathbf{A}=\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{r}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right],\quad\mathbf{R}\in\mathbb{R}^{3\times3},\mathbf{r}\in\mathbb{R}^{3},\mathbf{R}^{T}\mathbf{R}=\mathbf{R}\mathbf{R}^{T}=\mathbf{I}\right\} 
+\end{equation}
+
+\end_inset
+
+如果我们考虑这组由矩阵乘法定义的二元操作的矩阵集合，很容易看出
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+满足代数群(
+\shape italic
+algebraic group
+\shape default
+)的元素必须满足的四个公理：
+\end_layout
+
+\begin_layout Enumerate
+在二元操作下，集合是封闭的。换句话说，如果
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{B}$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+中的任意两个矩阵，
+\begin_inset Formula $\mathbf{AB}\in\mathrm{SE}(3)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+二元操作是结合的。换句话说，如果
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{B}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+是任意三个矩阵
+\begin_inset Formula $\in\mathrm{SE}(3)$
+\end_inset
+
+，则
+\begin_inset Formula $(\mathbf{AB})\mathbf{C}=\mathbf{A}(\mathbf{BC})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+对于每个元素
+\begin_inset Formula $\mathbf{A}\in\mathrm{SE}(3)$
+\end_inset
+
+，有一个由幺元元素给出的
+\begin_inset Formula $4\times4$
+\end_inset
+
+单位矩阵，
+\begin_inset Formula $\mathbf{I}\in\mathrm{SE}(3)$
+\end_inset
+
+，使得
+\begin_inset Formula $\mathbf{A}\mathbf{I}=\mathbf{A}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+对于每个元素
+\begin_inset Formula $\mathbf{A}\in\mathrm{SE}(3)$
+\end_inset
+
+，有一个幺元逆，
+\begin_inset Formula $\mathbf{A}^{-1}\in\mathrm{SE}(3)$
+\end_inset
+
+，使得
+\begin_inset Formula $\mathbf{A}\mathbf{A}^{-1}=\mathbf{I}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以很容易地证明：(a)方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的二元操作是连续操作 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+中任意两个元素的乘积是这两个元素的连续函数；(b)
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+中任一元素的逆是该元素的连续函数。因此
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+是一个连续群(
+\shape italic
+continuous group
+\shape default
+)。我们将证明
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的任何元素的开集在
+\begin_inset Formula $\mathbf{R}^{6}$
+\end_inset
+
+的开集上都有
+\begin_inset Formula $1-1$
+\end_inset
+
+映射。换句话说，
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+是一个可微流形(
+\shape italic
+differentiable manifold
+\shape default
+)。作为可微流形的群被称为李群(
+\shape italic
+Lie group
+\shape default
+)，这是著名数学家 Sophus Lie (1842-1899) 提出的。由于
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+是一个李群(
+\shape italic
+Lie group
+\shape default
+)，它有许多有趣的性质，这在螺杆系统理论中是有意义的。
+\end_layout
+
+\begin_layout Standard
+除了三维空间中的特殊欧几里德群，还有许多其它群对刚体运动学感兴趣。它们都是
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的子群(
+\shape italic
+subgroup
+\shape default
+)。群的子群由群的元素集合组成，这些元素本身构成一个具有相同二元操作的群。我们在表1中列出了一些重要的子群及其在运动学中的意义，并在下面描述了它们的性质。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的重要子群
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="middle" width="60mm">
+<column alignment="center" valignment="middle" width="40mm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+子群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+定义
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+意义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+三维旋转群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有适当的正交矩阵的集合。
+\begin_inset Newline linebreak
+\end_inset
+
+
+\begin_inset Formula ${\scriptstyle \mathrm{SO}(3)=\left\{ \mathbf{R}\mid\mathbf{R}\in\mathbb{R}^{3\times3},\mathbf{R}^{T}\mathbf{R}=\mathbf{R}\mathbf{R}^{T}=\mathbf{I}\right\} }$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有球形位移。或由球关节(
+\begin_inset Formula $S$
+\end_inset
+
+-pair)产生的所有位移集合。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+二维特殊欧氏群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有
+\begin_inset Formula $3\times3$
+\end_inset
+
+并有如下结构的矩阵集合。
+\begin_inset Newline linebreak
+\end_inset
+
+
+\begin_inset Formula ${\scriptstyle \left[\begin{array}{ccc}
+\cos\theta & \sin\theta & r_{x}\\
+-\sin\theta & \cos\theta & r_{y}\\
+0 & 0 & 1
+\end{array}\right]}$
+\end_inset
+
+
+\begin_inset Newline linebreak
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+，
+\begin_inset Formula $r_{x}$
+\end_inset
+
+和
+\begin_inset Formula $r_{y}$
+\end_inset
+
+为实数。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有平面位移。或平面对(
+\begin_inset Formula $E$
+\end_inset
+
+-pair)产生的位移集合。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+二维旋转群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有
+\begin_inset Formula $2\times2$
+\end_inset
+
+适当的正交矩阵的集合。它们有结构
+\begin_inset Newline linebreak
+\end_inset
+
+
+\begin_inset Formula ${\scriptstyle \left[\begin{array}{cc}
+\cos\theta & \sin\theta\\
+-\sin\theta & \cos\theta
+\end{array}\right]}$
+\end_inset
+
+
+\begin_inset Newline linebreak
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+为实数。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+平面内的所有旋转，或由单个旋转关节(
+\begin_inset Formula $R$
+\end_inset
+
+-pair)产生的所有位移集合。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+维平移群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{T}(n)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+所有
+\begin_inset Formula $n\times1$
+\end_inset
+
+实向量的集合，向量加法作为二元操作。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+维中的所有平移。
+\begin_inset Formula $n=2$
+\end_inset
+
+表示平面位移，
+\begin_inset Formula $n=3$
+\end_inset
+
+表示空间位移。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+维平移群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{T}(1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+以加法作为二元操作的所有实数的集合。
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+平行于一个轴的所有平移，或可由单个平移关节(
+\begin_inset Formula $P$
+\end_inset
+
+-pair)生成的所有位移集合。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+圆柱位移群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula ${\scriptstyle \mathrm{SO}(2)\times\mathrm{T}(1)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{T}(1)$
+\end_inset
+
+的笛卡尔乘积
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+平面内的所有旋转和沿垂直于平面的轴的平移，或由圆柱关节(
+\begin_inset Formula $C$
+\end_inset
+
+-pair)产生的所有位移集合。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+螺杆位移群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{H}(1)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的一个单参数子群
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+螺旋关节(
+\begin_inset Formula $H$
+\end_inset
+
+-pair)产生的所有位移。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+旋转群
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $B$
+\end_inset
+
+的一个点总是固定在帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中时，一个刚体
+\begin_inset Formula $B$
+\end_inset
+
+被称为相对于另一个刚体
+\begin_inset Formula $A$
+\end_inset
+
+旋转。附加帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+，使其原点
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+位于固定点。在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的齐次变换中，向量
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+等于零。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B} & \mathbf{0}_{3\times1}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+所有这些位移的集合，也被称为球面位移，可以很容易地看作
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的子群。
+\end_layout
+
+\begin_layout Standard
+如果我们组合两个旋转，
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{A}_{C}$
+\end_inset
+
+，乘积为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{A}_{B}\times{}^{B}\mathbf{A}_{C} & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B} & \mathbf{0}_{3\times1}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\times\left[\begin{array}{c|c}
+^{B}\mathbf{R}_{C} & \mathbf{0}_{3\times1}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B}\times{}^{B}\mathbf{R}_{C} & \mathbf{0}_{3\times1}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+注意，只有齐次变换矩阵的
+\begin_inset Formula $3\times3$
+\end_inset
+
+子矩阵在描述旋转中起作用。后面，将
+\begin_inset Formula $4\times4$
+\end_inset
+
+齐次变换矩阵相乘的二元操作简化为将相应的
+\begin_inset Formula $3\times3$
+\end_inset
+
+子矩阵相乘的二元操作。因此，我们可以简单地使用
+\begin_inset Formula $3\times3$
+\end_inset
+
+旋转矩阵来表示球面位移。这个子群，称为三维特殊正交群，或者简单地说
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{SO}(3)=\left\{ \mathbf{R}\mid\mathbf{R}\in\mathbb{R}^{3\times3},\mathbf{R}^{T}\mathbf{R}=\mathbf{R}\mathbf{R}^{T}=\mathbf{I}\right\} 
+\end{equation}
+
+\end_inset
+
+形容词“特殊的(special)”指的是排除行列式为负的正交矩阵。
+\end_layout
+
+\begin_layout Standard
+众所周知，任何旋转都可以分解为三个有限的连续旋转，每个旋转围绕一个不同于前一个旋转的轴。这三个旋转角，称为欧拉角，完全描述了给定的旋转。基本思路如下。如果我们考
+虑任意两个参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+，以及旋转矩阵
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+，我们可以构造两个中间参考系
+\begin_inset Formula $\{M\}$
+\end_inset
+
+和
+\begin_inset Formula $\{N\}$
+\end_inset
+
+，这样
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{R}_{B}=\,{}^{A}\mathbf{R}_{M}\times{}^{M}\mathbf{R}_{N}\times{}^{N}\mathbf{R}_{B}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Enumerate
+从
+\begin_inset Formula $\{A\}$
+\end_inset
+
+到
+\begin_inset Formula $\{M\}$
+\end_inset
+
+的旋转是绕
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的
+\begin_inset Formula $x$
+\end_inset
+
+轴旋转
+\begin_inset Formula $\psi$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Enumerate
+从
+\begin_inset Formula $\{M\}$
+\end_inset
+
+到
+\begin_inset Formula $\{N\}$
+\end_inset
+
+的旋转是绕
+\begin_inset Formula $\{M\}$
+\end_inset
+
+的
+\begin_inset Formula $y$
+\end_inset
+
+轴旋转
+\begin_inset Formula $\phi$
+\end_inset
+
+；并且
+\end_layout
+
+\begin_layout Enumerate
+从
+\begin_inset Formula $\{N\}$
+\end_inset
+
+到
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的旋转是绕
+\begin_inset Formula $\{N\}$
+\end_inset
+
+的
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：请注意旋转矩阵里
+\begin_inset Formula $\sin\theta$
+\end_inset
+
+前面的'
+\begin_inset Formula $-$
+\end_inset
+
+'号的位置。作者在这里多次变换采用左手坐标系和右手坐标系，所以'
+\begin_inset Formula $-$
+\end_inset
+
+'号位置相反。原文如此，未作修改。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{R}_{B}=\left[\begin{array}{ccc}
+R_{11} & R_{12} & R_{13}\\
+R_{21} & R_{22} & R_{23}\\
+R_{31} & R_{32} & R_{33}
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\psi & -\sin\psi\\
+0 & \sin\psi & \cos\psi
+\end{array}\right]\times\left[\begin{array}{ccc}
+\cos\phi & 0 & \sin\phi\\
+0 & 1 & 0\\
+-\sin\phi & 0 & \cos\phi
+\end{array}\right]\times\left[\begin{array}{ccc}
+\cos\theta & -\sin\theta & 0\\
+\sin\theta & \cos\theta & 0\\
+0 & 0 & 1
+\end{array}\right]\label{eq:5}
+\end{equation}
+
+\end_inset
+
+因此，任何旋转都可以被看作是这三个元素旋转的组合，除了欧拉角表示是奇异
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+通过显式写出方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的右侧并确定欧拉角不唯一的点，可以很容易地找到这些奇异点。注意，我们为欧拉角选择了所谓的
+\begin_inset Formula $x-y-z$
+\end_inset
+
+表示法，其中第一个绕
+\begin_inset Formula $x$
+\end_inset
+
+轴旋转，第二个绕
+\begin_inset Formula $y$
+\end_inset
+
+轴旋转，第三个绕
+\begin_inset Formula $z$
+\end_inset
+
+轴旋转。还有其它11种欧拉角表示法的选择，可以通过选择三个元素旋转的不同轴来导出。对于任何旋转，总是有可能找到一个合适的非奇异欧拉角表示。
+\end_layout
+
+\end_inset
+
+的旋转。这又意味着在
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+中开邻域中的所有旋转都可以用三个实数(坐标)来描述。稍加研究，就可以证明存在一个从
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+到
+\begin_inset Formula $\mathbf{R}^{3}$
+\end_inset
+
+中的一个开集的
+\begin_inset Formula $1-1$
+\end_inset
+
+连续映射。这使
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+具有三维可微流形的结构，因此也是一个李群。
+\end_layout
+
+\begin_layout Standard
+平面中的旋转，或更精确地说围绕垂直于平面的轴旋转，形成
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的子群，因此构成
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的子群。要查看此情况，请考虑这旋转集合的标准形式，即围绕
+\begin_inset Formula $z$
+\end_inset
+
+轴的旋转。换句话说，将刚体
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+与一个旋转关节连接，其旋转轴为图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:01"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的
+\begin_inset Formula $z$
+\end_inset
+
+轴。齐次变换矩阵的形式为：
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{cccc}
+\cos\theta & \sin\theta & 0 & 0\\
+-\sin\theta & \cos\theta & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转角度。如果我们分别通过
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+组合两个这样的旋转，
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{A}_{C}$
+\end_inset
+
+，乘积表示为：
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{A}_{B}\times{}^{B}\mathbf{A}_{C} & =\left[\begin{array}{cccc}
+\cos\theta_{1} & \sin\theta_{1} & 0 & 0\\
+-\sin\theta_{1} & \cos\theta_{1} & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\times\left[\begin{array}{cccc}
+\cos\theta_{2} & \sin\theta_{2} & 0 & 0\\
+-\sin\theta_{2} & \cos\theta_{2} & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\cos\left(\theta_{1}+\theta_{2}\right) & \sin\left(\theta_{1}+\theta_{2}\right) & 0 & 0\\
+-\sin\left(\theta_{1}+\theta_{2}\right) & \cos\left(\theta_{1}+\theta_{2}\right) & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_01.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:01"
+
+\end_inset
+
+刚体从初始位置和方向到最终位置和方向的刚体位移。机体固连参照系在初始位置和方向上与
+\begin_inset Formula $\{A\}$
+\end_inset
+
+重合，最终位置和方向
+\begin_inset Formula $\{B\}$
+\end_inset
+
+。附着到刚体的点
+\begin_inset Formula $P$
+\end_inset
+
+，从
+\begin_inset Formula $P$
+\end_inset
+
+移动到
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+这个子群中的所有矩阵都是同一个实变量
+\begin_inset Formula $\theta$
+\end_inset
+
+的周期函数，给出为：
+\begin_inset Formula 
+\[
+\mathbf{R}\left(\theta\right)=\left[\begin{array}{ccc}
+\cos\theta & -\sin\theta & 0\\
+\sin\theta & \cos\theta & 0\\
+0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+这个子群叫做
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+。此外，由于
+\begin_inset Formula $\mathbf{R}\left(\theta_{1}\right)\times\mathbf{R}\left(\theta_{2}\right)=\mathbf{R}\left(\theta_{1}+\theta_{2}\right)$
+\end_inset
+
+，我们可以认为该子群是局部同构
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+同构是局部的，因为从
+\begin_inset Formula $\mathbf{R}^{1}$
+\end_inset
+
+到
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+的映射是多对一的。严格地说，子群同构于复平面上以乘法为群操作的单位圆。
+\end_layout
+
+\end_inset
+
+于
+\begin_inset Formula $\mathbf{R}^{1}$
+\end_inset
+
+的，二元操作为加法。
+\end_layout
+
+\begin_layout Subsection
+平移群
+\end_layout
+
+\begin_layout Standard
+一个刚体
+\begin_inset Formula $B$
+\end_inset
+
+被称为相对于另一个刚体
+\begin_inset Formula $A$
+\end_inset
+
+平移，如果我们可以将参考系附加到
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+上，它们总是平行的。旋转矩阵
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+等于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中齐次变换的幺元。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{c|c}
+\mathbf{I}_{3\times3} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+所有这些齐次变换矩阵的集合是三维平移群，用
+\begin_inset Formula $\mathrm{T}(3)$
+\end_inset
+
+表示。
+\end_layout
+
+\begin_layout Standard
+如果我们将两个平移，
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{A}_{C}$
+\end_inset
+
+，进行组合，则乘积为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{A}_{B}\times{}^{B}\mathbf{A}_{C} & =\left[\begin{array}{c|c}
+\mathbf{I}_{3\times3} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\times\left[\begin{array}{c|c}
+\mathbf{I}_{3\times3} & ^{B}\mathbf{r}^{O^{\prime\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{I}_{3\times3} & ^{A}\mathbf{r}^{O^{\prime}}+{}^{B}\mathbf{r}^{O^{\prime\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+注意，只有齐次变换矩阵的
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量部分在描述平移时起作用。因此，我们可以把
+\begin_inset Formula $\mathrm{T}(3)$
+\end_inset
+
+的一个元素简单地看作一个
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+。由于两个平移的组合是通过简单地将两个对应的
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{r}^{O^{\prime\prime}}$
+\end_inset
+
+相加得到的，因此我们可以将子群
+\begin_inset Formula $\mathrm{T}(3)$
+\end_inset
+
+定义为实向量空间
+\begin_inset Formula $\mathbf{R}^{3}$
+\end_inset
+
+，二元操作是向量相加。
+\end_layout
+
+\begin_layout Standard
+同样，我们可以分别描述
+\begin_inset Formula $\mathrm{T}(3)$
+\end_inset
+
+的两个子群，
+\begin_inset Formula $\mathrm{T}(1)$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{T}(2)$
+\end_inset
+
+，即一维和二维的平移群。因为它们是
+\begin_inset Formula $\mathrm{T}(3)$
+\end_inset
+
+的子群，所以它们也是
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的子群。值得注意的是，
+\begin_inset Formula $\mathrm{T}(1)$
+\end_inset
+
+由沿轴的所有平移组成，这正是通过将
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+与单个平移关节连接而产生的位移集合。
+\end_layout
+
+\begin_layout Subsection
+二维特殊欧几里德群
+\end_layout
+
+\begin_layout Standard
+如果我们考虑平面上的所有旋转和平移，我们就得到了平面运动学中研究的所有位移的集合。这些也是
+\shape italic
+Ebene
+\shape default
+-pair产生的位移，平面
+\begin_inset Formula $E$
+\end_inset
+
+-pair。如果我们让刚体
+\begin_inset Formula $B$
+\end_inset
+
+沿
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴平移，并绕
+\begin_inset Formula $z$
+\end_inset
+
+轴相对于帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+旋转，我们得到如下形式的齐次变换矩阵的典型集合：
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{cccc}
+\cos\theta & \sin\theta & 0 & ^{A}r_{x}^{O^{\prime}}\\
+-\sin\theta & \cos\theta & 0 & ^{A}r_{y}^{O^{\prime}}\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转角，
+\begin_inset Formula $^{A}r_{x}^{O^{\prime}}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}r_{y}^{O^{\prime}}$
+\end_inset
+
+是原点
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+平移的两个分量。如果我们组合两个这样的位移，
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\mathbf{A}_{C}$
+\end_inset
+
+，其乘积为：
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{A}_{B}\times{}^{B}\mathbf{A}_{C} & =\left[\begin{array}{cccc}
+\cos\theta_{1} & \sin\theta_{1} & 0 & ^{A}r_{x}^{O^{\prime}}\\
+-\sin\theta_{1} & \cos\theta_{1} & 0 & ^{A}r_{y}^{O^{\prime}}\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\times\left[\begin{array}{cccc}
+\cos\theta_{2} & \sin\theta_{2} & 0 & ^{B}r_{x}^{O^{\prime\prime}}\\
+-\sin\theta_{2} & \cos\theta_{2} & 0 & ^{B}r_{y}^{O^{\prime\prime}}\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\cos\left(\theta_{1}+\theta_{2}\right) & \sin\left(\theta_{1}+\theta_{2}\right) & 0 & ^{A}r_{x}^{O^{\prime}}+{}^{B}r_{x}^{O^{\prime\prime}}\cos\theta_{1}+{}^{B}r_{y}^{O^{\prime\prime}}\sin\theta_{1}\\
+-\sin\left(\theta_{1}+\theta_{2}\right) & \cos\left(\theta_{1}+\theta_{2}\right) & 0 & ^{A}r_{y}^{O^{\prime}}-{}^{B}r_{x}^{O^{\prime\prime}}\sin\theta_{1}+{}^{B}r_{y}^{O^{\prime\prime}}\cos\theta_{1}\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+由于矩阵集合可以连续地被三个变量
+\begin_inset Formula $\theta$
+\end_inset
+
+、
+\begin_inset Formula $^{A}r_{x}^{O^{\prime}}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}r_{y}^{O^{\prime}}$
+\end_inset
+
+所参数化，所以
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+是一个可微的三维流形。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+中的单参数子群
+\end_layout
+
+\begin_layout Standard
+圆柱运动群是指cylindrical pair或C-pair所允许的运动群。如果我们让刚体
+\begin_inset Formula $B$
+\end_inset
+
+相对于帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+沿
+\begin_inset Formula $z$
+\end_inset
+
+轴平移和旋转，我们得到如下形式的齐次变换矩阵的典型集合：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{cccc}
+\cos\theta & \sin\theta & 0 & 0\\
+-\sin\theta & \cos\theta & 0 & 0\\
+0 & 0 & 1 & k\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转角度，
+\begin_inset Formula $k$
+\end_inset
+
+是平移。这些矩阵的集合由这两个变量连续参数化。因此，这个子群是一个二维李群。实际上，只不过是笛卡尔乘积
+\begin_inset Formula $\mathrm{SO}(2)\times\mathrm{T}(1)$
+\end_inset
+
+。从物理上讲，这意味着我们可以通过沿同一轴线(以任何顺序)排列旋转关节和平移关节来实现圆柱关节。
+\end_layout
+
+\begin_layout Standard
+一个一维的子群通过耦合平移和旋转而得到，因此它们是成比例的。典型齐次变换矩阵的形式如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}=\left[\begin{array}{cccc}
+\cos\theta & \sin\theta & 0 & 0\\
+-\sin\theta & \cos\theta & 0 & 0\\
+0 & 0 & 1 & h\theta\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $h$
+\end_inset
+
+是一个标量常数，称为螺距(pitch)。因为该位移涉及旋转和与旋转线性耦合的同轴平移，所以这种位移称为螺杆位移(
+\shape italic
+screw displacement
+\shape default
+)。它正是由螺旋关节(
+\shape italic
+helical pair
+\shape default
+)或
+\begin_inset Formula $H$
+\end_inset
+
+-pair产生的位移。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{A}_{B}\times{}^{B}\mathbf{A}_{C} & =\left[\begin{array}{cccc}
+\cos\theta_{1} & \sin\theta_{1} & 0 & 0\\
+-\sin\theta_{1} & \cos\theta_{1} & 0 & 0\\
+0 & 0 & 1 & h\theta_{1}\\
+0 & 0 & 0 & 1
+\end{array}\right]\times\left[\begin{array}{cccc}
+\cos\theta_{2} & \sin\theta_{2} & 0 & 0\\
+-\sin\theta_{2} & \cos\theta_{2} & 0 & 0\\
+0 & 0 & 1 & h\theta_{2}\\
+0 & 0 & 0 & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\cos\left(\theta_{1}+\theta_{2}\right) & \sin\left(\theta_{1}+\theta_{2}\right) & 0 & 0\\
+-\sin\left(\theta_{1}+\theta_{2}\right) & \cos\left(\theta_{1}+\theta_{2}\right) & 0 & 0\\
+0 & 0 & 1 & h\left(\theta_{1}+\theta_{2}\right)\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+所有关于
+\begin_inset Formula $z$
+\end_inset
+
+轴的螺杆位移的集合可以用一个矩阵函数
+\begin_inset Formula $\mathbf{A}\left(\theta\right)$
+\end_inset
+
+来描述，其属性为
+\begin_inset Formula $\mathbf{A}\left(\theta_{1}\right)\times\mathbf{A}\left(\theta_{2}\right)=\mathbf{A}\left(\theta_{1}+\theta_{2}\right)$
+\end_inset
+
+。因此，这个一维子群与具有二元加法操作的集合
+\begin_inset Formula $\mathbf{R}^{1}$
+\end_inset
+
+是同构的。这样的一维子群被称为单参数子群(
+\shape italic
+one-parameter subgroups
+\shape default
+)，正如我们将在后面看到的，它们具有重要的几何学意义。
+\end_layout
+
+\begin_layout Section
+速度分析
+\end_layout
+
+\begin_layout Subsection
+扭转(twist)
+\end_layout
+
+\begin_layout Standard
+我们研究刚体
+\begin_inset Formula $B$
+\end_inset
+
+在附着于刚体
+\begin_inset Formula $A$
+\end_inset
+
+的参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的运动。出于所有实际目的，
+\begin_inset Formula $A$
+\end_inset
+
+可以被认为是一个固定的刚体，因此
+\begin_inset Formula $\{A\}$
+\end_inset
+
+可以被认为是惯性系或绝对系。我们选择
+\begin_inset Formula $\{A\}$
+\end_inset
+
+作为坐标系，在某个初始时间
+\begin_inset Formula $t_{0}$
+\end_inset
+
+，与机体固连的参考坐标系重合。我们考虑在时间
+\begin_inset Formula $t$
+\end_inset
+
+时，机体固连的参考系在其当前位置和方向
+\begin_inset Formula $\{B\}$
+\end_inset
+
+。齐次变换矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}\left(t\right)$
+\end_inset
+
+是时间的函数，旋转矩阵
+\begin_inset Formula $^{A}\mathbf{R}_{B}\left(t\right)$
+\end_inset
+
+和平移向量
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}\left(t\right)$
+\end_inset
+
+也是时间的函数。
+\end_layout
+
+\begin_layout Standard
+我们像以前一样，考虑一个与刚体相连的一般点
+\begin_inset Formula $P$
+\end_inset
+
+。换句话说，
+\begin_inset Formula $^{A}\mathbf{r}^{P}\left(t\right)$
+\end_inset
+
+是时间的函数，但
+\begin_inset Formula $^{B}\mathbf{r}^{P}\left(t\right)$
+\end_inset
+
+是一个常数，等于
+\begin_inset Formula $^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+。通过微分参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的位置向量
+\begin_inset Formula $^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+获得参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中所见刚体
+\begin_inset Formula $B$
+\end_inset
+
+上点
+\begin_inset Formula $P$
+\end_inset
+
+的速度：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{v}^{P}\left(t\right)=\dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{r}^{P}\left(t\right)\right)={}^{A}\dot{\mathbf{r}}^{P}\left(t\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{\mathbf{a}}$
+\end_inset
+
+表示参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的微分。
+\end_layout
+
+\begin_layout Standard
+速度
+\begin_inset Formula $^{A}\mathbf{v}^{P}$
+\end_inset
+
+通过写出位置向量的方程得到，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right] & =^{A}\mathbf{A}_{B}\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+\hline 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B}\left(t\right) & ^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+\hline 1
+\end{array}\right]
+\end{array}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+并对其进行时间上的微分：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right] & =^{A}\dot{\mathbf{A}}_{B}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+\hline 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{R}_{B}\left(t\right)\right) & \dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+\hline 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中代入
+\begin_inset Formula $^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+，我们得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right] & =\,{}^{A}\dot{\mathbf{A}}_{B}\left[^{A}\mathbf{A}_{B}\right]^{-1}\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\dot{\mathbf{R}}_{B}\left(t\right) & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\left[\begin{array}{c|c}
+\left[^{A}\mathbf{R}_{B}\left(t\right)\right]^{\mathrm{T}} & -\left[^{A}\mathbf{R}_{B}\left(t\right)\right]^{\mathrm{T}}{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left[^{A}\mathbf{R}_{B}\left(t\right)\right]^{\mathrm{T}} & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)-\left[^{A}\mathbf{R}_{B}\left(t\right)\right]^{\mathrm{T}}{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right]
+\end{array}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+因此，通过将参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中点
+\begin_inset Formula $P$
+\end_inset
+
+的位置向量与矩阵
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+预乘，可以得到
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中刚体
+\begin_inset Formula $B$
+\end_inset
+
+上任意点
+\begin_inset Formula $P$
+\end_inset
+
+的速度，
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+\hline 1
+\end{array}\right]=\left[^{A}\mathbf{T}_{B}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+\hline 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{T}_{B}=\,{}^{A}\dot{\mathbf{A}}_{B}\left[^{A}\mathbf{A}_{B}\right]^{-1}=\left[\begin{array}{c|c}
+^{A}\boldsymbol{\Omega}_{B} & ^{A}\mathbf{v}^{\hat{O}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]\label{eq:9}
+\end{equation}
+
+\end_inset
+
+并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}\boldsymbol{\Omega}_{B} & =\,{}^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left[^{A}\mathbf{R}_{B}\left(t\right)\right]^{\mathrm{T}}\\
+^{A}\mathbf{v}^{\hat{O}} & =\,{}^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)-{}^{A}\boldsymbol{\Omega}_{B}\,{}^{A}\mathbf{r}^{O^{\prime}}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+是刚体
+\begin_inset Formula $B$
+\end_inset
+
+上的一个点，我们很快就会把它确定为与
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的原点瞬时重合的点。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵
+\begin_inset Formula $^{A}\boldsymbol{\Omega}_{B}$
+\end_inset
+
+很容易看出是斜对称的。因为
+\begin_inset Formula $^{A}\mathbf{R}_{B}\left[^{A}\mathbf{R}_{B}\right]^{\mathrm{T}}$
+\end_inset
+
+是单位矩阵，它的时间导数是零矩阵，这意味着
+\begin_inset Formula 
+\[
+^{A}\dot{\mathbf{R}}_{B}\left[^{A}\mathbf{R}_{B}\right]^{\mathrm{T}}+{}^{A}\mathbf{R}_{B}\left[^{A}\dot{\mathbf{R}}_{B}\right]^{\mathrm{T}}=\mathbf{0}
+\]
+
+\end_inset
+
+或者，
+\begin_inset Formula 
+\[
+^{A}\boldsymbol{\Omega}_{B}+\left[^{A}\boldsymbol{\Omega}_{B}\right]^{\mathrm{T}}=\mathbf{0}
+\]
+
+\end_inset
+
+因此
+\begin_inset Formula $^{A}\boldsymbol{\Omega}_{B}\left(t\right)$
+\end_inset
+
+是斜对称矩阵算子，其形式为：
+\begin_inset Formula 
+\[
+^{A}\boldsymbol{\Omega}_{B}=\left[\begin{array}{ccc}
+0 & -\omega_{3} & \omega_{2}\\
+\omega_{3} & 0 & -\omega_{1}\\
+-\omega_{2} & \omega_{1} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}=\left[\omega_{1},\omega_{2},\omega_{3}\right]^{\mathrm{T}}$
+\end_inset
+
+是与矩阵算子相关的
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量。
+\end_layout
+
+\begin_layout Standard
+如果我们把
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的球面运动(
+\shape italic
+spherical motion
+\shape default
+)作为特例，我们可以选择
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的原点与
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的原点重合，那么这个算子的物理意义就会立即显现出来。在这种特殊情况下，
+\begin_inset Formula 
+\[
+^{A}\mathbf{r}^{O^{\prime}}=\mathbf{0},\quad{}^{A}\dot{\mathbf{r}}^{O^{\prime}},
+\]
+
+\end_inset
+
+并且方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出了结果，
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{v}^{P}\left(t\right) & =\,{}^{A}\boldsymbol{\Omega}_{B}\,{}^{A}\mathbf{r}^{P}\\
+ & =\,{}^{A}\boldsymbol{\omega}_{B}\times{}^{A}\mathbf{r}^{P},
+\end{align*}
+
+\end_inset
+
+这意味着向量
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+必须是刚体
+\begin_inset Formula $B$
+\end_inset
+
+在参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的角速度向量。矩阵
+\begin_inset Formula $^{A}\boldsymbol{\Omega}_{B}$
+\end_inset
+
+被称为刚体
+\begin_inset Formula $B$
+\end_inset
+
+在参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+值得强调的是，
+\begin_inset Formula $^{A}\mathbf{r}^{P}$
+\end_inset
+
+、
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+、
+\begin_inset Formula $^{A}\mathbf{r}^{P}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}\boldsymbol{\Omega}_{B}$
+\end_inset
+
+是参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中物理量的分量。
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的选择有些随意，时间
+\begin_inset Formula $t_{0}$
+\end_inset
+
+的选择也是如此。这些分量本身取决于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:02"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中坐标系
+\begin_inset Formula $O-x-y-z$
+\end_inset
+
+的精确选择。
+\end_layout
+
+\end_inset
+
+中的角速度矩阵(
+\shape italic
+angular velocity matrix
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_02.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:02"
+
+\end_inset
+
+刚体
+\begin_inset Formula $B$
+\end_inset
+
+的运动，从帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+看。机体固定参考系在时刻
+\begin_inset Formula $t_{0}$
+\end_inset
+
+在初始位置和方向上与
+\begin_inset Formula $\{A\}$
+\end_inset
+
+重合，并且在时刻
+\begin_inset Formula $t$
+\end_inset
+
+在当前位置和方向上与
+\begin_inset Formula $\{B\}$
+\end_inset
+
+重合。点
+\begin_inset Formula $P$
+\end_inset
+
+与刚体相连。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一旦我们看到
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+是刚体
+\begin_inset Formula $B$
+\end_inset
+
+在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的角速度向量，我们就会发现
+\begin_inset Formula 
+\[
+^{A}\mathbf{v}^{\hat{O}}=\,{}^{A}\mathbf{v}^{O^{\prime}}+{}^{A}\boldsymbol{\omega}_{B}\left(-\,{}^{A}\mathbf{r}^{O^{\prime}}\right)
+\]
+
+\end_inset
+
+是
+\begin_inset Formula $B$
+\end_inset
+
+上点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的速度，其位置与
+\begin_inset Formula $A$
+\end_inset
+
+上点
+\begin_inset Formula $O$
+\end_inset
+
+的位置相同。
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+本质上是一个矩阵算子，它产生了
+\begin_inset Formula $\{A\}$
+\end_inset
+
+帧中与
+\begin_inset Formula $B$
+\end_inset
+
+相连的任何点的速度。它由
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的角速度矩阵和点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的速度组成，都在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+帧中看到。因为
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+只取决于六个参数 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 向量
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的三个分量和线速度
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+的三个分量 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 这六个分量可以组合成一个
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+有些作者倾向于这样排序，将线速度放在前三个槽中，而将角速度放在
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量的底部。
+\end_layout
+
+\end_inset
+
+，称为扭转向量(
+\shape italic
+twist vector
+\shape default
+)：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+\hline ^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]\label{eq:10}
+\end{equation}
+
+\end_inset
+
+与角速度的两种表示方法相类似，参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中机体
+\begin_inset Formula $B$
+\end_inset
+
+的扭转(
+\shape italic
+twist
+\shape default
+)可以表示为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的扭转矩阵(
+\shape italic
+twist matrix
+\shape default
+) 
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+ 或方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的扭转向量(
+\shape italic
+twist vector
+\shape default
+) 
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+。我们将在下一小节中探讨扭转(
+\shape italic
+twist
+\shape default
+)的几何意义。
+\end_layout
+
+\begin_layout Subsection
+瞬时螺杆轴
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了更好地理解扭转向量(或矩阵)的几何意义，首先研究刚体转动和刚体平移两种特殊情况是有意义的。
+\end_layout
+
+\begin_layout Standard
+考虑两个刚体
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+，它们通过旋转关节(revolute joint)与轴
+\begin_inset Formula $l$
+\end_inset
+
+相连，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:03"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，
+\begin_inset Formula $P$
+\end_inset
+
+是轴上的点。扭转，
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+，可以通过检查发现是：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+\hline ^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]=\left[\begin{array}{c}
+^{A}\mathbf{u}\dot{\theta}\\
+\hline ^{A}\mathbf{r}^{P}\times\mathbf{u}\dot{\theta}
+\end{array}\right]=\dot{\theta}\left[\begin{array}{c}
+^{A}\mathbf{u}\\
+\hline ^{A}\mathbf{r}^{P}\times\mathbf{u}
+\end{array}\right]\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_03.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:03"
+
+\end_inset
+
+刚体
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+通过旋转关节(revolute joint)与轴
+\begin_inset Formula $l$
+\end_inset
+
+相连。
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，
+\begin_inset Formula $P$
+\end_inset
+
+是轴上的点。
+\begin_inset Formula $O-x-y-z$
+\end_inset
+
+是参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:04"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，两个刚体
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+，通过平移关节(prismatic joint)相连，其轴
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+平移关节(prismatic joint)的轴不是唯一定义的。平移方向决定轴的方向，但轴可以是沿此方向的任何直线。
+\end_layout
+
+\end_inset
+
+平行于直线
+\begin_inset Formula $l$
+\end_inset
+
+。
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，
+\begin_inset Formula $P$
+\end_inset
+
+是轴上的点。扭转，
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+，可以通过检查发现是：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+\hline ^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{0}\\
+\hline ^{A}\mathbf{u}\dot{d}
+\end{array}\right]=\dot{d}\left[\begin{array}{c}
+\mathbf{0}\\
+\hline ^{A}\mathbf{u}
+\end{array}\right]\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_04.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:04"
+
+\end_inset
+
+刚体
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+通过平移关节(prismatic joint)与轴
+\begin_inset Formula $l$
+\end_inset
+
+相连。
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，
+\begin_inset Formula $P$
+\end_inset
+
+是轴上的点。
+\begin_inset Formula $O-x-y-z$
+\end_inset
+
+是参考系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这两种情况下，扭转向量可以与一个轴或一条直线相关联，该轴或直线的Plucker坐标很容易识别。在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，与扭转相关的直线是单位线向量给出的轴，
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+^{A}\mathbf{u}\\
+\hline ^{A}\mathbf{r}^{P}\times{}^{A}\mathbf{u}
+\end{array}\right]
+\]
+
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，单位线向量是在无穷远处的一条直线，由以下方程给出：
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\mathbf{0}\\
+\hline ^{A}\mathbf{u}
+\end{array}\right]
+\]
+
+\end_inset
+
+在这两种情况下，扭转向量只是单位线向量乘以一个标量，这个标量是关节位移的速度。
+\end_layout
+
+\begin_layout Standard
+直线与扭转向量的这种自然关联延伸到最一般的运动类型。给定任何扭转
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+，我们总能找到这样一个轴
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+与该轴平行，位于轴上的长方体
+\begin_inset Formula $B$
+\end_inset
+
+上的点沿轴平移。换句话说，存在一个轴，如果原点被选在轴上的任何一点上，则
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}\mathbf{v}^{P}$
+\end_inset
+
+是平行的。这是Chasles定理的“无穷小版本”，用这种方法得到的轴称为瞬时螺杆轴(
+\shape italic
+instantaneous screw axis
+\shape default
+)。下面是一个证明。
+\end_layout
+
+\begin_layout Standard
+考虑一般的扭转向量，其形式为一对向量。
+\begin_inset Formula 
+\[
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+\hline ^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]
+\]
+
+\end_inset
+
+定义
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+为沿
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的单位向量，让我们写出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\boldsymbol{\omega}_{B}=\omega\mathbf{u}
+\end{equation}
+
+\end_inset
+
+将线速度分解为
+\begin_inset Formula $\mathbf{v}_{par}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}_{perp}$
+\end_inset
+
+两个分量，其中
+\begin_inset Formula $\mathbf{v}_{par}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+平行，
+\begin_inset Formula $\mathbf{v}_{perp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+垂直。因为它垂直于
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{v}_{perp}$
+\end_inset
+
+可以写成形式，
+\begin_inset Formula $\boldsymbol{\rho}\times{}^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+，对于某些位置向量
+\begin_inset Formula $\boldsymbol{\rho}$
+\end_inset
+
+。
+\begin_inset Formula $\mathbf{v}_{par}$
+\end_inset
+
+可以写成标量
+\begin_inset Formula $h$
+\end_inset
+
+与
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的乘积。因此我们可以写：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{v}^{\hat{O}} & =\mathbf{v}_{par}+\mathbf{v}_{perp}\\
+ & =h\,{}^{A}\boldsymbol{\omega}_{B}+\boldsymbol{\rho}\times{}^{A}\boldsymbol{\omega}_{B}
+\end{align*}
+
+\end_inset
+
+现在，让
+\begin_inset Formula $P$
+\end_inset
+
+是
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的位置向量为
+\begin_inset Formula $\boldsymbol{\rho}$
+\end_inset
+
+的点。换句话说，
+\begin_inset Formula $\boldsymbol{\rho}={}^{A}\mathbf{r}^{P}$
+\end_inset
+
+，并且：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{v}^{\hat{O}}=h\,{}^{A}\boldsymbol{\omega}_{B}+{}^{A}\mathbf{r}^{P}\times{}^{A}\boldsymbol{\omega}_{B}\label{eq:14}
+\end{equation}
+
+\end_inset
+
+由于
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+和
+\begin_inset Formula $P$
+\end_inset
+
+都是刚体
+\begin_inset Formula $B$
+\end_inset
+
+上的点，我们可以这样写：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{v}^{\hat{O}}=\,{}^{A}\mathbf{v}^{P}+{}^{A}\mathbf{r}^{P}\times{}^{A}\boldsymbol{\omega}_{B}
+\end{equation}
+
+\end_inset
+
+比较这两个方程，很明显，只有当
+\begin_inset Formula $^{A}\mathbf{v}^{P}=h{}^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+时，这两个方程才被满足。换句话说，如果
+\begin_inset Formula $P$
+\end_inset
+
+是一个点，它的位置向量从
+\begin_inset Formula $O$
+\end_inset
+
+开始满足方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，它的速度必须平行于
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+。事实上，有一整套满足方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的点。任意点
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+的位置向量，
+\begin_inset Formula 
+\[
+^{A}\mathbf{r}^{P^{\prime}}=\,{}^{A}\mathbf{r}^{P}+k\mathbf{u}
+\]
+
+\end_inset
+
+具有特性
+\begin_inset Formula 
+\[
+^{A}\mathbf{r}^{P^{\prime}}\times{}^{A}\boldsymbol{\omega}_{B}=\,{}^{A}\mathbf{r}^{P}\times{}^{A}\boldsymbol{\omega}_{B}
+\]
+
+\end_inset
+
+并且也满足方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。这些点
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+如果原点，
+\begin_inset Formula $O$
+\end_inset
+
+，被选择在这些点中的任何一点，例如
+\begin_inset Formula $P$
+\end_inset
+
+，
+\begin_inset Formula $^{A}\mathbf{r}^{P}=\mathbf{0}$
+\end_inset
+
+，那么速度向量和角速度向量是平行的。
+\end_layout
+
+\end_inset
+
+的轨迹是一条直线，
+\begin_inset Formula $l$
+\end_inset
+
+，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:05"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，平行于
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+。因此，对于刚体
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的一般扭转，存在一条平行于
+\begin_inset Formula $A$
+\end_inset
+
+中的
+\begin_inset Formula $B$
+\end_inset
+
+的角速度的线，由附着在
+\begin_inset Formula $B$
+\end_inset
+
+上的点组成，使得它们的速度平行于该线。刚体
+\begin_inset Formula $B$
+\end_inset
+
+上任何其它点
+\begin_inset Formula $Q$
+\end_inset
+
+的速度，由下式给出：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{v}^{Q}=\,{}^{A}\mathbf{v}^{P}+{}^{A}\boldsymbol{\omega}_{B}\times\overline{PQ}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_05.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:05"
+
+\end_inset
+
+以
+\begin_inset Formula $l$
+\end_inset
+
+为轴的瞬时螺杆轴(Instantaneous Screw Axis, ISA)。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+方程右侧的第一项是平行于轴的分量，无论
+\begin_inset Formula $Q$
+\end_inset
+
+位于何处，都是相同的；第二项是垂直于轴的分量，其大小与离轴的距离成正比。速度
+\begin_inset Formula $^{A}\mathbf{v}^{Q}$
+\end_inset
+
+，也就是物体上任何一点的速度，与一个直圆螺旋线(right circular helix)相切，轴
+\begin_inset Formula $l$
+\end_inset
+
+穿过该点，其螺距由
+\begin_inset Formula $h$
+\end_inset
+
+给出，即
+\begin_inset Formula $^{A}\mathbf{v}^{P}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的比值。由于这种几何结构，
+\begin_inset Formula $l$
+\end_inset
+
+称为运动的瞬时螺杆轴(
+\shape italic
+Instantaneous Screw Axis
+\shape default
+, ISA)，
+\begin_inset Formula $h$
+\end_inset
+
+称为螺杆轴的螺距(
+\shape italic
+pitch
+\shape default
+)。角速度的大小，
+\begin_inset Formula $\omega$
+\end_inset
+
+，称为振幅(
+\shape italic
+amplitude
+\shape default
+)。相对于机体
+\begin_inset Formula $A$
+\end_inset
+
+，机体
+\begin_inset Formula $B$
+\end_inset
+
+被称为围绕瞬时螺杆轴
+\begin_inset Formula $l$
+\end_inset
+
+经历了一个振幅为
+\begin_inset Formula $\omega$
+\end_inset
+
+的扭转。
+\end_layout
+
+\begin_layout Standard
+如果我们定义
+\begin_inset Formula $\boldsymbol{\rho}_{n}$
+\end_inset
+
+为轴上某点的位置向量，使
+\begin_inset Formula $\boldsymbol{\rho}_{n}$
+\end_inset
+
+垂直于
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+，就可以得到对扭转和瞬时螺杆轴的紧凑描述，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:05"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。描述扭转和瞬时螺杆轴的参数由以下几点给出：
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+\omega & =\left|^{A}\boldsymbol{\omega}_{B}\right|\\
+\mathbf{u} & =\dfrac{^{A}\boldsymbol{\omega}_{B}}{\omega}\\
+\boldsymbol{\rho}_{n} & =\dfrac{^{A}\boldsymbol{\omega}_{B}\times{}^{A}\mathbf{v}^{\hat{O}}}{\omega^{2}}\\
+h & =\dfrac{^{A}\boldsymbol{\omega}_{B}\cdot{}^{A}\mathbf{v}^{\hat{O}}}{\omega^{2}}
+\end{array}
+\end{equation}
+
+\end_inset
+
+与扭转相关的瞬时螺杆轴可以使用以下方程显式表示：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+\hline ^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]=\omega\left[\begin{array}{c}
+\mathbf{u}\\
+\hline h\mathbf{u}+\boldsymbol{\rho}\times\mathbf{u}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+因此，如果线向量(无归一化)的Plucker坐标由向量
+\begin_inset Formula $\left[L,M,N,P,Q,R\right]^{\mathrm{T}}$
+\end_inset
+
+给出，则扭转向量由下式给出：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+L\\
+M\\
+N\\
+P^{\ast}\\
+Q^{\ast}\\
+R^{\ast}
+\end{array}\right]=\left[\begin{array}{c}
+L\\
+M\\
+N\\
+P+hL\\
+Q+hM\\
+R+hN
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+扭转向量的分量被称为螺杆坐标(
+\shape italic
+screw coordinates
+\shape default
+)，类似于直线的Plucker线坐标(
+\shape italic
+line coordinates
+\shape default
+)。
+\end_layout
+
+\begin_layout Section
+受力分析与绕轴扳动(wrench)
+\end_layout
+
+\begin_layout Standard
+在上一节中，我们证明了任何刚体运动的瞬时运动学都可以用瞬时螺杆轴来描述，并且我们导出了一组公式，这些公式允许我们计算螺杆轴的位置和螺距。在本节中，我们认为螺杆轴
+的概念也是描述作用在刚体上的力和偶的一般系统的核心，并且我们展示了如何计算螺杆轴的螺距和位置。
+\end_layout
+
+\begin_layout Standard
+作用在刚体上的一般力系和力偶系统不能简化为一个纯合力(pure resultant force)或纯合偶(pure resultant couple)。相反，如
+果我们把所有的力加起来得到一个合力 (resultant force) 
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，把关于原点
+\begin_inset Formula $O$
+\end_inset
+
+的所有力矩加起来得到一个合偶 (resultant couple) 
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+，我们就有一个纯的力以及一个纯的偶。这样的力偶(force-couple)组合被Plücker (1862) 以及后来的Routh (1892)
+ 称为动力学(
+\shape italic
+dyname
+\shape default
+)。接下来表明，任何这样的力耦动力学(force-couple dyname)都可以用一个力(force)和一个耦(couple)的等效组合来描述，这样代表纯力
+(pure force)和纯耦(pure couple)的向量是平行的。
+\end_layout
+
+\begin_layout Standard
+在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:06"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，一个刚体受到
+\begin_inset Formula $n$
+\end_inset
+
+个力，
+\begin_inset Formula $\mathbf{F}_{1},\ldots,\mathbf{F}_{n}$
+\end_inset
+
+，以及
+\begin_inset Formula $m$
+\end_inset
+
+个纯偶，
+\begin_inset Formula $\mathbf{C}_{1},\ldots,\mathbf{C}_{\mathrm{m}}$
+\end_inset
+
+，的作用。合成力可用力偶组合来描述：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{F}=\sum_{i=1}^{n}\mathbf{F}_{1},\quad\mathbf{M}^{O}=\sum_{i=1}^{m}\mathbf{C}_{\mathrm{i}}+\sum_{i=1}^{n}\mathbf{r}_{\mathrm{i}}\times\mathbf{F}_{\mathrm{i}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_06.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:06"
+
+\end_inset
+
+作用在刚体上的力和偶系统可以简化为一个扳动(
+\shape italic
+wrench
+\shape default
+)，即一个力和一个偶的组合，使得两个向量平行。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+我们说
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{M}^{O}$
+\end_inset
+
+的系统等同于由
+\begin_inset Formula $\mathbf{F}_{1},\ldots,\mathbf{F}_{n}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{C}_{1},\ldots,\mathbf{C}_{\mathrm{m}}$
+\end_inset
+
+组成的系统。为了发展另一个等价系统，我们将
+\begin_inset Formula $\mathbf{M}^{O}$
+\end_inset
+
+分解为两个向量分量，
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{C}^{\prime}$
+\end_inset
+
+，使得
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+平行于
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{C}^{\prime}$
+\end_inset
+
+垂直于
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+。现在我们找到一个向量
+\begin_inset Formula $\boldsymbol{\rho}_{n}$
+\end_inset
+
+垂直于
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，使得
+\begin_inset Formula $\mathbf{C}^{\prime}=\boldsymbol{\rho}_{\mathrm{n}}\times\mathbf{F}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+换句话说，
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\rho}_{n}=\dfrac{\mathbf{F}\times\mathbf{C}^{\prime}}{\mathbf{F}\cdot\mathbf{F}}
+\end{equation}
+
+\end_inset
+
+通过将力的作用直线穿过
+\begin_inset Formula $\boldsymbol{\rho}_{n}$
+\end_inset
+
+(如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:06"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示)，我们生成一个关于
+\begin_inset Formula $O$
+\end_inset
+
+的力矩，由
+\begin_inset Formula $\boldsymbol{\rho}_{n}\times\mathbf{F}$
+\end_inset
+
+给出，它等于
+\begin_inset Formula $\mathbf{C}^{\prime}$
+\end_inset
+
+。沿着新作用直线的力，
+\begin_inset Formula $l$
+\end_inset
+
+，与偶
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+是一个系统，它与
+\begin_inset Formula $n$
+\end_inset
+
+个力，
+\begin_inset Formula $\mathbf{F}_{1},\ldots,\mathbf{F}_{n}$
+\end_inset
+
+，以及
+\begin_inset Formula $m$
+\end_inset
+
+个纯偶，
+\begin_inset Formula $\mathbf{C}_{1},\ldots,\mathbf{C}_{\mathrm{m}}$
+\end_inset
+
+等价。
+\end_layout
+
+\begin_layout Standard
+因此，任何力和偶系统都可以用力和偶的等价组合来描述，使得表示纯力和纯偶的向量是平行的。这种组合称为扳动(
+\shape italic
+wrench
+\shape default
+)。在向量符号中，扳动由一个
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量来描述，
+\begin_inset Formula $^{A}\mathbf{w}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{w}=\left[\begin{array}{c}
+\mathbf{F}\\
+\mathbf{M}^{O}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+其中，前导上标
+\begin_inset Formula $A$
+\end_inset
+
+表示向量相对于参考帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的基向量而写入的事实，并且该矩是关于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+原点的矩。
+\end_layout
+
+\begin_layout Standard
+扳动沿着力的作用直线(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:06"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的
+\begin_inset Formula $l$
+\end_inset
+
+)作用。这条线叫做扳动轴。扳动有一个螺距(
+\shape italic
+pitch
+\shape default
+)，
+\begin_inset Formula $\lambda$
+\end_inset
+
+, 这是偶和力的大小的比值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\lambda=\dfrac{\left|\mathbf{C}\right|}{\left|\mathbf{F}\right|}
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\lambda$
+\end_inset
+
+在偶和力的方向相同时为正，在方向相反时为负。力的大小，
+\begin_inset Formula $F$
+\end_inset
+
+，是扳动的强度(
+\shape italic
+intensity
+\shape default
+)。最后，请注意，纯力和纯偶是扳动的特例 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 纯力是零螺距扳动，纯偶是无限螺距扳动。
+\end_layout
+
+\begin_layout Standard
+上述扳动(wrench)的概念和推导与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节运动学分析中的扭转(twist)表示非常相似。螺杆
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+瞬时螺杆轴最早由Mozzi (1763) 使用，尽管Chasles (1830) 被认为是这一发现的功臣。扳动的基本概念可以追溯到1806年Poinsot的工作
+，但是扳动和扭转的概念是由Plücker (1865) ，以及后来的Ball在1900年发表的论文《螺杆理论(
+\shape italic
+The theory of screws
+\shape default
+)》中形式化的。
+\end_layout
+
+\end_inset
+
+的几何概念是扭转和扳动的中心。如果我们忽略扭转的幅度(或扳动的强度)，剩下的就是扭转的轴(或扳动的轴)和与之相关的螺距。我们将螺杆定义为一条直线，在该直线上附加
+一个标量参数，即螺距(
+\shape italic
+pitch
+\shape default
+)。我们所说的扳动是指具有一定强度(
+\shape italic
+intensity
+\shape default
+)的螺杆，或者是指具有一定振幅(
+\shape italic
+amplitude
+\shape default
+)的螺杆。
+\end_layout
+
+\begin_layout Section
+扭转(twist)和扳动(wrench)的变换定律
+\end_layout
+
+\begin_layout Standard
+在上一节中，我们通过将一个帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+附着在刚体上，并描述帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+在附着在刚体
+\begin_inset Formula $\{A\}$
+\end_inset
+
+上的运动，发展了刚体的扭转的表达式。值得一提的是，我们从齐次变换矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+开始，它表示
+\begin_inset Formula $\{B\}$
+\end_inset
+
+在帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的位置和方向，我们并且导出了
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+的表达式，即描述附着在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+上的观测者所看到的
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的瞬时运动的
+\begin_inset Formula $6\times1$
+\end_inset
+
+扭转向量。注意，扭转向量的分量仅在参考帧{A}中有意义。在本小节中，我们将研究如何在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+以外的帧中找到像扭转，
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+，这样的分量。
+\end_layout
+
+\begin_layout Standard
+我们已经看到，通过相似变换，附着在刚体上的帧从
+\begin_inset Formula $\{A\}$
+\end_inset
+
+到
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的位移可以表示为与第一个帧(
+\begin_inset Formula $\{A\}$
+\end_inset
+
+)不同的帧
+\begin_inset Formula $\{F\}$
+\end_inset
+
+。在帧
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中，位移由齐次变换表示：
+\begin_inset Formula 
+\begin{equation}
+^{F}\mathbf{A}_{G}=\,{}^{F}\mathbf{A}_{A}\,{}^{A}\mathbf{A}_{B}\left(^{F}\mathbf{A}_{A}\right)^{-1}
+\end{equation}
+
+\end_inset
+
+这种相似变换可用于将一帧中的任何矩阵量变换到另一帧中。
+\end_layout
+
+\begin_layout Standard
+为了看到这一点，考虑通过微分矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}\left(t\right)$
+\end_inset
+
+在帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中获得的扭转
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+的矩阵表示：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{T}_{B}=\,{}^{A}\dot{\mathbf{A}}_{B}\left[^{A}\mathbf{A}_{B}\right]^{-1}=\left[\begin{array}{c|c}
+^{A}\boldsymbol{\Omega}_{B} & ^{A}\mathbf{v}^{\hat{O}}\left(t\right)\\
+\hline \mathbf{0}_{1\times3} & 0
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+同样的瞬时运动可以在
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中描述，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:07"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，通过微分矩阵
+\begin_inset Formula $^{F}\mathbf{A}_{G}\left(t\right)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+^{F}\dot{\mathbf{A}}_{G}\left[^{F}\mathbf{A}_{G}\right]^{-1} & =\dfrac{\mathrm{d}}{\mathrm{d}t}\left[^{F}\mathbf{A}_{A}\,{}^{A}\mathbf{A}_{B}\left(^{F}\mathbf{A}_{A}\right)^{-1}\right]\left[^{F}\mathbf{A}_{A}\,{}^{A}\mathbf{A}_{B}\left(^{F}\mathbf{A}_{A}\right)^{-1}\right]^{-1}\\
+ & =\left[\left(^{F}\mathbf{A}_{A}\right)\dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{A}_{B}\right)\left(^{F}\mathbf{A}_{A}\right)^{-1}\right]\left[\left(^{F}\mathbf{A}_{A}\right)\left(^{A}\mathbf{A}_{B}\right)^{-1}\left(^{F}\mathbf{A}_{A}\right)^{-1}\right]\\
+ & =\,{}^{F}\mathbf{A}_{A}\,{}^{A}\mathbf{T}_{B}\left(^{F}\mathbf{A}_{A}\right)^{-1}
+\end{array}
+\end{equation}
+
+\end_inset
+
+在上面的微分方程中，注意到我们对
+\begin_inset Formula $\{B\}$
+\end_inset
+
+在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的运动感兴趣，但是在帧
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中是刚性连接到
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的。因此
+\begin_inset Formula $^{F}\mathbf{A}_{A}$
+\end_inset
+
+是一个常数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_07.png
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:07"
+
+\end_inset
+
+附着在运动刚体
+\begin_inset Formula $B$
+\end_inset
+
+上的坐标系的运动可以从帧
+\begin_inset Formula $\{F\}$
+\end_inset
+
+或帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+来研究。瞬时运动可以在参考坐标系
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中用扭转矩阵
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+来描述。同样的运动可以在参考坐标系
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中用
+\begin_inset Formula $^{F}\mathbf{T}_{G}={}^{F}\mathbf{A}_{A}{}^{A}\mathbf{T}_{B}\left(^{F}\mathbf{A}_{A}\right)^{-1}$
+\end_inset
+
+来描述。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们选择一个与参考坐标系
+\begin_inset Formula $\{B\}$
+\end_inset
+
+重合的坐标系
+\begin_inset Formula $\{F\}$
+\end_inset
+
+，就会得到一个有趣的结果。这就给出了附加在移动刚体
+\begin_inset Formula $B$
+\end_inset
+
+上的坐标系中的扭转矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{B}\mathbf{A}_{A}\,{}^{A}\mathbf{T}_{B}\left(^{B}\mathbf{A}_{A}\right)^{-1} & =\,{}^{B}\mathbf{A}_{A}\left[^{A}\dot{\mathbf{A}}_{B}\left(^{A}\mathbf{A}_{B}\right)^{-1}\right]\left(^{B}\mathbf{A}_{A}\right)^{-1}\\
+ & =\left(^{A}\mathbf{A}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{A}}_{B}
+\end{align*}
+
+\end_inset
+
+注意，这个新的扭转矩阵表示相同的瞬时运动的分量(
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+，但在附着于
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的坐标系中)。
+\end_layout
+
+\begin_layout Standard
+在描述运动的坐标系以外的坐标系中，将瞬时运动表达为扭转矩阵的能力，需要一些新的符号。
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的瞬时运动可用帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的扭转矩阵
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+来描述。然而，如果我们用一个不同的帧，比如说
+\begin_inset Formula $\{F\}$
+\end_inset
+
+，来描述相同的瞬时运动，我们将要显式地表示这样一个事实，即扭转是通过考虑帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+获得的，但是在
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中表示，使用符号，
+\begin_inset Formula $^{F}\left[^{A}\mathbf{T}_{B}\right]$
+\end_inset
+
+。当第一个前导上标
+\begin_inset Formula $F$
+\end_inset
+
+不存在时，应该很清楚，扭转矩阵由
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的分量组成。因此，在帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中机体
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的瞬时运动由下式给出：
+\begin_inset Formula 
+\begin{equation}
+^{B}\left[^{A}\mathbf{T}_{B}\right]=\left(^{A}\mathbf{A}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{A}}_{B}
+\end{equation}
+
+\end_inset
+
+术语空间速度(
+\shape italic
+spatial velocity
+\shape default
+)有时用来指
+\begin_inset Formula $^{A}\left[^{A}\mathbf{T}_{B}\right]$
+\end_inset
+
+，而机体速度(
+\shape italic
+body velocity
+\shape default
+)则用来指
+\begin_inset Formula $^{B}\left[^{A}\mathbf{T}_{B}\right]$
+\end_inset
+
+。参见[MLS 94]。
+\end_layout
+
+\begin_layout Standard
+类似的符号适用于角速度。
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的瞬时旋转运动可以用帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的角速度矩阵
+\begin_inset Formula $^{A}\boldsymbol{\Omega}_{B}$
+\end_inset
+
+来描述。任何其它参考系中的运动由下式给出：
+\begin_inset Formula 
+\[
+^{F}\left[^{A}\boldsymbol{\Omega}_{B}\right]=\,{}^{F}\mathbf{R}_{A}\,{}^{A}\boldsymbol{\Omega}_{B}\left(^{F}\mathbf{R}_{A}\right)^{-1}=\,{}^{F}\mathbf{R}_{A}\left[^{A}\dot{\mathbf{R}}_{B}\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\right]\left(^{F}\mathbf{R}_{A}\right)^{\mathrm{T}}
+\]
+
+\end_inset
+
+这个结果的直接应用给出了在帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中，机体
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的瞬时旋转运动的表达式：
+\begin_inset Formula 
+\begin{equation}
+^{B}\left[^{A}\boldsymbol{\Omega}_{B}\right]=\left[\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\,{}^{A}\dot{\mathbf{R}}_{B}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于向量，变换要简单得多。例如，角速度向量 
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+ (在
+\begin_inset Formula $A$
+\end_inset
+
+中表示的分量)可以在任何其它帧中表示，只需通过适当的旋转矩阵进行预乘：
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+^{F}\left[^{A}\boldsymbol{\omega}_{B}\right] & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\left[^{A}\boldsymbol{\omega}_{B}\right]\\
+^{B}\left[^{A}\boldsymbol{\omega}_{B}\right] & =\,{}^{B}\mathbf{R}_{A}\,{}^{A}\left[^{A}\boldsymbol{\omega}_{B}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_08.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:08"
+
+\end_inset
+
+刚体
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的运动用帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的运动来描述。瞬时运动由
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的扭转向量
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+表示。同样的运动也由
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中的扭转向量
+\begin_inset Formula $^{F}\left[^{A}\mathbf{t}_{B}\right]$
+\end_inset
+
+给出。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似的方法也适用于扭转向量。考虑一个瞬时运动，在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的扭转向量
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+和在
+\begin_inset Formula $\{F\}$
+\end_inset
+
+中的
+\begin_inset Formula $^{F}\left[^{A}\mathbf{t}_{B}\right]$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{t}_{B} & =\,{}^{A}\left[^{A}\mathbf{t}_{B}\right]=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]\\
+^{F}\left[^{A}\mathbf{t}_{B}\right] & =\left[\begin{array}{c}
+^{F}\left[^{A}\boldsymbol{\omega}_{B}\right]\\
+^{F}\mathbf{v}^{\hat{Q}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+两个扭转中的角速度向量指的是同一的量，只是分量在不同的帧中。。然而，两个扭转向量中的线速度向量是不同的。
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+是机体
+\begin_inset Formula $B$
+\end_inset
+
+上与
+\begin_inset Formula $O$
+\end_inset
+
+瞬间重合的点的速度，而
+\begin_inset Formula $^{F}\mathbf{v}^{\hat{Q}}$
+\end_inset
+
+是机体
+\begin_inset Formula $B$
+\end_inset
+
+上与
+\begin_inset Formula $Q$
+\end_inset
+
+瞬间重合的点的速度。除了速度向量指的是不同帧中的分量之外，这两个速度是不同的量。由于
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{Q}$
+\end_inset
+
+指的是刚体
+\begin_inset Formula $\{B\}$
+\end_inset
+
+上的两个不同点，很明显，它们的速度是通过下式相关的：
+\begin_inset Formula 
+\[
+^{A}\mathbf{v}^{\hat{Q}}=\,{}^{A}\mathbf{v}^{\hat{O}}+\,{}^{A}\boldsymbol{\omega}_{B}\times{}^{A}\mathbf{r}^{Q}
+\]
+
+\end_inset
+
+或者，
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{v}^{\hat{Q}}=\,{}^{A}\mathbf{v}^{\hat{O}}+\left(-\,{}^{A}\mathbf{r}^{Q}\right)\times{}^{A}\boldsymbol{\omega}_{B}
+\end{equation}
+
+\end_inset
+
+假设向量是用旋转矩阵变换的，我们可以写为：
+\begin_inset Formula 
+\begin{align*}
+^{F}\left[^{A}\boldsymbol{\omega}_{B}\right] & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\boldsymbol{\omega}_{B}\\
+^{F}\mathbf{v}^{\hat{Q}} & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\mathbf{v}^{\hat{Q}}\\
+ & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\mathbf{v}^{\hat{O}}+\,{}^{F}\mathbf{R}_{A}\left[-\,{}^{A}\mathbf{r}^{Q}\times{}^{A}\boldsymbol{\omega}_{B}\right]\\
+ & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\mathbf{v}^{\hat{O}}+\,{}^{F}\mathbf{R}_{A}\left(-\,{}^{A}\mathbf{r}^{Q}\right)\times\left(^{F}\mathbf{R}_{A}\,{}^{A}\boldsymbol{\omega}_{B}\right)\\
+ & =\,{}^{F}\mathbf{R}_{A}\,{}^{A}\mathbf{v}^{\hat{O}}+\,{}^{F}\mathbf{r}^{Q}\times\left(^{F}\mathbf{R}_{A}\,{}^{A}\boldsymbol{\omega}_{B}\right)
+\end{align*}
+
+\end_inset
+
+扭转向量
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $^{F}\left[^{A}\mathbf{t}_{B}\right]$
+\end_inset
+
+可以通过下式关联：
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+^{F}\left[^{A}\boldsymbol{\omega}_{B}\right]\\
+^{F}\mathbf{v}^{\hat{Q}}
+\end{array}\right]=\left[\begin{array}{cc}
+^{F}\mathbf{R}_{A} & \mathbf{0}\\
+\left[^{A}\hat{\mathbf{r}}^{O}\right]{}^{F}\mathbf{R}_{A} & ^{F}\mathbf{R}_{A}
+\end{array}\right]\left[\begin{array}{c}
+^{A}\left[^{A}\boldsymbol{\omega}_{B}\right]\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中向量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+上的“
+\begin_inset Formula $\hat{\ }$
+\end_inset
+
+”表示
+\begin_inset Formula $3\times3$
+\end_inset
+
+斜对称矩阵算子
+\begin_inset Formula $\left[\hat{\mathbf{a}}\right]$
+\end_inset
+
+，对应于
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+。因此这两个
+\begin_inset Formula $6\times1$
+\end_inset
+
+扭转向量通过
+\begin_inset Formula $6\times6$
+\end_inset
+
+变换矩阵，
+\begin_inset Formula $^{F}\boldsymbol{\Gamma}_{A}$
+\end_inset
+
+，关联，由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rl}
+^{F}\left[^{A}\mathbf{t}_{B}\right] & =\,{}^{F}\boldsymbol{\Gamma}_{A}\,{}^{A}\left[^{A}\mathbf{t}_{B}\right]\\
+^{F}\boldsymbol{\Gamma}_{A} & =\left[\begin{array}{cc}
+^{F}\mathbf{R}_{A} & \mathbf{0}\\
+\left[^{A}\hat{\mathbf{r}}^{O}\right]{}^{F}\mathbf{R}_{A} & ^{F}\mathbf{R}_{A}
+\end{array}\right]
+\end{array}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $^{F}\hat{\mathbf{r}}^{O}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵，
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+零矩阵。
+\end_layout
+
+\begin_layout Standard
+注意，这是相同的
+\begin_inset Formula $6\times6$
+\end_inset
+
+变换矩阵，用于将线向量从一个参考帧转换到另一个参考帧。我们留下一个练习，以验证相同的变换矩阵是否允许我们将扳动从一个帧变换到另一个帧。
+\end_layout
+
+\begin_layout Section
+互反性(Reciprocity)
+\end_layout
+
+\begin_layout Standard
+当作用在质点上的力的作用线垂直于质点运动相关的速度向量的方向时，我们知道该力不能对质点做功。从数学上讲，功率，
+\begin_inset Formula $P$
+\end_inset
+
+，由力和速度的标量积给出，等于零。有时我们说力与速度正交。在力学中，我们总是对作用力和允许的运动方向“正交”的情况感兴趣。事实上，我们称之为约束力。
+\end_layout
+
+\begin_layout Standard
+当我们考虑力和力矩，或角速度和线速度时，我们需要一个新的术语。扭转(twist)是速度向量的自然概括。类似地，现在力向量的概括是扳动(wrench)。互反性(R
+eciprocity)是这种直观的正交性
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+说力向量与速度向量正交是不正确的。严格地说，速度向量可以与另一个速度向量正交，力向量可以与力向量正交。但由于力和速度“存在”于不同的向量空间中，所以不能说力与速
+度正交。
+\end_layout
+
+\end_inset
+
+概念的自然概括。
+\end_layout
+
+\begin_layout Standard
+从形式上看，如果对一个螺杆施加的扳动对另一个螺杆的扭转没有做功，那么就可以说这两个螺杆是互反的(
+\shape italic
+reciprocal
+\shape default
+)。由于扭转代表瞬时运动，因此考虑与扳动对正在经历扭转的机体的作用相关的功率，则更为适合。暂时省略前导和尾随的下标和上标，一个扳动
+\begin_inset Formula $\mathbf{w}=\left[\mathbf{F}^{\mathrm{T}},\mathbf{M}^{\mathrm{T}}\right]^{\mathrm{T}}$
+\end_inset
+
+对一个扭转
+\begin_inset Formula $\mathbf{t}=\left[\boldsymbol{\omega}^{\mathrm{T}},\mathbf{v}^{\mathrm{T}}\right]^{\mathrm{T}}$
+\end_inset
+
+所做的功率由下式给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P=\mathbf{F}\cdot\mathbf{v}+\mathbf{M}\cdot\boldsymbol{\omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_09.png
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:09"
+
+\end_inset
+
+机体
+\begin_inset Formula $B$
+\end_inset
+
+相对于机体
+\begin_inset Formula $A$
+\end_inset
+
+的瞬时运动由扭转
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+描述，而
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+是
+\begin_inset Formula $A$
+\end_inset
+
+对
+\begin_inset Formula $B$
+\end_inset
+
+施加的扳动。两个螺杆
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{S}_{2}$
+\end_inset
+
+是互反的(左边)，只有当关于
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+的扳动对关于
+\begin_inset Formula $\mathbf{S}_{2}$
+\end_inset
+
+的扭转没有做功(中间)，关于
+\begin_inset Formula $\mathbf{S}_{2}$
+\end_inset
+
+的扳动对关于
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+的扭转没有做功(右边)。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+上述方程可以用更正式的符号表示。在帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中写入扭转和扳动，我们得到：
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{rll}
+P & =\,{}^{A}\mathbf{t}_{B}^{\mathrm{T}}\,\boldsymbol{\Delta}\,{}^{A}\mathbf{w} & =\left[\begin{array}{cc}
+^{A}\boldsymbol{\omega}_{B} & ^{A}\mathbf{v}^{O}\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{M}^{O}\\
+^{A}\mathbf{F}
+\end{array}\right]\\
+ & =\,{}^{A}\mathbf{w}^{\mathrm{T}}\,\boldsymbol{\Delta}\,{}^{A}\mathbf{t}_{B} & =\left[\begin{array}{cc}
+^{A}\mathbf{F} & ^{A}\mathbf{M}^{O}\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{v}^{O}\\
+^{A}\boldsymbol{\omega}_{B}
+\end{array}\right]
+\end{array}\label{eq:31}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\Delta}$
+\end_inset
+
+是
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵：
+\begin_inset Formula 
+\[
+\boldsymbol{\Delta}=\left[\begin{array}{ccc|ccc}
+0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 1\\
+\hline 1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+它重新排列
+\begin_inset Formula $6\times1$
+\end_inset
+
+扭转或扳动向量的组件。
+\end_layout
+
+\begin_layout Standard
+如果我们考虑空间中两条任意方向的直线，并将不同螺距的螺杆相关联(见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们得到如下互反性(reciprocity)的充要条件。两个螺杆
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+(螺距
+\begin_inset Formula $h_{1}$
+\end_inset
+
+)和
+\begin_inset Formula $\mathbf{S}_{2}$
+\end_inset
+
+(螺距
+\begin_inset Formula $h_{2}$
+\end_inset
+
+)是互反的(reciprocal)，当且仅当
+\begin_inset Formula 
+\begin{equation}
+\left(h_{1}+h_{2}\right)\cos\phi-d\sin\phi=0\label{eq:32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename se3_fig_10.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:10"
+
+\end_inset
+
+互反性的条件，
+\begin_inset Formula $\left(h_{1}+h_{2}\right)\cos\phi-d\sin\phi=0$
+\end_inset
+
+，是一个几何条件，它与两个螺杆的螺距、轴之间的距离和轴之间的相对角度相关。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+为了说明这一点，考虑一个坐标系，其
+\begin_inset Formula $x$
+\end_inset
+
+轴与
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+对齐，
+\begin_inset Formula $z$
+\end_inset
+
+轴与从
+\begin_inset Formula $\mathbf{S}_{1}$
+\end_inset
+
+到
+\begin_inset Formula $\mathbf{S}_{2}$
+\end_inset
+
+的相互垂直线对齐。两个螺杆的螺杆坐标：
+\begin_inset Formula 
+\[
+\mathbf{S}_{1}=\left[\begin{array}{c}
+1\\
+0\\
+0\\
+h_{1}\\
+0\\
+0
+\end{array}\right],\quad\mathbf{S}_{2}=\left[\begin{array}{c}
+\cos\phi\\
+\sin\phi\\
+0\\
+h_{2}\cos\phi-d\sin\phi\\
+h_{2}\sin\phi+d\cos\phi\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+并且扳动
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+和扭转
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+给出为：
+\begin_inset Formula 
+\[
+\mathbf{w}=\left[\begin{array}{c}
+\mathbf{f}\\
+\mathbf{m}
+\end{array}\right]=f\left[\begin{array}{c}
+1\\
+0\\
+0\\
+h_{1}\\
+0\\
+0
+\end{array}\right],\quad\mathbf{t}=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right]=\omega\left[\begin{array}{c}
+\cos\phi\\
+\sin\phi\\
+0\\
+h_{2}\cos\phi-d\sin\phi\\
+h_{2}\sin\phi+d\cos\phi\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+因为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于上面的扳动和扭转必须成立，对于任何振幅
+\begin_inset Formula $\omega$
+\end_inset
+
+和任何强度
+\begin_inset Formula $f$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的结果直接得出。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请读者证明以下事实成立。
+\end_layout
+
+\begin_layout Enumerate
+如果以下情况之一成立，则作用在刚体上并绕旋转关节自由旋转的扳动对刚体不做功
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+扳动为零螺距，并且轴与旋转轴相交；或者
+\end_layout
+
+\begin_layout Itemize
+螺距不为零，但等于
+\begin_inset Formula $d\tan\phi$
+\end_inset
+
+。
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+如果以下情况之一成立，则无摩擦点接触处的接触扳动对刚体不做功
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+扭转为零螺距，并且轴与接触法线相交；或者
+\end_layout
+
+\begin_layout Itemize
+扭转的螺距不为零，但等于
+\begin_inset Formula $d\tan\phi$
+\end_inset
+
+。
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+作用在刚体上的扳动可沿平移关节自由平移，但在下列情况下，扳动对刚体不做功：
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+扳动具有无限螺距；或者
+\end_layout
+
+\begin_layout Itemize
+螺距为零或有限的，但轴垂直于平移关节的轴。
+\end_layout
+
+\end_deeper
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+Ball, R.
+ S., 
+\shape italic
+A Treatise on the Theory of Screws
+\shape default
+, Cambridge University Press, 1900.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Boothby, W.
+ M., 
+\shape italic
+An Introduction to differentiable manifolds and Riemannian Geometry
+\shape default
+, Academic Press, 1986.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hunt, K.H., 
+\shape italic
+Kinematic Geometry of Mechanisms
+\shape default
+, Clarendon Press, Oxford, 1978.
+ 
+\end_layout
+
+\begin_layout Enumerate
+McCarthy.
+ J.M., 
+\shape italic
+Introduction to Theoretical Kinematics
+\shape default
+, M.I.T.
+ Press, 1990.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Murray, R., Li, Z.
+ and Sastry, S., 
+\shape italic
+A mathematical introduction to robotic manipulation
+\shape default
+.
+ CRC Press, 1994.
+\end_layout
+
+\end_body
+\end_document

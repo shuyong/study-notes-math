@@ -1,0 +1,541 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "李群与李代数"
+target "https://karnikram.info/blog/lie/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Karnik Ram
+\end_layout
+
+\begin_layout Date
+September 3, 2017 
+\end_layout
+
+\begin_layout Section
+动机
+\end_layout
+
+\begin_layout Standard
+在机器人视觉中，我们经常处理需要估计摄像机运动的问题。例如，如果一架无人机在一个场景中移动，而我们要使用无人机相机的图像重建场景的三维模型，我们需要一种方法来建
+模和表示相机的轨迹，并知道图像是从哪里拍摄的，然后才能恢复场景的几何结构。摄像机的运动通常被建模为刚体运动(简单地说是旋转和平移，在SE(3)中更正式地称为特殊
+的欧几里德变换)，这是一个被广泛研究的课题。
+\end_layout
+
+\begin_layout Standard
+刚体运动可以用多种方式表示，我们对表示的选择与应用密切相关。例如，3D+YPR表示法在空中机器人中是一个很受欢迎的选择，但在它之外并不多，因为它的
+\series bold
+著名
+\series default
+的万向节锁问题。
+\end_layout
+
+\begin_layout Standard
+下面是更广泛使用的表示法，称为齐次矩阵表示法，它允许我们将运动表示为线性变换
+\begin_inset Formula 
+\[
+T=\left[\begin{array}{ccc|c}
+ &  &  & x\\
+ & R &  & y\\
+ &  &  & z\\
+\hline 0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $R$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+旋转矩阵(在SO(3)中更正式地称为特殊正交变换)
+\begin_inset Formula 
+\[
+R=\left[\begin{array}{ccc}
+r_{11} & r_{12} & r_{13}\\
+r_{21} & r_{21} & r_{23}\\
+r_{31} & r_{32} & r_{33}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，这样的表现实际上有点“讨厌”。旋转矩阵
+\begin_inset Formula $R$
+\end_inset
+
+是非线性空间的一部分，尽管旋转只代表三个自由度，但在这个表示中有九个旋转参数，受
+\begin_inset Formula $R^{\top}(t)R=I$
+\end_inset
+
+和
+\begin_inset Formula $\det\left(R\right)=+1$
+\end_inset
+
+的约束。因此，如果我们要估计相机在多个图像上的运动，我们要估计旋转的九个参数，这将作为一个有约束的优化问题来解决，这个问题很难实现。
+\end_layout
+
+\begin_layout Standard
+李群理论及其相应的代数为我们提供了一个更好的刚体运动的低维线性表示，这一点在计算机视觉中得到了越来越多的应用。在这篇文章中，我将讨论李群和李代数的概念模型，这是
+在计算机视觉问题中有效地使用它所需要的粗糙知识。
+\end_layout
+
+\begin_layout Section
+旋转的Lie参数化
+\end_layout
+
+\begin_layout Standard
+考虑一个代表相机旋转运动的旋转轨迹
+\begin_inset Formula $R(t):\mathbb{R}\rightarrow SO(3)$
+\end_inset
+
+，其中SO(3)是所有旋转矩阵的集合
+\begin_inset Formula 
+\[
+SO(3)\stackrel{.}{=}\left\{ R\in\mathbb{R}^{3x3}\;|\;R^{T}R=I,det(R)=+1\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们从定义上知道
+\begin_inset Formula 
+\[
+R(t)R(t)^{\top}=I
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算它对时间的导数，我们得到
+\begin_inset Formula 
+\[
+\begin{array}{c}
+\dot{R}(t)R^{\top}(t)+R(t)\dot{R}^{\top}(t)=0\\
+\Rightarrow\dot{R}(t)R^{\top}(t)=-(\dot{R}(t)R^{\top}(t))^{\top}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此得到的方程表明
+\begin_inset Formula $\dot{R}(t)R^{\top}(t)$
+\end_inset
+
+是一个斜对称矩阵，这意味着必须存在一个向量
+\begin_inset Formula $w(t)\in\mathbb{R}^{3}$
+\end_inset
+
+，满足
+\begin_inset Formula 
+\[
+\dot{R}(t)R^{\top}(t)=\hat{\omega}(t)\Leftrightarrow\dot{R}(t)=\omega(t)R(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在如果
+\begin_inset Formula $R(t_{0})=I$
+\end_inset
+
+，我们有
+\begin_inset Formula $\dot{R}(t_{0})=\hat{\omega}(t_{0})$
+\end_inset
+
+，因此
+\begin_inset Formula $R(t)$
+\end_inset
+
+对于
+\begin_inset Formula $t=t_{0}$
+\end_inset
+
+的泰勒级数近似将得到
+\begin_inset Formula 
+\[
+R(t_{o}+dt)\approx I_{o}+\hat{\omega}(t_{o})dt
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这意味着围绕幺元的
+\series bold
+新无穷小
+\series default
+的旋转仅局部依赖于斜对称矩阵的三维空间
+\begin_inset Formula $(\omega_{1},\omega_{2},\omega_{3})$
+\end_inset
+
+空间，也称为
+\series bold
+切空间
+\series default
+。在幺元处的切空间里，更正式地定义为
+\series bold
+李群
+\series default
+SO(3)的
+\series bold
+李代数
+\series default
+so(3)。
+\begin_inset Formula 
+\[
+so(3)\stackrel{.}{=}\hat{\omega}\in\mathbb{R}^{3x3}\;|\;\omega\in\mathbb{R}^{3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个切空间是一个三自由度的线性空间，没有附加的约束，这使得它比相应的李群更容易处理运动估计和优化问题。这使得我们可以将旋转建模为具有三个自由参数的斜对称矩阵。
+\end_layout
+
+\begin_layout Section
+指数映射
+\end_layout
+
+\begin_layout Standard
+现在我们将尝试用李代数so(3)来表示李群的元素SO(3)。
+\end_layout
+
+\begin_layout Standard
+从上面的讨论中我们知道，
+\begin_inset Formula 
+\[
+\left[\dot{R}(t)=\hat{\omega}R(t)\,,\,R(t_{o})=I\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一个初始状态为
+\begin_inset Formula $I$
+\end_inset
+
+的线性常微分方程，其解为
+\begin_inset Formula 
+\[
+\boxed{R(t)=e^{\hat{\omega}t}}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $e^{\hat{\omega}t}$
+\end_inset
+
+是矩阵指数
+\begin_inset Formula 
+\[
+e^{\hat{\omega}t}=I+\hat{\omega}t+\frac{(\hat{\omega}t)^{2}}{2!}+\frac{(\hat{\omega}t)^{3}}{3!}+…
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对这个解的一个有用的解释是围绕轴
+\begin_inset Formula $\omega\in\mathbb{R}^{3}$
+\end_inset
+
+旋转一个
+\begin_inset Formula $t$
+\end_inset
+
+弧度的角。
+\end_layout
+
+\begin_layout Standard
+因此，我们有一个指数映射，它允许我们从李代数so(3)中取一个元素到它在李群SO(3)中对应的元素。
+\begin_inset Formula 
+\[
+\exp:so(3)\rightarrow SO(3);\;\hat{\omega}\mapsto e^{\hat{\omega}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+罗德里格斯公式给出了实际计算指数映射的闭式表达式，
+\begin_inset Formula 
+\[
+\boxed{e^{\hat{\omega}}=I+\frac{\hat{\omega}}{\Vert\omega\Vert}\sin(\Vert\omega\Vert)+\frac{\hat{\omega}^{2}}{\Vert\omega\Vert^{2}}(1-\cos(\Vert\omega\Vert))}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们有一个指数映射的逆函数，由对数给出，它允许我们从李群中取一个元素到李代数。在这种情况下，一个旋转矩阵到它的斜对称矩阵。如果
+\begin_inset Formula $R\neq I$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\boxed{\Vert\omega\Vert=\cos^{-1}\left(\frac{\mathrm{trace}(R)-1}{2}\right),\;\frac{\omega}{\Vert\omega\Vert}=\frac{1}{2\sin(\Vert\omega\Vert)}\left[\begin{array}{c}
+r_{32}-r_{23}\ r_{13}-r_{31}\ r_{21}-r_{12}\end{array}\right]}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $R=I$
+\end_inset
+
+，则
+\begin_inset Formula $\Vert\omega\Vert=0$
+\end_inset
+
+并且旋转轴未定义。 然而，这种表示法不是唯一的，因为将角度乘以
+\begin_inset Formula $2\pi$
+\end_inset
+
+将得到相同的
+\begin_inset Formula $R$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+刚体运动的Lie参数化
+\end_layout
+
+\begin_layout Standard
+旋转的思想也可以扩展到刚体运动。刚体运动集合SE(3)有一个对应的李代数se(3)，定义为
+\begin_inset Formula $4\times4$
+\end_inset
+
+“扭曲”矩阵的集合
+\begin_inset Formula $\hat{\xi}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{align*}
+SE(3) & \stackrel{.}{=}\left\{ g=\begin{pmatrix}R & t\\
+0 & 1
+\end{pmatrix}\;|\;R\in SO(3),t\in\mathbb{R}^{3}\right\} \subset\mathbb{R}^{4x4}\\
+se(3) & \stackrel{.}{=}\left\{ \hat{\xi}=\begin{pmatrix}\hat{\omega} & v\\
+0 & 0
+\end{pmatrix}\;|\;\hat{w}\in so(3),v\in\mathbb{R}^{3}\right\} \subset\mathbb{R}^{4x4}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+扭曲矩阵
+\begin_inset Formula $\hat{\xi}$
+\end_inset
+
+由一个旋转的斜对称矩阵和一个三维向量组成，它是一个沿着某些
+\begin_inset Formula $g$
+\end_inset
+
+的切线向量。
+\begin_inset Formula $\hat{\xi}$
+\end_inset
+
+可以进一步简化为
+\begin_inset Formula $6$
+\end_inset
+
+参数向量
+\begin_inset Formula $\xi$
+\end_inset
+
+，称为扭曲坐标，定义为，
+\begin_inset Formula 
+\[
+\xi=\begin{pmatrix}v\\
+\omega
+\end{pmatrix}\in\mathbb{R}^{6}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $v$
+\end_inset
+
+称为线速度向量，它与平移向量
+\begin_inset Formula $t$
+\end_inset
+
+相关，如下所示：
+\begin_inset Formula 
+\[
+\frac{(I-e^{\hat{\omega}})\hat{\omega}v+\omega\omega^{T}v}{\Vert\omega\Vert}=t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+就像我们在旋转的例子中看到的，刚体变换可以用它的李代数元素
+\begin_inset Formula $\hat{\xi}$
+\end_inset
+
+和
+\begin_inset Formula $\xi$
+\end_inset
+
+来模拟。
+\end_layout
+
+\end_body
+\end_document
