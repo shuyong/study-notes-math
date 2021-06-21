@@ -1,0 +1,4928 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "减少不确定性的不确定性"
+\pdf_author "Matias Mattamala"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "减少不确定性的不确定性"
+target "https://gtsam.org/2021/02/23/uncertainties-part1.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Matias Mattamala"
+target "https://mmattamala.github.io/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+Feb 23, 2021
+\end_layout
+
+\begin_layout Part
+线性和非线性
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在这系列文章中，我将回顾一些基于优化的状态估计方法的一般方面，以及如何从中输入和输出一致的数量和不确定性，即协方差矩阵。我们将采取(希望是)全面的游览，将涵盖
+\series bold
+为什么我们所做的事情我们会这样做
+\series default
+的问题，旨在澄清一些
+\series bold
+不确定的
+\series default
+(
+\shape italic
+uncertain
+\shape default
+)事情与协方差的工作。我们将看到大多数解释是如何通过明确定义和约定自然产生的，这些定义和约定有时是我们在使用这些工具时隐含的。
+\end_layout
+
+\begin_layout Standard
+它们总结并扩展了我们在
+\begin_inset CommandInset href
+LatexCommand href
+name "gtsam-users"
+target "https://groups.google.com/g/gtsam-users/c/c-BhH8mfqbo/m/7Wsj_nogBAAJ"
+literal "false"
+
+\end_inset
+
+组中进行的一些有趣的讨论。我们希望，这样的空间将继续把我们大家共同关心的有关问题摆到桌面上。
+\end_layout
+
+\begin_layout Section
+一个简单的例子：位姿图
+\end_layout
+
+\begin_layout Standard
+作为一个动机，我们将使用与其它GTSAM示例中使用的类似的位姿图：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename motivation.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+我们考虑一个机器人在二维平面(顶部)上移动，它有里程表，提供机器人位移的相对测量。底部的图表示因子图模型。以一致的方式建模里程表因子是我们将在这些帖子中讨论的主
+要主题。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+首先，我们将考虑图
+\begin_inset Formula $\mathbf{x}_{i}$
+\end_inset
+
+中的变量对应于位置
+\begin_inset Formula $\mathbf{x}_{i}=(x,y)\in\mathbb{R}^{2}$
+\end_inset
+
+。这些变量由一个线性模型联系起来，线性模型由一个过渡矩阵
+\begin_inset Formula $\mathbf{A}_{i}$
+\end_inset
+
+和一个常数项
+\begin_inset Formula $\mathbf{b}_{i}=(b_{x},b_{y})$
+\end_inset
+
+给出，它可以从某些传感器(如车轮里程表)获得。然后我们可以在变量
+\begin_inset Formula $i$
+\end_inset
+
+和
+\begin_inset Formula $i+1$
+\end_inset
+
+之间建立以下关系：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}_{i+1}=\mathbf{A}_{i}\mathbf{x}_{i}+\mathbf{b}_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，我们知道事实上事情并不是这样的，我们通常会在传感器或执行器中产生由噪声产生的误差。解决这个问题最常用的方法是加入一些
+\series bold
+零均值高斯噪声
+\series default
+(
+\shape italic
+zero-mean Gaussian noise
+\shape default
+)
+\begin_inset Formula $\eta_{i}\sim Gaussian(\mathbf{0}_{2\times1},\Sigma_{i})$
+\end_inset
+
+到我们的模型中，它代表了这种不确定性：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}_{i+1}=\mathbf{A}_{i}\mathbf{x}_{i}+\mathbf{b}_{i}+\eta_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以在这里识别典型的
+\series bold
+运动
+\series default
+(
+\shape italic
+motion
+\shape default
+)或
+\series bold
+过程模型
+\series default
+(
+\shape italic
+process model
+\shape default
+)，例如，我们在卡尔曼滤波中使用的，描述我们的状态如何演变。我们说，我们在右边引入的噪声表明，我们的下一个状态
+\begin_inset Formula $\mathbf{x}_{i+1}$
+\end_inset
+
+将在
+\begin_inset Formula $\mathbf{A}_{i}\mathbf{x}_{i}+\mathbf{b}_{i}$
+\end_inset
+
+附近，协方差矩阵
+\begin_inset Formula $\Sigma_{i}$
+\end_inset
+
+描述了我们期望的
+\begin_inset Formula $\mathbf{x}_{i+1}$
+\end_inset
+
+所在区域。
+\end_layout
+
+\begin_layout Standard
+我们还可以注意到，通过一些操作，可以建立以下关系：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\eta_{i}=\mathbf{x}_{i+1}-\mathbf{A}_{i}\mathbf{x}_{i}-\mathbf{b}_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一个重要的表达式，因为我们知道左侧的表达式遵循高斯分布。但既然我们有一个等价项，右侧的项也必须如此。这里我们必须注意，作为高斯分布的既不是
+\begin_inset Formula $\mathbf{x}_{i}$
+\end_inset
+
+，也不是
+\begin_inset Formula $\mathbf{x}_{i+1}$
+\end_inset
+
+，而是
+\series bold
+差分
+\series default
+(
+\shape italic
+difference
+\shape default
+)
+\begin_inset Formula $(\mathbf{x}_{i+1}-\mathbf{A}_{i}\mathbf{x}_{i}-\mathbf{b}_{i})$
+\end_inset
+
+。这使得我们可以使用差值作为
+\series bold
+里程计因子
+\series default
+(
+\series bold
+odometry factor
+\series default
+)，该因子在我们的因子图中把
+\begin_inset Formula $\mathbf{x}_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{x}_{i+1}$
+\end_inset
+
+概率地联系起来：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(\mathbf{x}_{i+1}-\mathbf{A}_{i}\mathbf{x}_{i}-\mathbf{b}_{i})\sim Gaussian(\mathbf{0}_{2\times1},\Sigma_{i})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+解的分析
+\end_layout
+
+\begin_layout Standard
+在假设我们的所有因子均为高斯且我们使用
+\series bold
+最大后验概率
+\series default
+(
+\shape italic
+maximum-a-posteriori
+\shape default
+, MAP)估计的情况下，使用前面的里程计因子表达式求解因子图等效于求解以下最小二乘问题，幸运的是，这是我们的情况：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}^{*}=\arg\min{\displaystyle \sum_{i}||\mathbf{A}_{i}\mathbf{x}_{i}+\mathbf{b}_{i}-\mathbf{x}_{i+1}||_{\Sigma_{i}}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，虽然我们交换了因子中的项以与GTSAM的文档保持一致，但这并不影响公式，因为该项是平方的。
+\end_layout
+
+\begin_layout Standard
+以前的优化问题对于变量是线性的，因此可以在封闭形式下求解。通过对成本的平方进行微分，将其设置为零并进行一些操作，我们得到了所谓的正规方程，这与我们的后验分析特别
+相关：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{A}^{T}\Sigma^{-1}\mathbf{A}\ \mathcal{X}^{*}=\mathbf{A}^{T}\Sigma^{-1}\mathbf{b}
+\end{equation}
+
+\end_inset
+
+其中向量
+\begin_inset Formula $\mathcal{X}^{*}$
+\end_inset
+
+叠加问题中的所有变量，
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+是一个矩阵，它叠加因子中的线性项，
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+对常数向量项也是如此。
+\end_layout
+
+\begin_layout Standard
+这里要注意的第一点是，找到
+\begin_inset Formula $\mathcal{X}^{*}$
+\end_inset
+
+的解，需要对矩阵
+\begin_inset Formula $\mathbf{A}^{T}\Sigma^{-1}\mathbf{A}$
+\end_inset
+
+进行转置 ，这在一般情况下是很难的，因为它在某些部分可能是巨大而密集的计算。然而，我们知道有一些聪明的方法来解决它，比如GTSAM已经实现的iSAM和iSAM2
+，这将在Frank Dellaert和Michael Kaess的
+\begin_inset CommandInset href
+LatexCommand href
+name "这篇综合性文章"
+target "https://www.cc.gatech.edu/~dellaert/pubs/Dellaert17fnt.pdf"
+literal "false"
+
+\end_inset
+
+中介绍。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename hessian.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在求解正规方程时，左侧称为Fisher信息矩阵或Hessian矩阵。其逆函数近似于最小二乘解的协方差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们对这个矩阵的兴趣，被称为
+\series bold
+Fisher信息矩阵
+\series default
+(
+\series bold
+Fisher information matrix
+\series default
+)或
+\series bold
+Hessian
+\series default
+矩阵(因为它近似于原始二次成本的Hessian矩阵)，它的逆矩阵
+\begin_inset Formula $\Sigma^{*}=(\mathbf{A}^{T}\Sigma^{-1}\mathbf{A})^{-1}$
+\end_inset
+
+也近似于我们的解的协方差
+\begin_inset space \space{}
+\end_inset
+
+ — 
+\begin_inset space \space{}
+\end_inset
+
+在机器学习(Bishop (2006), Chap.
+ 4.4)中称为拉普拉斯近似(
+\shape italic
+Laplace approximation
+\shape default
+)。这是一个非常重要的结果，因为通过求解因子图，我们不仅恢复了对解的均值的估计，而且还恢复了对其不确定性的测量。在GTSAM中，
+\family typewriter
+Marginals
+\family default
+类实现了这个程序，
+\begin_inset CommandInset href
+LatexCommand href
+name "教程"
+target "https://gtsam.org/tutorials/intro.html#subsec_Full_Posterior_Inference"
+literal "false"
+
+\end_inset
+
+中可以进一步探讨一个示例。
+\end_layout
+
+\begin_layout Standard
+因此，我们可以说，在求解因子图之后，
+\series bold
+解的概率分布
+\series default
+(
+\shape italic
+probability distribution of the solution
+\shape default
+)由
+\begin_inset Formula $Gaussian(\mathcal{X}^{*},\Sigma^{*})$
+\end_inset
+
+给出。
+\end_layout
+
+\begin_layout Section
+获取非线性
+\end_layout
+
+\begin_layout Standard
+前面的位姿图非常简单，可能不适用于我们的大多数问题。对于大多数应用程序来说，将线性因子作为前一个因子是
+\series bold
+不可能的梦想
+\series default
+。更现实的想法是，我们的状态
+\begin_inset Formula $i+1$
+\end_inset
+
+将演变为状态
+\begin_inset Formula $i$
+\end_inset
+
+和测量值的非线性函数，这比以前假设的线性模型
+\begin_inset Formula $\mathbf{A}_{i}\mathbf{x}_{i}+\mathbf{b}_{i}$
+\end_inset
+
+更普遍：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}_{i+1}=f(\mathbf{x}_{i})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+尽管是非线性的，我们仍然可以说我们的映射包含了一些误差，这些误差嵌入到零均值高斯噪声中，我们可以像以前一样简单地增加：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}_{i+1}=f(\mathbf{x}_{i})+\eta_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+按照与之前类似的隔离噪声步骤，我们可以将问题重新表述为以下
+\series bold
+非线性最小二乘
+\series default
+(
+\shape italic
+nonlinear least squares
+\shape default
+, NLS)问题：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}=\arg\min{\displaystyle \sum_{i}||f(\mathbf{x}_{i})-\mathbf{x}_{i+1}||_{\Sigma_{i}}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为系统对于变量不再是线性的，所以我们不能用封闭形式来求解它。我们需要使用非线性优化算法，如
+\begin_inset CommandInset href
+LatexCommand href
+name "Gauss-Newton"
+target "https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm"
+literal "false"
+
+\end_inset
+
+，
+\begin_inset CommandInset href
+LatexCommand href
+name "Levenberg-Marquardt"
+target "https://en.wikipedia.org/wiki/Levenberg%E2%80%93Marquardt_algorithm"
+literal "false"
+
+\end_inset
+
+或
+\begin_inset CommandInset href
+LatexCommand href
+name "Dogleg"
+target "https://en.wikipedia.org/wiki/Powell%27s_dog_leg_method"
+literal "false"
+
+\end_inset
+
+。他们将试图通过线性化残差来近似我们的
+\series bold
+线性梦想
+\series default
+，这些残差是关于在迭代
+\begin_inset Formula $k$
+\end_inset
+
+时由猜测
+\begin_inset Formula $\mathcal{\bar{X}}^{k}$
+\end_inset
+
+给出的某些有效的
+\series bold
+线性化
+\series default
+或
+\series bold
+操作点
+\series default
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(\mathbf{x}_{i})\approx f(\bar{\mathbf{x}}^{k})+\mathbf{H}(\bar{\mathbf{x}}^{k})\mathbf{x}_{i}=\mathbf{b}_{k}+\mathbf{H}^{k}\mathbf{x}_{i}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{H}(\bar{\mathbf{x}}^{k})$
+\end_inset
+
+表示
+\begin_inset Formula $f(\cdot)$
+\end_inset
+
+在线性化点
+\begin_inset Formula $\bar{\mathbf{x}}^{k}$
+\end_inset
+
+处评估的Jacobian矩阵。因此，问题变成：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\delta\mathcal{X}^{k}=\arg\min{\displaystyle \sum_{i}||\mathbf{H}^{k}\mathbf{x}_{i}+\mathbf{b}_{i}-\mathbf{x}_{i+1}||_{\Sigma_{i}^{k}}^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里需要注意的是，我们得到的不是全局解
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+，而是一个很小的增量
+\begin_inset Formula $\delta\mathcal{X}^{k}$
+\end_inset
+
+，这将使我们更接近于一些极小值，这取决于初始值。这个线性问题可以像我们以前做的那样用封闭形式来解决。事实上，正规方程现在变得类似于线性情况：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(\mathbf{H}^{k})^{T}(\Sigma^{k})^{-1}\ \mathbf{H}^{k}\ \delta\mathcal{X}=(\mathbf{H}^{k})^{T}(\Sigma^{k})^{-1}\mathbf{b}\label{eq:nonlinear-normal-equations}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{H}^{k}$
+\end_inset
+
+是通过在迭代
+\begin_inset Formula $k$
+\end_inset
+
+时叠加Jacobian矩阵来建立的。该解
+\begin_inset Formula $\delta\mathcal{X}^{k}$
+\end_inset
+
+将用于在迭代
+\begin_inset Formula $k$
+\end_inset
+
+时使用更新规则更新当前的解：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}^{k+1}=\mathcal{X}^{k}+\delta\mathcal{X}^{k}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathcal{X}^{k+1}$
+\end_inset
+
+对应于迄今为止的最佳估计，并且可以用作下一次迭代的新的线性化点。
+\end_layout
+
+\begin_layout Standard
+同样，左侧的表达式
+\begin_inset Formula $\Sigma^{k+1}=((\mathbf{H}^{k})^{T}(\Sigma^{k})^{-1}\mathbf{H}^{k})^{-1}$
+\end_inset
+
+同样对应于Fisher信息矩阵或Hessian矩阵，
+\series bold
+但与线性化点有关
+\series default
+。这一点非常重要，因为迄今为止的最佳解
+\begin_inset Formula $\mathcal{X}^{k+1}$
+\end_inset
+
+和与其相关的协方差
+\begin_inset Formula $\Sigma^{k+1}$
+\end_inset
+
+将只在这个线性化点中有效，并且随着非线性优化的每次迭代而变化。但是理解了这一点，我们仍然可以说
+\series bold
+在迭代
+\begin_inset Formula $k+1$
+\end_inset
+
+时，我们的最佳解将遵循一个分布
+\series default
+
+\begin_inset Formula $Gaussian(\mathcal{X}^{k+1},\Sigma^{k+1})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在第一篇文章中，我们回顾了求解因子图并从中提取估计值的基本思想。我们展示了用正规方程组(
+\shape italic
+normal equations
+\shape default
+)描述的线性问题不仅可以让我们找到解，而且还可以编码由Fisher信息矩阵的逆给出的协方差信息。此外，在非线性问题的背景下，我们展示了
+\series bold
+这种协方差如何仅在线性化点附近有效
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+在我们的下一篇文章中，我们将回顾当我们不再估计向量变量而是估计其它对象时，如旋转矩阵和刚体变换
+\begin_inset space \space{}
+\end_inset
+
+ — 
+\begin_inset space \space{}
+\end_inset
+
+通常称为
+\series bold
+流形
+\series default
+(
+\series bold
+manifold
+\series default
+)，这些思想是如何推广的。虽然这不仅在数学上，而且在符号上都会带来一些复杂性，但通过明确我们的约定，我们将能够始终如一地解决通常在机器人学和计算机视觉中发现的更
+广泛的问题。
+\end_layout
+
+\begin_layout Part
+坐标系与流形
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset CommandInset href
+LatexCommand href
+name "上一篇文章"
+target "https://gtsam.org/2021/02/23/uncertainties-part1.html"
+literal "false"
+
+\end_inset
+
+中，我们讨论了求解线性和非线性因子图以及从中提取不确定性估计的一些基本概念。我们回顾了Fisher信息矩阵对应于解的逆协方差矩阵的近似，并且在非线性情况下，解及
+其协方差估计
+\series bold
+仅对当前线性化点有效
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+虽然非线性案例有效地让我们能够模拟一堆问题，但我们必须承认，当我们说这是我们模拟实际问题所需要的
+\series bold
+一切东西
+\series default
+时，我们并不太诚实。到目前为止，我们的公式假设在我们的因子图中的变量是
+\series bold
+向量
+\series default
+(
+\series bold
+vector
+\series default
+)，而机器人和计算机视觉至少不是这样。
+\end_layout
+
+\begin_layout Standard
+第二部分将回顾
+\series bold
+流形
+\series default
+(
+\shape italic
+manifold
+\shape default
+)的概念以及参考系如何影响因子图的形成。我们在这里介绍的工具也将有助于以更一般的方式定义概率分布，以及将我们的估计框架扩展到更一般的问题。
+\end_layout
+
+\begin_layout Section
+获取非欧几里德空间
+\end_layout
+
+\begin_layout Standard
+在机器人学中，我们不仅通过机器人的位置，而且还通过机器人的方向来估计机器人的状态。那么我们就说，它的
+\series bold
+位姿
+\series default
+(
+\series bold
+pose
+\series default
+)，即位置和方向结合在一起，是定义其状态的关键。
+\end_layout
+
+\begin_layout Standard
+表示位姿是一件棘手的事情。我们可以说“好吧，但是让我们把方向附加到位置向量上，然后像以前一样做所有的事情”，但这在实践中不起作用。当我们要组成两个位姿
+\begin_inset Formula $\mathbf{T}_{1}=(x_{1},y_{1},\theta_{1})$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{T}_{2}=(x_{2},y_{2},\theta_{2})$
+\end_inset
+
+时，问题就来了。在向量假设下，我们可以把下面的表达式写成两个位姿的组合：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{1}+\mathbf{T}_{2}=\begin{bmatrix}x_{1}\\
+y_{1}\\
+\theta_{1}
+\end{bmatrix}+\begin{bmatrix}x_{2}\\
+y_{2}\\
+\theta_{2}
+\end{bmatrix}=\begin{bmatrix}x_{1}+x_{2}\\
+y_{1}+y_{2}\\
+\theta_{1}+\theta_{2}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这基本上是说，不管我们是从
+\begin_inset Formula $\mathbf{T}_{1}$
+\end_inset
+
+位姿还是
+\begin_inset Formula $\mathbf{T}_{2}$
+\end_inset
+
+位姿开始，我们最终都会以相同的位姿结束，因为在向量空间中，我们可以交换元素。
+\series bold
+但这在现实中是行不通的，因为旋转和平移不能相互交换
+\series default
+。一个简单的例子是，如果你现在坐在办公桌前，站起来，旋转180度，向前走一步，这与站起来，向前走一步，然后旋转180度完全不同(除了如果你做后者，你会撞到你的办
+公桌)。
+\end_layout
+
+\begin_layout Standard
+因此，我们需要一种不同的位姿表示法，让我们能够准确地描述我们在现实中观察到的东西。长话短说，我们必须将平面位姿表示为
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵称为
+\series bold
+刚体变换
+\series default
+(
+\shape italic
+rigid-body transformation
+\shape default
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{1}=\left[\begin{array}{ccc}
+\cos\theta_{1} & -\sin\theta_{1} & x_{1}\\
+\sin\theta_{1} & \cos\theta_{1} & y_{1}\\
+0 & 0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+\mathbf{R}_{1} & \mathbf{t}_{1}\\
+0 & 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+这里
+\begin_inset Formula $\mathbf{R}_{1}=\left[\begin{array}{cc}
+\cos\theta_{1} & -\sin\theta_{1}\\
+\sin\theta_{1} & \cos\theta_{1}
+\end{array}\right]$
+\end_inset
+
+是二维旋转矩阵，还有
+\begin_inset Formula $\mathbf{t}_{1}=\left[\begin{array}{cc}
+x_{1} & y_{1}\end{array}\right]$
+\end_inset
+
+是平移向量。当我们现在使用
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵表示位姿的时候，它的
+\series bold
+自由度
+\series default
+仍然是
+\begin_inset Formula $3$
+\end_inset
+
+，因为它是
+\begin_inset Formula $(x_{1},y_{1},\theta_{1})$
+\end_inset
+
+的函数。
+\end_layout
+
+\begin_layout Standard
+使用变换矩阵的工作是非常好的，因为我们现在可以使用矩阵操作来描述我们之前用文字解释的行为。如果我们从位姿
+\begin_inset Formula $\mathbf{T}_{1}$
+\end_inset
+
+开始，应用变换
+\begin_inset Formula $\mathbf{T}_{2}$
+\end_inset
+
+ :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{1}\mathbf{T}_{2}=\left[\begin{array}{cc}
+\mathbf{R}_{1} & \mathbf{t}_{1}\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+\mathbf{R}_{2} & \mathbf{t}_{2}\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+\mathbf{R}_{1}\mathbf{R}_{2} & \mathbf{R}_{1}\mathbf{t}_{2}+\mathbf{t}_{1}\\
+0 & 1
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在可以重写与以前一样的问题，但现在使用我们的变换矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{i+1}=\mathbf{T}_{i}\ \Delta\mathbf{T}_{i}
+\end{equation}
+
+\end_inset
+
+在这里我们说下一个状态
+\begin_inset Formula $\mathbf{T}_{i+1}$
+\end_inset
+
+是由上一个状态
+\begin_inset Formula $\mathbf{T}_{i}$
+\end_inset
+
+加上一些由传感器给出的增量
+\begin_inset Formula $\Delta\mathbf{T}_{i}$
+\end_inset
+
+，在这种情况下，传感器是里程表。请注意，由于我们现在正在处理变换矩阵，
+\begin_inset Formula $\Delta\mathbf{T}_{i}$
+\end_inset
+
+几乎是我们需要更精确地建模问题的所有内容，因为它将代表位置和方向的变化。
+\end_layout
+
+\begin_layout Standard
+现在，在继续工作之前
+\series bold
+有两件事我们必须讨论
+\series default
+，这是使一切保持一致的基础。我们现在将仔细审查。
+\end_layout
+
+\begin_layout Subsection
+参考系的重要性
+\end_layout
+
+\begin_layout Standard
+虽然有些人(包括我在内)喜欢像以前一样编写流程，在
+\series bold
+右侧
+\series default
+应用增量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{i+1}=\mathbf{T}_{i}\ \Delta\mathbf{T}_{i}
+\end{equation}
+
+\end_inset
+
+其他人则以不同的方式，在
+\series bold
+左侧
+\series default
+应用：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{i+1}=\Delta\mathbf{T}_{i}\ \mathbf{T}_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+正如我们已经讨论过的那样，这些表达方式并不等价，因为刚体变换不能相互交换。然而，
+\series bold
+在特定的约定下，两者都有意义
+\series default
+。通过在符号中引入
+\series bold
+参考系
+\series default
+(
+\series bold
+reference frame
+\series default
+)的概念，我们现在将更加明确。我们将使用Paul Furgale在其博客文章
+\begin_inset CommandInset href
+LatexCommand href
+name "“表示机器人位姿：好的、坏的和丑陋的”"
+target "http://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly"
+literal "false"
+
+\end_inset
+
+中提出的符号。
+\end_layout
+
+\begin_layout Standard
+假设机器人在空间中的轨迹是用一个固定的坐标系来表示的；我们称之为
+\series bold
+世界坐标系
+\series default
+(
+\shape italic
+world frame
+\shape default
+)
+\begin_inset Formula $W$
+\end_inset
+
+。机器人本身在它的机体内部定义了一个坐标系，
+\series bold
+机体坐标系
+\series default
+(
+\shape italic
+body frame
+\shape default
+)
+\begin_inset Formula $B$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+然后我们可以使用以下符号来定义机器人机体
+\begin_inset Formula $B$
+\end_inset
+
+在世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+中的位姿：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB}
+\end{equation}
+
+\end_inset
+
+类似地，我们可以用以下符号来定义在机器人坐标系
+\begin_inset Formula $B$
+\end_inset
+
+中表示的原点/世界
+\begin_inset Formula $W$
+\end_inset
+
+的位姿：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{BW}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据这个公式，第一个表示是从一个
+\series bold
+固定的世界坐标系
+\series default
+来描述，注意下标的左侧，而另一个则是从
+\series bold
+机器人的角度
+\series default
+来描述。有趣的是，我们总是可以通过转置矩阵从一个得到另一个：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB}^{-1}=\mathbf{T}_{BW}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，
+\series bold
+逆向交换
+\series default
+(
+\shape italic
+inverse swap
+\shape default
+)子索引，有效地改变了我们描述世界的
+\series bold
+观点
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+选择使用哪一个并不重要。重要的是保持一致。
+\series default
+事实上，通过在我们的约定中明确坐标系，我们总是可以检查我们是否犯了错误。假设我们使用的是第一个定义，而我们的里程表提供的是
+\series bold
+相对于前一个机体状态
+\series default
+的增量。我们的增量
+\begin_inset Formula $\Delta\mathbf{T}_{i}$
+\end_inset
+
+将会是
+\begin_inset Formula $\Delta\mathbf{T}_{B_{i}B_{i+1}}$
+\end_inset
+
+，也就是说，它是一个变换，它描述了在前一个
+\begin_inset Formula $i$
+\end_inset
+
+时刻中表示的
+\begin_inset Formula $i+1$
+\end_inset
+
+时刻机体的位姿。
+\end_layout
+
+\begin_layout Standard
+因此，在世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+中表示的时间
+\begin_inset Formula $i+1$
+\end_inset
+
+处机体的实际位姿通过
+\series bold
+右侧增量的矩阵乘法
+\series default
+给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们知道这是正确的，因为内部索引相互抵消，有效地表示我们想要的坐标系中
+\begin_inset Formula $i+1$
+\end_inset
+
+处的位姿：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{W\bcancel{B_{i}}}\ \Delta\mathbf{T}_{\bcancel{B_{i}}B_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为我们
+\series bold
+应用右侧增量
+\series default
+，所以我们将此称为
+\series bold
+右侧约定
+\series default
+(
+\series bold
+right-hand convention
+\series default
+)。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename right-convention.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+当使用右侧约定时，描述机器人在瞬间
+\begin_inset Formula $i$
+\end_inset
+
+的位姿的增量应用于右侧。我们所有的估计都是关于一个固定的世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+(黑色坐标)的。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果要将增量应用于
+\begin_inset Formula $\mathbf{T}_{BW}$
+\end_inset
+
+，则需要对测量值求逆：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta\mathbf{T}_{B_{i+1}B_{i}}=\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}
+\end{equation}
+
+\end_inset
+
+所以我们可以
+\series bold
+在左侧
+\series default
+应用变换：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{B_{i+1}W}=\Delta\mathbf{T}_{B_{i+1}B_{i}}\mathbf{T}_{B_{i}W}
+\end{equation}
+
+\end_inset
+
+我们称之为
+\series bold
+左侧约定
+\series default
+(
+\series bold
+left-hand convention
+\series default
+)。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename left-convention.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+使用左侧约定，从左侧应用增量，将参考坐标系更改为新的机器人位姿
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+(黑色坐标)。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+在GTSAM中，我们使用右侧约定：我们假设变量相对于固定的坐标系
+\series default
+
+\begin_inset Formula $W$
+\end_inset
+
+
+\series bold
+表示，因此增量应用于右侧。
+\end_layout
+
+\begin_layout Standard
+记住这一点很重要，因为实现的所有操作都遵循这一点。事实上，3D计算机视觉通常使用左侧约定，因为从左侧应用投影模型很简单：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{I}\mathbf{p}=\mathbf{K}_{IC}\ \mathbf{T}_{CW}\ {}_{W}\mathbf{P}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里，我们明确了我们通常在教科书中可以找到的所有涉及到的变换的坐标系：用世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+表示的一个齐次点
+\begin_inset Formula $_{W}\mathbf{P}$
+\end_inset
+
+，由在相机坐标系
+\begin_inset Formula $C$
+\end_inset
+
+中表示的世界
+\begin_inset Formula $W$
+\end_inset
+
+的外部校准矩阵
+\begin_inset Formula $\mathbf{T}_{CW}$
+\end_inset
+
+(刚体变换)进行变换，在相机坐标系(未显示)中产生向量
+\begin_inset Formula $_{C}\mathbf{P}$
+\end_inset
+
+。这通过内部校准矩阵
+\begin_inset Formula $\mathbf{K}_{IC}$
+\end_inset
+
+投影到图像上，产生在图像坐标系
+\begin_inset Formula $I$
+\end_inset
+
+中表示的向量
+\begin_inset Formula $_{I}\mathbf{p}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+由于在GTSAM中，外部校准是以另一种方式定义的，以符合右手约定，即
+\begin_inset Formula $\mathbf{T}_{WC}$
+\end_inset
+
+，因此
+\family typewriter
+CalibratedCamera
+\family default
+的实现通过
+\begin_inset CommandInset href
+LatexCommand href
+name "在进行投影之前正确求逆矩阵"
+target "https://github.com/borglab/gtsam/blob/develop/gtsam/geometry/CalibratedCamera.cpp#L120"
+literal "false"
+
+\end_inset
+
+来处理它，正如我们所期望的：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{I}\mathbf{p}=\mathbf{K}_{IC}\ (\mathbf{T}_{WC})^{-1}\ {}_{W}\mathbf{P}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+它们不仅仅是矩阵
+\end_layout
+
+\begin_layout Standard
+我们需要讨论的第二个重要点是，虽然刚体变换很好，但是当我们尝试使用前面的方法在因子图中使用它时，给我们用来表示这个过程的新表达式带来了一些挑战：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+首先，我们需要找出一种方法来包括
+\series bold
+噪声
+\series default
+(
+\shape italic
+noise
+\shape default
+)项
+\begin_inset Formula $\eta_{i}$
+\end_inset
+
+，我们之前用它来处理关于我们的测量
+\begin_inset Formula $\Delta\mathbf{T}_{B_{i}B_{i+1}}$
+\end_inset
+
+的不确定性，这也是我们用来生成我们在因子图中使用的高斯因子的技巧。现在，我们将说，噪声将由矩阵
+\begin_inset Formula $\mathbf{N}_{i}\in\mathbb{R}^{4\times4}$
+\end_inset
+
+给出，其中包含以下内容：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}}\mathbf{N}_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其次，假设噪声
+\begin_inset Formula $\mathbf{N}_{i}$
+\end_inset
+
+是以某种方式定义的，我们可以像以前一样隔离它。但是，我们现在需要使用矩阵操作：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{N}_{i}=(\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}})^{-1}\mathbf{T}_{WB_{i+1}}
+\end{equation}
+
+\end_inset
+
+并且我们可以对其进行一些处理，以使其更加清晰：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{N}_{i}=(\Delta\mathbf{T}_{B_{i}B_{i+1}})^{-1}(\mathbf{T}_{WB_{i}})^{-1}\mathbf{T}_{WB_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们做之前做过的子索引取消技巧，适当地交换由于求逆而产生的索引，我们可以确认误差是
+\series bold
+在帧
+\series default
+
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+
+\series bold
+中定义的，并在帧
+\series default
+
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+
+\series bold
+中表达
+\series default
+。这看起来可能违反直觉，但实际上描述了我们想要的：我们的模型和测量之间的不匹配程度，以表达帧
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+处的位姿，理想情况下应该是零。
+\end_layout
+
+\begin_layout Standard
+然而，误差仍然是一个矩阵，这是不可能将其作为一个因子纳入到我们迄今为止构建的框架中。我们不能像以前那样计算
+\series bold
+向量残差
+\series default
+(
+\shape italic
+vector residual
+\shape default
+)，也不能完全确定矩阵
+\begin_inset Formula $\mathbf{N}_{i}$
+\end_inset
+
+遵循某种高斯分布。
+\end_layout
+
+\begin_layout Standard
+我们需要定义一些在GTSAM中使用的重要概念，以便更好地理解对象是如何被操纵的。
+\end_layout
+
+\begin_layout Subsection
+有些对象是群
+\end_layout
+
+\begin_layout Standard
+首先，GTSAM中使用的一些对象是
+\begin_inset CommandInset href
+LatexCommand href
+name "群(group)"
+target "https://en.wikipedia.org/wiki/Group_(mathematics)"
+literal "false"
+
+\end_inset
+
+。刚体变换(在GTSAM中的
+\family typewriter
+Pose3
+\family default
+和
+\family typewriter
+Pose2
+\family default
+)、旋转矩阵(
+\family typewriter
+Rot2
+\family default
+和
+\family typewriter
+Rot3
+\family default
+)和四元数，当然还有向量空间(
+\family typewriter
+Point2
+\family default
+和
+\family typewriter
+Point3
+\family default
+)具有一些基本操作，允许我们对它们进行操作。这些概念在实现层面上
+\begin_inset CommandInset href
+LatexCommand href
+name "已经在以前的文章中讨论过"
+target "https://gtsam.org/notes/GTSAM-Concepts.html"
+literal "false"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+组合
+\series default
+(
+\series bold
+Composition
+\series default
+)：如何从同一流形组合
+\begin_inset Formula $2$
+\end_inset
+
+个具有关联性属性的对象。它类似于向量的
+\series bold
+加法
+\series default
+(
+\shape italic
+addition
+\shape default
+)操作。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+幺元
+\series default
+(
+\series bold
+Identity
+\series default
+)：在组合/之间(composition/between)下的幺元算子。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+求逆
+\series default
+(
+\series bold
+Inverse
+\series default
+)：一个元素，当与它的逆元素组合操作时，就成为幺元。
+\end_layout
+
+\begin_layout Standard
+上面的
+\begin_inset Formula $3$
+\end_inset
+
+个操作允许我们定义
+\series bold
+之间
+\series default
+(
+\series bold
+between
+\series default
+)操作，它计算来自同一群的
+\begin_inset Formula $2$
+\end_inset
+
+个对象之间的差异，类似于
+\series bold
+减法
+\series default
+(
+\shape italic
+subtraction
+\shape default
+)操作。
+\end_layout
+
+\begin_layout Standard
+由于对每一类对象的操作可以使用不同的方式定义(例如，旋转矩阵的组合与四元数或向量的组合是不同的)，一些作者定义了特殊的算子来表示组合/之间(compositio
+n/between)操作。一些例子是
+\series bold
+盒子加号
+\series default
+(
+\shape italic
+box-plus
+\shape default
+) 
+\begin_inset Formula $\boxplus$
+\end_inset
+
+ 用于
+\series bold
+组合
+\series default
+(
+\shape italic
+composition
+\shape default
+)和
+\series bold
+盒子减号
+\series default
+(
+\shape italic
+box-minus
+\shape default
+) 
+\begin_inset Formula $\boxminus$
+\end_inset
+
+ 用于
+\series bold
+之间
+\series default
+(
+\shape italic
+between
+\shape default
+)操作，这由 
+\begin_inset CommandInset href
+LatexCommand href
+name "Hertzberg等人"
+target "https://arxiv.org/abs/1107.1119"
+literal "false"
+
+\end_inset
+
+、
+\begin_inset CommandInset href
+LatexCommand href
+name "Blanco-Claraco"
+target "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.468.5407&rep=rep1&type=pdf"
+literal "false"
+
+\end_inset
+
+、
+\begin_inset CommandInset href
+LatexCommand href
+name "Bloesch等人"
+target "https://arxiv.org/abs/1606.05285"
+literal "false"
+
+\end_inset
+
+，还有 
+\begin_inset CommandInset href
+LatexCommand href
+name "Kindr library"
+target "https://github.com/ANYbotics/kindr"
+literal "false"
+
+\end_inset
+
+ 所做的工作。
+\end_layout
+
+\begin_layout Standard
+但是，组合可以从
+\series bold
+左侧
+\series default
+(
+\shape italic
+left
+\shape default
+)或
+\series bold
+右侧
+\series default
+(
+\shape italic
+right
+\shape default
+)定义，因为
+\series bold
+组合是结合的(associative)但不是分配的(distributive)
+\series default
+。这与我们之前在讨论参考系以及如何使用
+\series bold
+左侧
+\series default
+(
+\shape italic
+left
+\shape default
+)或
+\series bold
+右侧
+\series default
+(
+\shape italic
+right
+\shape default
+)约定增加小的增量时所描述的问题相同，因为这两者都是有效的，取决于我们或其他作者的决定。虽然我们可以清楚自己的决定，但重要的是要知道每个作者的定义，因为有时没有
+明确说明。例如，
+\begin_inset CommandInset href
+LatexCommand href
+name "Solà等人"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+通过分别使用
+\series bold
+左侧
+\series default
+(
+\shape italic
+left
+\shape default
+)约定或
+\series bold
+右侧
+\series default
+(
+\shape italic
+right
+\shape default
+)约定，定义左结合
+\begin_inset Formula $\oplus$
+\end_inset
+
+和右结合
+\begin_inset Formula $\oplus$
+\end_inset
+
+的组合，明确了两者的区别，我们需要注意识别对方的选择。
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+我们再次回顾，在GTSAM和本文的其余部分中，我们使用右侧约定(right convention)
+\series default
+，双关语
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：right convention，有正确的约定之意。
+\end_layout
+
+\end_inset
+
+，因为我们表示我们的位姿是相对于固定世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+的，并且增量是相对于机体坐标系
+\begin_inset Formula $B$
+\end_inset
+
+定义的。
+\end_layout
+
+\begin_layout Subsection
+有些对象是
+\shape slanted
+流形
+\end_layout
+
+\begin_layout Standard
+另外，刚体变换、旋转矩阵、四元数甚至向量都是
+\series bold
+可微流形
+\series default
+(
+\series bold
+differentiable manifold
+\series default
+)。这意味着，即使它们在全局尺度上不表现为欧几里德空间，它们也可以通过使用称为
+\series bold
+切空间
+\series default
+(
+\series bold
+tangent spaces
+\series default
+)的局部向量空间进行
+\series bold
+局部近似
+\series default
+(
+\shape italic
+locally approximated
+\shape default
+)。从流形的角度分析所有这些对象的主要优点是，我们可以根据适用于所有对象的共同原则构建通用算法。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename manifold.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+当流形具有非欧几里德结构时，它可以用切空间进行局部近似。在图中，我们说明了在流形上的对象
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{p}_{2}$
+\end_inset
+
+定义的不同切空间。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+正如我们之前简单提到的，像旋转矩阵这样的对象很难在估计框架中操作，因为它们是矩阵。3D旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+表示相对于参考坐标系的
+\begin_inset Formula $3$
+\end_inset
+
+个方向，但在原始元素项中，它们使用
+\begin_inset Formula $9$
+\end_inset
+
+个数值来表示，这似乎是
+\series bold
+过度参数化
+\series default
+(
+\shape italic
+overparametrize
+\shape default
+)了对象。然而，定义旋转矩阵以及流形的约束，如正交性
+\begin_inset Formula $\mathbf{R}^{T}\mathbf{R}=\mathbf{I}$
+\end_inset
+
+和
+\begin_inset Formula $\text{det}(\mathbf{R})=1$
+\end_inset
+
+，使得旋转的固有维数仍然是
+\begin_inset Formula $3$
+\end_inset
+
+。有趣的是，
+\series bold
+这正是可以在流形上定义的切空间的维数
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+这就是使用流形如此方便的原因
+\series default
+：作为对象定义一部分的所有约束都被自然地处理，我们可以利用其固有的维度在切向空间中工作。同样的情况也发生在刚体变换(由
+\begin_inset Formula $16$
+\end_inset
+
+个元素矩阵表示的
+\begin_inset Formula $6$
+\end_inset
+
+维)、四元数(由4D向量表示的
+\begin_inset Formula $3$
+\end_inset
+
+个方向)，
+\series bold
+还有甚至不是群的对象，例如单位向量
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+为了使用流形，我们需要定义
+\begin_inset Formula $2$
+\end_inset
+
+个操作，它们是在流形和切空间之间变换对象的关键：
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+收回
+\series default
+(
+\series bold
+retract
+\series default
+ or 
+\series bold
+retraction
+\series default
+)：将元素
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+从
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+处的切空间映射到流形的操作：
+\begin_inset Formula $\mathbf{p}=\text{retract}_{\mathbf{p}_{1}}(\boldsymbol{\xi})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+局部
+\series default
+(
+\series bold
+local
+\series default
+)：相反的操作：将元素
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+从流形映射到切空间
+\begin_inset Formula $\boldsymbol{\xi}=\text{local}_{\mathbf{p}_{1}}(\mathbf{p})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename manifold-retract-zoom.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+收回
+\series default
+(
+\shape italic
+retract
+\shape default
+)操作将定义在
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+处的切空间中的一个元素
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+映射回流形。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename manifold-retract.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+用另一个图形表示收回(retraction)，它将用于其余的位姿，因为它更明确显示流形和切空间之间的相互作用。我们可以清楚地观察到，收回产生的元素
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+也与流形上的
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+有关。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename manifold-local.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+局部
+\series default
+(
+\shape italic
+local
+\shape default
+)操作则相反，将相对于
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+定义的元素
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+映射为在切空间中的向量
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+收回(retraction)是
+\begin_inset CommandInset href
+LatexCommand href
+name "求解优化问题"
+target "https://press.princeton.edu/absil"
+literal "false"
+
+\end_inset
+
+和定义流形不确定性的基本概念。虽然本文后面将用一个例子讨论前者，但现在解释后者是有用的。一般的想法是，我们可以定义切空间上的分布，并使用收回将它们映射回流形上。
+例如，我们可以在以
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+为中心的切空间中定义一个零均值的高斯变量
+\begin_inset Formula $\eta\sim Gaussian(\mathbf{0}_{n\times1},\Sigma)$
+\end_inset
+
+，并使用收回：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Gaussian(\mathbf{p}_{1},\boldsymbol{\eta}):=\text{retract}_{\mathbf{p}_{1}}(\boldsymbol{\eta})
+\end{equation}
+
+\end_inset
+
+其图形对应于：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename manifold-gaussian.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+通过收回，我们可以在以
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+为中心的切空间上定义高斯分布，并将它们映射回流形上，从而在具有均值
+\begin_inset Formula $\mathbf{p}_{1}$
+\end_inset
+
+和协方差
+\begin_inset Formula $\text{Cov}(\eta)=\Sigma$
+\end_inset
+
+的流形上构造高斯分布。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，我们定义了
+\series bold
+从右侧
+\series default
+的收回，因为这与GTSAM使用的约定相匹配，而这恰好也符合群的组合算子。然而，在文献中我们可以发现不同的定义：
+\begin_inset CommandInset href
+LatexCommand href
+name "Barfoot和Furgale(2014，左侧约定)"
+target "http://ncfrn.cim.mcgill.ca/members/pubs/barfoot_tro14.pdf"
+literal "false"
+
+\end_inset
+
+、
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Forster等人(2017，右侧约定)"
+target "https://arxiv.org/abs/1512.02363"
+literal "false"
+
+\end_inset
+
+ 以及 
+\begin_inset CommandInset href
+LatexCommand href
+name "Mangelson等人(2020，左侧约定)"
+target "https://arxiv.org/abs/1906.07795"
+literal "false"
+
+\end_inset
+
+，就是其中一些例子。定义流形上概率分布的其它定义包括 
+\begin_inset CommandInset href
+LatexCommand href
+name "Calinon(2020)"
+target "https://arxiv.org/abs/1909.05946"
+literal "false"
+
+\end_inset
+
+ 和 
+\begin_inset CommandInset href
+LatexCommand href
+name "Lee等人(2008)"
+target "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.175.5054&rep=rep1&type=pdf"
+literal "false"
+
+\end_inset
+
+，请参阅他们的工作以了解更多细节。
+\end_layout
+
+\begin_layout Subsection
+有些对象具有双重属性：李群
+\end_layout
+
+\begin_layout Standard
+在GTSAM中，
+\series bold
+我们只需要对象是可微流形，以便在估计框架中对其进行优化，而完全不要求对象是群
+\series default
+。然而，需要注意的是，我们处理的一些对象
+\series bold
+既是群又是可微流形
+\series default
+，称为
+\series bold
+
+\begin_inset CommandInset href
+LatexCommand href
+name "李群(Lie groups)"
+target "https://en.wikipedia.org/wiki/Lie_group"
+literal "false"
+
+\end_inset
+
+
+\series default
+，这是状态估计文献中普遍存在的公式。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+李群既是群又是可微流形。它们在幺元处定义了一个切空间，允许通过在幺元处定义的收回来表示流形上的任何对象，称为指数映射，以及在幺元处的局部操作
+\begin_inset space \space{}
+\end_inset
+
+ —
+\begin_inset Formula $\,$
+\end_inset
+
+对数映射。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+像刚体矩阵和四元数等对象是李群。二维刚体变换是
+\series bold
+特殊欧几里德群
+\series default
+(
+\shape italic
+Special Euclidean group
+\shape default
+)\SpecialChar allowbreak
+
+\begin_inset Formula $\text{SE(2)}$
+\end_inset
+
+的元素，二维和三维旋转分别来自
+\series bold
+特殊正交群
+\series default
+(
+\shape italic
+Special Orthogonal groups
+\shape default
+) 
+\begin_inset Formula $\text{SO(2)}$
+\end_inset
+
+和
+\begin_inset Formula $\text{SO(3)}$
+\end_inset
+
+。三维刚体变换是
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的对象，并且我们可以使用这些定义来定义前面描述的群和流形的操作：
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+组合
+\series default
+(
+\series bold
+Composition
+\series default
+)：矩阵乘法
+\begin_inset Formula $\mathbf{T}_{1}\ \mathbf{T}_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+幺元
+\series default
+(
+\series bold
+Identity
+\series default
+)：幺元矩阵
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+求逆
+\series default
+(
+\series bold
+Inverse
+\series default
+)：矩阵求逆
+\begin_inset Formula $(\mathbf{T}_{1})^{-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+收回
+\series default
+(
+\series bold
+Retract
+\series default
+)：收回在幺元处的切空间定义，称为
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的
+\series bold
+指数映射
+\series default
+(
+\shape italic
+exponential map
+\shape default
+)：
+\begin_inset Formula $\text{retract}_{\mathbf{I}}(\boldsymbol{\xi}):=\text{Exp}(\boldsymbol{\xi})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+局部
+\series default
+(
+\series bold
+Local
+\series default
+)：它也定义在幺元处，称为
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的
+\series bold
+对数映射
+\series default
+(
+\shape italic
+logarithm map
+\shape default
+)：
+\begin_inset Formula $\text{local}_{\mathbf{I}}:=\text{Log}(\mathbf{T}_{1})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+请注意，为了简单起见，我们使用了
+\series bold
+大写的
+\series default
+
+\begin_inset Formula $\text{Log}(\cdot):=\text{log}(\cdot)^{\vee}$
+\end_inset
+
+和
+\begin_inset Formula $\text{Exp}(\cdot):=\text{exp}((\cdot)^{\wedge})$
+\end_inset
+
+算子，正如 
+\begin_inset CommandInset href
+LatexCommand href
+name "Forster等人(2017)"
+target "https://arxiv.org/abs/1512.02363"
+literal "false"
+
+\end_inset
+
+，还有 
+\begin_inset CommandInset href
+LatexCommand href
+name "Solà等人(2020)"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+ 所使用的那样，因为在收回视角下，它们很容易理解。更详细的描述请参考Solà等人的文章，包括切空间和
+\series bold
+李代数
+\series default
+(
+\shape italic
+Lie algebra
+\shape default
+)之间的关系。
+\end_layout
+
+\begin_layout Standard
+在GTSAM中，3D位姿被实现为
+\family typewriter
+Pose3
+\family default
+对象，我们可以把它们看作是
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+元素。因此，为了简单起见，我们将继续使用对数映射和指数映射来讨论它们的收回和局部算子。然而，GTSAM也允许我们在某些情况下使用替代性的收回，就像使用
+\series bold
+其它李群
+\series default
+来表示位姿一样，比如
+\begin_inset Formula $\mathbb{R}^{3}\times\text{SO}(3)$
+\end_inset
+
+群，见
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://gtsam.org/notes/GTSAM-Concepts.html"
+literal "false"
+
+\end_inset
+
+的解释。
+\end_layout
+
+\begin_layout Subsection
+流形上的参考系
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+在应用局部和收回操作时，参考坐标系被保留
+\series default
+。我们将使用
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+来介绍一些重要的想法，因为它与我们最初的位姿估计问题有关。
+\end_layout
+
+\begin_layout Standard
+首先，当我们讨论
+\series bold
+定义在幺元处的切空间
+\series default
+时，在物理术语中，它指的是有一个固定的，全局的坐标系，我们用它来表达我们的位姿。然后，当使用定义为
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的对数映射的局部操作时，我们获得一个向量
+\begin_inset Formula $_{W}\boldsymbol{\xi}_{W}\in\mathbb{R}^{6}$
+\end_inset
+
+ (有时也称为
+\series bold
+切向量
+\series default
+(
+\shape italic
+tangent vector
+\shape default
+)或
+\series bold
+扭转向量
+\series default
+(
+\shape italic
+twist vector
+\shape default
+) )，它定义在
+\series bold
+世界坐标系
+\series default
+(
+\shape italic
+world frame
+\shape default
+)的切空间中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{W}\boldsymbol{\xi}=\text{Log}(\mathbf{T}_{WB_{i}})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在此示例中，在幺元处的切空间表示世界坐标系，可以在其上定义在世界坐标系中表示的任意变换
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，我们
+\series bold
+可以使用收回将增量变化增加到变换中
+\series default
+，对于
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+，使用指数映射完成，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\text{Exp}({}_{B_{i}}\boldsymbol{\xi})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在本例中，我们从时间
+\begin_inset Formula $i$
+\end_inset
+
+处的机体坐标系增加了一个增量，其表示时间
+\begin_inset Formula $i+1$
+\end_inset
+
+处的新位姿。请注意，
+\series bold
+增量是相对于参考坐标系定义的，但它们不需要指定结果坐标系
+\series default
+。它们的含义(代表时间
+\begin_inset Formula $i+1$
+\end_inset
+
+处的新位姿)是我们
+\begin_inset space \space{}
+\end_inset
+
+ —
+\begin_inset Formula $\,$
+\end_inset
+
+作为用户
+\begin_inset space \space{}
+\end_inset
+
+ —
+\begin_inset Formula $\,$
+\end_inset
+
+定义的，但在公式中并不明确。(虽然我们可以这样做，但它可能会导致混淆，因为在这个特定的情况下，我们表示的是下一个瞬间的位姿，但我们也可以使用收回来描述对世界坐标
+系的校正，我们将在最后一篇文章中看到。)
+\end_layout
+
+\begin_layout Standard
+流形的图形解释与我们对收回和坐标系的一般定义是一致的。使用右侧的指数映射在
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+处定义一个切空间，可以将其解释为
+\begin_inset Formula $B_{i}$
+\end_inset
+
+处的新的
+\series bold
+参考系
+\series default
+(
+\shape italic
+reference frame
+\shape default
+)，我们使用它来定义增量：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames-increment.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+当对于位姿
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+我们增加一个小的增量
+\begin_inset Formula $_{B_{i}}\boldsymbol{\xi}$
+\end_inset
+
+，表达式
+\begin_inset Formula $\mathbf{T}_{WB_{i}}\text{Exp}({}_{B_{i}}\boldsymbol{\xi})$
+\end_inset
+
+对应于在
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+处定义的切空间的收回。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当我们有局部(机体坐标系)速度测量值时，也称为
+\series bold
+扭转
+\series default
+(
+\shape italic
+twists
+\shape default
+)，
+\begin_inset Formula $(_{B_{i}}\omega,{}_{B_{i}}v)$
+\end_inset
+
+，其中
+\begin_inset Formula $_{B_{i}}\omega\in\mathbb{R}^{3},{}_{B_{i}}v\in\mathbb{R}^{3}$
+\end_inset
+
+ ，通过收回表述增量公式也很方便，并且我们想做
+\begin_inset CommandInset href
+LatexCommand href
+name "航位推算(dead reckoning)"
+target "https://en.wikipedia.org/wiki/Dead_reckoning"
+literal "false"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\text{Exp}\left(\begin{array}{cc}
+\begin{bmatrix}_{B_{i}}\omega\\
+_{B_{i}}v
+\end{bmatrix} & \delta t\end{array}\right)
+\end{equation}
+
+\end_inset
+
+乘积
+\begin_inset Formula $\left[\begin{array}{cc}
+_{B_{i}}\omega & \delta t\\
+_{B_{i}}v & \delta t
+\end{array}\right]$
+\end_inset
+
+代表速度的时间积分所得到的切向量，它通过
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的收回映射到流形上：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames-velocities.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+同样的公式可用于通过收回/指数映射将速度映射为增量。在这种情况下，时间增量
+\begin_inset Formula $\delta t$
+\end_inset
+
+控制着在进行航位推算时投影到流形上的曲线的长度。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一个例子也有助于理解3D位姿下收回/局部(retraction/local)操作的物理意义，这一点并不总是很清晰。用
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+说明这一点的一个有趣的方面是，如果我们只使用旋转(
+\begin_inset Formula $\text{SO(3)}$
+\end_inset
+
+，
+\begin_inset Formula $\text{SO(2)}$
+\end_inset
+
+)或2D位姿(
+\begin_inset Formula $\text{SE(2)}$
+\end_inset
+
+)，其意义也适用：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames-velocities-physical.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+此图说明了航位推算示例的
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+收回的物理意义。在浅蓝色中，我们显示了应用于位姿的增量
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+，它生成了一个
+\series bold
+新的
+\series default
+坐标系。在右侧，我们演示了分解的增量：顶部的方向和底部的位置。
+\series bold
+方向增量
+\series default
+(
+\shape italic
+orientation increment
+\shape default
+)的每个分量表示相对于在
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+处由机体位姿定义的每个旋转轴的变化(分别显示相对于
+\begin_inset Formula $X$
+\end_inset
+
+、
+\begin_inset Formula $Y$
+\end_inset
+
+和
+\begin_inset Formula $Z$
+\end_inset
+
+轴的旋转)。组合时，向量表示旋转增量的轴角度表示。
+\series bold
+位置增量
+\series default
+(
+\shape italic
+position increments
+\shape default
+)(右侧，底部)更容易解释，因为它们仅表示相对于
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+原点的位置偏移。由于收回在流形上实际上
+\series bold
+组合
+\series default
+了方向和位置增量两者，它产生了一个平滑的轨迹，如左侧所示(浅蓝色)。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+关于收回和局部操作的几点备注
+\end_layout
+
+\begin_layout Standard
+最后，我们想与大家分享一些重要的备注，这些备注在数学中并不总是被提及的，但
+\series bold
+在实现中却可能成为真正的问题
+\series default
+。首先，我们需要注意
+\series bold
+在收回/局部(retraction/local)操作中各分量的顺序的约定
+\series default
+(是的，又是约定)。弄清楚每个软件或论文对这些操作所使用的定义，甚至是隐含的，对于理解我们在估计问题中所投入的数据和我们所提取的估计值，这是至关重要的。
+\end_layout
+
+\begin_layout Standard
+例如，我们提出的
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+收回的定义，与GTSAM中的
+\family typewriter
+Pose3
+\family default
+匹配，使用一种
+\series bold
+先方向后平移
+\series default
+(
+\shape italic
+orientation-then-translation
+\shape default
+)的约定，即6D切向量在前
+\begin_inset Formula $3$
+\end_inset
+
+个坐标中为方向，在后
+\begin_inset Formula $3$
+\end_inset
+
+个坐标中为平移，
+\begin_inset Formula $\boldsymbol{\xi}=(\phi,\rho)$
+\end_inset
+
+，其中
+\begin_inset Formula $\phi\in\mathbb{R}^{3}$
+\end_inset
+
+表示方向分量，而
+\begin_inset Formula $\rho\in\mathbb{R}^{3}$
+\end_inset
+
+是平移分量。另一方面，
+\family typewriter
+Pose2
+\family default
+使用
+\series bold
+先平移后方向
+\series default
+(
+\shape italic
+translation-then-orientation
+\shape default
+)约定
+\begin_inset Formula $(x,y,\theta)$
+\end_inset
+
+是因为
+\begin_inset CommandInset href
+LatexCommand href
+name "历史原因"
+target "https://github.com/borglab/gtsam/issues/160#issuecomment-562161665"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+这也与协方差的定义有关
+\series default
+。例如，对于
+\family typewriter
+Pose3
+\family default
+对象，我们必须定义与切向量的定义和意义相匹配的协方差矩阵。事实上，左上角的块必须编码为方向协方差，即每个旋转轴的不确定度，而右下角的块编码为位置协方差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cc}
+\Sigma_{\phi\phi} & \Sigma_{\phi\rho}\\
+\Sigma_{\phi\rho}^{T} & \Sigma_{\rho\rho}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是至关重要的，因为，例如，先前的协方差矩阵与在ROS中存储在
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "PoseWithCovariance"
+target "http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/PoseWithCovariance.html"
+literal "false"
+
+\end_inset
+
+
+\family default
+中的协方差的约定不匹配。在使用不同的库或软件时可能会出现类似的问题，因此我们必须了解它们的约定。如果文档中没有说明，我们的建议是
+\series bold
+一定要检查收回/指数映射的定义
+\series default
+。
+\end_layout
+
+\begin_layout Section
+把所有的东西放在一起
+\end_layout
+
+\begin_layout Standard
+现在我们可以回到我们最初的使用刚体变换的估计问题上。让我们回顾一下，我们定义了以下由里程表测量值给出的过程模型：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}}\mathbf{N}_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们之前报告了两个问题：
+\end_layout
+
+\begin_layout Enumerate
+我们需要将噪声
+\begin_inset Formula $\mathbf{N}_{i}$
+\end_inset
+
+定义为高斯噪声，但它是一个
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵。
+\end_layout
+
+\begin_layout Enumerate
+当隔离噪声以产生残差时，我们最终得到的是一个矩阵表达式，而不是我们的估计框架中所需要的向量表达式。
+\end_layout
+
+\begin_layout Standard
+现在我们可以确定我们的位姿是
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的对象，因此我们可以使用刚刚定义的工具。
+\end_layout
+
+\begin_layout Subsection
+定义噪声
+\end_layout
+
+\begin_layout Standard
+如前所述，通过使用流形上的概率分布解决了第一个恰当定义噪声的问题。我们
+\series bold
+在切空间中的
+\series default
+
+\begin_inset Formula $\Delta\mathbf{T}_{B_{i}B_{i+1}}$
+\end_inset
+
+
+\series bold
+处定义一个零均值高斯，并将其收回到流形上
+\series default
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{WB_{i+1}}=\mathbf{T}_{WB_{i}}\ \Delta\mathbf{T}_{B_{i}B_{i+1}}\text{Exp}(_{B_{i+1}}\boldsymbol{\eta})
+\end{equation}
+
+\end_inset
+
+其中我们定义了
+\begin_inset Formula $_{B_{i+1}}\eta\sim Gaussian(\mathbf{0}_{6\times1},\ {}_{B_{i+1}}\Sigma)$
+\end_inset
+
+。请注意，为了匹配我们的右侧约定，
+\series bold
+我们所使用的协方差必须在时间
+\series default
+
+\begin_inset Formula $i+1$
+\end_inset
+
+
+\series bold
+的机体坐标系中定义
+\series default
+，即
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+。此外，
+\series bold
+协方差矩阵必须遵循我们前面提到的由收回定义的相同顺序
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames-gaussian.png
+	scale 59
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+噪声定义的图形解释，在帧
+\begin_inset Formula $B_{i+1}$
+\end_inset
+
+中定义，并使用收回映射。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+定义残差
+\end_layout
+
+\begin_layout Standard
+在解决第一个问题之后，我们现在可以关注残差定义。我们可以像以前一样隔离噪音，这就意味着：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})=\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，我们可以在两边应用流形的
+\series bold
+局部
+\series default
+(
+\series bold
+local
+\series default
+)算子，
+\series bold
+将残差映射到切空间中
+\series default
+(简单起见，回想一下，我们对
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+元素使用
+\series bold
+对数映射
+\series default
+(
+\shape italic
+logarithm map
+\shape default
+) )：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{B_{i+1}}\boldsymbol{\eta}=\text{Log}\left(\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为噪声是在切空间中定义的，所以两边都表示
+\begin_inset Formula $\mathbb{R}^{6}$
+\end_inset
+
+中的向量表达式。两者也都对应于零均值高斯噪声，因此在我们估计框架中，右侧可以作为适当的因子使用。事实上，右侧的表达式与GTSAM中用以定义
+\family typewriter
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "BetweenFactor"
+target "https://github.com/borglab/gtsam/blob/master/gtsam/slam/BetweenFactor.h#L90"
+literal "false"
+
+\end_inset
+
+
+\family default
+ 的表达式
+\series bold
+完全
+\series default
+相同。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename lie-group-frames-residual.png
+	scale 58
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+残差之间的关系，如图所示。在左侧，我们在流形上表达了计算中涉及的相应变换。由于误差(红色)也是在流形上定义的，因此不能用直线来描述。然而，通过应用
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的对数映射给出的局部操作，我们可以将它映射到
+\begin_inset Formula $\Delta\mathbf{T}_{B_{i}B_{i+1}}$
+\end_inset
+
+，这是一个向量空间(右图)。误差本身应该在我们使用噪声
+\begin_inset Formula $_{B_{i+1}}\boldsymbol{\eta}$
+\end_inset
+
+，其表示里程计模型的噪声，所创建的高斯分布范围内。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里我们还必须记住，通过使用
+\series bold
+局部
+\series default
+(
+\series bold
+local
+\series default
+)操作，
+\series bold
+残差向量将遵循同样的排序
+\series default
+。如前所述，对于
+\family typewriter
+Pose3
+\family default
+对象，它将在前
+\begin_inset Formula $3$
+\end_inset
+
+个分量中编码方向误差，而在后
+\begin_inset Formula $3$
+\end_inset
+
+个分量中编码平移误差。这样，如果我们写出高斯因子的扩展表达式，我们可以注意到，所有分量都相应地由求逆协方差加权，正如我们之前回顾的那样(先方向，然后平移)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{split}\mathbf{r}_{\text{between}}(\mathbf{T}_{WB_{i}},\mathbf{T}_{WB_{i+1}}) & =\left\Vert \text{Log}\left(\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\right)\right\Vert _{\Sigma_{i}}^{2}\\
+ & =\text{Log}\left(\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\right)^{T}\ \Sigma_{i}^{-1}\\
+ & \qquad\text{Log}\left(\Delta\mathbf{T}_{B_{i}B_{i+1}}^{-1}\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\right)
+\end{split}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因子现在是一个非线性向量表达式，可以使用我们前面介绍的非线性优化技术来求解。实际上，GTSAM已经为所有已实现的对象的
+\series bold
+局部
+\series default
+(
+\series bold
+local
+\series default
+)算子实现了Jacobian矩阵，这简化了过程。然而，我们必须澄清一些细微的差别。
+\end_layout
+
+\begin_layout Standard
+首先，由于因子在当前线性化点的切空间中定义了一个残差，优化本身
+\series bold
+在当前线性化点定义的切空间中
+\series default
+执行。这意味着，当我们对因子进行线性化并建立正规方程时，我们计算的增量
+\begin_inset Formula $_{B_{i}}\delta\mathbf{T}^{k}$
+\end_inset
+
+位于切空间。
+\end_layout
+
+\begin_layout Standard
+出于这个原因，我们需要使用收回操作更新
+\series bold
+在流形上
+\series default
+的变量。例如，对于
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{T}}_{WB_{i}}^{k+1}=\mathbf{T}_{WB_{i}}^{k}\text{Exp}({}_{B_{i}}\delta\mathbf{T}^{k})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第二个要点是，我们可以从信息矩阵中恢复的协方差，
+\series bold
+也将在线性化点周围的切空间中定义，遵循收回操作的约定
+\series default
+。这意味着，如果我们在当前线性化点的信息矩阵由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma^{k+1}=((\mathbf{H}^{k})^{T}(\Sigma^{k})^{-1}\mathbf{H}^{k})^{-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，在当前线性化点
+\begin_inset Formula $\mathbf{T}_{WB_{i}}^{k+1}$
+\end_inset
+
+周围的解的相应分布将由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Gaussian(\mathbf{T}_{WB_{i}}^{k+1},\Sigma^{k+1}):=\mathbf{T}_{WB_{i}}^{k+1}\text{Exp}({}_{B_{i}}\eta^{k+1})
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $_{B_{i}}\eta^{k+1}\sim Gaussian(\mathbf{0}_{6\times1},{}_{B_{i}}\Sigma^{k+1})$
+\end_inset
+
+。作为收回约定的结果，
+\series bold
+产生的协方差也在机体坐标系中表示，并使用先方向后平移(orientation-then-translation)的顺序对协方差矩阵进行排序
+\series default
+。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在第二部分文章中，我们扩展了前面提出的估计框架，以明确的方式将参考坐标系引入到我们的符号中，这有助于理解数据的含义。
+\end_layout
+
+\begin_layout Standard
+我们还回顾了流形的群的概念。我们所讨论的流形，是将基本概念推广到在GTSAM中定义的优化框架以及概率分布的概念。
+\end_layout
+
+\begin_layout Standard
+我们提出了右侧和左侧约定的概念，虽然不是标准的，但是允许我们识别不同的公式，这些公式可以在操作群和流形的文献中找到。通过明确说明GTSAM使用群的组合以及流形上
+的收回的右侧约定，我们可以确定用于定义变量的坐标系，以及我们通过
+\family typewriter
+Marginals
+\family default
+所获得的解的协方差。
+\end_layout
+
+\begin_layout Standard
+此外，局部和收回操作的定义也直接影响协方差矩阵的排序，这也因对象的不同而不同。例如，我们讨论了
+\family typewriter
+Pose2
+\family default
+使用
+\series bold
+先平移后方向
+\series default
+(
+\shape italic
+translation-then-orientation
+\shape default
+)约定，而
+\family typewriter
+Pose3
+\family default
+使用
+\series bold
+先方向后平移
+\series default
+(
+\shape italic
+orientation-then-translation
+\shape default
+)约定。当我们想在不同的软件中使用GTSAM数据时，这一点特别重要，例如ROS，它对其3D位姿结构使用
+\series bold
+先平移后方向
+\series default
+(
+\shape italic
+translation-then-orientation
+\shape default
+)约定，例如(
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "PoseWithCovariance"
+target "http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/PoseWithCovariance.html"
+literal "false"
+
+\end_inset
+
+
+\family default
+)。
+\end_layout
+
+\begin_layout Standard
+最后一篇文章将涉及一些关于我们定义的约定，还有李群
+\series bold
+伴随
+\series default
+(
+\shape italic
+adjoint
+\shape default
+)的应用，以及最后的评论，这对于正确变换为位姿定义的协方差矩阵相当有用。
+\end_layout
+
+\begin_layout Part
+伴随与协方差
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在我们
+\begin_inset CommandInset href
+LatexCommand href
+name "前面的文章"
+target "https://gtsam.org/2021/02/23/uncertainties-part2.html"
+literal "false"
+
+\end_inset
+
+中，我们介绍了参考坐标系的概念，以及它们如何与群和流形相关联，从而为我们的估计框架的变量赋予物理意义。我们注意到，我们的GTSAM对象的优化和定义概率分布所需的
+唯一属性是
+\series bold
+流形
+\series default
+(
+\shape italic
+manifolds
+\shape default
+)。然而，群有助于理解某些对象的组成，也有助于提出
+\series bold
+李群
+\series default
+(
+\shape italic
+Lie groups
+\shape default
+)的概念，李群既是群又是可微流形。
+\end_layout
+
+\begin_layout Standard
+这最后的部分主要讨论李群，这是我们用来表示机器人位姿的大多数对象的情况。特别地，我们将回顾李群
+\series bold
+伴随
+\series default
+(
+\series bold
+adjoint
+\series default
+)的概念，这将有助于我们将应用在右侧的增量或校正，与左侧的增量或校正联系起来。这样的性质将允许我们用代数方法处理李群定义的不确定性，并获得不同协方差变换的表达式
+。我们将集中讨论3D位姿，即
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+，因为它具有广泛的适用性，但是类似的定义也应该适用于其它李群，因为它们主要依赖于伴随的定义。
+\end_layout
+
+\begin_layout Standard
+大部分的表达式已经由 
+\begin_inset CommandInset href
+LatexCommand href
+name "Barfoot和Furgale(2014)"
+target "http://ncfrn.cim.mcgill.ca/members/pubs/barfoot_tro14.pdf"
+literal "false"
+
+\end_inset
+
+ 以及 
+\begin_inset CommandInset href
+LatexCommand href
+name "Mangelson等人(2020)"
+target "https://arxiv.org/abs/1906.07795"
+literal "false"
+
+\end_inset
+
+ 在文献中展示过，但由于它们遵循左侧约定，因此无法直接用于GTSAM。我们提供了Mangelson等人的协方差变换的结果表达式，但我们建议参考他们的工作以了解过
+程的细节。
+\end_layout
+
+\begin_layout Section
+伴随
+\end_layout
+
+\begin_layout Standard
+让我们考虑一个类似于前面例子的情况，即我们将一个小的增量
+\begin_inset Formula $_{B_{i}}\boldsymbol{\xi}$
+\end_inset
+
+增加到一个位姿
+\begin_inset Formula $\mathbf{T}_{WB_{i}}$
+\end_inset
+
+上：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{W_{i}B_{i}}\text{Exp}({}_{B_{i}}\boldsymbol{\xi})
+\end{equation}
+
+\end_inset
+
+其中我们已经使用
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的收回，使用
+\series bold
+右侧约定
+\series default
+(
+\shape italic
+right-hand convention
+\shape default
+)增加了一个小的增量，就像GTSAM所做的那样。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename adjoint-right.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+与前面讨论的情况类似，从右侧应用校正可以解释为在时间
+\begin_inset Formula $i+1$
+\end_inset
+
+处从先前的帧
+\begin_inset Formula $B_{i}$
+\end_inset
+
+创建新的机体坐标系。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是，对于某些应用，我们可能对
+\series bold
+从左侧
+\series default
+应用校正感兴趣：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{W_{i+1}B}=\text{Exp}({}_{W_{i}}\boldsymbol{\xi})\mathbf{T}_{W_{i}B_{i}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意，这种情况是不同的例子，在前面的文章中，我们把坐标系求逆了。
+\series bold
+在这里，我们实际上是在世界坐标系上应用了一个校正
+\series default
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename adjoint-left.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+如果我们从左侧定义一个校正，就好像我们在时间
+\begin_inset Formula $i+1$
+\end_inset
+
+处从帧
+\begin_inset Formula $W_{i}$
+\end_inset
+
+创建一个新的参考坐标系。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们感兴趣的是找出一个机体上的校正，这种校正可以导致与应用在右侧的校正相同的结果。对于这种特定的校正，两种公式将有效地表示相同的位姿，但使用
+\series bold
+不同的参考坐标系
+\series default
+。如下图所示：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename adjoint-all-transformations.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+存在一个应用于机体坐标系(右侧约定)的校正，它可以导致与应用于世界坐标系(左侧约定)的校正等效的变换。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了找到它，我们可以写出应用于机体坐标系和世界坐标系的校正之间的等价关系，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{Exp}({}_{W}\boldsymbol{\xi})\mathbf{T}_{WB}=\mathbf{T}_{WB}\text{Exp}({}_{B}\boldsymbol{\xi})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了简单起见，我们去掉了与时间相关的索引，因为这是一个几何关系。为了满足这个条件，我们在左侧应用增量变化，即在世界坐标系中，
+\begin_inset Formula $_{W}\boldsymbol{\xi}$
+\end_inset
+
+必须由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{Exp}({}_{W}\boldsymbol{\xi})=\mathbf{T}_{WB}\text{Exp}({}_{B}\boldsymbol{\xi})\mathbf{T}_{WB}^{-1}
+\end{equation}
+
+\end_inset
+
+该项是我们通过分离得到。右侧的表达式称为
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+的
+\series bold
+伴随作用
+\series default
+(
+\shape italic
+adjoint action
+\shape default
+)。它把在左侧应用的增量与在右侧应用的增量相关联。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename adjoint-equal.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+我们前面的过程允许我们确定这种由
+\series bold
+伴随
+\series default
+(
+\shape italic
+adjoint
+\shape default
+)描述的关系，如方程右侧所示。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+出于我们的目的，使用一个直接适用于来自切空间的元素的等效替代表达式，这很有用(
+\begin_inset CommandInset href
+LatexCommand href
+name "Solà等人"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+给出了一个更完整的推导，我们在这里省略了一些特性)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{Exp}({}_{W}\boldsymbol{\xi})\mathbf{T}_{WB_{i}}=\mathbf{T}_{WB_{i}}\text{Exp}(\text{Ad}_{T_{WB_{i}}^{-1}}{}_{W}\boldsymbol{\xi})
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\text{Ad}_{T_{WB_{i}}^{-1}}$
+\end_inset
+
+称为
+\series bold
+伴随矩阵
+\series default
+(
+\shape italic
+adjoint matrix
+\shape default
+)或
+\begin_inset Formula $T_{WB_{i}}^{-1}$
+\end_inset
+
+的
+\series bold
+伴随
+\series default
+(
+\series bold
+adjoint
+\series default
+)。伴随直接作用于切空间的元素，改变它们的参考坐标系。请注意，同样的子索引取消也适用于这里，因此我们可以确认这些变换的定义是正确的。
+\end_layout
+
+\begin_layout Standard
+我们还可以将此解释为一种方法，将应用于左侧(在世界坐标系中)的增量一致地
+\series bold
+移动
+\series default
+到右侧(机体坐标系)，这对于保持右侧收回约定和概率分布的一致性特别有用。这是我们将在下一节中用来定义一些协方差变换的主要属性，它已经在
+\family typewriter
+Pose3
+\family default
+中做为
+\family typewriter
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "AdjointMap"
+target "https://github.com/borglab/gtsam/blob/develop/gtsam/geometry/Pose3.cpp#L58"
+literal "false"
+
+\end_inset
+
+
+\family default
+ 实现。
+\end_layout
+
+\begin_layout Section
+逆分布
+\end_layout
+
+\begin_layout Standard
+作为第一个例子，伴随如何帮助操纵协方差的，让我们考虑这样一种情况，我们有一个因子图的解，其协方差定义在我们前面讨论过的机体坐标系中。我们感兴趣的是获得一个表达式
+来表达在世界坐标系中的协方差：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename covariance-inverse.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+考虑到机器人在机体坐标系
+\begin_inset Formula $B_{i}$
+\end_inset
+
+(左图)中的协方差，我们有兴趣根据GTSAM的右侧约定(右图)获得一个公式来表示世界坐标系
+\begin_inset Formula $W$
+\end_inset
+
+中的协方差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假定高斯分布的位姿的分布将用下式表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{T}}_{WB}=\mathbf{T}_{WB}\text{Exp}({}_{B}\boldsymbol{\eta})
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $_{B}\boldsymbol{\eta}$
+\end_inset
+
+为零均值高斯噪声，协方差为
+\begin_inset Formula $\Sigma_{B}$
+\end_inset
+
+ ，如以前一样。可以通过对表达式求逆来计算逆分布：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+(\tilde{\mathbf{T}}_{WB})^{-1} & =(\mathbf{T}_{WB}\text{Exp}({}_{B}\boldsymbol{\eta}))^{-1}\\
+ & =(\text{Exp}({}_{B}\boldsymbol{\eta}))^{-1}\ \mathbf{T}_{WB}^{-1}\\
+ & =\text{Exp}(-{}_{B}\boldsymbol{\eta})\ \mathbf{T}_{WB}^{-1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，噪声是在左侧定义的，这是不方便的，因为它仍然是机体坐标系中的协方差，并且它也不符合右侧约定。我们可以用伴随把它移到到右侧：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+(\tilde{\mathbf{T}}_{WB})^{-1}=\ \mathbf{T}_{WB}^{-1}\ \text{Exp}(-\text{Ad}_{\mathbf{T}_{WB}}{}_{B}\boldsymbol{\eta})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是遵循右侧约定的恰当分布，它定义了世界坐标系中的协方差。求逆协方差由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma_{W}=\text{Ad}_{\mathbf{T}_{WB}}\Sigma_{B}\text{Ad}_{\mathbf{T}_{WB}}^{T}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+组合分布
+\end_layout
+
+\begin_layout Standard
+一个不同的情况是，如果我们有一个位姿
+\begin_inset Formula $\tilde{\mathbf{T}}_{WB_{i}}$
+\end_inset
+
+的分布，我们还有一个由另一个分布
+\begin_inset Formula $\tilde{\mathbf{T}}_{B_{i}B_{i+1}}$
+\end_inset
+
+给出的增量。通过一些代数操作，我们可以确定组合
+\begin_inset Formula $\tilde{\mathbf{T}}_{WB_{i+1}}$
+\end_inset
+
+的分布。这在进行航位推算时非常有用，例如：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename covariance-composition.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在我们的第二个例子中，给定初始位姿
+\begin_inset Formula $\tilde{\mathbf{T}}_{WB_{i}}$
+\end_inset
+
+和相对增量
+\begin_inset Formula $\tilde{\mathbf{T}}_{B_{i}B_{i+1}}$
+\end_inset
+
+(左图)的分布，我们想用代数方法确定
+\begin_inset Formula $\tilde{\mathbf{T}}_{WB_{i+1}}$
+\end_inset
+
+(右图)的协方差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们遵循与之前类似的公式，我们可以确定组合分布(及其协方差)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{T}}_{WB_{i+1}} & =\tilde{\mathbf{T}}_{WB_{i}}\tilde{\mathbf{T}}_{B_{i}B_{i+1}}\\
+ & =\mathbf{T}_{WB_{i}}\text{Exp}({}_{B_{i}}\boldsymbol{\eta})\ \mathbf{T}_{B_{i}B_{i+1}}\text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，我们需要
+\series bold
+移动
+\series default
+噪声
+\begin_inset Formula $_{B_{i}}\boldsymbol{\eta}$
+\end_inset
+
+到右侧，以便
+\series bold
+将变换放在左侧
+\series default
+(代表分布的均值)，而
+\series bold
+将噪声放在右侧
+\series default
+(编码协方差)。我们可以再次使用伴随：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{\mathbf{T}}_{WB_{i}}=\mathbf{T}_{WB_{i}}\ \mathbf{T}_{B_{i}B_{i+1}}\text{Exp}(\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}{}_{B_{i}}\boldsymbol{\eta})\ \text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，我们不能合并指数，因为这将假定群中的交换性，对我们之前讨论过的
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+并不成立。尽管如此，仍然可以使用一些近似值(在Mangelson的文章中也讨论过)来最终得到组合协方差的以下表达式：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma_{B_{i+1}}=\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}\Sigma_{B_{i}}\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}^{T}+\Sigma_{B_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，如果我们认为位姿是相关的，那么联合分布的协方差由下式给出：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{bmatrix}\Sigma_{B_{i}} & \Sigma_{B_{i},B_{i+1}}\\
+\Sigma_{B_{i},B_{i+1}}^{T} & \Sigma_{B_{i+1}}
+\end{bmatrix}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们具有的组合的协方差是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{split}\Sigma_{B_{i+1}} & =\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}\Sigma_{B_{i}}\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}^{T}+\Sigma_{B_{i+1}}\\
+ & \qquad+\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}\Sigma_{B_{i},B_{i+1}}+\Sigma_{B_{i},B_{i+1}}^{T}\text{Ad}_{\mathbf{T}_{B_{i}B_{i+1}}^{-1}}^{T}
+\end{split}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+相对变换分布
+\end_layout
+
+\begin_layout Standard
+最后，可能的情况是，我们有两个位姿的分布在同一个参考坐标系中表示，我们想计算它们之间的相对变换的分布。例如，如果我们有一个提供协方差估计的里程计系统，并且我们想
+要使用相对测量作为位姿图SLAM系统的因子，我们将需要相对变换的均值和协方差。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="15.4cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename covariance-relative.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在最后一个例子中，给定位姿
+\begin_inset Formula $\tilde{\mathbf{T}}_{WB_{i}}$
+\end_inset
+
+和
+\begin_inset Formula $\tilde{\mathbf{T}}_{B_{i}B_{i+1}}$
+\end_inset
+
+(左图)的分布，我们要确定相对变换
+\begin_inset Formula $\tilde{\mathbf{T}}_{B_{i}B_{i+1}}$
+\end_inset
+
+(右图)的协方差。
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了确定它，我们遵循相同的代数过程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{T}}_{B_{i}B_{i+1}} & =\tilde{\mathbf{T}}_{WB_{i}}^{-1}\tilde{\mathbf{T}}_{WB_{i+1}}\\
+ & =\left(\mathbf{T}_{WB_{i}}\text{Exp}({}_{B_{i}}\boldsymbol{\eta})\right)^{-1}\ \mathbf{T}_{WB_{i+1}}\text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})\\
+ & =\text{Exp}(-{}_{B_{i}}\boldsymbol{\eta})\ \mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，我们使用伴随移动指数两次：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\tilde{\mathbf{T}}_{B_{i}B_{i+1}} & =\mathbf{T}_{WB_{i}}^{-1}\text{Exp}(-\text{Ad}_{\mathbf{T}_{WB_{i}}}\ {}_{B_{i}}\boldsymbol{\eta})\ \mathbf{T}_{WB_{i+1}}\text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})\\
+ & =\mathbf{T}_{WB_{i}}^{-1}\ \mathbf{T}_{WB_{i+1}}\ \text{Exp}(-\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\ \text{Ad}_{\mathbf{T}_{WB_{i}}}\ {}_{B_{i}}\boldsymbol{\eta})\ \text{Exp}({}_{B_{i+1}}\boldsymbol{\eta})
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，在假设独立位姿的情况下，对于相对位姿，以下协方差成立：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Sigma_{B_{i+1}}=\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)\Sigma_{B_{i}}\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)^{T}+\Sigma_{B_{i+1}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然而，该表达式存在的一个问题是，通过假设独立性，相对位姿的协方差
+\series bold
+将分别大于每个位姿的协方差
+\series default
+。这与我们
+\begin_inset CommandInset href
+LatexCommand href
+name "计算独立高斯的差分分布的一维情形"
+target "https://mathworld.wolfram.com/NormalDifferenceDistribution.html"
+literal "false"
+
+\end_inset
+
+是一致的，在这种情形下，均值是差分，而协方差会增加。然而，这并不是我们想要的结果，因为我们的里程计因子会随着时间的推移而退化。
+\end_layout
+
+\begin_layout Standard
+Mangelson等人证明，如果存在某些相关性(如我们对组合示例所示)，并且在计算中明确考虑了这些相关性，则估计值会更精确，协方差不会过高或过低。那么，符合GT
+SAM的相应表达式为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{split}\Sigma_{B_{i+1}} & =\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)\Sigma_{B_{i}}\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)^{T}+\Sigma_{B_{i+1}}\\
+ & \qquad-\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)\Sigma_{B_{i}B_{i+1}}-\Sigma_{B_{i}B_{i+1}}^{T}\left(\text{Ad}_{\mathbf{T}_{WB_{i+1}}^{-1}}\text{Ad}_{\mathbf{T}_{WB_{i}}}\right)^{T}
+\end{split}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在这最后一篇文章中，我们回顾了李群伴随的概念，用来解释左侧的增量和右侧的增量之间的关系。这是我们需要的最后一部分，以确保我们的估计与GTSAM中使用的约定一致。
+\end_layout
+
+\begin_layout Standard
+我们还提出了一些表达式来操作位姿的分布。虽然它们以前在文献中有过介绍，但我们展示了如何操纵不确定性的一般准则，以便与我们使用的坐标系和约定保持一致。
+\end_layout
+
+\begin_layout Section
+Acknowledgments
+\end_layout
+
+\begin_layout Standard
+I would like to thank again the interesting discussions originated in the
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "gtsam-users"
+target "https://groups.google.com/g/gtsam-users/c/c-BhH8mfqbo/m/7Wsj_nogBAAJ"
+literal "false"
+
+\end_inset
+
+ group.
+ Stefan Gächter guided a rich conversation doing some important questions
+ that motivated the idea of writing this post.
+\end_layout
+
+\begin_layout Standard
+Coincidently, similar discussions we had at the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Dynamic Robot Systems"
+target "https://ori.ox.ac.uk/labs/drs/"
+literal "false"
+
+\end_inset
+
+ group at the University of Oxford were aligned with the topics discussed
+ here and facilitated the writing process.
+ Special thanks to Yiduo Wang and Milad Ramezani for our conversations,
+ derivation and testing of the formulas for the covariance of relative poses
+ presented here, Marco Camurri for feedback on the notation and proofreading,
+ and Maurice Fallon for encouraging to write this post.
+\end_layout
+
+\begin_layout Standard
+Finally, thanks to Frank Dellaert, José Luis Blanco-Claraco, and John Lambert
+ for proofreading the posts and their feedback, as well as Michael Bosse
+ for providing insightful comments to ensure the consistency of the topics
+ presented here.
+\end_layout
+
+\end_body
+\end_document
