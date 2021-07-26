@@ -37,7 +37,7 @@
 \paperfontsize default
 \spacing single
 \use_hyperref true
-\pdf_title "规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价"
+\pdf_title "规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价"
 \pdf_author "Stergios I. Roumeliotis, Gaurav S . Sukhatme and George A. Bekey"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
@@ -97,7 +97,7 @@
 \begin_layout Title
 \begin_inset CommandInset href
 LatexCommand href
-name "规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价"
+name "规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价"
 target "https://www-users.cs.umn.edu/~stergios/papers/icra99-2d.pdf"
 literal "false"
 
@@ -119,7 +119,7 @@ May 1999
 
 \begin_layout Abstract
 将移动机器人定位问题看作是一个两阶段迭代估计过程。首先对姿态进行估计，然后再对位置进行估计。这里开发的卡尔曼滤波器在陀螺建模中采用姿态估计的间接(误差状态)形式
-。这种选择的主要好处是避免了移动机器人复杂的动态建模及其与环境的交互。该滤波器将来自陀螺的姿态速率信息和绝对方位测量值最佳地结合起来。拟议的实施是独立于车辆的结
+。这种选择的主要好处是避免了移动机器人复杂的动力学建模及其与环境的交互。该滤波器将来自陀螺的姿态速率信息和绝对方位测量值最佳地结合起来。拟议的实施是独立于车辆的结
 构或地面的形态。这种方法只要携带一组等效的传感器，就可以很容易地转移到另一个移动平台上。首先对二维情况进行了详细的研究。给出了将该方法扩展到三维情况下的结果。两
 个方面的结果都证明了该方法的有效性。
 \end_layout
@@ -163,7 +163,7 @@ May 1999
 \end_layout
 
 \begin_layout Standard
-我们列举了在户外移动机器人中应用动态建模进行姿态估计的缺点。通过选择陀螺模型，避免了特定飞行器的繁琐建模及其与动态环境的相互作用。陀螺信号出现在系统方程(而不是
+我们列举了在户外移动机器人中应用动力学建模进行姿态估计的缺点。通过选择陀螺模型，避免了特定飞行器的繁琐建模及其与动力学环境的相互作用。陀螺信号出现在系统方程(而不是
 测量方程)中，因此问题的表述需要一种间接(误差状态)卡尔曼滤波方法。
 \end_layout
 
@@ -185,14 +185,14 @@ status open
 在下一节中，我们将讨论先前的相关工作；在第
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:动态模型替换"
+reference "sec:动力学模型替换"
 plural "false"
 caps "false"
 noprefix "false"
 
 \end_inset
 
-节中，我们将讨论动态模型替换背后的基本原理；在第
+节中，我们将讨论动力学模型替换背后的基本原理；在第
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:卡尔曼滤波器的形式"
@@ -254,10 +254,10 @@ status open
 \end_layout
 
 \begin_layout Section
-动态模型替换
+动力学模型替换
 \begin_inset CommandInset label
 LatexCommand label
-name "sec:动态模型替换"
+name "sec:动力学模型替换"
 
 \end_inset
 
@@ -265,33 +265,33 @@ name "sec:动态模型替换"
 \end_layout
 
 \begin_layout Standard
-在我们的方法中，我们避免了动态建模。原因如下：
+在我们的方法中，我们避免了动力学建模。原因如下：
 \end_layout
 
 \begin_layout Itemize
-最基本的原因是，每次对机器人进行修改(即质量改变、零件重新定位或尺寸改变)，都必须重新进行动态建模。生成的估计量是为特定的结构而定制的。稍有不同的车辆需要一个新
+最基本的原因是，每次对机器人进行修改(即质量改变、零件重新定位或尺寸改变)，都必须重新进行动力学建模。生成的估计量是为特定的结构而定制的。稍有不同的车辆需要一个新
 的估算器。
 \end_layout
 
 \begin_layout Itemize
-一个更实际的原因是动态建模需要大量的状态(例如，Rocky 7，一个火星探测器原型，有6个轮子，4个转向节，3个转向节)。就计算需要而言，估计量必须是实用的。估
+一个更实际的原因是动力学建模需要大量的状态(例如，Rocky 7，一个火星探测器原型，有6个轮子，4个转向节，3个转向节)。就计算需要而言，估计量必须是实用的。估
 计状态的大小可以有很大的计算需求，而精度增益很小。
 \end_layout
 
 \begin_layout Itemize
-动态建模和增加的复杂性并不总是产生预期的结果。一个例子是Lefferts和Markley[12]试图对Nimbus-6航天器的姿态动力学进行建模，这表明采用精细
-扭矩模型的动态建模仍然不能给出可接受的姿态确定精度。因此，航空航天领域的大多数姿态估计应用都使用动态模型替换模式的陀螺仪[27]。
+动力学建模和增加的复杂性并不总是产生预期的结果。一个例子是Lefferts和Markley[12]试图对Nimbus-6航天器的姿态动力学进行建模，这表明采用精细
+扭矩模型的动力学建模仍然不能给出可接受的姿态确定精度。因此，航空航天领域的大多数姿态估计应用都使用动力学模型替换模式的陀螺仪[27]。
 \end_layout
 
 \begin_layout Itemize
 对比飞行器与地面的相互作用，在崎岖地形上运动的移动机器人建模要比航天器建模复杂得多。航天器在空间弹道上的外力，可以用引力定律精确描述。月球车与地面的相互作用取决
-于许多参数，需要做出假设(经常使用点接触假设)。车辆地形动态效应的建模，如车轮碰撞、车轮打滑、车轮下沉，需要事先了解地面参数(即摩擦系数，作为车轮打滑率、土壤抗
+于许多参数，需要做出假设(经常使用点接触假设)。车辆地形动力学效应的建模，如车轮碰撞、车轮打滑、车轮下沉，需要事先了解地面参数(即摩擦系数，作为车轮打滑率、土壤抗
 剪强度、弹性模量等的函数)。此外，横向滑移不可观测，在动力学模型中也不能解释。为了获得作用在每个车轮上的扭矩的实际值，还需要对电机进行精确建模。
 \end_layout
 
 \begin_layout Itemize
 从另一个角度来看，大多数车辆都有一个悬架系统，其目的是将车辆的运动与地形形态分离开来。“理想”悬挂系统将支持车辆的运动，在某种程度上模仿气垫船的运动。然后，机器
-人可以以非常平稳的方式移动。这样的运动很容易被有效地估计，以下方法依赖于使用惯性导航系统作为动态模型替换，并且独立于特定地形。
+人可以以非常平稳的方式移动。这样的运动很容易被有效地估计，以下方法依赖于使用惯性导航系统作为动力学模型替换，并且独立于特定地形。
 \end_layout
 
 \begin_layout Section
@@ -331,7 +331,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-直接过滤实现有一些严重的缺点。在INS环路中，使用全状态表示法，滤波器必须保持对车辆角运动的明确、准确的感知，即包含一个动态模型，并尝试以相对较高的频率抑制噪声
+直接过滤实现有一些严重的缺点。在INS环路中，使用全状态表示法，滤波器必须保持对车辆角运动的明确、准确的感知，即包含一个动力学模型，并尝试以相对较高的频率抑制噪声
 和错误数据。
 \end_layout
 
@@ -427,7 +427,7 @@ name "sec:单偏差补偿陀螺的平面运动"
 参数化了地面形态、土壤摩擦等。为了避免由于第
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:动态模型替换"
+reference "sec:动力学模型替换"
 plural "false"
 caps "false"
 noprefix "false"
@@ -1307,7 +1307,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure1.png
+	filename 规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure1.png
 	scale 50
 
 \end_inset
@@ -1369,7 +1369,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure2.png
+	filename 规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure2.png
 	scale 30
 
 \end_inset
@@ -1497,7 +1497,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure3.png
+	filename 规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价-Figure3.png
 	scale 30
 
 \end_inset

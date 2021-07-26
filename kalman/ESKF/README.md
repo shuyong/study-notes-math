@@ -12,7 +12,7 @@
     + 介绍了数学上的困境与理论发展现状
 
 01. [Circumventing Dynamic Modeling: Evaluation of the Error-State Kalman Filter applied to Mobile Robot Localization - 1999](https://www.academia.edu/13385785/Circumventing_dynamic_modeling_Evaluation_of_the_error-state_kalman_filter_applied_to_mobile_robot_localization)
-    + 规避动态建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价
+    + 规避动力学建模：应用于移动机器人定位的误差状态卡尔曼滤波器的评价
 
 02. [Attitude Error Representations for Kalman Filtering - 2002](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20020060647.pdf)
     + [Attitude Error Representations for Kalman Filtering - 2003](https://www.researchgate.net/publication/245432681_Attitude_Error_Representations_for_Kalman_Filtering)
