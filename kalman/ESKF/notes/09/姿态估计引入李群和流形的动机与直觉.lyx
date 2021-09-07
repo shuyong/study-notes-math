@@ -1224,14 +1224,14 @@ r^{2}+x^{2}+y^{2}+z^{2}=1
 \begin_inset Formula $\mathrm{Exp}\left(\:\right)$
 \end_inset
 
-的运算为
+的运算和常见的四元数形式关联为
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-\mathrm{Exp}\left(\theta\right) & =\exp\left(\left[\theta\times\right]\right)\\
- & =\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{u}
+\mathrm{Exp}\left(\boldsymbol{\theta}\right) & =\exp\left(\left[\boldsymbol{\theta}\times\right]\right)\\
+ & =\cos\left(\theta/2\right)+\sin\left(\theta/2\right)\mathbf{u}
 \end{align*}
 
 \end_inset
@@ -1240,11 +1240,31 @@ r^{2}+x^{2}+y^{2}+z^{2}=1
 \end_layout
 
 \begin_layout Standard
-其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。这往往体现了不同理论之间，还有理论和工程之间的差异。
+其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。这个
+\begin_inset Formula $1/2$
+\end_inset
+
+系数，是因为四元数
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+流形对
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+是双倍覆盖。于是在旋转矩阵形式的版本中使用的是全角
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，而在四元数版本中使用的是半角
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+。
 \end_layout
 
 \begin_layout Standard
-首先，因为在工程中IMU的取样间隔时间
+此外，因为在工程中IMU的取样间隔时间
 \begin_inset Formula $\Delta t$
 \end_inset
 
@@ -1252,12 +1272,7 @@ r^{2}+x^{2}+y^{2}+z^{2}=1
 \begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\Delta t$
 \end_inset
 
-都很小，所以都会应用三角函数小角度近似的方法。同时，经过四元数微分方程的启发，也经过工程中的各种摸索，(NASA)大佬们认为计算数值大概是
-\begin_inset Formula $\boldsymbol{\theta}/2$
-\end_inset
-
-的量级。严格地说，他们选择了流形的不同的收回(retraction)操作，于是在不同的论文出现了下面几种映射方法，(正式的是前4种，后两种为近似值，参考文献[4
-])：
+都很小，所以都会应用三角函数小角度近似的方法。于是在不同的论文出现了下面几种映射方法，(正式的是前4种，后两种为近似值，参考文献[4])：
 \end_layout
 
 \begin_layout Enumerate
@@ -1515,7 +1530,7 @@ RV
 \begin_inset Formula $\boldsymbol{\theta}/2$
 \end_inset
 
-，区别于前面定义的加号
+，区别于前面定义的面向旋转矩阵运算的加号
 \begin_inset Formula $\oplus$
 \end_inset
 
@@ -1523,7 +1538,7 @@ RV
 \begin_inset Formula $\ominus$
 \end_inset
 
-算子，另外定义有两个类似的半角加减操作算子：
+算子，另外定义有两个类似的面向四元数运算的半角加减操作算子：
 \begin_inset Formula $\boxplus$
 \end_inset
 
@@ -1540,7 +1555,7 @@ RV
 \end_inset
 
 将向量
-\begin_inset Formula $\boldsymbol{\theta}/2$
+\begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
 做为纯虚四元数直接一步映射为单位四元数，也用算子
@@ -1557,7 +1572,7 @@ RV
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-\boldsymbol{\theta}^{\wedge} & \triangleq\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right)=\left[\begin{array}{c}
+\boldsymbol{\theta}^{\wedge} & \triangleq\exp\left(\boldsymbol{\theta}\right)=\left[\begin{array}{c}
 \cos\left(\dfrac{\left\Vert \boldsymbol{\theta}\right\Vert }{2}\right)\\
 \dfrac{\boldsymbol{\theta}}{\left\Vert \boldsymbol{\theta}\right\Vert }\sin\left(\dfrac{\left\Vert \boldsymbol{\theta}\right\Vert }{2}\right)
 \end{array}\right]\\
@@ -1574,12 +1589,12 @@ q^{\vee} & \triangleq\log\left(q\right)=2\mathrm{atan2}\left(\left\Vert \boldsym
 \begin_inset Formula $\mathrm{Log}\left(\:\right)$
 \end_inset
 
-，但是增量角度为
-\begin_inset Formula $\boldsymbol{\theta}/2$
+，因为纯虚四元数代入指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
 \end_inset
 
-。(这也是看相关论文的一个麻烦事，看文章前先看看作者是哪个门派的。另外一个类似的麻烦就是看公式前先要看看作者选择的四元数的约定，是Hamilton约定还是JPL
-约定，否则推导公式就是一头雾水。最后还得出论文论证哪种表示方法更好，给人造成麻烦的同时还给人制造了灌水的机会。)
+可以一步到位。(这也是看相关论文的一个麻烦事，看文章前先看看作者是哪个门派的。另外一个类似的麻烦就是看公式前先要看看作者选择的四元数的约定，是Hamilton约
+定还是JPL约定，否则推导公式就是一头雾水。最后还得出论文论证哪种表示方法更好，给人造成麻烦的同时还给人制造了灌水的机会。)
 \end_layout
 
 \begin_layout Standard
@@ -1595,7 +1610,7 @@ q^{\vee} & \triangleq\log\left(q\right)=2\mathrm{atan2}\left(\left\Vert \boldsym
 \begin_inset Formula 
 \[
 \begin{array}{rlll}
-q^{\prime} & =q*\boldsymbol{\theta}^{\wedge} & =q*\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right) & =q\boxplus\boldsymbol{\theta}\\
+q^{\prime} & =q*\boldsymbol{\theta}^{\wedge} & =q*\exp\left(\boldsymbol{\theta}\right) & =q\boxplus\boldsymbol{\theta}\\
 \boldsymbol{\theta} & =\left(q^{-1}*q^{\prime}\right)^{\vee} & =\log\left(q^{-1}*q^{\prime}\right) & =q^{\prime}\boxminus q
 \end{array}
 \]
@@ -1665,7 +1680,7 @@ on)操作，半角的旋转向量(RV)映射；对于精度要求不高的运算�
 \begin_inset Formula 
 \begin{align*}
 \bar{q}_{n} & =\hat{q}_{n-1}\boxplus\boldsymbol{\theta}\\
- & =\hat{q}_{n-1}*\exp\left(\dfrac{\boldsymbol{\theta}}{2}\right)\\
+ & =\hat{q}_{n-1}*\exp\left(\boldsymbol{\theta}\right)\\
  & =\hat{q}_{n-1}*\left(\begin{array}{c}
 \cos\left(\boldsymbol{\theta}/2\right)\\
 \left(\boldsymbol{\theta}/\left\Vert \boldsymbol{\theta}\right\Vert \right)\sin\left(\boldsymbol{\theta}/2\right)

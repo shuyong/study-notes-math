@@ -226,14 +226,14 @@ q & =r+x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\\
 \begin_inset Formula $\mathrm{Exp}\left(\:\right)$
 \end_inset
 
-的运算为
+的运算和常见的四元数形式关联为
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-\mathrm{Exp}\left(\theta\right) & =\exp\left(\left[\theta\times\right]\right)\\
- & =\cos\left(\theta\right)+\sin\left(\theta\right)\mathbf{u}
+\mathrm{Exp}\left(\boldsymbol{\theta}\right) & =\exp\left(\left[\boldsymbol{\theta}\times\right]\right)\\
+ & =\cos\left(\theta/2\right)+\sin\left(\theta/2\right)\mathbf{u}
 \end{align*}
 
 \end_inset
@@ -242,7 +242,27 @@ q & =r+x\mathbf{i}+y\mathbf{j}+z\mathbf{k}\\
 \end_layout
 
 \begin_layout Standard
-其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。在参考文献[4]中，总结了常见的4种：
+其实这个收回(retraction)操作，在不同的论文和项目里，有不同的版本。这个
+\begin_inset Formula $1/2$
+\end_inset
+
+系数，是因为四元数
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+流形对
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+是双倍覆盖。于是在旋转矩阵形式的版本中使用的是全角
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，而在四元数版本中使用的是半角
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+。在参考文献[4]中，总结了常见的4种：
 \end_layout
 
 \begin_layout Enumerate
@@ -564,41 +584,16 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-第四种，旋转向量 (Rotation Vector, RV)。实际上就是指数映射函数
+第四种，旋转向量 (Rotation Vector, RV)。实际上就是参考文献[1-3]所说的指数映射函数
 \begin_inset Formula $\exp\left(\:\right)$
 \end_inset
 
-，只是旋量选择
-\begin_inset Formula $\boldsymbol{\theta}/2$
-\end_inset
-
-。这种映射属于等距投影 (Equidistant)，
-\begin_inset Formula $\mathrm{E}^{3}$
-\end_inset
-
-空间位于幺元处，并且向量的模长和测地线(geodesic)的弧长是
-\begin_inset Formula $2:1$
-\end_inset
-
-关系(fig2d-24.pdf)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Graphics
-	filename fig2d-24.pdf
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-第五种，参考文献[1-3]所选择的指数映射函数
-\begin_inset Formula $\exp\left(\:\right)$
-\end_inset
-
-，实际上和旋转向量 (Rotation Vector, RV)一样，只是旋量选择
+，在旋转矩阵形式的版本中使用的是全角
 \begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，而在四元数版本中使用的是半角
+\begin_inset Formula $\boldsymbol{\theta}/2$
 \end_inset
 
 。这种映射属于等距投影 (Equidistant)，
@@ -632,19 +627,7 @@ literal "false"
 \begin_layout Standard
 如果说前三种映射关系是第四种的某种近似，因为这四种映射关系在零点附近的小角度情况下数值很接近，但大角度之后就明显不再是球面，如果球面是完美模型，选择前三种映射关
 系可能是因为某种原因，例如选择正交投影 (Orthographic)是因为它可以简单地把单位四元数转换为轴-角向量，选择Rodrigues参数(RP)是因为它是
-单映射，选择改进型Rodrigues参数(MRP)是因为它避免了超越函数的运算，那么第四种映射关系和第五种的差异就是一个
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
-的系数的关系。
-\end_layout
-
-\begin_layout Standard
-这个
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
-的系数怎么来的呢？首先，因为在工程中IMU的取样间隔时间
+单映射，选择改进型Rodrigues参数(MRP)是因为它避免了超越函数的运算。此外，因为在工程中IMU的取样间隔时间
 \begin_inset Formula $\Delta t$
 \end_inset
 
@@ -652,47 +635,7 @@ literal "false"
 \begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\Delta t$
 \end_inset
 
-都很小，所以都会应用三角函数小角度近似的方法。同时，经过四元数微分方程的启发，也经过工程中的各种摸索，(NASA)大佬们认为计算数值大概是
-\begin_inset Formula $\boldsymbol{\theta}/2$
-\end_inset
-
-的量级。或者说，假如机体的姿态位于单位四元数
-\begin_inset Formula $q$
-\end_inset
-
-所在的
-\begin_inset Formula $\mathrm{S}^{3}$
-\end_inset
-
-球面，也就是大家的半径
-\begin_inset Formula $r=1$
-\end_inset
-
-都保持不变，都表示同一个增量角度
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
-，那么
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
-的系数在
-\begin_inset Formula $\mathrm{E}^{3}$
-\end_inset
-
-空间里就是
-\begin_inset Formula $2$
-\end_inset
-
-倍的放大系数，数值精度会高一点，对变化会更敏感一些，并且原来是在
-\begin_inset Formula $\pi/2$
-\end_inset
-
-处的奇点，被推迟到了
-\begin_inset Formula $\pi$
-\end_inset
-
-处，这可以表示更大的增量旋转。严格地说，大佬们他们各自选择了流形的不同的收回(retraction)操作。一切都是人为选择。
+都很小，所以都会应用三角函数小角度近似的方法。
 \end_layout
 
 \begin_layout Standard
