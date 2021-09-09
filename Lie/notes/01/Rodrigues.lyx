@@ -1,0 +1,3821 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+由Rodrigues旋转公式想开去的随风飘
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+走哪算哪，将所学的知识串一串，放在火上烤一烤，看看能不能滋滋冒油。考糊了拉倒。
+\end_layout
+
+\begin_layout Section
+符号说明
+\end_layout
+
+\begin_layout Standard
+在三维世界里，表示刚体运动的位姿向量
+\begin_inset Formula $\boldsymbol{\xi}\in\mathbb{R}^{6}$
+\end_inset
+
+由姿态向量
+\begin_inset Formula $\boldsymbol{\phi}\in\mathbb{R}^{3}$
+\end_inset
+
+和平移向量
+\begin_inset Formula $\boldsymbol{\rho}\in\mathbb{R}^{3}$
+\end_inset
+
+组合而成
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+姿态变化由角速度驱动，位置变化由速度驱动。附着在机体上的IMU测量得到的是局部坐标系的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和加速度
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+，假定是匀速运动，通过时间的积分可以得到增量角度
+\begin_inset Formula $\theta=\left\Vert \boldsymbol{\omega}\right\Vert \cdot\Delta t$
+\end_inset
+
+和增量速度
+\begin_inset Formula $\mathbf{v}=\mathbf{a}\cdot\Delta t$
+\end_inset
+
+。在角度空间里，用单位向量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}=\boldsymbol{\omega}/\left\Vert \boldsymbol{\omega}\right\Vert $
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+描述旋转轴，为方便起见，用一个旋转向量
+\begin_inset Formula $\boldsymbol{\phi}=\mathbf{u}\theta$
+\end_inset
+
+描述围绕旋转轴
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，旋转角度为
+\begin_inset Formula $\theta$
+\end_inset
+
+的旋转。
+\end_layout
+
+\begin_layout Section
+公式分析
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+向量，并且
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是描述旋转轴的单位向量，根据右手法则，
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+围绕旋转轴旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+，旋转向量
+\begin_inset Formula $\mathbf{v}_{\text{rot}}$
+\end_inset
+
+的罗德里格斯公式为
+\begin_inset Formula 
+\[
+\mathbf{v}_{\text{rot}}=\mathbf{v}\cos\theta+(\mathbf{u}\times\mathbf{v})\sin\theta+\mathbf{u}(\mathbf{u}\cdot\mathbf{v})(1-\cos\theta)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+相对于旋转轴
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+投影，分解为平行(投影
+\begin_inset Formula $\parallel$
+\end_inset
+
+)于
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+以及正交(垂直
+\begin_inset Formula $\perp$
+\end_inset
+
+)于
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的两个分量，
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+。旋转由垂直分量由
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+做贡献。上述公式的直觉是，第一项将向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+投影到旋转平面上，而根据叉乘定义，
+\begin_inset Formula $\mathbf{u}\times\mathbf{v}$
+\end_inset
+
+在旋转平面上生成一个与两者都正交的向量，第二项对该向量再投影，通过前两项的向量相加，将向量向新的旋转位置倾斜。第三项重新添加第一项丢失的高度(相对于
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+)。相应的推导和几何演示，可以查看
+\begin_inset CommandInset href
+LatexCommand href
+name "四元数与三维旋转"
+target "https://krasjet.github.io/quaternion/quaternion.pdf"
+literal "false"
+
+\end_inset
+
+这个文档。
+\end_layout
+
+\begin_layout Standard
+旋转轴
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+与旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+可以组合成旋转向量
+\begin_inset Formula $\boldsymbol{\phi}\equiv\theta\mathbf{u}$
+\end_inset
+
+。我们希望研究旋转向量
+\begin_inset Formula $\boldsymbol{\phi}$
+\end_inset
+
+关于旋转的一般规律。显然，上式里，向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的运算纠缠在一起，不容易分离出旋转向量
+\begin_inset Formula $\boldsymbol{\phi}$
+\end_inset
+
+的特性。因此我们需要做变换。
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{u}\times\mathbf{v}$
+\end_inset
+
+表示为列矩阵，叉积可以表示为矩阵积
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+(\mathbf{u}\times\mathbf{v})_{x}\\
+(\mathbf{u}\times\mathbf{v})_{y}\\
+(\mathbf{u}\times\mathbf{v})_{z}
+\end{array}\right]=\left[\begin{array}{c}
+u_{y}v_{z}-u_{z}v_{y}\\
+u_{z}v_{x}-u_{x}v_{z}\\
+u_{x}v_{y}-u_{y}v_{x}
+\end{array}\right]=\left[\begin{array}{ccc}
+0 & -u_{z} & u_{y}\\
+u_{z} & 0 & -u_{x}\\
+-u_{y} & u_{x} & 0
+\end{array}\right]\left[\begin{array}{c}
+v_{x}\\
+v_{y}\\
+v_{z}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让
+\begin_inset Formula $\left[\mathbf{u}\times\right]$
+\end_inset
+
+表示单位向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的“叉积矩阵”，
+\begin_inset Formula 
+\[
+\left[\mathbf{u}\times\right]=\left[\begin{array}{ccc}
+0 & -u_{z} & u_{y}\\
+u_{z} & 0 & -u_{x}\\
+-u_{y} & u_{x} & 0
+\end{array}\right],
+\]
+
+\end_inset
+
+就是说，对于任何向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+有
+\begin_inset Formula 
+\[
+\left[\mathbf{u}\times\right]\mathbf{v}=\mathbf{u}\times\mathbf{v},
+\]
+
+\end_inset
+
+实际上，
+\begin_inset Formula $\left[\mathbf{u}\times\right]$
+\end_inset
+
+是具有此性质的唯一矩阵。它具有
+\begin_inset Formula $3$
+\end_inset
+
+个特征值：
+\begin_inset Formula $0$
+\end_inset
+
+和
+\begin_inset Formula $\pm i$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+所以根据
+\begin_inset CommandInset href
+LatexCommand href
+name "WIKI"
+target "https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula"
+literal "false"
+
+\end_inset
+
+上面的推导，我们有
+\begin_inset Formula 
+\[
+\mathbf{v}_{\text{rot}}=\mathbf{v}+(\sin\theta)\left[\mathbf{u}\times\right]\mathbf{v}+(1-\cos\theta)\left[\mathbf{u}\times\right]^{2}\mathbf{v}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+分解
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+可以得到紧凑的表达式
+\begin_inset Formula 
+\[
+\mathbf{v}_{\text{rot}}=\mathbf{R}\mathbf{v}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathbf{R}=\mathbf{I}+(\sin\theta)\left[\mathbf{u}\times\right]+(1-\cos\theta)\left[\mathbf{u}\times\right]^{2}}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+是绕
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+轴逆时针旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+的旋转矩阵，
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+单位矩阵。该矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+的旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的一个元素，
+\begin_inset Formula $\left[\mathbf{u}\times\right]$
+\end_inset
+
+是生成该李群的李代数
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+的一个元素。注意，
+\begin_inset Formula $\left[\mathbf{u}\times\right]$
+\end_inset
+
+是斜对称的，由其刻画
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+，三维向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+用
+\begin_inset Formula $3$
+\end_inset
+
+个生成元进入该空间
+\begin_inset Formula 
+\[
+G_{1}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right),G_{2}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right),G_{3}=\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\mathbf{u} & \in\mathbb{R}^{3}\\
+u_{x}G_{1}+u_{y}G_{2}+u_{z}G_{3} & \in\mathfrak{so}(3)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在矩阵指数方面，
+\begin_inset Formula 
+\[
+\mathbf{R}=\exp\left(\theta\left[\mathbf{u}\times\right]\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了使得下式后面的幺元成立，注意到
+\begin_inset Formula 
+\[
+\mathbf{R}\left(\theta\right)\mathbf{R}\left(\phi\right)=\mathbf{R}\left(\theta+\phi\right),\;\mathbf{R}\left(0\right)=\mathbf{I},
+\]
+
+\end_inset
+
+是单参数子群的特征，即指数，公式匹配无穷小
+\begin_inset Formula $\theta$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+到
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+是指数映射
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+。从
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+到
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+的反向映射为
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+映射。
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\left[\mathbf{u}\times\right]^{2}=\mathbf{u}\mathbf{u}^{\mathrm{T}}-\mathbf{I}$
+\end_inset
+
+，所以旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+又有另外一种形式
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathbf{R}=\cos\theta\mathbf{I}+(\sin\theta)\left[\mathbf{u}\times\right]+(1-\cos\theta)\mathbf{u}\mathbf{u}^{\mathrm{T}}}\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意这点
+\begin_inset Formula 
+\[
+\left[\mathbf{u}\times\right]\mathbf{u}=\mathbf{0}
+\]
+
+\end_inset
+
+因此有
+\begin_inset Formula 
+\begin{align*}
+\mathbf{R}\mathbf{u} & =\left(\cos\theta\mathbf{I}+(\sin\theta)\left[\mathbf{u}\times\right]+(1-\cos\theta)\mathbf{u}\mathbf{u}^{\mathrm{T}}\right)\mathbf{u}\\
+ & =\mathbf{u},
+\end{align*}
+
+\end_inset
+
+因此旋转轴
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的特征值
+\begin_inset Formula $\lambda=1$
+\end_inset
+
+所对应的特征向量。因此，将罗德里格斯公式给出的旋转矩阵应用于旋转轴上的任何点，都会返回相同的点。
+\end_layout
+
+\begin_layout Standard
+根据旋转向量
+\begin_inset Formula $\boldsymbol{\phi}\equiv\theta\mathbf{u}$
+\end_inset
+
+的定义，将其代入上面旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的公式，我们有类似的形式
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathbf{R}=\begin{cases}
+\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\\
+\cos\theta\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}
+\end{cases}.}\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是在软件中更常用的公式，因为从IMU中读取出来的角速度向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{u}=\boldsymbol{\omega}/\left\Vert \boldsymbol{\omega}\right\Vert $
+\end_inset
+
+为旋转轴，
+\begin_inset Formula $\theta=\left\Vert \boldsymbol{\omega}\right\Vert \Delta t$
+\end_inset
+
+为旋转角度。并由此计算出来的增量角度
+\begin_inset Formula $\boldsymbol{\phi}=\boldsymbol{\omega}\cdot\Delta t$
+\end_inset
+
+就是旋转向量，将其代入上式就得到软件中常见的计算公式
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathbf{R}=\begin{cases}
+\mathbf{I}+\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\left[\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }\times\right]+\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)\left[\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }\times\right]^{2}\\
+\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\mathbf{I}+\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\left[\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }\times\right]+\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }^{\mathrm{T}}
+\end{cases}.}\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为IMU的采样率很高，通常
+\begin_inset Formula $\theta\rightarrow0$
+\end_inset
+
+，上式会出现数值不稳定的情况，所以
+\begin_inset CommandInset href
+LatexCommand href
+name " Indirect Kalman filter for 3D attitude estimation 这个文档"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+给出了其极限形式。
+\end_layout
+
+\begin_layout Section
+四元数形式
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和旋转向量的运动学方程是超越方程并且具有病态行为，尽管对零旋转角来说作用是有限的。在旋转向量空间中，所有旋转都可以映射到半径为
+\begin_inset Formula $\pi$
+\end_inset
+
+的球体的内部和表面上的点，其中直径两端的点表示相同的旋转；虽然姿态在流形上是平滑变化，但旋转向量可以从直径的一端跳到另一端。这些跳跃可以通过将表示扩展到半径为
+\begin_inset Formula $2\pi$
+\end_inset
+
+的球体来延迟问题的出现，但不能完全避免，因为旋转向量的运动学方程对于
+\begin_inset Formula $\theta=2\pi$
+\end_inset
+
+是奇异的。这些特性限制了旋转向量作为全局姿态表示的实用性。
+\end_layout
+
+\begin_layout Standard
+因此在大多数软件中都采用四元数表示全局姿态。将旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+转换为姿态四元数的方程是
+\begin_inset Formula 
+\[
+\mathbf{R}\left(\theta\right)\rightarrow\left[\begin{array}{c}
+\cos\left(\dfrac{\theta}{2}\right)\\
+\dfrac{\boldsymbol{\phi}}{\left\Vert \boldsymbol{\phi}\right\Vert }\sin\left(\dfrac{\theta}{2}\right)
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该方程可以从指数映射
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+推导出来。当
+\begin_inset Formula $\theta\rightarrow0$
+\end_inset
+
+时，姿态四元数有一个二阶近似方程
+\begin_inset Formula 
+\[
+\delta q\left(\theta\right)=\left[\begin{array}{c}
+1-\left\Vert \boldsymbol{\phi}\right\Vert ^{2}/8\\
+\dfrac{\boldsymbol{\phi}}{2}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该二阶近似方程可以避免三角函数运算。将其中的向量部分
+\begin_inset Formula $\dfrac{\boldsymbol{\phi}}{2}$
+\end_inset
+
+及
+\begin_inset Formula $\theta\rightarrow0$
+\end_inset
+
+代入得到小角度时的旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的近似方程
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}\left(\theta\right)\approx\mathbf{I}-\left[\boldsymbol{\phi}\times\right]+\dfrac{1}{2}\left(\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}-\left\Vert \boldsymbol{\phi}\right\Vert ^{2}\mathbf{I}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该近似方程也可以避免三角函数运算。如果
+\begin_inset Formula $\theta$
+\end_inset
+
+更小，则上式第三项还可以消掉，有
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}\left(\theta\right)\approx\mathbf{I}-\left[\boldsymbol{\phi}\times\right].\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外，斜对称矩阵
+\begin_inset Formula $\left[\boldsymbol{\phi}\times\right]$
+\end_inset
+
+在和旋转相关的方程中随处可见，例如四元数的乘积方程。有两个四元数
+\begin_inset Formula $p$
+\end_inset
+
+和
+\begin_inset Formula $q$
+\end_inset
+
+，两者矩阵形式的乘积可以表示为
+\begin_inset Formula 
+\begin{align*}
+p*q & =\left[\begin{array}{cc}
+p_{0} & -\boldsymbol{p}\\
+\boldsymbol{p} & p_{0}\boldsymbol{I}+\left[\boldsymbol{p}\times\right]
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+\boldsymbol{q}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+q_{0} & -\boldsymbol{q}\\
+\boldsymbol{q} & q_{0}\boldsymbol{I}-\left[\boldsymbol{q}\times\right]
+\end{array}\right]\left[\begin{array}{c}
+p_{0}\\
+\boldsymbol{p}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+指数映射运算
+\end_layout
+
+\begin_layout Standard
+旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的定义是
+\begin_inset Formula 
+\begin{equation}
+\mathrm{SO}(3)=\left\{ \mathbf{R}\mid\mathbf{R}\in\mathbb{R}^{3\times3},\mathbf{R}^{\mathrm{T}}\mathbf{R}=\mathbf{R}\mathbf{R}^{\mathrm{T}}=\mathbf{I},\det\left(\mathbf{R}\right)=1\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的李代数
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+的定义是
+\begin_inset Formula 
+\begin{equation}
+\mathfrak{so}(3)=\left\{ \boldsymbol{\Phi}|\boldsymbol{\Phi}=\left[\boldsymbol{\phi}\times\right]\in\mathbb{R}^{3\times3},\boldsymbol{\phi}\in\mathbb{R}^{3}\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转姿态位于嵌入四维空间
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+的三维
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面上。当前姿态在流形上受到角速度向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的驱动，就移动到新的姿态点上。但是，向量不能直接作用到
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+的元素上，因此，在当前姿态点上就同时存在
+\begin_inset Formula $3$
+\end_inset
+
+个三维空间，第一个是角速度向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+所在的局部笛卡尔空间；第二个是以当前姿态点为原点构建的局部切空间，三维向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+用
+\begin_inset Formula $3$
+\end_inset
+
+个生成元进入该空间，该空间是一个三维线性空间；第三个是三维流形空间，对局部切空间中的元素使用收回(retraction)，也就是指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+，使其进入该空间。最后，进入流形空间的元素通过乘法作用到当前姿态点上，当前姿态点就移动到新的姿态点上，这种球面运动就是旋转，所经过的轨迹就是测地线(geodes
+ic)。
+\end_layout
+
+\begin_layout Standard
+因此了解指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+的推导十分重要。指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+的泰勒级数展开是
+\begin_inset Formula 
+\[
+e^{x}=\sum_{n=0}^{\infty}\dfrac{x^{n}}{n!}=1+x+\dfrac{x^{2}}{2!}+\dfrac{x^{3}}{3!}+\dfrac{x^{4}}{4!}+\ldots
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导三维旋转的指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+有两个路径，一种是用
+\begin_inset Formula $\exp\left(\left[\boldsymbol{\omega}\times\right]\right)$
+\end_inset
+
+矩阵形式推导，关键点是用如下的降幂次方法
+\begin_inset Formula 
+\[
+\begin{array}{llll}
+\left[\boldsymbol{\omega}\times\right]^{2}=\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\boldsymbol{I}\\
+\left[\boldsymbol{\omega}\times\right]^{3}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{4}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{5}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{6}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right]^{2}\\
+\left[\boldsymbol{\omega}\times\right]^{7}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{8}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{9}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{10}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right]^{2}
+\end{array}
+\]
+
+\end_inset
+
+最后推导出旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\exp\left(\left[\boldsymbol{\omega}\times\right]\right)=\mathbf{R}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外一种方式是用纯虚四元数形式推导，
+\begin_inset Formula $\exp\left(\omega_{1}\mathbf{i}+\omega_{2}\mathbf{j}+\omega_{3}\mathbf{k}\right)$
+\end_inset
+
+，关键点是用四元数乘法和换元法进行降幂次，最后同样得到
+\begin_inset Formula 
+\[
+\exp\left(\omega_{1}\mathbf{i}+\omega_{2}\mathbf{j}+\omega_{3}\mathbf{k}\right)=\left[\begin{array}{c}
+\cos\left(\dfrac{\theta}{2}\right)\\
+\dfrac{\boldsymbol{\omega}}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\dfrac{\theta}{2}\right)
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这里要注意在旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+中用全角
+\begin_inset Formula $\theta$
+\end_inset
+
+，在四元数中用半角
+\begin_inset Formula $\theta/2$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+不过在工作中常用的还是矩阵形式推导，因为矩阵形式可以简单而一致性地扩展到
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+等流形上面，而四元数很难做到。另外，符号
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+虽然形象地表示斜对称矩阵来自于向量叉乘，但是不容易找到一个类似的表示反函数的符号，并且也不利于应用于流形的扩展概念，因此有必要引入新的符号，
+\begin_inset Formula $\wedge$
+\end_inset
+
+和
+\begin_inset Formula $\vee$
+\end_inset
+
+，前者表示“从向量到矩阵”的变换，其实也就是从笛卡尔空间进入切空间，
+\begin_inset Formula $\boldsymbol{\omega}^{\wedge}=\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+，后者表示“从矩阵到向量”的变换，也就是从切空间进入笛卡尔空间，
+\begin_inset Formula $\boldsymbol{\omega}=\left[\boldsymbol{\omega}\times\right]^{\vee}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+此外，在软件中一般会提供一个快捷函数，一步从笛卡尔空间到流形空间的相互变换，即所谓的大写指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+，就是将生成元操作和
+\begin_inset Formula $\exp$
+\end_inset
+
+操作一次性运算完成，方便调用者。同样也会有一个大写对数函数
+\begin_inset Formula $\mathrm{Log}\left(\mathbf{R}\right)$
+\end_inset
+
+做为反函数。这时候又可以引入方便使用的加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+和减号
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rcl}
+\text{Plus operator:} & \mathcal{X}\oplus\boldsymbol{\theta} & \triangleq\mathcal{X}\cdot\mathrm{Exp}\left(\boldsymbol{\theta}\right)\\
+\text{Minus operator:} & \mathcal{Y}\ominus\mathcal{X} & \triangleq\mathrm{Log}\left(\mathcal{X}^{-1}\cdot\mathcal{Y}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来理解Baker–Campbell–Hausdorff公式，简称BCH公式。我们期望
+\begin_inset Formula 
+\[
+\exp\left(\boldsymbol{\phi}_{1}^{\wedge}\right)\exp\left(\boldsymbol{\phi}_{2}^{\wedge}\right)=\exp\left(\left(\boldsymbol{\phi}_{1}+\boldsymbol{\phi}_{2}\right)^{\wedge}\right),
+\]
+
+\end_inset
+
+因为函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+运算慢，我们期望在向量空间中将所有的向量一次加减完成而只算一次函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+。但是，这个等式成立的条件是
+\begin_inset Formula $\boldsymbol{\phi}_{1}^{\wedge}\boldsymbol{\phi}_{2}^{\wedge}=\boldsymbol{\phi}_{2}^{\wedge}\boldsymbol{\phi}_{1}^{\wedge}$
+\end_inset
+
+，
+\begin_inset CommandInset href
+LatexCommand href
+name "Matrix exponential properties 这个视频"
+target "https://www.youtube.com/watch?v=kQW9oTwGMoU"
+literal "false"
+
+\end_inset
+
+有简短的证明。显然，对于矩阵乘法，
+\begin_inset Formula $\boldsymbol{\phi}_{1}^{\wedge}\boldsymbol{\phi}_{2}^{\wedge}\neq\boldsymbol{\phi}_{2}^{\wedge}\boldsymbol{\phi}_{1}^{\wedge}$
+\end_inset
+
+，所以
+\begin_inset Formula 
+\[
+\exp\left(\boldsymbol{\phi}_{1}^{\wedge}\right)\exp\left(\boldsymbol{\phi}_{2}^{\wedge}\right)\neq\exp\left(\left(\boldsymbol{\phi}_{1}+\boldsymbol{\phi}_{2}\right)^{\wedge}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+BCH公式告诉我们，当处理两个矩阵之积时，它们会产生一些由李括号组成的余项。直观上的理解，我们在上式的两端同时乘上单位矩阵
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+，方程左边，旋转向量
+\begin_inset Formula $\boldsymbol{\phi}_{1}$
+\end_inset
+
+收回并作用到幺元上，于是姿态点从幺元出发，沿测地线到达新的姿态点，我们称之为
+\begin_inset Formula $q_{1}$
+\end_inset
+
+，接着旋转向量
+\begin_inset Formula $\boldsymbol{\phi}_{2}$
+\end_inset
+
+收回并作用到
+\begin_inset Formula $q_{1}$
+\end_inset
+
+上，于是姿态点从
+\begin_inset Formula $q_{1}$
+\end_inset
+
+出发，沿测地线到达新的姿态点，我们称之为
+\begin_inset Formula $q_{2}$
+\end_inset
+
+，前后两条测地线的方向并不相同。如果我们直接从幺元出发，沿测地线到达
+\begin_inset Formula $q_{2}$
+\end_inset
+
+姿态点，那么在流形上我们将看到一个三角形。注意，我们不能用
+\begin_inset Formula $\log\left(\:\right)$
+\end_inset
+
+函数将前两条测地线展开(unwrap)到向量空间并相加，
+\begin_inset Formula $\boldsymbol{\phi}_{1}+\boldsymbol{\phi}_{2}$
+\end_inset
+
+，这个运算不可行，这是因为局部切空间发生了切换，第二次旋转是在
+\begin_inset Formula $q_{1}$
+\end_inset
+
+姿态点上建立局部切空间进行计算，而第一次和第三次旋转是在幺元处的切空间进行计算，两处局部切空间产生的差异就是那些余项。
+\end_layout
+
+\begin_layout Standard
+但是通过分析BCH公式，当
+\begin_inset Formula $\boldsymbol{\phi}_{1}$
+\end_inset
+
+或
+\begin_inset Formula $\boldsymbol{\phi}_{2}$
+\end_inset
+
+为小量时，公式可以做一些近似化简，从上面的直观理解也可以看出，当有一个向量为小量时，剩下两个向量就很相近。因为在工程中，增量向量通常是小量，而原有的状态通常是大
+的量，因此近似方程很常用。对于旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的化简，还会涉及到全局或局部坐标系选择的问题。因此通常约定是，小量在右边叫右乘，表示从机体坐标系变换到惯性坐标系的旋转，用
+\begin_inset Formula $\mathbf{R}_{B}^{I}$
+\end_inset
+
+表示，所以有
+\begin_inset Formula 
+\[
+\mathbf{R}_{B}^{I}\left(\boldsymbol{\phi}_{1}\right)\mathbf{R}_{B}^{I}\left(\boldsymbol{\phi}_{2}\right)\approx\mathbf{R}_{B}^{I}\left(\boldsymbol{\phi}_{1}\right)\left(\mathbf{I}+\left[\boldsymbol{\phi}_{2}\times\right]\right),
+\]
+
+\end_inset
+
+小量在左边叫左乘，表示从惯性坐标系变换到机体坐标系的旋转，用
+\begin_inset Formula $\mathbf{R}_{I}^{B}$
+\end_inset
+
+表示，所以有
+\begin_inset Formula 
+\[
+\mathbf{R}_{I}^{B}\left(\boldsymbol{\phi}_{1}\right)\mathbf{R}_{I}^{B}\left(\boldsymbol{\phi}_{2}\right)\approx\left(\mathbf{I}-\left[\boldsymbol{\phi}_{1}\times\right]\right)\mathbf{R}_{I}^{B}\left(\boldsymbol{\phi}_{2}\right),
+\]
+
+\end_inset
+
+这些都是应用旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+当
+\begin_inset Formula $\boldsymbol{\phi}\rightarrow0$
+\end_inset
+
+时的简化方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+指数映射运算
+\end_layout
+
+\begin_layout Standard
+刚体位姿包括姿态和平移，刚体运动群
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+由旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+和平移向量这两种数学对象组合而成。
+\begin_inset Formula 
+\begin{equation}
+\mathrm{SE}(3)=\left\{ \mathbf{T}\mid\mathbf{T}=\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\in\mathbb{R}^{4\times4},\mathbf{R}\in\mathrm{SO}(3),\mathbf{t}\in\mathbb{R}^{3}\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的李代数
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+的定义是
+\begin_inset Formula 
+\begin{equation}
+\mathfrak{se}(3)=\left\{ \boldsymbol{\xi}^{\wedge}|\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]\in\mathbb{R}^{6},\boldsymbol{\phi}\in\mathbb{R}^{3},\boldsymbol{\rho}\in\mathbb{R}^{3},\boldsymbol{\xi}^{\wedge}=\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\in\mathbb{R}^{4\times4}\right\} 
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此和
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+相仿，
+\begin_inset Formula $6$
+\end_inset
+
+参数向量
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+用
+\begin_inset Formula $6$
+\end_inset
+
+个生成元进入
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+空间
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+G_{1}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & -1 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right), & G_{2}=\left(\begin{array}{cccc}
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0\\
+-1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right), & G_{3}=\left(\begin{array}{cccc}
+0 & -1 & 0 & 0\\
+1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right),\\
+G_{4}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right), & G_{5}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right), & G_{6}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0
+\end{array}\right).
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right] & \in\mathbb{R}^{6}\\
+\phi_{x}G_{1}+\phi_{y}G_{2}+\phi_{z}G_{3}+\rho_{x}G_{4}+\rho_{y}G_{5}+\rho_{z}G_{6} & \in\mathfrak{se}(3)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\boldsymbol{\xi}^{\wedge}$
+\end_inset
+
+代入指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+就得到位姿矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+，切空间中的元素就进入
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+流形中
+\begin_inset Formula 
+\begin{align*}
+\exp\left(\boldsymbol{\xi}^{\wedge}\right) & =\exp\left(\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\right)\\
+ & =\left[\begin{array}{c|c}
+\exp\left(\boldsymbol{\phi}^{\wedge}\right) & \mathbf{V}\boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\mathbf{T}
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵，有些文档又称为
+\begin_inset Formula $\mathbf{J}$
+\end_inset
+
+系数矩阵，经过泰勒级数展开并推导得到
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathbf{V}=\begin{cases}
+\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\\
+\dfrac{\sin\theta}{\theta}\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}
+\end{cases}.}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+可以看到
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵和
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+矩阵十分相像。在工程中，
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+向量的数值可以通过传感器测量得到，因此在程序中
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+矩阵的计算过程如下：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\xi} & =\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]\in\mathbb{R}^{6}\\
+\theta & =\sqrt{\boldsymbol{\phi}^{\mathrm{T}}\boldsymbol{\phi}}\\
+A & =\dfrac{\sin\theta}{\theta}\\
+B & =\dfrac{1-\cos\theta}{\theta^{2}}\\
+C & =\dfrac{1-A}{\theta^{2}}\\
+\mathbf{R} & =\mathbf{I}+A\left[\boldsymbol{\phi}\times\right]+B\left[\boldsymbol{\phi}\times\right]^{2}\\
+\mathbf{V} & =\mathbf{I}+B\left[\boldsymbol{\phi}\times\right]+C\left[\boldsymbol{\phi}\times\right]^{2}\\
+\mathrm{Exp}\left(\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]\right) & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{Vu}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right].
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+出于实现的目的，当
+\begin_inset Formula $\theta^{2}$
+\end_inset
+
+为小值时应使用
+\begin_inset Formula $A$
+\end_inset
+
+、
+\begin_inset Formula $B$
+\end_inset
+
+和
+\begin_inset Formula $C$
+\end_inset
+
+的泰勒展开。
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+有一个封闭形式的逆矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{V}^{-1}=\mathbf{I}-\dfrac{1}{2}\left[\boldsymbol{\phi}\times\right]+\dfrac{1}{\theta^{2}}\left(1-\dfrac{A}{2B}\right)\left[\boldsymbol{\phi}\times\right]^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位姿矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+的幺元同样为单位矩阵
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+，由此计算逆矩阵为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{T} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+\mathbf{T}^{-1} & =\left[\begin{array}{c|c}
+\mathbf{R}^{\mathrm{T}} & -\mathbf{R}^{\mathrm{T}}\mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+这在机体坐标系中的位姿和惯性坐标系中的位姿相互变换时用到。
+\end_layout
+
+\begin_layout Standard
+位姿矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+通过乘法组合
+\begin_inset Formula 
+\begin{align*}
+\mathbf{T}_{1}\cdot\mathbf{T}_{2} & =\left[\begin{array}{c|c}
+\mathbf{R}_{1} & \mathbf{t}_{1}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\cdot\left[\begin{array}{c|c}
+\mathbf{R}_{2} & \mathbf{t}_{2}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{R}_{1}\mathbf{R}_{2} & \mathbf{R}_{1}\mathbf{t}_{2}-\mathbf{t}_{1}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵表示法还使得对于三维上的点和向量的群作用清晰可见：
+\begin_inset Formula 
+\begin{align*}
+\mathbf{x} & =\left[\begin{array}{c}
+x\\
+y\\
+z\\
+w
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+w
+\end{array}\right]\\
+\mathbf{T}\cdot\mathbf{x} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+w
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\mathbf{R}\boldsymbol{\rho}+w\mathbf{t}\\
+w
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常，
+\begin_inset Formula $w=1$
+\end_inset
+
+，因此
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+是笛卡尔空间中的点。矩阵向量相乘的作用相当于先旋转
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+，然后平移它。对于方向向量，用
+\begin_inset Formula $w=0$
+\end_inset
+
+编码，将忽略平移变换。如果
+\begin_inset Formula $\mathbf{R}=\mathbf{I}$
+\end_inset
+
+，则矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+为平移矩阵，只有平移变换。
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+指数映射运算
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+为三维空间中的相似性变换，是刚性变换和缩放的组合。三维空间中的相似变换群
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+具有几乎相同的表示，且有增加的缩放因子：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{R} & \in\mathrm{SO}(3),\mathbf{t}\in\mathbb{R}^{3},s\in\mathbb{R}\\
+\mathbf{T} & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)\in\mathrm{Sim}(3)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其李代数
+\begin_inset Formula $\mathfrak{sim}(3)$
+\end_inset
+
+的生成元与
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+的生成元相似，只增加了一个对应于缩放变化的生成元：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+G_{7}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & -1
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\mathfrak{sim}(3)$
+\end_inset
+
+中的一个元素由生成元的倍数表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\delta}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}\\
+\lambda
+\end{array}\right] & \in\mathbb{R}^{7}\\
+\phi_{x}G_{1}+\phi_{y}G_{2}+\phi_{z}G_{3}+\rho_{x}G_{4}+\rho_{y}G_{5}+\rho_{z}G_{6}+\lambda G_{7} & \in\mathfrak{sim}(3)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\boldsymbol{\delta}^{\wedge}$
+\end_inset
+
+代入指数映射函数
+\begin_inset Formula $\exp\left(\:\right)$
+\end_inset
+
+就得到相似性变换矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+，切空间中的元素就进入
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+流形中
+\begin_inset Formula 
+\begin{align*}
+\exp\left(\boldsymbol{\delta}^{\wedge}\right) & =\exp\left(\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & -\lambda
+\end{array}\right]\right)\\
+ & =\left[\begin{array}{c|c}
+\exp\left(\boldsymbol{\phi}^{\wedge}\right) & \mathbf{V}\boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & \exp\left(-\lambda\right)
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & s^{-1}
+\end{array}\right]\\
+ & =\mathbf{T}
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵和
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+的版本有些相似，但现在旋转、平移和缩放被无限交错。指数的旋转分量和缩放分量很明显，但平移分量包含了这三者的混合。这个
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵太复杂，这里就不抄书了。可以查看参考文献[2]了解推导过程及结果。
+\end_layout
+
+\begin_layout Standard
+相似性变换矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+的幺元同样为单位矩阵
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+，由此计算逆矩阵为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{T} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & s^{-1}
+\end{array}\right]\\
+\mathbf{T}^{-1} & =\left[\begin{array}{c|c}
+\mathbf{R}^{\mathrm{T}} & -s\mathbf{R}^{\mathrm{T}}\mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & s
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相似性变换矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+通过乘法组合
+\begin_inset Formula 
+\begin{align*}
+\mathbf{T}_{1}\cdot\mathbf{T}_{2} & =\left[\begin{array}{c|c}
+\mathbf{R}_{1} & \mathbf{t}_{1}\\
+\hline \mathbf{0}^{\mathrm{T}} & s_{1}^{-1}
+\end{array}\right]\cdot\left[\begin{array}{c|c}
+\mathbf{R}_{2} & \mathbf{t}_{2}\\
+\hline \mathbf{0}^{\mathrm{T}} & s_{2}^{-1}
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{R}_{1}\mathbf{R}_{2} & \mathbf{R}_{1}\mathbf{t}_{2}-s_{2}^{-1}\mathbf{t}_{1}\\
+\hline \mathbf{0}^{\mathrm{T}} & \left(s_{1}\cdot s_{2}\right)^{-1}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在三维上的点的群操作也通过
+\begin_inset Formula $s$
+\end_inset
+
+编码缩放：
+\begin_inset Formula 
+\begin{align*}
+\mathbf{x} & =\left[\begin{array}{c}
+x\\
+y\\
+z\\
+w
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+w
+\end{array}\right],\quad\left(\lambda\mathbf{x}\simeq\mathbf{x}\forall\lambda\in\mathbb{R}\right)\\
+\mathbf{T}\cdot\mathbf{x} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & s^{-1}
+\end{array}\right]\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+w
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\mathbf{R}\boldsymbol{\rho}+w\mathbf{t}\\
+s^{-1}w
+\end{array}\right]\\
+ & \simeq\left[\begin{array}{c}
+s\left(\mathbf{R}\boldsymbol{\rho}+w\mathbf{t}\right)\\
+w
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $w=1$
+\end_inset
+
+的典型情况下，这对应于刚性变换，跟随有缩放。
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+q & =x\mathbf{i}+y\mathbf{j}+z\mathbf{k}+w\\
+ & =\mathbf{q}+w
+\end{align*}
+
+\end_inset
+
+可以表示三维空间的姿态。但是单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+要想用图形表示出来，也是一个困难的事情，因为单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+所在的球面是嵌入
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+空间中的
+\begin_inset Formula $\mathrm{S}^{3}$
+\end_inset
+
+球面。所以有一种方法是用类似复平面的方式表示(fig2d-30.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-30.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中，实数轴
+\begin_inset Formula $w$
+\end_inset
+
+做为南北轴。因为单位四元数
+\begin_inset Formula $q$
+\end_inset
+
+表示旋转是两倍覆盖，所以一般选择
+\begin_inset Formula $w\geq0$
+\end_inset
+
+的北半球表示一个三维旋转。另外，图中的角度
+\begin_inset Formula $\theta$
+\end_inset
+
+代表的是
+\begin_inset Formula 
+\[
+\tan\left(\theta\right)=\dfrac{\left\Vert \mathbf{q}\right\Vert }{w}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将旋转向量 (Rotation Vector, RV)代入指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+就将其收回(retraction)到流形中。这种映射属于等距投影 (Equidistant)，
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间位于幺元
+\begin_inset Formula $\left[\begin{array}{cccc}
+0 & 0 & 0 & 1\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+处。注意，在四元数版本中使用的是半角
+\begin_inset Formula $\boldsymbol{\theta}/2$
+\end_inset
+
+，但为了绘图方便，下图将
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间乘上了
+\begin_inset Formula $1/2$
+\end_inset
+
+的系数(fig2d-31.pdf)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2d-31.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的，将流形中的元素代入对数映射函数
+\begin_inset Formula $\mathrm{Log}\left(\:\right)$
+\end_inset
+
+就将其展开(unwrap)到
+\begin_inset Formula $\mathrm{E}^{3}$
+\end_inset
+
+空间中。注意，这个在幺元
+\begin_inset Formula $\left[\begin{array}{cccc}
+0 & 0 & 0 & 1\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+处建立的局部切空间是一个三维空间，在旋转向量空间中，所有旋转都可以映射到半径为
+\begin_inset Formula $\pi$
+\end_inset
+
+的球体的内部和表面上的点，其中直径两端的点表示相同的旋转；虽然姿态在流形上是平滑变化，但旋转向量可以从直径的一端跳到另一端。
+\end_layout
+
+\begin_layout Standard
+在实现指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+时，要注意，当旋转角度
+\begin_inset Formula $\theta=\left\Vert \boldsymbol{\phi}\right\Vert \rightarrow0$
+\end_inset
+
+时，在上图的幺元附近，会有数值不稳定的情况，当
+\begin_inset Formula $\theta=\left\Vert \boldsymbol{\phi}\right\Vert \rightarrow2\pi$
+\end_inset
+
+时，在上图的赤道附近，会有姿态跳跃的情况，表现为无人机在yaw的抖动中突然旋转
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在流形上的当前位姿点上可以同时存在
+\begin_inset Formula $3$
+\end_inset
+
+个三维空间，第一个局部笛卡尔空间，第二个是局部切空间，第三个是三维流形空间。各空间中的元素之间的变换算法见下图(Rodrigues-01.pdf)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename Rodrigues-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{tabular}{cccccc}
+\hline   &  \mathbf{Vector}  &   &  \mathbf{Lie\ algebra}  &  \ensuremath{}  & \mathbf{Lie\ group}\\
+ & (Cartesian\ space) &  & (Tangent\ space) &  & (Manifold\ space)\\
+\hline \text{} \\
+  \mathrm{Rotation}  & \boxed{\begin{array}{rl}
+ & \mathbb{R}^{3}\\
+\\
+\theta & =\left\Vert \boldsymbol{\omega}\right\Vert \cdot\Delta t\\
+\mathbf{u} & =\boldsymbol{\omega}/\left\Vert \boldsymbol{\omega}\right\Vert \\
+\boldsymbol{\phi} & =\mathbf{u}\theta\\
+\\
+\\
+\\
+\end{array}} & \phi_{x}G_{1}+\phi_{y}G_{2}+\phi_{z}G_{3} & \boxed{\begin{array}{rl}
+ & \mathfrak{so}(3)\\
+\boldsymbol{\phi}^{\wedge} & =\left[\begin{array}{ccc}
+0 & -\phi_{z} & \phi_{y}\\
+\phi_{z} & 0 & -\phi_{x}\\
+-\phi_{y} & \phi_{x} & 0
+\end{array}\right]
+\end{array}} & \exp\left(\boldsymbol{\phi}^{\wedge}\right)=\cos\theta\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\boldsymbol{\phi}^{\wedge}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}} & \boxed{\begin{array}{rl}
+\mathrm{SO}(3)\\
+\\
+\mathbf{R} & \in\mathbb{R}^{3\times3}\\
+\mathbf{R}^{\mathrm{T}}\mathbf{R}=\mathbf{R}\mathbf{R}^{\mathrm{T}} & =\mathbf{I}\\
+\det\left(\mathbf{R}\right) & =1\\
+\\
+\\
+\\
+\end{array}}\\
+  \\
+  \mathrm{Transformation}  & \boxed{\begin{array}{rl}
+ & \mathbb{R}^{6}\\
+\\
+\boldsymbol{\xi} & =\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]\\
+\\
+\\
+\\
+\end{array}} & \phi_{x}G_{1}+\phi_{y}G_{2}+\phi_{z}G_{3}+\rho_{x}G_{4}+\rho_{y}G_{5}+\rho_{z}G_{6} & \boxed{\begin{array}{rl}
+ & \mathfrak{se}(3)\\
+\boldsymbol{\xi}^{\wedge} & =\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\in\mathbb{R}^{4\times4}
+\end{array}} & {\scriptstyle \begin{array}{rl}
+\exp\left(\boldsymbol{\xi}^{\wedge}\right) & =\left[\begin{array}{c|c}
+\exp\left(\boldsymbol{\phi}^{\wedge}\right) & \mathbf{V}\boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+\mathbf{V} & =\dfrac{\sin\theta}{\theta}\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\phi}^{\wedge}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}
+\end{array}} & \boxed{\begin{array}{rl}
+ & \qquad\mathrm{SE}(3)\\
+\\
+\mathbf{T} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\in\mathbb{R}^{4\times4}\\
+\\
+\\
+\\
+\end{array}}\\
+ \mathrm{} \\
+Similarity  & \boxed{\begin{array}{rl}
+ & \mathbb{R}^{7}\\
+\\
+\boldsymbol{\delta} & =\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}\\
+\lambda
+\end{array}\right]\\
+\\
+\\
+\end{array}} & \phi_{x}G_{1}+\phi_{y}G_{2}+\phi_{z}G_{3}+\rho_{x}G_{4}+\rho_{y}G_{5}+\rho_{z}G_{6}+\lambda G_{7} & \boxed{\begin{array}{rl}
+ & \mathfrak{sim}(3)\\
+\boldsymbol{\delta}^{\wedge} & =\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & -\lambda
+\end{array}\right]\in\mathbb{R}^{4\times4}
+\end{array}} & \exp\left(\boldsymbol{\delta}^{\wedge}\right)=\left[\begin{array}{c|c}
+\exp\left(\boldsymbol{\phi}^{\wedge}\right) & \mathbf{V}\boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & \exp\left(-\lambda\right)
+\end{array}\right] & \boxed{\begin{array}{rl}
+ & \qquad\mathrm{Sim}(3)\\
+\\
+\mathbf{T} & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0}^{\mathrm{T}} & s^{-1}
+\end{array}\right]\in\mathbb{R}^{4\times4}\\
+\\
+\\
+\\
+\end{array}}\\
+\\
+\hline \end{tabular}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+更多的信息，参见参考文献[3]中总结的表格(Rodrigues-02.pdf)：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="10" columns="11">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tangent space
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exponential map
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Lie algebra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cartesian
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Lie group 
+\begin_inset Formula $\mathcal{M},\circ$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+size
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+dim
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Constraint
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\tau}^{\wedge}\in\frak{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\tau}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Comp.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Action
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+-D vector
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbb{R}^{n},+$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}\in\mathbb{R}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}-\mathbf{v}=\mathbf{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}\in\mathbb{R}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}\in\mathbb{R}^{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}=\exp\left(\mathbf{v}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}_{1}+\mathbf{v}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{v}+\mathbf{x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+circle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S^{1},\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{z}\in\mathbb{C}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{z}*\mathbf{z}=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $i\theta\in i\mathbb{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\theta\in\mathbb{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{z}=\exp\left(i\theta\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{z}_{1}\,\mathbf{z}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{z}\,\mathbf{x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $SO(2),\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}^{\top}\mathbf{R}=\mathbf{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\theta\right]_{\times}\in\mathfrak{so}(2)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\theta\in\mathbb{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}=\exp\left(\left[\theta\right]_{\times}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}_{1}\,\mathbf{R}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}\,\mathbf{x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rigid motion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $SE(2),\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $9$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{M}=\left[\begin{array}{cc}
+\mathbf{R} & \mathbf{t}\\
+0 & 1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}^{\top}\mathbf{R}=\mathbf{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+\left[\theta\right]_{\times} & \boldsymbol{\rho}\\
+0 & 0
+\end{array}\right]\in\mathfrak{se}(2)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+\theta
+\end{array}\right]\in\mathbb{R}^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\exp\left(\left[\begin{array}{cc}
+\left[\theta\right]_{\times} & \boldsymbol{\rho}\\
+0 & 0
+\end{array}\right]\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{M}_{1}\,\mathbf{M}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}\,\mathbf{x}+\mathbf{t}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+-sphere
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S^{3},\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{q}\in\mathbb{H}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{q}^{*}\mathbf{q}=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\theta}/2\in\mathbb{H}_{p}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\theta}\in\mathbb{R}^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{q}=\exp\left(\mathbf{u}\theta/2\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{q}_{1}\,\mathbf{q}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{q}\,\mathbf{x}\,\mathbf{q}^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $SO(3),\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $9$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}^{\top}\mathbf{R}=\mathbf{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\boldsymbol{\theta}\right]_{\times}\in\mathfrak{so}(3)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{\theta}\in\mathbb{R}^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}=\exp\left(\left[\boldsymbol{\theta}\right]_{\times}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}_{1}\,\mathbf{R}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}\,\mathbf{x}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rigid motion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $SE(3),\cdot$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $16$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{M}=\left[\begin{array}{cc}
+\mathbf{R} & \mathbf{t}\\
+0 & 1
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}^{\top}\mathbf{R}=\mathbf{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{cc}
+\left[\boldsymbol{\theta}\right]_{\times} & \boldsymbol{\rho}\\
+0 & 0
+\end{array}\right]\in\mathfrak{se}(3)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[\begin{array}{c}
+\boldsymbol{\rho}\\
+\boldsymbol{\theta}
+\end{array}\right]\in\mathbb{R}^{6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\exp\left(\left[\begin{array}{cc}
+\left[\boldsymbol{\theta}\right]_{\times} & \boldsymbol{\rho}\\
+0 & 0
+\end{array}\right]\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{M}_{1}\,\mathbf{M}_{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{R}\,\mathbf{x}+\mathbf{t}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+参考文献列表
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Rodrigues' rotation formula"
+target "https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie Groups for 2D and 3D Transformations"
+target "http://ethaneade.com/lie.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+《视觉SLAM十四讲》— 第3/4讲
+\end_layout
+
+\end_body
+\end_document
