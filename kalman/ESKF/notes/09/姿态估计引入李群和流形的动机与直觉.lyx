@@ -3332,6 +3332,349 @@ so(3)=\left\{ \boldsymbol{S}\in\mathbb{R}^{3\times3}:\boldsymbol{S}^{\mathrm{T}}
 \end_layout
 
 \begin_layout Standard
+Homogeneous Transformations
+\end_layout
+
+\begin_layout Standard
+They represent the position and orientation (pose) of a frame with respect
+ to another frame
+\end_layout
+
+\begin_layout Standard
+Parts
+\begin_inset Formula 
+\[
+T=\left[\begin{array}{ccc|c}
+r_{11} & r_{12} & r_{13} & t_{x}\\
+r_{21} & r_{22} & r_{23} & t_{y}\\
+r_{31} & r_{32} & r_{33} & t_{z}\\
+\hline 0 & 0 & 0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+R & \mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $R:\text{Rotation (orientation)},\mathbf{t}:\text{translation (position)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mathematically, they belong to 
+\begin_inset Formula $SE(3):\mathbb{R}^{3}\times SO(3)$
+\end_inset
+
+, (SE = Special Euclidean)
+\end_layout
+
+\begin_layout Standard
+- They can also be viewed from the perspective of projective geometry
+\end_layout
+
+\begin_layout Standard
+Pure transformations : Pure rotaion, Pure translation
+\begin_inset Formula 
+\[
+T=\left[\begin{array}{cc}
+R & \mathbf{0}\\
+\mathbf{0} & 1
+\end{array}\right],T=\left[\begin{array}{cc}
+I & \mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pure rotaions
+\begin_inset Formula 
+\[
+Rot_{x}\left(\theta\right)=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & \cos\theta & -\sin\theta & 0\\
+0 & \sin\theta & \cos\theta & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Rot_{y}\left(\theta\right)=\left[\begin{array}{cccc}
+\cos\theta & 0 & \sin\theta & 0\\
+0 & 1 & 0 & 0\\
+-\sin\theta & 0 & \cos\theta & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Rot_{z}\left(\theta\right)=\left[\begin{array}{cccc}
+\cos\theta & -\sin\theta & 0 & 0\\
+\sin\theta & \cos\theta & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pure translations:
+\begin_inset Formula 
+\[
+Trans_{x}\left(d\right)=\left[\begin{array}{cccc}
+1 & 0 & 0 & d\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Trans_{y}\left(d\right)=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & d\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Trans_{z}\left(d\right)=\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 1 & d\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Composition
+\end_layout
+
+\begin_layout Standard
+1.
+ When a transformation is applied with respect to the fixed frame:
+\end_layout
+
+\begin_layout Standard
+- A pre-multiplication is used
+\end_layout
+
+\begin_layout Standard
+2.
+ When a transformation is applied with respect to the mobile (current, new)
+ frame
+\end_layout
+
+\begin_layout Standard
+- A post-multiplication is used
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+a frame 
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+ is rotated 
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+ about 
+\begin_inset Formula $x$
+\end_inset
+
+, and then it is translated a vector 
+\begin_inset Formula $\left(6,-2,10\right)$
+\end_inset
+
+ with respect to the fixed (initial) frame.
+ Find the homogeneous transformation that describes 
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{A}T_{B} & =Trans\left(6,-2,10\right)Rot_{x}\left(90^{\circ}\right)\\
+ & =\left[\begin{array}{cccc}
+1 & 0 & 0 & 6\\
+0 & 1 & 0 & -2\\
+0 & 0 & 1 & 10\\
+0 & 0 & 0 & 1
+\end{array}\right]\left[\begin{array}{cccc}
+1 & 0 & 0 & 0\\
+0 & \cos\left(90^{\circ}\right) & -\sin\left(90^{\circ}\right) & 0\\
+0 & \sin\left(90^{\circ}\right) & \cos\left(90^{\circ}\right) & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+1 & 0 & 0 & 6\\
+0 & 0 & -1 & -2\\
+0 & 1 & 0 & 10\\
+0 & 0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example
+\end_layout
+
+\begin_layout Standard
+Find the homogeneous transformation matrix that represents a rotation of
+ an angle 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ about the 
+\begin_inset Formula $x$
+\end_inset
+
+ axis, followed by a translation of 
+\begin_inset Formula $b$
+\end_inset
+
+ units along the new 
+\begin_inset Formula $x$
+\end_inset
+
+ axis, followed by a translation of 
+\begin_inset Formula $d$
+\end_inset
+
+units along the new 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, followed by a rotation of an angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+ about the new 
+\begin_inset Formula $z$
+\end_inset
+
+ axis.
+\end_layout
+
+\begin_layout Standard
+Solution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}T_{B}=Rot_{x}\left(\alpha\right)Trans_{x}\left(b\right)Trans_{z}\left(d\right)Rot_{z}\left(\theta\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Uses
+\end_layout
+
+\begin_layout Standard
+1.
+ They represent the pose (position+orientation) of a frame (rigid body)
+ with respect to another frame.
+\end_layout
+
+\begin_layout Standard
+2.
+ The change the reference frame in which a point is represented (using a
+ linear relation):
+\begin_inset Formula 
+\[
+^{A}\tilde{p}={}^{A}T_{B}\,{}^{B}\tilde{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+- Note : the point must be represented using homogeneous coordinates (its
+ notation used ~)
+\end_layout
+
+\begin_layout Standard
+3.
+ They apply a transformation (rotation+translation) to a point in the same
+ reference frame.
+\end_layout
+
+\begin_layout Standard
+—
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \[
 \begin{array}{ll}
