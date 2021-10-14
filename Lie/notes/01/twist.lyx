@@ -1,0 +1,2671 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+位姿向量与速度旋量
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+从位姿向量推导到速度旋量向量，从李群的角度理解速度旋量。
+\end_layout
+
+\begin_layout Section
+前置说明
+\end_layout
+
+\begin_layout Standard
+在三维世界里，表示刚体运动的位姿向量
+\begin_inset Formula $\boldsymbol{\xi}\in\mathbb{R}^{6}$
+\end_inset
+
+由姿态向量
+\begin_inset Formula $\boldsymbol{\phi}\in\mathbb{R}^{3}$
+\end_inset
+
+和平移向量
+\begin_inset Formula $\boldsymbol{\rho}\in\mathbb{R}^{3}$
+\end_inset
+
+组合而成
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\boldsymbol{\rho}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+姿态变化由角速度驱动，位置变化由速度驱动。附着在机体上的IMU测量得到的是局部坐标系的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和加速度
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+，假定是匀速运动，通过时间的积分可以得到增量角度
+\begin_inset Formula $\theta=\left\Vert \boldsymbol{\omega}\right\Vert \cdot\Delta t$
+\end_inset
+
+和增量速度
+\begin_inset Formula $\mathbf{v}=\mathbf{a}\cdot\Delta t$
+\end_inset
+
+。在角度空间里，用单位向量
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}=\boldsymbol{\omega}/\left\Vert \boldsymbol{\omega}\right\Vert $
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+描述旋转轴，为方便起见，用一个旋转向量
+\begin_inset Formula $\boldsymbol{\phi}=\mathbf{u}\theta$
+\end_inset
+
+描述围绕旋转轴
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，旋转角度为
+\begin_inset Formula $\theta$
+\end_inset
+
+的旋转。
+\end_layout
+
+\begin_layout Standard
+位姿向量
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+指数映射函数
+\begin_inset Formula $\mathrm{Exp}\left(\:\right)$
+\end_inset
+
+就得到位姿矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Exp}\left(\boldsymbol{\xi}\right) & =\exp\left(\boldsymbol{\xi}^{\wedge}\right)\\
+ & =\exp\left(\left[\begin{array}{c|c}
+\boldsymbol{\phi}^{\wedge} & \boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\right)\\
+ & =\left[\begin{array}{c|c}
+\exp\left(\boldsymbol{\phi}^{\wedge}\right) & \mathbf{V}\boldsymbol{\rho}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{c|c}
+\mathbf{R} & \mathbf{r}\\
+\hline \mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\mathbf{T}
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+是旋转矩阵，由Rodrigues旋转公式计算得到，
+\begin_inset Formula 
+\[
+\mathbf{R}=\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]^{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵也类似
+\begin_inset Formula 
+\[
+\mathbf{V}=\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\phi}\times\right]^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+位姿矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+表示的是两个坐标系的原点之间位姿关系。如果有两个坐标系，一般选择惯性坐标系
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+为参考系，其原点位于
+\begin_inset Formula $O$
+\end_inset
+
+，选择附着在刚体
+\begin_inset Formula $B$
+\end_inset
+
+上的局部坐标系
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+为机体坐标系，其原点位于
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+。
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧在
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧中的姿态用旋转矩阵
+\begin_inset Formula $^{A}\mathbf{R}_{B}$
+\end_inset
+
+表示，
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧中的原点
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+在
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧中用位置向量
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+表示。于是我们通过齐次变换矩阵
+\begin_inset Formula $^{A}\mathbf{T}_{B}$
+\end_inset
+
+描述
+\begin_inset Formula $\{B\}$
+\end_inset
+
+在
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的位置和姿态：
+\begin_inset Formula 
+\[
+^{A}\mathbf{T}_{B}=\left[\begin{array}{c|c}
+^{A}\mathbf{R}_{B} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\hline \mathbf{0}_{1\times3} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+于是在
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧的一个点
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+的坐标为
+\begin_inset Formula $^{B}\mathbf{r}^{P^{\prime}}$
+\end_inset
+
+，在
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧中的一个点
+\begin_inset Formula $P$
+\end_inset
+
+与之重合，则该点的坐标为
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\\
+1
+\end{array}\right]={}^{A}\mathbf{T}_{B}\left[\begin{array}{c}
+^{B}\mathbf{r}^{P^{\prime}}\\
+1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+速度旋量的推导
+\end_layout
+
+\begin_layout Standard
+存在一个惯性坐标系
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+，它的原点位于
+\begin_inset Formula $O$
+\end_inset
+
+，和一个在其中运动的机体，上面附着机体坐标系
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+，它的原点位于
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+，其位于
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧中的
+\begin_inset Formula $^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+位置。在初始时间
+\begin_inset Formula $t_{0}$
+\end_inset
+
+，
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧和
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧重合，此时在
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧中的一个点
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧中的一个点
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+粘连，因此有
+\begin_inset Formula $^{B}\mathbf{r}^{P^{\prime}}\left(t_{0}\right)=\,{}^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+我们考虑在时间
+\begin_inset Formula $t$
+\end_inset
+
+时
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧点
+\begin_inset Formula $P$
+\end_inset
+
+的位置和方向。位姿矩阵
+\begin_inset Formula $\mathbf{T}\left(t\right)$
+\end_inset
+
+是时间的函数，其中的旋转矩阵
+\begin_inset Formula $\mathbf{R}\left(t\right)$
+\end_inset
+
+和平移向量
+\begin_inset Formula $\mathbf{r}\left(t\right)$
+\end_inset
+
+也是时间的函数。为简化，假设点
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+在
+\begin_inset Formula $\left\{ B\right\} $
+\end_inset
+
+帧中无变化，因此
+\begin_inset Formula $^{B}\mathbf{r}^{P^{\prime}}\left(t\right)$
+\end_inset
+
+是一个常数，
+\begin_inset Formula $^{B}\mathbf{r}^{P^{\prime}}\left(t\right)=\,{}^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+像以前一样，通过微分参考坐标系
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+中的位置向量
+\begin_inset Formula $^{A}\mathbf{r}^{P}\left(t_{0}\right)$
+\end_inset
+
+获得参考坐标系
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+中所见刚体
+\begin_inset Formula $B$
+\end_inset
+
+上点
+\begin_inset Formula $P^{\prime}$
+\end_inset
+
+的速度
+\begin_inset Formula 
+\[
+^{A}\mathbf{v}^{P}\left(t\right)=\dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{r}^{P}\left(t\right)\right)={}^{A}\dot{\mathbf{r}}^{P}\left(t\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{\mathbf{a}}$
+\end_inset
+
+表示参考坐标系
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+中的量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+的微分。
+\end_layout
+
+\begin_layout Standard
+线速度
+\begin_inset Formula $^{A}\mathbf{v}^{P}\left(t\right)$
+\end_inset
+
+通过写出位置向量的方程得到，
+\begin_inset Formula 
+\begin{align}
+\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right] & =\,{}^{A}\mathbf{T}_{B}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B}\left(t\right) & ^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+1
+\end{array}\right]\nonumber 
+\end{align}
+
+\end_inset
+
+对其进行时间上的微分：
+\begin_inset Formula 
+\begin{align}
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+1
+\end{array}\right] & =\,{}^{A}\dot{\mathbf{T}}_{B}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+1
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{R}_{B}\left(t\right)\right) & \dfrac{\mathrm{d}}{\mathrm{d}t}\left(^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+1
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据方程(1)有
+\begin_inset Formula 
+\begin{align*}
+\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t_{0}\right)\\
+1
+\end{array}\right] & =\left(^{A}\mathbf{T}_{B}\right)^{-1}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right) & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right)\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+将其代入方程(2)得到
+\begin_inset Formula 
+\begin{align}
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+1
+\end{array}\right] & =\,{}^{A}\dot{\mathbf{T}}_{B}\left(t\right)\left(^{A}\mathbf{T}_{B}\right)^{-1}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+^{A}\dot{\mathbf{R}}_{B}\left(t\right) & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right) & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right)\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right) & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)-{}^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right)\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]\nonumber \\
+ & =\,{}^{A}\mathbf{A}_{B}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，点
+\begin_inset Formula $P$
+\end_inset
+
+的位置向量与矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+预乘，可以得到机体上任意点
+\begin_inset Formula $P$
+\end_inset
+
+的速度，
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+^{A}\mathbf{v}^{P}\left(t\right)\\
+1
+\end{array}\right]=\,{}^{A}\mathbf{A}_{B}\left(t\right)\left[\begin{array}{c}
+^{A}\mathbf{r}^{P}\left(t\right)\\
+1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+^{A}\mathbf{A}_{B}\left(t\right)=\left[\begin{array}{cc}
+^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right) & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)-{}^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right)\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+的左上角
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵块，很容易看出是斜对称的，因为
+\begin_inset Formula $\mathbf{R}\mathbf{R}^{\mathrm{T}}=\mathbf{I}$
+\end_inset
+
+，所以有
+\begin_inset Formula 
+\begin{align*}
+\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}+\mathbf{R}\dot{\mathbf{R}}^{\mathrm{T}} & =\mathbf{0}\\
+\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}} & =-\left(\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}\right)^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+因此
+\begin_inset Formula $\boldsymbol{\Omega}=\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}$
+\end_inset
+
+是斜对称矩阵算子，其形式为：
+\begin_inset Formula 
+\[
+\boldsymbol{\Omega}=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\omega}=\left[\begin{array}{ccc}
+\omega_{x} & \omega_{y} & \omega_{z}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+是与矩阵算子相关的
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量，两者的关系为
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}^{\wedge}=\left[\boldsymbol{\omega}\times\right]=\boldsymbol{\Omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假如机体做球面运动 (spherical motion)，并且机体坐标系的原点与参考坐标系的原点重合，对于平移向量
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{r}^{O^{\prime}}\left(t\right)=\mathbf{0},\;{}^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)=\mathbf{0},
+\end{align*}
+
+\end_inset
+
+在这种特殊情况下，从方程(3)中得出结果
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{v}^{P}\left(t\right) & =\left[\boldsymbol{\omega}\times\right]{}^{A}\mathbf{r}^{P}\left(t\right)\\
+ & =\boldsymbol{\omega}\times{}^{A}\mathbf{r}^{P}\left(t\right)
+\end{align*}
+
+\end_inset
+
+此时旋转半径
+\begin_inset Formula $r=\left\Vert \mathbf{r}\right\Vert $
+\end_inset
+
+，上式就是角速度到线速度的转换公式，因此这个算子的物理意义就会立即显现出来。这意味着
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+必须是机体在参考系中的角速度向量，矩阵
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+被称为机体在参考系中的角速度矩阵 (angular velocity matrix)。或者说在李代数的视角下，
+\begin_inset Formula $\left[\boldsymbol{\omega}\times\right]$
+\end_inset
+
+是切空间中的角速度表示。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑更一般的运动
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这时分析矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+的右上角
+\begin_inset Formula $3\times1$
+\end_inset
+
+的列向量，因为
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+是机体在参考系中的角速度向量，我们就会发现
+\begin_inset Formula 
+\begin{align*}
+^{A}\mathbf{v}^{\hat{O}}\left(t\right) & =\,{}^{A}\dot{\mathbf{r}}^{O^{\prime}}\left(t\right)-\,{}^{A}\dot{\mathbf{R}}_{B}\left(t\right)\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\left(t\right)\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+ & =\,{}^{A}\mathbf{v}^{O^{\prime}}\left(t\right)-\left[\boldsymbol{\omega}\times\right]{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\\
+ & =\,{}^{A}\mathbf{v}^{O^{\prime}}\left(t\right)+\boldsymbol{\omega}\times\left(-\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\right)
+\end{align*}
+
+\end_inset
+
+是在机体上点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的速度，其位置与参考系上原点
+\begin_inset Formula $O$
+\end_inset
+
+的位置瞬时相同。因为，
+\begin_inset Formula $-\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)$
+\end_inset
+
+是从机体坐标系原点
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+指向点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的向量，则
+\begin_inset Formula $\boldsymbol{\omega}\times\left(-\,{}^{A}\mathbf{r}^{O^{\prime}}\left(t\right)\right)$
+\end_inset
+
+为沿
+\begin_inset Formula $-\,{}^{A}\mathbf{r}^{O^{\prime}}$
+\end_inset
+
+半径的切向运动，或者说是机体自身的旋转(the rotation of the body)，
+\begin_inset Formula $^{A}\mathbf{v}^{O^{\prime}}$
+\end_inset
+
+为机体自身的运动(the motion of the body)。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-04.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+本质上是一个矩阵算子，它产生了参考系中与机体相连的任意点的速度。它由机体的角速度矩阵和点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的速度组成，都在参考系中看到。因为矩阵
+\begin_inset Formula $^{A}\mathbf{A}_{B}$
+\end_inset
+
+只取决于
+\begin_inset Formula $6$
+\end_inset
+
+个参数 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 旋转向量
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的
+\begin_inset Formula $3$
+\end_inset
+
+个分量和线速度
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+的
+\begin_inset Formula $3$
+\end_inset
+
+个分量 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 这
+\begin_inset Formula $6$
+\end_inset
+
+个分量可以组合成一个
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量，称为速度旋量向量(
+\shape italic
+twist vector
+\shape default
+)：
+\begin_inset Formula 
+\[
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]
+\]
+
+\end_inset
+
+该向量可以用
+\begin_inset Formula $6$
+\end_inset
+
+个生成元变换为速度旋量矩阵(
+\shape italic
+twist matrix
+\shape default
+)
+\begin_inset Formula 
+\[
+\left(^{A}\mathbf{t}_{B}\right)^{\wedge}=\left[\begin{array}{cc}
+\left(^{A}\boldsymbol{\omega}_{B}\right)^{\wedge} & ^{A}\mathbf{v}^{\hat{O}}\\
+\mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+这被称为空间速度旋量(
+\shape italic
+spatial
+\shape default
+ 
+\shape italic
+twist
+\shape default
+)，用来表示参考系中的空间速度(
+\shape italic
+spatial velocity
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+我们再对比另外一个极为相似的概念。我们有位姿向量
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{\phi}\\
+\mathbf{r}
+\end{array}\right]
+\]
+
+\end_inset
+
+它同样可以用
+\begin_inset Formula $6$
+\end_inset
+
+个生成元进入
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+空间
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}^{\wedge}=\left[\begin{array}{cc}
+\boldsymbol{\phi}^{\wedge} & \mathbf{r}\\
+\mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该数学对象位于位姿空间，对其求微分，得到的数学对象就位于速度空间。
+\begin_inset Formula 
+\begin{align*}
+\dot{\boldsymbol{\xi}} & =\mathbf{t}\\
+\left[\begin{array}{c}
+\dot{\boldsymbol{\phi}}\\
+\dot{\mathbf{r}}
+\end{array}\right] & =\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+为刚体
+\begin_inset Formula $B$
+\end_inset
+
+上瞬时和
+\begin_inset Formula $\left\{ A\right\} $
+\end_inset
+
+帧原点
+\begin_inset Formula $O$
+\end_inset
+
+重合的点
+\begin_inset Formula $\hat{O}$
+\end_inset
+
+的速度。
+\end_layout
+
+\begin_layout Standard
+速度旋量矩阵
+\begin_inset Formula $\left(^{A}\mathbf{t}_{B}\right)^{\wedge}$
+\end_inset
+
+位于局部切空间，属于
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+元素。
+\end_layout
+
+\begin_layout Section
+伴随
+\end_layout
+
+\begin_layout Standard
+类似于方程(3)，我们可以将其顺序颠倒计算得到
+\begin_inset Formula 
+\begin{align*}
+\left(^{A}\mathbf{T}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{T}}_{B} & =\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\,{}^{A}\mathbf{r}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{cc}
+^{A}\dot{\mathbf{R}}_{B} & ^{A}\dot{\mathbf{r}}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\,{}^{A}\dot{\mathbf{R}}_{B} & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}\,{}^{A}\dot{\mathbf{r}}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left(^{A}\dot{\mathbf{R}}_{B}{}^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & ^{B}\mathbf{R}_{A}\,{}^{A}\dot{\mathbf{r}}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge} & ^{B}\mathbf{v}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+这时所得到的速度旋量
+\begin_inset Formula 
+\[
+^{B}\mathbf{t}_{A}=\left[\begin{array}{c}
+^{B}\boldsymbol{\omega}_{A}\\
+^{B}\mathbf{v}^{O^{\prime}}
+\end{array}\right]
+\]
+
+\end_inset
+
+为机体速度旋量(
+\shape italic
+body twist
+\shape default
+)，用来表示机体坐标系的空间速度(
+\shape italic
+spatial velocity
+\shape default
+)。从附着在机体上的IMU所获得的测量数据为机体局部坐标系的数据，直接构建的就是机体速度旋量。
+\end_layout
+
+\begin_layout Standard
+两种速度旋量矩阵的转换关系为
+\begin_inset Formula 
+\begin{align*}
+\left(^{B}\mathbf{t}_{A}\right)^{\wedge} & =\left(^{A}\mathbf{T}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{T}}_{B}\\
+ & =\left(^{A}\mathbf{T}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{T}}_{B}\left(^{A}\mathbf{T}_{B}\right)^{-1}\,{}^{A}\mathbf{T}_{B}\\
+ & =\left(^{A}\mathbf{T}_{B}\right)^{-1}\left(^{A}\mathbf{t}_{B}\right)^{\wedge}\,{}^{A}\mathbf{T}_{B}\\
+\left(^{A}\mathbf{t}_{B}\right)^{\wedge} & =\,{}^{A}\dot{\mathbf{T}}_{B}\left(^{A}\mathbf{T}_{B}\right)^{-1}\\
+ & =\,{}^{A}\mathbf{T}_{B}\left(^{A}\mathbf{T}_{B}\right)^{-1}\,{}^{A}\dot{\mathbf{T}}_{B}\left(^{A}\mathbf{T}_{B}\right)^{-1}\\
+ & =\,{}^{A}\mathbf{T}_{B}\left(^{B}\mathbf{t}_{A}\right)^{\wedge}\left(^{A}\mathbf{T}_{B}\right)^{-1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的，两种速度旋量向量也可以相互转换。速度旋量矩阵采用非齐次方程，我们有
+\begin_inset Formula 
+\begin{align}
+\left(^{A}\mathbf{t}_{B}\right)^{\wedge} & =\,{}^{A}\mathbf{T}_{B}\left(^{B}\mathbf{t}_{A}\right)^{\wedge}\left(^{A}\mathbf{T}_{B}\right)^{-1}\nonumber \\
+ & =\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B} & ^{A}\mathbf{r}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\left[\begin{array}{cc}
+\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge} & ^{B}\mathbf{v}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}{}^{A}\mathbf{r}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B}\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge} & ^{A}\mathbf{R}_{B}\,{}^{B}\mathbf{v}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]\left[\begin{array}{cc}
+\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & -\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}{}^{A}\mathbf{r}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 1
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B}\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & ^{A}\mathbf{R}_{B}\,{}^{B}\mathbf{v}^{O^{\prime}}-\,{}^{A}\mathbf{R}_{B}\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}}{}^{A}\mathbf{r}^{O^{\prime}}\\
+\mathbf{0}^{\mathrm{T}} & 0
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+对比方程(3)和方程(4)，我们得到
+\begin_inset Formula 
+\begin{align*}
+^{A}\boldsymbol{\omega}_{B} & =\,{}^{A}\mathbf{R}_{B}\,{}^{B}\boldsymbol{\omega}_{A}\\
+\left(^{A}\boldsymbol{\omega}_{B}\right)^{\wedge} & =\left(^{A}\mathbf{R}_{B}\,{}^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}\\
+^{A}\mathbf{R}_{B}\left(^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}\left(^{A}\mathbf{R}_{B}\right)^{\mathrm{T}} & =\left(^{A}\mathbf{R}_{B}\,{}^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}\\
+^{A}\mathbf{v}^{\hat{O}} & =\,{}^{A}\mathbf{R}_{B}\,{}^{B}\mathbf{v}^{O^{\prime}}-\left(^{A}\mathbf{R}_{B}\,{}^{B}\boldsymbol{\omega}_{A}\right)^{\wedge}{}^{A}\mathbf{r}^{O^{\prime}}\\
+ & =\left(^{A}\mathbf{r}^{O^{\prime}}\right)^{\wedge}\left(^{A}\mathbf{R}_{B}\,{}^{B}\boldsymbol{\omega}_{A}\right)+\,{}^{A}\mathbf{R}_{B}\,{}^{B}\mathbf{v}^{O^{\prime}}
+\end{align*}
+
+\end_inset
+
+整理为矩阵形式有
+\begin_inset Formula 
+\begin{align*}
+\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right] & =\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B} & \mathbf{0}\\
+\left(^{A}\mathbf{r}^{O^{\prime}}\right)^{\wedge}{}^{A}\mathbf{R}_{B} & ^{A}\mathbf{R}_{B}
+\end{array}\right]\left[\begin{array}{c}
+^{B}\boldsymbol{\omega}_{A}\\
+^{B}\mathbf{v}^{O^{\prime}}
+\end{array}\right]\\
+^{A}\mathbf{t}_{B} & =\left[\mathrm{Ad}_{\mathbf{T}}\right]\,{}^{B}\mathbf{t}_{A}
+\end{align*}
+
+\end_inset
+
+其中矩阵
+\begin_inset Formula 
+\[
+\left[\mathrm{Ad}_{\mathbf{T}}\right]=\left[\begin{array}{cc}
+^{A}\mathbf{R}_{B} & \mathbf{0}\\
+\left(^{A}\mathbf{r}^{O^{\prime}}\right)^{\wedge}{}^{A}\mathbf{R}_{B} & ^{A}\mathbf{R}_{B}
+\end{array}\right]
+\]
+
+\end_inset
+
+被称为速度旋量的伴随矩阵，它可以用来将机体坐标系中的速度旋量变换到参考坐标系中。反之则有
+\begin_inset Formula 
+\[
+\left[\mathrm{Ad}_{\mathbf{T}^{-1}}\right]=\left[\mathrm{Ad}_{\mathbf{T}}\right]^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们将伴随
+\begin_inset Formula $\mathrm{Ad}_{\mathbf{T}}$
+\end_inset
+
+表示为
+\begin_inset Formula 
+\[
+\left(^{A}\mathbf{t}_{B}\right)^{\wedge}=\mathrm{Ad}_{\mathbf{T}}\left(\left(^{B}\mathbf{t}_{A}\right)^{\wedge}\right)\Longleftrightarrow\left(^{A}\mathbf{t}_{B}\right)^{\wedge}=\mathbf{T}\left(^{B}\mathbf{t}_{A}\right)^{\wedge}\mathbf{T}^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+伴随
+\begin_inset Formula $\mathrm{Ad}_{\mathbf{T}}$
+\end_inset
+
+有两个重要的性质
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rrl}
+\text{Linear :} & \mathrm{Ad}_{\mathbf{T}}\left(a\boldsymbol{\tau}^{\wedge}+b\boldsymbol{\sigma}^{\wedge}\right) & =a\mathrm{Ad}_{\mathbf{T}}\left(\boldsymbol{\tau}^{\wedge}\right)+b\mathrm{Ad}_{\mathbf{T}}\left(\boldsymbol{\sigma}^{\wedge}\right)\\
+\text{Homomorphism :} & \mathrm{Ad}_{\mathbf{T}_{1}}\left(\mathrm{Ad}_{\mathbf{T}_{2}}\left(\boldsymbol{\tau}^{\wedge}\right)\right) & =\mathrm{Ad}_{\mathbf{T}_{1}\mathbf{T}_{2}}\left(\boldsymbol{\tau}^{\wedge}\right)
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+瞬时旋量轴
+\end_layout
+
+\begin_layout Standard
+速度旋量向量
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+由角速度向量
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+和线速度向量
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+两个数学对象组合而成：
+\begin_inset Formula 
+\[
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]
+\]
+
+\end_inset
+
+因此当两个向量共线并且都在做匀速运动时，就是其所表达的最简单的三维空间中的运动，也就是旋量运动。(twist-05.pdf)
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-05.pdf
+	scale 200
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了更好地理解速度旋量向量(或矩阵)的几何意义，需要研究刚体旋转和刚体平移这两种特殊情况。
+\end_layout
+
+\begin_layout Standard
+当刚体只有旋转运动时，
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，速度旋量，
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+，可以通过检查发现是：
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]=\left[\begin{array}{c}
+^{A}\mathbf{u}\dot{\theta}\\
+^{A}\mathbf{r}^{P}\times{}^{A}\mathbf{u}\dot{\theta}
+\end{array}\right]=\dot{\theta}\left[\begin{array}{c}
+^{A}\mathbf{u}\\
+^{A}\mathbf{r}^{P}\times{}^{A}\mathbf{u}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当刚体只有平移运动时，
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是沿轴的单位向量，速度旋量，
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+，可以通过检查发现是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+^{A}\mathbf{t}_{B}=\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{0}\\
+^{A}\mathbf{u}\dot{d}
+\end{array}\right]=\dot{d}\left[\begin{array}{c}
+\mathbf{0}\\
+^{A}\mathbf{u}
+\end{array}\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这两种情况下，速度旋量向量可以与一个轴或一条直线相关联。在方程(5)中，与速度旋量相关的直线是单位线向量给出的轴，
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+^{A}\mathbf{u}\\
+^{A}\mathbf{r}^{P}\times{}^{A}\mathbf{u}
+\end{array}\right]
+\]
+
+\end_inset
+
+在方程(6)中，单位线向量是在无穷远处的一条直线，由以下方程给出：
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\mathbf{0}\\
+^{A}\mathbf{u}
+\end{array}\right]
+\]
+
+\end_inset
+
+在这两种情况下，速度旋量向量只是单位线向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+乘以一个标量，这个标量是关节位移的速度。
+\end_layout
+
+\begin_layout Standard
+直线与速度旋量向量的这种自然关联延伸到最一般的运动类型。在3D中的任何位移都可以通过围绕同一轴的旋转和平移来表示，称为旋量运动(screw motion)。并且
+该轴称为瞬时旋量轴 (instantaneous screw axis, ISA)。相对于该轴将线速度分解为
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+两个分量，其中
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+平行，
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+垂直。
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}_{\perp}$
+\end_inset
+
+这三个向量在空间中的相对关系如下图：(twist-06a.pdf)
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-06a.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\boldsymbol{\rho}$
+\end_inset
+
+为从原点
+\begin_inset Formula $O$
+\end_inset
+
+出发与直线
+\begin_inset Formula $l$
+\end_inset
+
+垂直的向量，此时距离最短且唯一。(twist-06b.pdf)
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-06b.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在点
+\begin_inset Formula $P$
+\end_inset
+
+处的线速度
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的分解以及与角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+之间的关系见下图：(twist-07.pdf)
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-07.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的符号定义如下表：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\text{unit vector :} & \mathbf{u}=\boldsymbol{\omega}/\left\Vert \boldsymbol{\omega}\right\Vert \\
+\text{delta angle :} & \theta=\left\Vert \boldsymbol{\omega}\right\Vert \cdot\Delta t\\
+\text{angular speed :} & \omega=\left\Vert \boldsymbol{\omega}\right\Vert =\dot{\theta}\\
+\text{linear speed :} & v=\mathbf{u}\cdot\mathbf{v}\\
+\text{screw pitch :} & h=v/\omega=\left(\boldsymbol{\omega}\cdot\mathbf{v}\right)/\omega^{2}\\
+\text{position vector :} & \boldsymbol{\rho}=\left(\boldsymbol{\omega}\times\mathbf{v}\right)/\omega^{2}\\
+\text{twist vector :} & \mathbf{t}=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right]=\omega\left[\begin{array}{c}
+\mathbf{u}\\
+h\mathbf{u}+\boldsymbol{\rho}\times\mathbf{u}
+\end{array}\right]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此看出，旋转轴为直线
+\begin_inset Formula $l$
+\end_inset
+
+，运动轨迹为螺旋(screw)线。其螺距(
+\shape italic
+pitch
+\shape default
+)由
+\begin_inset Formula $h$
+\end_inset
+
+，即
+\begin_inset Formula $\mathbf{v}_{\parallel}$
+\end_inset
+
+和
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+的比值给出。由于这种几何结构，直线
+\begin_inset Formula $l$
+\end_inset
+
+称为运动的瞬时旋量轴(
+\shape italic
+Instantaneous Screw Axis
+\shape default
+, ISA)，
+\begin_inset Formula $h$
+\end_inset
+
+称为旋量轴的螺距(
+\shape italic
+pitch
+\shape default
+)。角速度的大小，
+\begin_inset Formula $\omega$
+\end_inset
+
+，称为幅度(
+\shape italic
+amplitude
+\shape default
+)。相对于机体
+\begin_inset Formula $A$
+\end_inset
+
+，机体
+\begin_inset Formula $B$
+\end_inset
+
+被称为围绕瞬时旋量轴
+\begin_inset Formula $l$
+\end_inset
+
+经历了一个幅度为
+\begin_inset Formula $\omega$
+\end_inset
+
+的速度旋量。
+\end_layout
+
+\begin_layout Standard
+从计算方向看，从传感器测量得到的是线速度
+\begin_inset Formula $^{A}\mathbf{v}^{\hat{O}}$
+\end_inset
+
+和角速度
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{B}$
+\end_inset
+
+，因此计算速度旋量
+\begin_inset Formula $^{A}\mathbf{t}_{B}$
+\end_inset
+
+的顺序为
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\omega & =\left|^{A}\boldsymbol{\omega}_{B}\right|\\
+\mathbf{u} & =\dfrac{^{A}\boldsymbol{\omega}_{B}}{\omega}\\
+\boldsymbol{\rho} & =\dfrac{^{A}\boldsymbol{\omega}_{B}\times{}^{A}\mathbf{v}^{\hat{O}}}{\omega^{2}}\\
+h & =\dfrac{^{A}\boldsymbol{\omega}_{B}\cdot{}^{A}\mathbf{v}^{\hat{O}}}{\omega^{2}}\\
+^{A}\mathbf{t}_{B} & =\left[\begin{array}{c}
+^{A}\boldsymbol{\omega}_{B}\\
+^{A}\mathbf{v}^{\hat{O}}
+\end{array}\right]\\
+ & =\omega\left[\begin{array}{c}
+\mathbf{u}\\
+h\mathbf{u}+\boldsymbol{\rho}\times\mathbf{u}
+\end{array}\right]
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+值得注意的是，这里的螺距(
+\shape italic
+pitch
+\shape default
+)与机械设计中的螺距有所不同。在旋量理论中的螺距指的是点
+\begin_inset Formula $P$
+\end_inset
+
+旋转
+\begin_inset Formula $1$
+\end_inset
+
+弧度时，在轴上平移的距离，而在机械设计中的螺距指的是点
+\begin_inset Formula $P$
+\end_inset
+
+旋转
+\begin_inset Formula $2\pi$
+\end_inset
+
+弧度时，在轴上平移的距离。两者的线速度和角速度的比值是一样的，反映在轨迹在圆柱面的展开图上的斜角
+\begin_inset Formula $\alpha$
+\end_inset
+
+是一样的，在工程中后者容易测量。(twist-08.pdf)
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename twist-08.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+力旋量(Wrench)
+\end_layout
+
+\begin_layout Standard
+对于速度旋量(twist)，它具有沿同一轴的线速度和角速度。对于一个刚体来说，角速度是整个刚体的属性，而线速度是刚体上单个点的属性，数值大小与其和瞬时旋量轴的距
+离成正比。相似的概念应用到力和力矩的组合上，就成了力旋量(
+\shape italic
+wrench
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+任意力和偶系统都可以用力和偶的等价组合来描述，使得表示纯力和纯偶的向量是平行的。这种组合称为力旋量(
+\shape italic
+wrench
+\shape default
+)。在向量符号中，力旋量由一个
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量来描述，
+\begin_inset Formula $^{A}\mathbf{w}$
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+^{A}\mathbf{w}=\left[\begin{array}{c}
+\mathbf{F}\\
+\mathbf{M}^{O}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中，前导上标
+\begin_inset Formula $A$
+\end_inset
+
+表示向量相对于参考帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+中的基向量而写入的事实，并且该矩是关于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+原点的矩。
+\end_layout
+
+\begin_layout Standard
+力旋量沿着力的作用直线作用。这条线叫做力旋量轴。力旋量有一个螺距(
+\shape italic
+pitch
+\shape default
+)，
+\begin_inset Formula $\lambda$
+\end_inset
+
+, 这是偶和力的大小的比值。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\lambda=\dfrac{\left|\mathbf{C}\right|}{\left|\mathbf{F}\right|}
+\]
+
+\end_inset
+
+
+\begin_inset Formula $\lambda$
+\end_inset
+
+在偶和力的方向相同时为正，在方向相反时为负。力的大小，
+\begin_inset Formula $F$
+\end_inset
+
+，是力旋量的强度(
+\shape italic
+intensity
+\shape default
+)。最后，请注意，纯力和纯偶是力旋量的特例 
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+ 纯力是零螺距力旋量，纯偶是无限螺距力旋量。
+\end_layout
+
+\begin_layout Standard
+上述力旋量(wrench)的概念和推导与前面的运动学分析中的速度旋量(twist)表示非常相似。旋量(screw)的几何概念是速度旋量和力旋量的中心。如果我们忽
+略速度旋量的幅度(或力旋量的强度)，剩下的就是速度旋量的轴(或力旋量的轴)和与之相关的旋距。我们将旋量定义为一条直线，在该直线上附着一个标量参数，即螺距(
+\shape italic
+pitch
+\shape default
+)。我们所说的力旋量是指具有一定强度(
+\shape italic
+intensity
+\shape default
+)的旋量，或者所说的速度旋量是指具有一定幅度(
+\shape italic
+amplitude
+\shape default
+)的旋量。
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+旋量(Screw)
+\series default
+ ：刚体可以通过绕直线(向量)旋转并沿该直线平移，从一个位置移动到任何其他位置。这称为旋量运动。旋量的概念可以应用于运动(速度旋量)或力和动量(力旋量)。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+速度旋量(Twist) 
+\series default
+：刚体的瞬时空间速度(以其线性和角度分量表示)称为速度旋量。它可以表示为
+\begin_inset Formula $\mathbb{R}^{6}$
+\end_inset
+
+中的一个点，由
+\begin_inset Formula $3$
+\end_inset
+
+参数角速度和
+\begin_inset Formula $3$
+\end_inset
+
+参数线速度定义。速度旋量可以看作是一个无穷小的旋量运动。刚体的任何构型都可以通过从固定点(参考坐标系)开始并在指定时间(指数坐标系)积分恒定速度旋量(const
+ant twist)来实现。这种运动类似于旋量的运动，围绕同一固定轴旋转和平移。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+力旋量(Wrench) 
+\series default
+：作用在刚体上的力系可以由沿直线的单一力和围绕该直线的扭矩代替。这些力称为力旋量。许多适用于速度旋量的定理可以推广到力旋量。类似于角速度和线速度在
+\begin_inset Formula $\mathbb{R}^{6}$
+\end_inset
+
+中被打包成一个向量(速度旋量)，力矩(扭矩)和力也在
+\begin_inset Formula $\mathbb{R}^{6}$
+\end_inset
+
+中被打包成一个向量，称为力旋量(空间力)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在位姿估计系统中，很少看到使用旋量进行位姿估计的算法。这时因为动力学方程所需要的物理值很难测量精确，相关的数学模型也很难精确构建。例如汽车是4个轮子还是6个轮子
+，是在雨天还是晴天，是在公路还是在沙漠，风大还是风小，载荷有多大，如何分布，这些外界环境因素对动力学模型影响很大，更不要说汽车和无人机的模型差异了。而基于运动学
+方程，基于车辆内部的IMU的误差构建的位姿估计系统，可以很好地规避前面的问题，一个算法都可以适用于汽车、无人机和卫星。这是因为IMU是内部的，在构建车辆系统时是
+可以精确分析和测量其误差特性，与外界环境无关。所以现在的位姿估计系统大多是基于IMU误差的估计系统，而旋量主要应用于受力分析和运动轨迹规划等方面。
+\end_layout
+
+\begin_layout Section
+参考文献列表
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie Groups for 2D and 3D Transformations"
+target "http://ethaneade.com/lie.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Rigid Body Motion and the Euclidean Group"
+target "https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset href
+LatexCommand href
+name "理解速度旋量(Twist)和力旋量(Wrench)术语"
+target "https://physics.stackexchange.com/questions/298125/understanding-terms-twist-and-wrench"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+提问
+\end_layout
+
+\begin_layout Standard
+在运动学、物理学，尤其是机器人学中，我们经常会遇到速度旋量(Twist)和力旋量(Wrench)这两个术语。速度旋量为(线速度、角速度)，力旋量为(力、扭矩)。
+我感到困惑的原因是我看到了不同的定义，我不再确定我是否正确使用了这些术语...
+\end_layout
+
+\begin_layout Itemize
+根据维基百科，速度旋量是在旋量理论的背景下定义的，它具有沿同一轴的线速度和角速度。
+\end_layout
+
+\begin_layout Itemize
+一些机器人学文献使用速度旋量使线速度部分为
+\begin_inset Formula $(V+L\times W)$
+\end_inset
+
+。这使得计算机工作更容易。
+\end_layout
+
+\begin_layout Itemize
+在ROS(流行的机器人平台)中，速度旋量仅与线速度和角速度有关。
+\end_layout
+
+\begin_layout Standard
+问题：
+\end_layout
+
+\begin_layout Enumerate
+对任何物体来说，将速度旋量这个术语简单地用作单个线速度和角速度的组合是正确的吗？
+\end_layout
+
+\begin_layout Enumerate
+有没有类似的术语来描述线加速度和角加速度的组合？
+\end_layout
+
+\begin_layout Subsection
+回答
+\end_layout
+
+\begin_layout Standard
+速度旋量和力旋量都是旋量。“旋量(Screw)”是通用术语，“速度旋量(Twist)”是运动的具体应用，“力旋量(Wrench)”是力和动量的具体应用。所有这些
+结合了线性和角度方面的东西，它们描述了一个
+\begin_inset Formula $6\times1$
+\end_inset
+
+的对象。这些定义通常与刚体力学有关，而不是特定于机器人学。
+\end_layout
+
+\begin_layout Standard
+对于第一个问题，我希望以下定义能帮助你：
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+射线(Ray)/轴(Axis)表示
+\series default
+：三维旋量是一个对象，表示空间中的一条线(方向(direction)和位置(location))，还附加幅度(magnitude)值和螺距(pitch)值。旋量
+有
+\begin_inset Formula $6$
+\end_inset
+
+个分量，它们以方向向量
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+和力矩向量
+\begin_inset Formula $\mathbf{m}$
+\end_inset
+
+的形式排列。有两种可能的方式来表示旋量，a) 先方向(Direction)然后是力矩(Moment)，或者 b) 先力矩然后是方向
+\begin_inset Formula 
+\[
+{\rm Screw}=\left\{ \begin{array}{cl}
+\begin{pmatrix}\mathbf{e}\\
+\mathbf{m}
+\end{pmatrix} & \mbox{ray coordinates}\\
+\begin{pmatrix}\mathbf{m}\\
+\mathbf{e}
+\end{pmatrix} & \mbox{axis coordinates}
+\end{array}\right.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+直线合成(Line Composition)：
+\series default
+考虑了空间中具有单位方向向量
+\begin_inset Formula $\hat{\mathbf{e}}$
+\end_inset
+
+和直线
+\begin_inset Formula $\mathbf{r}$
+\end_inset
+
+上
+\series bold
+任意
+\series default
+一个点。直线对象可以用以下坐标表示
+\begin_inset Formula 
+\[
+{\rm Line}=\left\{ \begin{array}{cl}
+\begin{pmatrix}\hat{\mathbf{e}}\\
+\mathbf{r}\times\hat{\mathbf{e}}
+\end{pmatrix} & \mbox{ray coordinates}\\
+\begin{pmatrix}\mathbf{r}\times\hat{\mathbf{e}}\\
+\hat{\mathbf{e}}
+\end{pmatrix} & \mbox{axis coordinates}
+\end{array}\right.
+\]
+
+\end_inset
+
+方向向量是这样的，因为它在整个3D空间中保持不变(自由向量)，而如果感兴趣的位置发生变化，则需要变换力矩向量(线向量)。这在上面很明显，力矩向量定义为位置和方向
+向量之间的叉积。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+旋量组合(Screw Composition)：
+\series default
+考虑上面的直线，但增加标量幅度
+\begin_inset Formula $s$
+\end_inset
+
+和标量螺距
+\begin_inset Formula $h$
+\end_inset
+
+。旋量对象类似于直线对象，但有一个附加项，平行于力矩向量中的方向
+\begin_inset Formula $\hat{\mathbf{e}}$
+\end_inset
+
+。
+\begin_inset Formula 
+\[
+{\rm Screw}=\left\{ \begin{array}{cl}
+s\begin{pmatrix}\hat{\mathbf{e}}\\
+\mathbf{r}\times\hat{\mathbf{e}}+h\,\hat{\mathbf{e}}
+\end{pmatrix} & \mbox{ray coordinates}\\
+s\begin{pmatrix}\mathbf{r}\times\hat{\mathbf{e}}+h\,\hat{\mathbf{e}}\\
+\hat{\mathbf{e}}
+\end{pmatrix} & \mbox{axis coordinates}
+\end{array}\right.
+\]
+
+\end_inset
+
+螺距表示与方向向量平行的力矩向量的任何分量，作为标量比
+\begin_inset Formula $h=\frac{\|\mathbf{m}_{\parallel}\|}{\|\mathbf{e}\|}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+旋量分解(Screw Decomposition)：
+\series default
+对于射线和轴表示，具有方向向量(非单位) 
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+和力矩向量
+\begin_inset Formula $\mathbf{m}$
+\end_inset
+
+的旋量的特性可通过以下公式得出
+\begin_inset Formula 
+\[
+\begin{align}\mbox{Magnitude} &  & s & =\|\mathbf{e}\|\\
+\mbox{Unit Direction} &  & \hat{\mathbf{e}} & =\frac{\mathbf{e}}{\|\mathbf{e}\|}\\
+\mbox{Position Closest To Origin} &  & \mathbf{r} & =\frac{\mathbf{e}\times\mathbf{m}}{\|\mathbf{e}\|^{2}}\\
+\mbox{Pitch} &  & h & =\frac{\mathbf{e}\cdot\mathbf{m}}{\|\mathbf{e}\|^{2}}\\
+\\
+\\
+\\
+\end{align}
+\]
+
+\end_inset
+
+注：
+\begin_inset Formula $\times$
+\end_inset
+
+为向量叉积，且
+\begin_inset Formula $\cdot$
+\end_inset
+
+向量点积。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+速度旋量(Twist)：
+\series default
+速度旋量是一个表示运动的旋量(无限小的旋转、速度和空间(
+\emph on
+spatial
+\emph default
+)加速度、关节轴)。方向向量是角度部分，力矩向量是线性部分(在固定点
+\begin_inset Formula $A$
+\end_inset
+
+)。例如，速度是
+\begin_inset Formula 
+\[
+\begin{align} & \mbox{Axis Coordinates} &  & \mbox{Ray Coordinates}\\
+\mathbf{v}_{A} & =\begin{pmatrix}\mathbf{v}_{A}\\
+\boldsymbol{\omega}
+\end{pmatrix} & \mathbf{v}_{A} & =\begin{pmatrix}\boldsymbol{\omega}\\
+\mathbf{v}_{A}
+\end{pmatrix}
+\end{align}
+\]
+
+\end_inset
+
+轴坐标是速度旋量最常见的坐标，但并不总是如此。由于人们经常交替使用速度旋量坐标和轴坐标，因此产生了很多混乱。记住，速度旋量表示某种运动，坐标表示与方向向量和力矩
+向量的表示顺序有关。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+力旋量(Wrench)：
+\series default
+力旋量是代表载荷(力(force)、动量(momentum)、冲量(impulse))的旋量。方向向量是线性部分，力矩向量是角度部分(在固定点
+\begin_inset Formula $A$
+\end_inset
+
+)。例如，力是
+\begin_inset Formula 
+\[
+\begin{align} & \mbox{Axis Coordinates} &  & \mbox{Ray Coordinates}\\
+\mathbf{f}_{A} & =\begin{pmatrix}\boldsymbol{\tau}_{A}\\
+\mathbf{F}
+\end{pmatrix} & \mathbf{f}_{A} & =\begin{pmatrix}\mathbf{F}\\
+\boldsymbol{\tau}_{A}
+\end{pmatrix}
+\end{align}
+\]
+
+\end_inset
+
+射线坐标是力旋量最常见的坐标，但并不总是如此。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+解释(Interpretation)：
+\series default
+速度旋量和力旋量都代表有距离的对象。例如，通过点
+\begin_inset Formula $A$
+\end_inset
+
+的力
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+具有扭矩(torque) 
+\begin_inset Formula $\boldsymbol{\tau}_{A}=\mathbf{r}_{A}\times\mathbf{F}$
+\end_inset
+
+，物体绕点
+\begin_inset Formula $A$
+\end_inset
+
+旋转的速度为
+\begin_inset Formula $\mathbf{v}_{A}=\mathbf{r}_{A}\times\boldsymbol{\mathbf{\omega}}$
+\end_inset
+
+。两者都是相应旋量的力矩向量。在最常用的表示法中，这些是
+\begin_inset Formula 
+\[
+\begin{align}\mathbf{v}_{A} & =\begin{pmatrix}\mathbf{r}_{A}\times\boldsymbol{\omega}\\
+\boldsymbol{\omega}
+\end{pmatrix} & \mbox{twist in (linear,angular)=axis coordinates}\\
+\mathbf{f}_{A} & =\begin{pmatrix}\mathbf{F}\\
+\mathbf{r}_{A}\times\mathbf{F}
+\end{pmatrix} & \mbox{wrench in (linear,angular)=ray coordinates}
+\end{align}
+\]
+
+\end_inset
+
+你可以看到这些都是相同的线组成。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+速度旋量示例(Twist Example)：
+\series default
+运动中的物体具有角速度
+\begin_inset Formula $\mathbf{\boldsymbol{\omega}}=(1,0,5)$
+\end_inset
+
+和点
+\begin_inset Formula $A$
+\end_inset
+
+线速度
+\begin_inset Formula $\mathbf{v}_{A}=(-2,4,1)$
+\end_inset
+
+。在轴坐标中将运动显示为速度旋量，并将其分解为它的属性
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+轴坐标中的速度旋量(
+\begin_inset Formula $6\times1$
+\end_inset
+
+数量)
+\begin_inset Formula 
+\[
+\mathbf{v}_{A}=\begin{pmatrix}\mbox{moment}\\
+\mbox{direction}
+\end{pmatrix}=\begin{pmatrix}\mathbf{v}_{A}\\
+\boldsymbol{\omega}
+\end{pmatrix}=\begin{pmatrix}\begin{vmatrix}-2\\
+4\\
+1
+\end{vmatrix}\\
+\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+幅度(Magnitude)
+\begin_inset Formula 
+\[
+\|\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}\|=\sqrt{26}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+方向(Direction)
+\begin_inset Formula 
+\[
+\frac{\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}}{\sqrt{26}}=\begin{vmatrix}\frac{1}{\sqrt{26}}\\
+0\\
+\frac{5}{\sqrt{26}}
+\end{vmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+位置(Position)
+\begin_inset Formula 
+\[
+\frac{\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}\times\begin{vmatrix}-2\\
+4\\
+1
+\end{vmatrix}}{\sqrt{26}^{2}}=\begin{vmatrix}-\frac{10}{13}\\
+-\frac{11}{26}\\
+\frac{2}{13}
+\end{vmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+螺距(Pitch)
+\begin_inset Formula 
+\[
+\frac{\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}\cdot\begin{vmatrix}-2\\
+4\\
+1
+\end{vmatrix}}{\sqrt{26}^{2}}=\frac{3}{26}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+平行速度向量(Parallel velocity vector)
+\begin_inset Formula 
+\[
+\mbox{(pitch)}\boldsymbol{\omega}=\frac{3}{26}\begin{vmatrix}1\\
+0\\
+5
+\end{vmatrix}=\begin{vmatrix}\frac{3}{26}\\
+0\\
+\frac{15}{26}
+\end{vmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+上面所示的是运动的几何图形，所有细节都可以从两条信息中获得，在一点处的线速度和角速度。
+\end_layout
+
+\begin_layout Standard
+力旋量也是如此。定义它们的
+\begin_inset Formula $6$
+\end_inset
+
+个分量被分解为幅度(magnitude)、方向(direction)、位置(position)和螺距(pitch)。
+\end_layout
+
+\begin_layout Standard
+Related posts.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Forces as Screws"
+target "https://physics.stackexchange.com/a/132288/392"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Motion Screw"
+target "https://physics.stackexchange.com/a/201139/392"
+literal "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset href
+LatexCommand href
+name "Instant Rotation Axis"
+target "https://physics.stackexchange.com/a/248721/392"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于第二个问题，线性加速度和角加速度不会形成速度旋量(运动旋量)，因为它们包含离心项，不会像普通旋量一样变换。这是因为常规加速度(regular
+ acceleration)跟踪一个特定的粒子，而旋量量值在空间中有一个固定的测量点。
+\end_layout
+
+\begin_layout Standard
+但是，如果不是使用常规加速度，即原料(material)加速度，而是使用空间加速度，则可以构造加速度的速度旋量。在任意点
+\begin_inset Formula $A$
+\end_inset
+
+，空间加速度向量
+\begin_inset Formula $\boldsymbol{\psi}_{A}$
+\end_inset
+
+是原料加速度
+\begin_inset Formula $\mathbf{a}_{A}$
+\end_inset
+
+减去离心力项。
+\begin_inset Formula 
+\[
+\boldsymbol{\psi}_{A}=\mathbf{a}_{A}-\boldsymbol{\omega}\times\mathbf{v}_{A}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，轴坐标中的加速度的速度旋量定义为：
+\begin_inset Formula 
+\[
+\boldsymbol{\psi}_{A}=\begin{pmatrix}\mbox{moment}\\
+\mbox{direction}
+\end{pmatrix}=\begin{pmatrix}\mathbf{a}_{A}-\boldsymbol{\omega}\times\mathbf{v}_{A}\\
+\boldsymbol{\alpha}
+\end{pmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上述方程用于
+\begin_inset Formula $6\times6$
+\end_inset
+
+运动方程
+\begin_inset Formula 
+\[
+\mathbf{f}_{A}=\mathrm{I}_{A}\boldsymbol{\psi}_{A}+\mathbf{v}_{A}\times\mathrm{I}_{A}\mathbf{v}_{A}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但这是另一个问题的主题，因为在这个阶段相当涉及空间运动方程的推导。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+实际上，线动量和角动量形成一个力旋量(wrench)，(某种程度上)加速度形成一个速度旋量(twist)。术语速度旋量用于描述与运动相关的量，以及与力旋量作用或
+与力相关的量。
+\end_layout
+
+\begin_layout Standard
+动量(Momentum)，定义为应用于停止运动的量，实际上是力(随时间)的度量。动量是力-时间曲线下的面积。
+\end_layout
+
+\begin_layout Standard
+一般规律是，质量或惯性将运动的速度旋量(motion twisis)变换为力的力旋量(force wrenches)。想想
+\begin_inset Formula $\mathbf{p}=m\mathbf{v}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{L}=\mathrm{I}_{C}\boldsymbol{\omega}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度和空间加速度是速度旋量(twist)，力和动量是力旋量(wrench)。两个都是旋量(screw)，由两个向量组成，一个是自由向量(free
+ vector)，另一个是空间场(spatial field)。所有这些都以相同的定律进行变换，它们的相互作用有许多双重属性。
+\end_layout
+
+\begin_layout Standard
+作用在刚体上的力系可以简化为旋量上的力旋量的典型形式。(The canonical form to which a system of forces
+ acting on a rigid body can be reduced is a wrench on a screw.)
+\end_layout
+
+\begin_layout Standard
+刚体的位移可以简化为围绕旋量的速度旋量的典型形式。(The canonical form to which the displacement of
+ a rigid body can be reduced is a twist about a screw.)
+\end_layout
+
+\begin_layout Standard
+将速度旋量(twist)变换为力旋量(wrench)的比例张量(proportionality tensor)是
+\begin_inset Formula $6\times6$
+\end_inset
+
+空间质量矩阵，将运动转化为动量，将加速度转化为力。
+\end_layout
+
+\begin_layout Standard
+例如，下面我正在合成一个速度的速度旋量(velocity twist)和一个动量的力旋量(momentum wrench)。你发现相似之处了吗？
+\begin_inset Formula 
+\[
+\begin{aligned}\hat{v} & =\begin{pmatrix}{\bf \boldsymbol{\omega}}\\
+{\bf r}\times{\bf \boldsymbol{\omega}}
+\end{pmatrix} & \hat{p} & =\begin{pmatrix}{\bf p}\\
+{\bf r}\times{\bf p}
+\end{pmatrix}\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Reference
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A treatise on the theory of screws"
+target "https://archive.org/details/theoryscrews00ballrich"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A Short Course on Spatial Vector Algebra"
+target "http://royfeatherstone.org/teaching/2008/slides.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+单词解释
+\end_layout
+
+\begin_layout Standard
+spatial : adjective
+\end_layout
+
+\begin_layout Standard
+Definition of spatial 
+\end_layout
+
+\begin_layout Standard
+1: relating to, occupying, or having the character of space
+\end_layout
+
+\begin_layout Standard
+2: of, relating to, or involved in the perception of relationships (as of
+ objects) in space
+\end_layout
+
+\begin_layout Subsection
+MISC
+\end_layout
+
+\begin_layout Standard
+The force and torque vectors that arise in applying Newton's laws to a rigid
+ body can be assembled into a screw called a wrench.
+\end_layout
+
+\begin_layout Standard
+I will try to make it as simple as possible.
+ Imagine you have a SCREW, when you WRENCH it, it TWIST forward or backward.
+\end_layout
+
+\begin_layout Standard
+The components of the screw define the Plücker coordinates of a line in
+ space and the magnitudes of the vector along the line and moment about
+ this line.
+\end_layout
+
+\begin_layout Standard
+It means that any system can be described as those coordinate system is
+ a screw.
+ For example a normal screw has it axis and it pitch.
+\end_layout
+
+\begin_layout Standard
+A WRENCH is one case of SCREW where the act (force or torque) have the axis
+ and yield a movement (translation or rotation).
+\end_layout
+
+\end_body
+\end_document
