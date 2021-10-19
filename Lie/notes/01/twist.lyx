@@ -2075,11 +2075,11 @@ literal "false"
 \begin_inset Formula $h$
 \end_inset
 
-。旋量对象类似于直线对象，但有一个附加项，平行于力矩向量中的方向
+。旋量对象类似于直线对象，但有一个附加项，力矩向量中的平行于方向
 \begin_inset Formula $\hat{\mathbf{e}}$
 \end_inset
 
-。
+的分量。
 \begin_inset Formula 
 \[
 {\rm Screw}=\left\{ \begin{array}{cl}
@@ -2094,7 +2094,7 @@ s\begin{pmatrix}\mathbf{r}\times\hat{\mathbf{e}}+h\,\hat{\mathbf{e}}\\
 
 \end_inset
 
-螺距表示与方向向量平行的力矩向量的任何分量，作为标量比
+螺距表示与方向向量平行的力矩向量的任意分量，作为标量比
 \begin_inset Formula $h=\frac{\|\mathbf{m}_{\parallel}\|}{\|\mathbf{e}\|}$
 \end_inset
 
@@ -2120,10 +2120,7 @@ s\begin{pmatrix}\mathbf{r}\times\hat{\mathbf{e}}+h\,\hat{\mathbf{e}}\\
 \begin{align}\mbox{Magnitude} &  & s & =\|\mathbf{e}\|\\
 \mbox{Unit Direction} &  & \hat{\mathbf{e}} & =\frac{\mathbf{e}}{\|\mathbf{e}\|}\\
 \mbox{Position Closest To Origin} &  & \mathbf{r} & =\frac{\mathbf{e}\times\mathbf{m}}{\|\mathbf{e}\|^{2}}\\
-\mbox{Pitch} &  & h & =\frac{\mathbf{e}\cdot\mathbf{m}}{\|\mathbf{e}\|^{2}}\\
-\\
-\\
-\\
+\mbox{Pitch} &  & h & =\frac{\mathbf{e}\cdot\mathbf{m}}{\|\mathbf{e}\|^{2}}
 \end{align}
 \]
 
@@ -2437,7 +2434,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-对于第二个问题，线性加速度和角加速度不会形成速度旋量(运动旋量)，因为它们包含离心项，不会像普通旋量一样变换。这是因为常规加速度(regular
+对于第二个问题，线性加速度和角加速度不会形成速度旋量(运动旋量)，因为它们包含离心项，不能像普通旋量一样变换。这是因为常规加速度(regular
  acceleration)跟踪一个特定的粒子，而旋量量值在空间中有一个固定的测量点。
 \end_layout
 
@@ -2498,7 +2495,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-但这是另一个问题的主题，因为在这个阶段相当涉及空间运动方程的推导。
+但这是另一个问题的主题，因为在这个阶段，运动的空间方程的推导相当复杂。
 \end_layout
 
 \begin_layout Standard
@@ -2665,6 +2662,210 @@ It means that any system can be described as those coordinate system is
 \begin_layout Standard
 A WRENCH is one case of SCREW where the act (force or torque) have the axis
  and yield a movement (translation or rotation).
+\end_layout
+
+\begin_layout Section
+做为李代数元素的速度旋量
+\end_layout
+
+\begin_layout Standard
+考虑由参数化的
+\begin_inset Formula $4\times4$
+\end_inset
+
+齐次变换所定义的刚体的运动，
+\begin_inset Formula 
+\[
+\mathbf{P}(t)=[T(t)]\mathbf{p}=\left\{ \begin{array}{l}
+\mathbf{P}\\
+1
+\end{array}\right\} =\left[\begin{array}{cc}
+A(t) & \mathbf{d}(t)\\
+0 & 1
+\end{array}\right]\left\{ \begin{array}{l}
+\mathbf{p}\\
+1
+\end{array}\right\} .
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个符号没有区分
+\begin_inset Formula $\mathbf{P}=(X,Y,Z,1)$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{P}=(X,Y,Z)$
+\end_inset
+
+，这在上下文中是很清楚的。
+\end_layout
+
+\begin_layout Standard
+这种运动的速度是通过计算机体内各点的轨迹速度来定义的，
+\begin_inset Formula 
+\[
+\mathbf{V}_{P}=[\dot{T}(t)]\mathbf{p}=\left\{ \begin{array}{c}
+\mathbf{V}_{P}\\
+0
+\end{array}\right\} =\left[\begin{array}{cc}
+\dot{A}(t) & \dot{d}(t)\\
+0 & 0
+\end{array}\right]\left\{ \begin{array}{l}
+\mathbf{p}\\
+1
+\end{array}\right\} .
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上标的点表示对时间的导数，因为
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+是常数，所以它的导数为零。
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的逆变换代入速度方程，通过对点
+\begin_inset Formula $P$
+\end_inset
+
+的轨迹
+\begin_inset Formula $\mathbf{P}(t)$
+\end_inset
+
+进行运算，得到点
+\begin_inset Formula $P$
+\end_inset
+
+的速度，即
+\begin_inset Formula 
+\[
+\mathbf{V}_{P}=[\dot{T}(t)][T(t)]^{-1}\mathbf{P}(t)=[S]\mathbf{P},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+[S]=\left[\begin{array}{cc}
+\boldsymbol{\Omega} & -\boldsymbol{\Omega}\mathbf{d}+\dot{\mathbf{d}}\\
+\mathbf{0} & 0
+\end{array}\right]=\left[\begin{array}{cc}
+\boldsymbol{\Omega} & \mathbf{d}\times\boldsymbol{\omega}+\mathbf{v}\\
+\mathbf{0} & 0
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+回想一下，
+\begin_inset Formula $\left[\boldsymbol{\Omega}\right]$
+\end_inset
+
+是角速度矩阵。矩阵
+\begin_inset Formula $\left[S\right]$
+\end_inset
+
+是齐次变换李群
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的李代数
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+的一个元素。
+\begin_inset Formula $\left[S\right]$
+\end_inset
+
+的组件是扭转旋量(twist screw)的组件，因此
+\begin_inset Formula $\left[S\right]$
+\end_inset
+
+通常也称为速度旋量(twist)。
+\end_layout
+
+\begin_layout Standard
+根据矩阵
+\begin_inset Formula $\left[S\right]$
+\end_inset
+
+的定义，我们可以建立常微分方程，
+\begin_inset Formula 
+\[
+[\dot{T}(t)]=[S][T(t)],
+\]
+
+\end_inset
+
+并且求出具有恒定速度旋量矩阵
+\begin_inset Formula $\left[S\right]$
+\end_inset
+
+的运动
+\begin_inset Formula $[T(t)]$
+\end_inset
+
+。其解是矩阵指数
+\begin_inset Formula 
+\[
+[T(t)]=e^{[S]t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该公式可以推广，使得给定
+\begin_inset Formula $\mathrm{SE}(n)$
+\end_inset
+
+中的初始位形
+\begin_inset Formula $g(0)$
+\end_inset
+
+和
+\begin_inset Formula $\mathfrak{se}(n)$
+\end_inset
+
+中的速度旋量
+\begin_inset Formula $\xi$
+\end_inset
+
+，可以使用该公式计算到新的位置和方向的齐次变换，
+\begin_inset Formula 
+\[
+g(\theta)=\exp(\xi\theta)g(0),
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta$
+\end_inset
+
+表示变换的参数。
 \end_layout
 
 \end_body
