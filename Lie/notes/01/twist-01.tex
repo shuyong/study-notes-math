@@ -1,0 +1,101 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+
+%Angle Definitions
+%-----------------
+%
+%set the plot display orientation
+%synatax: \tdplotsetdisplay{\theta_d}{\phi_d}
+\tdplotsetmaincoords{60}{110}
+%
+%define polar coordinates for some vector
+%TODO: look into using 3d spherical coordinate system
+\pgfmathsetmacro{\rvec}{1.0}
+\pgfmathsetmacro{\thetavec}{30}
+\pgfmathsetmacro{\phivec}{60}
+%
+%start tikz picture, and use the tdplot_main_coords style to implement the display coordinate transformation provided by 3dplot
+\begin{tikzpicture}[scale=4,tdplot_main_coords]
+
+\node[above] at (-0.25,-0.25) {$\{A\}$};
+\node[above] at (-0.25,+0.25,+0.75) {$\{B\}$};
+
+%set up some coordinates 
+%-----------------------
+\coordinate (O) at (0,0,0);
+
+% O^{\prime}
+%determine a coordinate (OP) using (r,\theta,\phi) coordinates.  This command also determines (OPxy), (OPxz), and (OPyz): the xy-, xz-, and yz-projections of the point (OP).
+%synatax: \tdplotsetcoord{Coordinate name without parentheses}{r}{\theta}{\phi}
+\tdplotsetcoord{OP}{\rvec}{\thetavec}{\phivec}
+
+%draw figure contents
+%--------------------
+
+%draw the main coordinate system axes
+\draw[thick,->,>=latex] (0,0,0) -- ( 1.2, 0  , 0  ) node[anchor=north east]{$x$};
+\draw[thick,->,>=latex] (0,0,0) -- ( 0  , 1.2, 0  ) node[anchor=north west]{$y$};
+\draw[thick,->,>=latex] (0,0,0) -- ( 0  , 0  , 1.2) node[anchor=south]     {$z$};
+
+%draw a vector from origin to point (OP) 
+\draw node[left,color=black]{$O$} [thick,->,>=latex,color=red] (O) -- node[anchor=north west,color=black]{$\mathbf{r}$} (OP) node[left,color=black]{$O^{\prime}$} ;
+
+%draw projection on xy plane, and a connecting line
+\draw[thin, dashed, color=red] (O) -- (OPxy);
+\draw[thin, dashed, color=red] (OP) -- (OPxy);
+
+%draw the angle \phi, and label it
+%syntax: \tdplotdrawarc[coordinate frame, draw options]{center point}{r}{angle}{label options}{label}
+%\tdplotdrawarc{(O)}{0.2}{0}{\phivec}{anchor=north}{$\phi$}
+
+
+%set the rotated coordinate system so the x'-y' plane lies within the "theta plane" of the main coordinate system
+%syntax: \tdplotsetthetaplanecoords{\phi}
+\tdplotsetthetaplanecoords{\phivec}
+
+%draw theta arc and label, using rotated coordinate system
+%\tdplotdrawarc[tdplot_rotated_coords]{(0,0,0)}{0.4}{0}{\thetavec}{anchor=south west}{$\theta$}
+
+%draw some dashed arcs, demonstrating direct arc drawing
+\draw[dashed,tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\draw[dashed] (\rvec,0,0) arc (0:90:\rvec);
+
+%set the rotated coordinate definition within display using a translation coordinate and Euler angles in the "z(\alpha)y(\beta)z(\gamma)" euler rotation convention
+%syntax: \tdplotsetrotatedcoords{\alpha}{\beta}{\gamma}
+\tdplotsetrotatedcoords{\phivec}{\thetavec}{0}
+
+%translate the rotated coordinate system
+%syntax: \tdplotsetrotatedcoordsorigin{point}
+\tdplotsetrotatedcoordsorigin{(OP)}
+
+%use the tdplot_rotated_coords style to work in the rotated, translated coordinate frame
+\draw[thick,tdplot_rotated_coords,->,>=latex] (0,0,0) -- (0.6,0.0,0.0) node[anchor=north west]{$x^{\prime}$};
+\draw[thick,tdplot_rotated_coords,->,>=latex] (0,0,0) -- (0.0,0.6,0.0) node[anchor=west]{$y^{\prime}$};
+\draw[thick,tdplot_rotated_coords,->,>=latex] (0,0,0) -- (0.0,0.0,0.6) node[anchor=south]{$z^{\prime}$};
+
+%WARNING:  coordinates defined by the \coordinate command (eg. (O), (OP), etc.) cannot be used in rotated coordinate frames.  Use only literal coordinates.  
+
+%draw some vector, and its projection, in the rotated coordinate frame
+\draw[thick,->,>=latex,color=blue,tdplot_rotated_coords] (0.0,0.0,0.0) -- (0.3,0.3,0.3) node[right,color=black]{$P^{\prime}$} ;
+\draw[thin, dashed,color=blue,tdplot_rotated_coords]     (0.0,0.0,0.0) -- (0.3,0.3,0.0);
+\draw[thin, dashed,color=blue,tdplot_rotated_coords]     (0.3,0.3,0.0) -- (0.3,0.3,0.3);
+
+%show its phi arc and label
+%\tdplotdrawarc[tdplot_rotated_coords,color=blue]{(0,0,0)}{0.2}{0}{45}{anchor=north west,color=black}{$\phi'$}
+
+%change the rotated coordinate frame so that it lies in its theta plane.  Note that this overwrites the original rotated coordinate frame
+%syntax: \tdplotsetrotatedthetaplanecoords{\phi'}
+\tdplotsetrotatedthetaplanecoords{45}
+
+%draw theta arc and label
+%\tdplotdrawarc[tdplot_rotated_coords,color=blue]{(0,0,0)}{0.2}{0}{55}{anchor=south west,color=black}{$\theta'$}
+
+\end{tikzpicture}
+
+\end{document}
+

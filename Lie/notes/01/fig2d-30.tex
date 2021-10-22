@@ -1,0 +1,41 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{quotes,angles}
+\usepackage{amsmath}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=4]
+
+% Draw x and y axis lines
+\draw [->,>=latex] (-1.2,0) -- (1.2,0) node [below] {$\mathbf{q}$};
+\draw [->,>=latex] (0,-1.2) -- (0,1.2) node [left] {$w$};
+\node [above] at (0, 1.25) {North};
+\node [below] at (0,-1.25) {South};
+\node[above left] at (-0.7,0.7) {$\mathrm{S}^{3}$};
+\node[above] at (0.0,1.40) {$\mathrm{S}^{3}$ : The unit quaternion numbers};
+
+% Draw a circle at the origin of radius 1
+\draw (0,0) circle (1);
+
+% Draw a red arc at the origin of radius 1
+\draw [->,>=latex] [very thick, red] (1,0) arc (0:1*180/3.1415926:1) node[above,black] {$q=\mathbf{q}+w$};
+
+\draw
+  (0.5403,0.8415) coordinate (a) 
+  -- (0,0) coordinate (b) 
+  -- (0,1) coordinate (c) 
+  pic["$\theta$", draw=black, very thin, <->,>=latex, angle eccentricity=1.2, angle radius=30]
+  {angle=a--b--c};
+
+\draw [very thin, dashed] (0.5403,0) -- (0.5403,0.8415) ;
+\draw [very thin, dashed] (0,0.8415) -- (0.5403,0.8415) ;
+\node[below] at (0.3,0.0) {$\left\Vert \mathbf{q} \right\Vert=\sin\left( \theta \right)$};
+\filldraw[black] (0.5403,0.8415) circle (0.5pt) ;
+\draw (0,0) -- (-0.5403,-0.8415) node [below left] {$-q$} ;
+\filldraw[black] (-0.5403,-0.8415) circle (0.5pt) ;
+
+\end{tikzpicture}
+
+\end{document}
+

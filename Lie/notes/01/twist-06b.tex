@@ -1,0 +1,73 @@
+\documentclass[border=6pt,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+
+% 3D axis with spherical coordinates
+\tdplotsetmaincoords{60}{110}
+\begin{tikzpicture}[scale=5,tdplot_main_coords]
+
+% variables
+\def\rvec{1.0}
+\def\thetavec{30}
+\def\phivec{60}
+
+\coordinate (O) at (0,0,0);
+\tdplotsetcoord{P}{\rvec}{\thetavec}{\phivec}
+
+% axes
+\draw[->, >=latex] ( 0.0, 0.0, 0.0) -- ( 1.2, 0.0, 0.0) node[anchor=north east]{$x$};
+\draw[->, >=latex] ( 0.0, 0.0, 0.0) -- ( 0.0, 1.2, 0.0) node[anchor=north west]{$y$};
+\draw[->, >=latex] ( 0.0, 0.0, 0.0) -- ( 0.0, 0.0, 1.2) node[anchor=south]     {$z$};
+\node[left] at ( 0.0, 0.0, 0.0) {$O$};
+
+%draw a vector from origin to point (P) 
+\draw[very thick,->, >=latex] (O) -- node[right] {$\boldsymbol{\rho}$} (P) ;
+
+\tdplotsetthetaplanecoords{\phivec}
+
+\draw[dashed,tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\draw[dashed] (\rvec,0,0) arc (0:90:\rvec);
+
+\tdplotsetrotatedcoords{\phivec}{\thetavec}{0}
+
+\tdplotsetrotatedcoordsorigin{(P)}
+
+\draw[tdplot_rotated_coords,->, >=latex] (-0.5, 0.0, 0.0) -- ( 0.5, 0.0, 0.0) node[anchor=north west]{$x'$};
+\draw[tdplot_rotated_coords,->, >=latex] ( 0.0,-0.2, 0.0) node [left] {$l$} -- ( 0.0, 2.0, 0.0) node[anchor=west]{$y'$};
+\draw[tdplot_rotated_coords,->, >=latex] ( 0.0, 0.0, 0.0) -- ( 0.0, 0.0, 0.6) node[anchor=south]{$z'$};
+\draw[tdplot_rotated_coords,thick,->, smooth, samples=100, domain=-0.04:pi*0.625] plot ({sin(4*\x r)}, \x, {cos(4*\x r)});
+
+%% vectors
+\draw[tdplot_rotated_coords,very thick,->, >=latex] ( 0.0, pi/2, \rvec) -- ( 0.5, pi/2, \rvec)     node[left] {$\mathbf{v}_\perp$};
+\draw[tdplot_rotated_coords,very thick,->, >=latex] ( 0.0, pi/2, \rvec) -- ( 0.0, pi/2+0.25, \rvec) node[right] {$\mathbf{v}_\parallel$};
+\draw[tdplot_rotated_coords,very thick,->, >=latex] ( 0.0, pi/2, 0.0  ) -- ( 0.0, pi/2+0.25, 0.0) node[right] {$\boldsymbol{\omega}$};
+\draw[tdplot_rotated_coords,very thick,->, >=latex] ( 0.0, pi/2, 0.0  ) -- node[right] {$\boldsymbol{\rho}$} ( 0.0, pi/2, \rvec) node [above] {$P$};
+
+%\draw[tdplot_rotated_coords,dashed] (0,0, 0  ) circle [radius=\rvec/2];
+%\draw[dashed] (0,0,pi/2) circle [radius=\rvec];
+%\draw[dashed] (0,0,pi  ) circle [radius=\rvec];
+%\draw[dashed] (0, \rvec, 0)  -- (0, \rvec, pi) ;
+%\draw[dashed] (0,-\rvec, 0)  -- (0,-\rvec, pi) ;
+%\draw[dashed] (0,-\rvec, pi) -- (0, \rvec, pi) ;
+%\draw[dashed] (-\rvec,0, pi) -- ( \rvec,0, pi) ;
+
+%\draw[thick,->, smooth, samples=100, domain=0:pi+pi/40] plot ({cos(4*\x r)}, {sin(4*\x r)}, \x);
+%
+%% vectors
+%\draw[very thick,->, >=latex] ( \rvec, 0.0, pi/2) -- ( \rvec, 0.8, pi/2)     node[right] {$\mathbf{v}_\perp=\boldsymbol{\omega} \times \boldsymbol{\rho}$};
+%\draw[very thick,->, >=latex] ( \rvec, 0.0, pi/2) -- ( \rvec, 0.0, pi/2+0.4) node[right] {$\mathbf{v}_\parallel$};
+%\draw[very thick,->, >=latex] (   0.0, 0.0, pi/2) -- (   0.0, 0.0, pi/2+0.4) node[right] {$\boldsymbol{\omega}$};
+%\draw[very thick,->, >=latex] (   0.0, 0.0, pi/2) -- node[right] {$\boldsymbol{\rho}$} ( \rvec, 0.0, pi/2) node [below] {$P$};
+%
+%\draw[very thin] (0.0, 1.05, pi/8       ) -- (0.0, 1.20, pi/8       ) ;
+%\draw[very thin] (0.0, 1.05, pi/8 + pi/2) -- (0.0, 1.20, pi/8 + pi/2) ;
+%\draw[very thin, <->, >=latex] (0.0, 1.15, pi/8) -- node[above, rotate=90] {$d$} (0.0, 1.15, pi/8 + pi/2) ;
+
+\end{tikzpicture}
+
+\end{document}
+
