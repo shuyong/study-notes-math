@@ -6,7 +6,7 @@
 
 3. [PX4 - EKF - python code](https://github.com/PX4/PX4-ECL/tree/master/EKF/python)
 
-4. [https://github.com/PX4/PX4-ECL/tree/master/EKF/matlabPX4 - EKF - matlab code]()
+4. [PX4 - EKF - matlab code](https://github.com/PX4/PX4-ECL/tree/master/EKF/matlab)
 
 5. [Using the ECL EKF](https://docs.px4.io/en/advanced_config/tuning_the_ecl_ekf.html)
 
@@ -18,17 +18,21 @@
 
 9. [NavEKF Change Overview 2020](http://manual.cuav.net/ardupilot2020/EKF%20update.pptx)
 
-10. [PX4 State Estimation 2021 Update](https://px4.io/wp-content/uploads/2020/07/Paul-Riseborough-PX4-state-estimation-update.pdf)
+10. [PX4 State Estimation 2021 Update - video](https://www.youtube.com/watch?v=CwehBx2hJcg)
 
-11. [PX4 State Estimation Overview](https://youtu.be/HkYRJJoyBwQ)
+11. [PX4 State Estimation 2021 Update](https://px4.io/wp-content/uploads/2020/07/Paul-Riseborough-PX4-state-estimation-update.pdf)
 
-12. [Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements](http://users.cecs.anu.edu.au/~trumpf/pubs/khosravian_trumpf_mahony_hamel_ACC2015.pdf)
+12. [PX4 State Estimation Overview](https://youtu.be/HkYRJJoyBwQ)
 
-13. [PX4 的 ECL EKF 公式推导及代码解析](https://blog.csdn.net/u010307048/article/details/100553475)
+13. [Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements](http://users.cecs.anu.edu.au/~trumpf/pubs/khosravian_trumpf_mahony_hamel_ACC2015.pdf)
 
-14. [PX4 InertialNAV Filter 与 EKF2概论](https://blog.csdn.net/westlovehehe/article/details/54754943)
+14. [PX4 的 ECL EKF 公式推导及代码解析](https://blog.csdn.net/u010307048/article/details/100553475)
 
+15. [PX4 InertialNAV Filter 与 EKF2概论](https://blog.csdn.net/westlovehehe/article/details/54754943)
 
+16. [Extended Kalman Filter](https://ahrs.readthedocs.io/en/latest/filters/ekf.html)
+
+17. [Bottom to top explanation of the Mahalanobis distance?](https://stats.stackexchange.com/questions/62092/bottom-to-top-explanation-of-the-mahalanobis-distance)
 
 
 
