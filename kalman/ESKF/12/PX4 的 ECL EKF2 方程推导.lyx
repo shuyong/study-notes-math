@@ -521,7 +521,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-创新或测量残差
+新息或测量残差
 \end_layout
 
 \end_inset
@@ -553,7 +553,7 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-创新(或残差)协方差
+新息(或残差)协方差
 \end_layout
 
 \end_inset
@@ -756,7 +756,7 @@ status open
 
 \begin_deeper
 \begin_layout Itemize
-创新或测量残差
+新息或测量残差
 \begin_inset Formula 
 \[
 \tilde{\boldsymbol{y}}_{k}=\boldsymbol{z}_{k}-h\left(\hat{\boldsymbol{x}}_{k\mid k-1}\right)
@@ -768,7 +768,7 @@ status open
 \end_layout
 
 \begin_layout Itemize
-创新(或残差)协方差
+新息(或残差)协方差
 \begin_inset Formula 
 \[
 \boldsymbol{S}_{k}=\boldsymbol{H}_{k}\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}+\boldsymbol{R}_{k}
@@ -795,7 +795,7 @@ status open
 最佳卡尔曼增益
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{K}_{k}=\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}\boldsymbol{S}_{k}^{-1}
+\boldsymbol{K}_{k}=\boldsymbol{P}_{k\mid k-1}\boldsymbol{H}_{k}^{{\rm T}}\boldsymbol{S}_{k}^{-1}\label{eq:3}
 \end{equation}
 
 \end_inset
@@ -807,7 +807,7 @@ status open
 更新(后验)的状态估计
 \begin_inset Formula 
 \begin{equation}
-\hat{\boldsymbol{x}}_{k\mid k}=\hat{\boldsymbol{x}}_{k\mid k-1}+\boldsymbol{K}_{k}\tilde{\mathbf{y}}_{k}
+\hat{\boldsymbol{x}}_{k\mid k}=\hat{\boldsymbol{x}}_{k\mid k-1}+\boldsymbol{K}_{k}\tilde{\mathbf{y}}_{k}\label{eq:4}
 \end{equation}
 
 \end_inset
@@ -819,7 +819,7 @@ status open
 更新(后验)的协方差
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{P}_{k|k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k|k-1}
+\boldsymbol{P}_{k|k}=\left(\boldsymbol{I}-\boldsymbol{K}_{k}\boldsymbol{H}_{k}\right)\boldsymbol{P}_{k|k-1}\label{eq:5}
 \end{equation}
 
 \end_inset
@@ -890,7 +890,15 @@ XYZ 磁力计读数用作单独的观察值。 该方法更精确并且允许学
 \end_layout
 
 \begin_layout Standard
-高度数据源 — 来自 GPS，气压计，测距仪或外部视觉设备，需要最小频率为 5Hz。 
+高度数据源
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+来自 GPS，气压计，测距仪或外部视觉设备，需要最小频率为 5Hz。 
 \end_layout
 
 \begin_layout Standard
@@ -924,14 +932,45 @@ GPS 提供位置和速度测量。
 \end_layout
 
 \begin_layout Standard
-EKF在内部运行一个附加的多假设滤波器，它使用多个3-状态—北/东向(N/E)的速度和偏航角—的扩展卡尔曼滤波器(EKF)。 然后使用高斯加和滤波器(GSF)合
-并这些偏航角的估计值。 单个3-状态的EKF使用了IMU和GPS水平速度数据(加上可选的空速数据)，而不依赖于事先对偏航角或磁强计测量有任何了解。
- 这里提供了一个对于主滤波器的偏航角备份，当起飞后导航丢失，表明磁力计的偏航估计值不好时，它被用于重置主 EKF 滤波器的24-状态的中的偏航数据。
+EKF在内部运行一个附加的多假设滤波器，它使用多个
+\begin_inset Formula $3$
+\end_inset
+
+参数状态
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+北/东向(N/E)的速度和偏航角
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+的扩展卡尔曼滤波器(EKF)。 然后使用高斯加和滤波器(GSF)合并这些偏航角的估计值。 单个
+\begin_inset Formula $3$
+\end_inset
+
+参数状态的EKF使用了IMU和GPS水平速度数据(加上可选的空速数据)，而不依赖于事先对偏航角或磁强计测量有任何了解。 这里提供了一个对于主滤波器的偏航角备份，
+当起飞后导航丢失，表明磁力计的偏航估计值不好时，它被用于重置主 EKF 滤波器的
+\begin_inset Formula $24$
+\end_inset
+
+参数状态的中的偏航数据。
 \end_layout
 
 \begin_layout Standard
 这也使得 ECL 能够在没有任何磁力计、或没有双天线 GPS 接收器的情况下运行，并提供偏航数据，只要起飞后能够进行某种水平的移动，偏航数据就变得可观测。
- 一旦机体完成了足够的水平移动，使偏航角可观测， 24-状态的主EKF将使其偏航角与GSF的估计值对齐，并开始使用 GPS。 
+ 一旦机体完成了足够的水平移动，使偏航角可观测， 
+\begin_inset Formula $24$
+\end_inset
+
+参数的主EKF将使其偏航角与GSF的估计值对齐，并开始使用 GPS。 
 \end_layout
 
 \begin_layout Subsubsection
@@ -1751,31 +1790,87 @@ ECL EKF 时间更新方程
 \end_layout
 
 \begin_layout Itemize
-IMU 的速度 — 北，东，地(NED)(m/s) 
+IMU 的速度
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+北，东，地(NED)(m/s) 
 \end_layout
 
 \begin_layout Itemize
-IMU 的位置 — 北，东，地(NED)(m) 
+IMU 的位置
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+北，东，地(NED)(m) 
 \end_layout
 
 \begin_layout Itemize
-IMU 增量角度偏差估计 — X, Y, Z(rad) 
+IMU 增量角度偏差估计
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+X, Y, Z(rad) 
 \end_layout
 
 \begin_layout Itemize
-IMU 增量速度偏差估计 — X, Y, Z(m/s) 
+IMU 增量速度偏差估计
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+X, Y, Z(m/s) 
 \end_layout
 
 \begin_layout Itemize
-地球磁场组分 — 北，东，地(NED)(gauss) 
+地球磁场分量
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+北，东，地(NED)(gauss) 
 \end_layout
 
 \begin_layout Itemize
-飞行器机体坐标系磁场偏差 — X, Y, Z(gauss) 
+飞行器机体坐标系磁场偏差
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+X, Y, Z(gauss) 
 \end_layout
 
 \begin_layout Itemize
-风速 — 北, 东(NE)(m/s)
+风速
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+北, 东(NE)(m/s)
 \end_layout
 
 \begin_layout Standard
@@ -1799,7 +1894,7 @@ status open
 \begin_inset Formula 
 \[
 \boldsymbol{x}=\left[\begin{array}{cccccccc}
-q & \boldsymbol{V}_{NED} & \boldsymbol{P}_{NED} & \boldsymbol{\Delta\theta}_{b} & \boldsymbol{\Delta V}_{b} & \boldsymbol{M}_{I} & \boldsymbol{M}_{B} & \boldsymbol{V}_{wind}\end{array}\right]^{\mathrm{T}}
+q^{\mathrm{T}} & \boldsymbol{V}_{NED}^{\mathrm{T}} & \boldsymbol{P}_{NED}^{\mathrm{T}} & \boldsymbol{\Delta\theta}_{b}^{\mathrm{T}} & \boldsymbol{\Delta V}_{b}^{\mathrm{T}} & \boldsymbol{M}_{I}^{\mathrm{T}} & \boldsymbol{M}_{B}^{\mathrm{T}} & \boldsymbol{V}_{wind}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}
 \]
 
 \end_inset
@@ -1834,7 +1929,11 @@ q & \boldsymbol{V}_{NED} & \boldsymbol{P}_{NED} & \boldsymbol{\Delta\theta}_{b} 
 \uwave default
 \noun default
 \color inherit
-的角度位置，
+的角度位置，我们用
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+表示其向量部分，
 \end_layout
 
 \begin_layout Standard
@@ -1845,6 +1944,9 @@ q_{0}\\
 q_{1}\\
 q_{2}\\
 q_{3}
+\end{array}\right]=\left[\begin{array}{c}
+q_{0}\\
+\boldsymbol{q}
 \end{array}\right]
 \]
 
@@ -1999,7 +2101,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-应用常用的数据输出有：
+应用软件常用的数据输出有：
 \end_layout
 
 \begin_layout Itemize
@@ -2040,17 +2142,22 @@ status open
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\left[T\right]_{B}^{N}=\left[\begin{array}{ccc}
+\begin{align*}
+\left[T\right]_{B}^{N} & =\left[\begin{array}{ccc}
 q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right) & 2\left(q_{1}\cdot q_{3}+q_{0}\cdot q_{2}\right)\\
 2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}\cdot q_{3}-q_{0}\cdot q_{1}\right)\\
 2\left(q_{1}\cdot q_{3}-q_{0}\cdot q_{2}\right) & 2\left(q_{2}\cdot q_{3}+q_{0}\cdot q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+1-2q_{2}^{2}-2q_{3}^{2} & 2\left(q_{1}\cdot q_{2}-q_{0}\cdot q_{3}\right) & 2\left(q_{1}\cdot q_{3}+q_{0}\cdot q_{2}\right)\\
+2\left(q_{1}\cdot q_{2}+q_{0}\cdot q_{3}\right) & 1-2q_{1}^{2}-2q_{3}^{2} & 2\left(q_{2}\cdot q_{3}-q_{0}\cdot q_{1}\right)\\
+2\left(q_{1}\cdot q_{3}-q_{0}\cdot q_{2}\right) & 2\left(q_{2}\cdot q_{3}+q_{0}\cdot q_{1}\right) & 1-2q_{1}^{2}-2q_{2}^{2}
 \end{array}\right]
-\]
+\end{align*}
 
 \end_inset
 
-
+上面上下两个方程在数学上完全相等，但是第二个方程在符号推导系统中产生更简单且更数值稳定的计算式，因此 ECL EKF2 选择了第二个方程。
 \end_layout
 
 \begin_layout Standard
@@ -2697,6 +2804,21 @@ M\left(\boldsymbol{\theta}\right)=\left[\begin{array}{cccc}
 
 \end_inset
 
+该矩阵在四元数教材里又被称为
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+矩阵，出现在向量和四元数的乘积中
+\begin_inset Formula 
+\[
+\boldsymbol{\Omega}\left(\boldsymbol{\theta}\right)=\left[\begin{array}{cc}
+0 & -\boldsymbol{\theta}^{\mathrm{T}}\\
+\boldsymbol{\theta} & \left[\boldsymbol{\theta}\times\right]
+\end{array}\right]
+\]
+
+\end_inset
+
 
 \end_layout
 
@@ -2797,7 +2919,7 @@ q_{1} & q_{2} & q_{3}
 \begin_inset Formula $k$
 \end_inset
 
-时刻的速度的 Jacobian ，大小为
+时刻的速度的 Jacobian，大小为
 \begin_inset Formula $3\times3$
 \end_inset
 
@@ -2891,8 +3013,40 @@ noprefix "false"
 +q_{0} & -q_{3} & +q_{2}\\
 +q_{3} & +q_{0} & -q_{1}\\
 -q_{2} & +q_{1} & +q_{0}
-\end{array}\right]
+\end{array}\right]\\
+ & =-\dfrac{1}{2}\boldsymbol{\Xi}\left(q\right)
 \end{align*}
+
+\end_inset
+
+矩阵
+\begin_inset Formula $\boldsymbol{\Xi}\left(q\right)$
+\end_inset
+
+出现在四元数与向量的乘法中
+\begin_inset Formula 
+\[
+\boldsymbol{\Xi}\left(q\right)=\left[\begin{array}{c}
+-\boldsymbol{q}^{\mathrm{T}}\\
+q_{0}\boldsymbol{I}_{3\times3}+\left[\boldsymbol{q}\times\right]
+\end{array}\right]
+\]
+
+\end_inset
+
+矩阵
+\begin_inset Formula $\boldsymbol{\Xi}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+之间的关系为
+\begin_inset Formula 
+\[
+\boldsymbol{\Omega}\left(\boldsymbol{\theta}\right)q=\boldsymbol{\Xi}\left(q\right)\boldsymbol{\theta}
+\]
 
 \end_inset
 
@@ -3071,7 +3225,8 @@ noprefix "false"
 +q_{0} & -q_{3} & +q_{2}\\
 +q_{3} & +q_{0} & -q_{1}\\
 -q_{2} & +q_{1} & +q_{0}
-\end{array}\right]
+\end{array}\right]\\
+ & =\dfrac{1}{2}\boldsymbol{\Xi}\left(q\right)
 \end{align*}
 
 \end_inset
@@ -3523,8 +3678,15 @@ status open
 \begin_inset Formula $\psi_{DECLINATION}$
 \end_inset
 
-。 因此如果增加了磁偏角的约束，则需要在融合完三轴磁力计测量值的基础上进行此部分的融合。这用于在没有绝对位置或速度测量的情况下保持正确的航向—例如使用光流时。这
-可以用来防止在航向观测不良期间地球磁场估计的不必要的偏航旋转。
+。 因此如果增加了磁偏角的约束，则需要在融合完三轴磁力计测量值的基础上进行此部分的融合。这用于在没有绝对位置或速度测量的情况下保持正确的航向
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+例如使用光流时。这可以用来防止在航向观测不良期间地球磁场估计的不必要的偏航旋转。
 \end_layout
 
 \begin_layout Standard
@@ -3753,7 +3915,31 @@ M_{Z}
 
 \end_inset
 
-这个偏导展开太复杂，就不在这里推导。具体可见代码中用符号推导系统生成的计算式。
+这个偏导展开太复杂，很难手工推导。使用符号推导系统生成的计算式如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{H}_{q}^{\psi}=\begin{cases}
+\left[\begin{array}{c}
+\frac{2\left(-2q_{0}\left(q_{0}q_{3}+q_{1}q_{2}\right)+q_{3}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+\frac{2\left(-2q_{1}\left(q_{0}q_{3}+q_{1}q_{2}\right)+q_{2}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+\frac{2\left(q_{1}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)+2q_{2}\left(q_{0}q_{3}+q_{1}q_{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+\frac{2\left(q_{0}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)+2q_{3}\left(q_{0}q_{3}+q_{1}q_{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}
+\end{array}\right]^{\mathrm{T}} & \text{for yaw321}\\
+\left[\begin{array}{c}
+\frac{2\left(-2q_{0}\left(q_{0}q_{3}-q_{1}q_{2}\right)+q_{3}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+\frac{2\left(2q_{1}\left(q_{0}q_{3}-q_{1}q_{2}\right)-q_{2}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+-\frac{2q_{1}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)+4q_{2}\left(q_{0}q_{3}-q_{1}q_{2}\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
+\frac{2\left(q_{0}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)+2q_{3}\left(q_{0}q_{3}-q_{1}q_{2}\right)\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}
+\end{array}\right]^{\mathrm{T}} & \text{for yaw312}
+\end{cases}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4163,7 +4349,11 @@ V_{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right)}
 \begin_inset Formula $\boldsymbol{H}_{V_{NED}}^{V_{TAS}}$
 \end_inset
 
-为真实风速相对于速度的观测矩阵：
+为真实风速相对于速度的
+\begin_inset Formula $1\times3$
+\end_inset
+
+观测矩阵：
 \begin_inset Formula 
 \[
 \boldsymbol{H}_{V_{NED}}^{V_{TAS}}=\left[\begin{array}{c}
@@ -4179,7 +4369,11 @@ V_{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right)}
 \begin_inset Formula $\boldsymbol{H}_{V_{wind}}^{V_{TAS}}$
 \end_inset
 
-为真实风速相对于风速的观测矩阵：
+为真实风速相对于风速的
+\begin_inset Formula $1\times2$
+\end_inset
+
+观测矩阵：
 \begin_inset Formula 
 \[
 \boldsymbol{H}_{V_{wind}}^{V_{TAS}}=-\left[\begin{array}{c}
@@ -4582,7 +4776,7 @@ GPS
 \end_layout
 
 \begin_layout Standard
-根据各自传感器的噪声
+根据各自传感器Z轴的噪声
 \begin_inset Formula $R_{hgt}$
 \end_inset
 
@@ -4602,8 +4796,12 @@ GPS
 \end_layout
 
 \begin_layout Standard
-因为光流的算法依赖测距仪提供的高度数据，所以ECL模块在原先维护的24状态EKF之外，还单独维护一个地形估计器，目的是融合测距仪的测量值以估计地形垂直位置。地形
-高差(terrain height offset)估计的EKF方程在本节描述。
+因为光流的算法依赖测距仪提供的高度数据，所以ECL模块在原先维护的
+\begin_inset Formula $24$
+\end_inset
+
+参数状态EKF之外，还单独维护一个地形估计器，目的是融合测距仪的测量值以估计地形垂直位置。地形高差(terrain height offset)估计的EKF方程
+在本节描述。
 \end_layout
 
 \begin_layout Subsection
@@ -4765,15 +4963,1099 @@ H_{flow} & =\dfrac{\partial\left(V_{LOS_{X}},V_{LOS_{Y}}\right)}{\partial\left(\
 \end_layout
 
 \begin_layout Section
-YawEKFGSF（暂缺）
+使用 IMU 和 GPS 进行偏航对准
 \end_layout
 
-\begin_layout Section
-输出互补滤波器（暂缺）
+\begin_layout Subsection
+EKF-GSF 偏航估计器描述
 \end_layout
 
 \begin_layout Standard
-参考文档[12]
+该算法能在没有磁强计或外部偏航传感器的情况下运行，其目的是自动修正偏航误差引起的起飞后导航损失。它可以从不良磁偏航引起的起飞后导航故障中快速自动恢复。
+\end_layout
+
+\begin_layout Standard
+ECL项目自2018年起进行的初步算法工作，以确定是否有可能仅使用 IMU 和 GPS 速度数据快速确定偏航角(yaw)，而不依赖机体动力学的假设。最后确定使用
+多个 EKF 状态的高斯和滤波器(Gaussian Sum Filter, GSF)算法，即EKF-GSF，因其为应用提供了最佳的性能/计算成本权衡。
+\end_layout
+
+\begin_layout Standard
+EKF-GSF算法也是在
+\begin_inset Formula $24$
+\end_inset
+
+参数状态EKF之外又一个EKF实现，包括以下内容：
+\end_layout
+
+\begin_layout Itemize
+使用互补滤波器的
+\begin_inset Formula $5$
+\end_inset
+
+组AHRS的解
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+这些计算预测偏航角和向前、向右加速度。
+\end_layout
+
+\begin_layout Itemize
+空速(测量或估计)用于固定翼飞行期间的向心加速度修正。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+\begin_inset Formula $5$
+\end_inset
+
+组
+\begin_inset Formula $3$
+\end_inset
+
+参数状态扩展卡尔曼滤波器
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+状态为向北(N)、向东(E)速度和偏航角。
+\end_layout
+
+\begin_layout Itemize
+偏航角估算开始时的角度间隔相等，
+\begin_inset Formula $\left[\begin{array}{ccccc}
+-4/5\pi & -2/5\pi & 0 & 2/5\pi & 4/5\pi\end{array}\right]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+GPS的向北(N)、向东(E)速度作为观测值。
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+高斯和滤波器(Gaussian Sum Filter)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+根据标准化GPS的向北(N)、向东(E)速度新息数值级别计算每个EKF的权重。总权重为
+\begin_inset Formula $1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+输出偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+估计值，这是单个EKF估计值的加权平均值。
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+GSF-EKF过程框图如下：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename EKF-GSF.png
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该算法运行要求无人机在起飞和初始水平运动时必须处于不需要位置固定模式(Position Control Mode)，让无人机水平移动一段距离。根据实验，无人机大
+约在
+\begin_inset Formula $1\mathrm{s}$
+\end_inset
+
+左右移动
+\begin_inset Formula $4\mathrm{m}$
+\end_inset
+
+左右的距离，EKF 将自动对准偏航并开始使用 GPS，从而启用位置固定模式。测试结果表明：
+\end_layout
+
+\begin_layout Itemize
+GSF权重在单个EKF滤波器之前收敛。
+\end_layout
+
+\begin_layout Itemize
+要求水平速度变化大于GPS速度不确定性。
+\end_layout
+
+\begin_layout Itemize
+速度变化越大，收敛速度越快。
+\end_layout
+
+\begin_layout Itemize
+由于失去导航，速度变化较大，导致在
+\begin_inset Formula $1\mathrm{s}$
+\end_inset
+
+内收敛。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+偏航估计器的算法直觉
+\end_layout
+
+\begin_layout Standard
+EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面还是在传感器方面，以及无人机的运动特性方面，设计者在技术方面和工程方面都已经炉火纯青、游刃有余。
+虽然该算法在数学方面还有说不清的地方，但是KF同样擅长在相关性领域工作，建模不一定要因果关系。
+\end_layout
+
+\begin_layout Standard
+首先该算法一个假设就是偏航角由
+\begin_inset Formula $xy$
+\end_inset
+
+水平面的向北(N)、向东(E)的增量速度和绕
+\begin_inset Formula $Z$
+\end_inset
+
+轴旋转的增量角度所驱动，所以偏航角的测量误差也和这
+\begin_inset Formula $3$
+\end_inset
+
+个值的测量噪声相关
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\psi_{error}\propto\left(\sigma_{\Delta V_{x}}^{2},\sigma_{\Delta V_{y}}^{2},\sigma_{\Delta\psi}^{2}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这
+\begin_inset Formula $3$
+\end_inset
+
+个值和
+\begin_inset Formula $3$
+\end_inset
+
+个噪声由IMU提供。于是我们可以在
+\begin_inset Formula $xy$
+\end_inset
+
+水平面上面预置
+\begin_inset Formula $5$
+\end_inset
+
+个偏航角
+\begin_inset Formula $\psi_{i},i\in1\sim5$
+\end_inset
+
+，每个偏航角由这
+\begin_inset Formula $3$
+\end_inset
+
+个值和
+\begin_inset Formula $3$
+\end_inset
+
+个噪声驱动演化，独立进行时间更新。在测量更新阶段，我们观测GPS提供的
+\begin_inset Formula $xy$
+\end_inset
+
+水平面的向北(N)、向东(E)的速度，因为残差的存在，这
+\begin_inset Formula $5$
+\end_inset
+
+个偏航角
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+会向真实的偏航角
+\begin_inset Formula $\psi_{true}$
+\end_inset
+
+聚拢，但是真实的偏航角
+\begin_inset Formula $\psi_{true}$
+\end_inset
+
+不可见。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename EKF-GSF-01.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+不过我们可以通过高斯和的算法，计算这
+\begin_inset Formula $5$
+\end_inset
+
+个偏航角
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+的权重并相加，得到距离真实的偏航角
+\begin_inset Formula $\psi_{true}$
+\end_inset
+
+最近的复合偏航角
+\begin_inset Formula $\psi_{GSF}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename EKF-GSF-02.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此该算法就可以在没有磁强计的情况下估计偏航角，并且是水平速度变化越大，收敛越快。
+\end_layout
+
+\begin_layout Subsection
+偏航估计器的初始化与对齐
+\end_layout
+
+\begin_layout Subsubsection
+偏航估计器的初始化
+\end_layout
+
+\begin_layout Standard
+初始化的关键在于在
+\begin_inset Formula $xy$
+\end_inset
+
+平面上预制
+\begin_inset Formula $5$
+\end_inset
+
+个偏航角，平均间隔，平均权重。其它初始化都是常规操作。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename EKF-GSF-00.png
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+AHRS倾斜对齐
+\end_layout
+
+\begin_layout Standard
+就是如何从增量速度计算旋转矩阵。旋转矩阵直接从加速度测量中构造，对于所有模型都是相同的，因此只需计算一次。其假设是：
+\end_layout
+
+\begin_layout Enumerate
+偏航角为零
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+当速度融合开始时，每个模型的偏航角稍后对齐。
+\end_layout
+
+\begin_layout Enumerate
+机体没有加速，因此所有测量的加速度都是由重力引起的。
+\end_layout
+
+\begin_layout Standard
+用
+\begin_inset Formula $\Delta t$
+\end_inset
+
+表示传感器事件间隔时间。从主模块得到的加速度
+\begin_inset Formula $\boldsymbol{a}_{I}$
+\end_inset
+
+计算得到增量速度
+\begin_inset Formula $\boldsymbol{\Delta V}_{I}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{\Delta V}_{I}=\boldsymbol{a}_{I}\cdot\Delta t
+\]
+
+\end_inset
+
+这是地球坐标系中的数据，需要转换到机体坐标系中并归一得到重力方向的单位向量
+\begin_inset Formula 
+\[
+\boldsymbol{D}_{B}=-\boldsymbol{\Delta V}_{I}/\left\Vert \boldsymbol{\Delta V}_{I}\right\Vert 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算地球坐标系向北轴的单位向量，旋转为机体坐标系，与
+\begin_inset Formula $\boldsymbol{D}_{B}$
+\end_inset
+
+正交
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{N}_{B} & =\left[\begin{array}{c}
+1\\
+0\\
+0
+\end{array}\right]-\boldsymbol{D}_{B}\cdot\left(\left[\begin{array}{ccc}
+1 & 0 & 0\end{array}\right]\boldsymbol{D}_{B}\right)\\
+\boldsymbol{N}_{B} & =\boldsymbol{N}_{B}/\left\Vert \boldsymbol{N}_{B}\right\Vert 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算地球坐标系向东轴的单位向量，旋转为机体坐标系，与
+\begin_inset Formula $\boldsymbol{D}_{B}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{N}_{B}$
+\end_inset
+
+正交
+\begin_inset Formula 
+\[
+\boldsymbol{E}_{B}=\boldsymbol{D}_{B}\times\boldsymbol{N}_{B}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从地球坐标系到机体坐标系的旋转矩阵中的每一列表示旋转到机体坐标系的相应地球坐标系单位向量的投影，例如
+\begin_inset Formula $\boldsymbol{N}_{B}$
+\end_inset
+
+将是第一列。我们需要从机体坐标系到地球坐标系的旋转矩阵，因此旋转到机体坐标系的地球坐标系单位向量被复制到相应的行中
+\begin_inset Formula 
+\[
+\left[T\right]_{B}^{N}=\left[\begin{array}{c}
+\boldsymbol{N}_{B}^{\mathrm{T}}\\
+\boldsymbol{E}_{B}^{\mathrm{T}}\\
+\boldsymbol{D}_{B}^{\mathrm{T}}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+倾斜对齐完成后可对每一个模型进行时间更新。
+\end_layout
+
+\begin_layout Subsubsection
+AHRS偏航角对齐
+\end_layout
+
+\begin_layout Standard
+其算法是根据最新的偏航角
+\begin_inset Formula $\psi$
+\end_inset
+
+更新欧拉角向量，进而生成新的姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+。在
+\begin_inset Formula $24$
+\end_inset
+
+参数EKF算法之外，在EKF-GSF算法中为每一个模型用增益系数法维护一个独立的姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+，用于后面的算法中。
+\end_layout
+
+\begin_layout Standard
+偏航角对齐完成后可对每一个模型进行测量更新。
+\end_layout
+
+\begin_layout Subsubsection
+AHRS预测
+\end_layout
+
+\begin_layout Standard
+在每次时间更新前先从IMU数据生成姿态基准，即每一个模型的姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+被IMU数据驱动往前旋转了一个角度。所用数据为IMU数据及真实空速，并用加速度融合增益系数和陀螺仪偏差增益系数进行计算。最后计算得到一个校正后的增量角度，将其应
+用到姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+就得到新的姿态矩阵。
+\end_layout
+
+\begin_layout Subsubsection
+AHRS更新
+\end_layout
+
+\begin_layout Standard
+同样的，在每次测量更新之后，需要对姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+进行更新。因为增量偏航角
+\begin_inset Formula $\Delta\psi$
+\end_inset
+
+发生在
+\begin_inset Formula $xy$
+\end_inset
+
+平面上，所以利用偏航旋转矩阵的稀疏性可以对姿态矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+做优化更新。
+\end_layout
+
+\begin_layout Subsection
+偏航估计器的预测方程
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\psi$
+\end_inset
+
+表示机体坐标系相对于地球坐标系的偏航角(yaw)。
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\boldsymbol{V}_{NE}$
+\end_inset
+
+表示机体在世界坐标系中的向北(N)和向东(E)的速度，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{NE}=\left[\begin{array}{c}
+V_{N}\\
+V_{E}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\Delta\psi$
+\end_inset
+
+表示IMU的
+\begin_inset Formula $z$
+\end_inset
+
+轴在机体轴上的增量角度测量值，即增量偏航角的测量值。
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\sigma_{\Delta\psi}^{2}$
+\end_inset
+
+表示IMU的
+\begin_inset Formula $z$
+\end_inset
+
+轴增量角度测量方差值。
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\boldsymbol{\Delta V}_{xy}$
+\end_inset
+
+表示IMU的
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴在机体轴上的增量速度测量值
+\begin_inset Formula 
+\[
+\boldsymbol{\Delta V}_{xy}=\left[\begin{array}{c}
+\Delta V_{x}\\
+\Delta V_{y}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta V}xy}^{2}$
+\end_inset
+
+表示IMU的
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴增量速度测量方差
+\begin_inset Formula 
+\[
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}xy}^{2}=\left[\begin{array}{c}
+\sigma_{\Delta V_{x}}^{2}\\
+\sigma_{\Delta V_{y}}^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导机体到导航方向的变换矩阵(2D)
+\begin_inset Formula 
+\[
+\left[T\right]_{B}^{N}=\left[\begin{array}{cc}
+\cos\left(\psi\right) & -\sin\left(\psi\right)\\
+\sin\left(\psi\right) & \cos\left(\psi\right)
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+姿态更新方程
+\begin_inset Formula 
+\[
+\psi^{\prime}=\psi+\Delta\psi
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+速度更新方程
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{NE}^{\prime}=\boldsymbol{V}_{NE}+\left[T\right]_{B}^{N}\boldsymbol{\Delta V}_{xy}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定义状态向量
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{x}}_{k-1|k-1}=\left[\begin{array}{c}
+\boldsymbol{V}_{NE}\\
+\psi
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定义过程方程的向量
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{x}}_{k|k-1}=\left[\begin{array}{c}
+\boldsymbol{V}_{NE}^{\prime}\\
+\psi^{\prime}
+\end{array}\right]
+\]
+
+\end_inset
+
+此即方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，预测 (先验) 状态估计。
+\end_layout
+
+\begin_layout Standard
+计算状态转移矩阵
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F} & =\dfrac{\partial\hat{\boldsymbol{x}}_{k|k-1}}{\partial\hat{\boldsymbol{x}}_{k-1|k-1}}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{c}
+V_{N}+\cos\left(\psi\right)\Delta V_{x}-\sin\left(\psi\right)\Delta V_{y}\\
+V_{E}+\sin\left(\psi\right)\Delta V_{x}+\cos\left(\psi\right)\Delta V_{y}\\
+\psi+\Delta\psi
+\end{array}\right]\right)}{\partial\left(\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+\psi
+\end{array}\right]\right)}\\
+ & =\left[\begin{array}{ccc}
+1 & 0 & -\sin\left(\psi\right)\Delta V_{x}-\cos\left(\psi\right)\Delta V_{y}\\
+0 & 1 & \cos\left(\psi\right)\Delta V_{x}-\sin\left(\psi\right)\Delta V_{y}\\
+0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+定义控制(干扰)向量
+\begin_inset Formula 
+\[
+\boldsymbol{u}=\left[\begin{array}{c}
+\boldsymbol{\Delta V}_{xy}\\
+\Delta\psi
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导协方差预测方程。在消除偏差效应后，假设惯性解中的误差增长由增量角度和增量速度中的“噪声”驱动。推导IMU噪声到状态噪声的
+\begin_inset Formula $3\times3$
+\end_inset
+
+控制(干扰)影响矩阵
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{G} & =\dfrac{\partial\hat{\boldsymbol{x}}_{k|k-1}}{\partial\boldsymbol{u}}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{c}
+V_{N}+\cos\left(\psi\right)\Delta V_{x}-\sin\left(\psi\right)\Delta V_{y}\\
+V_{E}+\sin\left(\psi\right)\Delta V_{x}+\cos\left(\psi\right)\Delta V_{y}\\
+\psi+\Delta\psi
+\end{array}\right]\right)}{\partial\left(\left[\begin{array}{c}
+\Delta V_{x}\\
+\Delta V_{y}\\
+\Delta\psi
+\end{array}\right]\right)}\\
+ & =\left[\begin{array}{ccc}
+\cos\left(\psi\right) & -\sin\left(\psi\right) & 0\\
+\sin\left(\psi\right) & \cos\left(\psi\right) & 0\\
+0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+这实际上是在
+\begin_inset Formula $xy$
+\end_inset
+
+平面上的旋转矩阵。
+\end_layout
+
+\begin_layout Standard
+定义干扰(disturbance)矩阵，即
+\begin_inset Formula $3\times3$
+\end_inset
+
+过程噪声矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{D}=\mathrm{diag}\left(\left[\begin{array}{c}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta V}xy}^{2}\\
+\sigma_{\Delta\psi}^{2}
+\end{array}\right]\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导状态误差矩阵，即过程噪声协方差矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{Q}=\boldsymbol{G}\boldsymbol{D}\boldsymbol{G}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+传播协方差矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{k|k-1}=\boldsymbol{F}\boldsymbol{P}_{k-1|k-1}\boldsymbol{F}^{\mathrm{T}}+\boldsymbol{Q}
+\]
+
+\end_inset
+
+此即方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，预测 (先验) 估计协方差。
+\end_layout
+
+\begin_layout Subsection
+偏航估计器的观测方程
+\end_layout
+
+\begin_layout Standard
+由GPS提供的向北(N)、向东(E)速度观测值为
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{GPS}=\left[\begin{array}{c}
+V_{N_{GPS}}\\
+V_{E_{GPS}}
+\end{array}\right]
+\]
+
+\end_inset
+
+其方差为
+\begin_inset Formula $\sigma_{\Delta V_{GPS}}^{2}$
+\end_inset
+
+，由此构建
+\begin_inset Formula $2\times2$
+\end_inset
+
+测量噪声矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{R}=\mathrm{diag}\left(\left[\begin{array}{c}
+\sigma_{\Delta V_{GPS}}^{2}\\
+\sigma_{\Delta V_{GPS}}^{2}
+\end{array}\right]\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为是对速度的直接观测，所以测量矩阵比较简单
+\begin_inset Formula 
+\[
+\boldsymbol{H}=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+推导向北(N)、向东(E)速度观测的协方差更新方程，即方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{align*}
+\tilde{\boldsymbol{y}} & =\boldsymbol{H}\hat{\boldsymbol{x}}_{k|k-1}-\boldsymbol{V}_{GPS}\\
+\boldsymbol{S} & =\boldsymbol{H}\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{\mathrm{T}}+\boldsymbol{R}\\
+\boldsymbol{K} & =\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{\mathrm{T}}\boldsymbol{S}^{-1}\\
+\hat{\boldsymbol{x}}_{k|k} & =\hat{\boldsymbol{x}}_{k|k-1}-\boldsymbol{K}\tilde{\boldsymbol{y}}\\
+\boldsymbol{P}_{k|k} & =\boldsymbol{P}_{k|k-1}-\boldsymbol{K}\boldsymbol{S}\boldsymbol{K}^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+偏航估计器的GSF方程
+\end_layout
+
+\begin_layout Standard
+对每个模型的状态计算高斯密度。首先计算马式距离(
+\begin_inset CommandInset href
+LatexCommand href
+name "Mahalanobis distance"
+target "https://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+)
+\begin_inset Formula 
+\[
+D_{M}^{2}=\tilde{\boldsymbol{y}}^{\mathrm{T}}\boldsymbol{S}^{-1}\tilde{\boldsymbol{y}}
+\]
+
+\end_inset
+
+再计算2D正态分布(
+\begin_inset CommandInset href
+LatexCommand href
+name "Multivariate Normal Distribution"
+target "https://online.stat.psu.edu/stat505/book/export/html/636"
+literal "false"
+
+\end_inset
+
+)的密度
+\begin_inset Formula 
+\[
+\mathrm{Density}=\left(\dfrac{1}{2}\right)^{p/2}\sqrt{\det\left(\boldsymbol{S}^{-1}\right)}\exp\left(-\dfrac{D_{M}^{2}}{2}\right)
+\]
+
+\end_inset
+
+其中我们观测的是
+\begin_inset Formula $2\times1$
+\end_inset
+
+速度向量，所以
+\begin_inset Formula $p=2$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+计算
+\begin_inset Formula $5$
+\end_inset
+
+组AHRS的解的权重并归一
+\begin_inset Formula 
+\begin{align*}
+W_{i}^{\prime} & =\mathrm{Density}_{i}\cdot W_{i}\\
+\boldsymbol{W} & =\boldsymbol{W}^{\prime}/\left\Vert \boldsymbol{W}^{\prime}\right\Vert 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用每个模型的偏航状态的加权平均值以计算复合偏航向量。为避免角度回绕问题，在求和之前，将偏航状态转换为长度等于权重值为
+\begin_inset Formula $1$
+\end_inset
+
+的向量
+\begin_inset Formula 
+\begin{align*}
+x & =\sum_{i=1}^{5}W_{i}\cdot\cos\left(\psi_{i}\right)\\
+y & =\sum_{i=1}^{5}W_{i}\cdot\sin\left(\psi_{i}\right)\\
+\psi_{GSF} & =\mathrm{atan2}\left(y,x\right)
+\end{align*}
+
+\end_inset
+
+该算法原理在于将每一个偏航状态
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+看成是一个从原点出发的向量，因而在
+\begin_inset Formula $x/y$
+\end_inset
+
+轴上的投影通过权重缩放后相加，就得到单位圆上的一个向量，因而求出加权复合偏航角
+\begin_inset Formula $\psi_{GSF}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename EKF-GSF-03.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据每个模型方差的加权平均值计算偏航状态的复合方差。具有较大新息的模型的权重较小 
+\begin_inset Formula 
+\begin{align*}
+\Delta\psi_{i} & =\psi_{i}-\psi_{GSF}\\
+\mathrm{variance}_{\psi_{GSF}} & =\sum_{i=1}^{5}W_{i}\cdot\left(P_{i}\left(3,3\right)+\Delta\psi_{i}^{2}\right)
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $P_{i}\left(3,3\right)$
+\end_inset
+
+为第
+\begin_inset Formula $i$
+\end_inset
+
+组的协方差矩阵
+\begin_inset Formula $\boldsymbol{P}_{i}$
+\end_inset
+
+中偏航角
+\begin_inset Formula $\psi_{i}$
+\end_inset
+
+的方差。
+\end_layout
+
+\begin_layout Section
+输出互补滤波器
+\end_layout
+
+\begin_layout Standard
+该算法使用当前时间范围内的最新IMU数据实现惯性导航。该算法缓冲惯性导航状态，并计算延迟融合时间范围内与EKF状态的差异。根据差值计算增量角、增量速度和速度修正
+，并在当前时间范围内应用它们，以便惯性导航状态在延迟融合时间范围内跟踪EKF状态。使用互补滤波器校正EKF中的时间延迟的灵感来源于参考文档[12]的工作。
+\end_layout
+
+\begin_layout Standard
+从软件的角度看，因为现在的系统越来越复杂，原本在RTOS时代所做的假设越来越不能得到满足。现在传感器采样，滤波器计算位姿，用户获取位姿，都分别处于不同的线程中，
+有不同的工作频率。众多传感器各自工作在不同的频率，异步采样，数据异步到达。滤波器有自己的工作频率，上层软件也有另外的工作频率。所有这些，都会有一个时间差，因此在
+用户获取当前位姿信息的瞬间，滤波器需要对当前所维护的信息做一个补偿，这就是输出互补滤波器。它的工作原理就是维护一个历史窗口，从历史数据中计算互补参数，然后对输出
+信息进行校正，具体的原理请看参考文档[12]。在这里没有什么复杂的计算公式，一行的互补公式较多且大多简单细碎，经验参数众多，要看懂还得依赖专业背景和工程经验。
 \end_layout
 
 \begin_layout Section
@@ -4781,20 +6063,36 @@ YawEKFGSF（暂缺）
 \end_layout
 
 \begin_layout Standard
-ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这使得系统具有很高的容错性，但也使得算法具有更大的复杂度。但是在代码里，更多的代码是对数据和协方差
-矩阵质量判断，并对上下限进行钳制处理，发现异常后更换数据源的处理。这些方法和经验数据，是多年的经验积累，是在一个个项目中一点点地磨炼出来的经验总结。这才是
- ECL EKF 模块最有价值的地方，因为主要算法可以在短时间内掌握，而这些知识只有靠时间来积淀。
+ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这使得系统具有很高的容错性，即对传感器故障的容忍度，但也使得算法具有更大的复杂度。但是在代码里，更
+多的代码是对数据和协方差矩阵质量判断，并对上下限进行钳制处理，发现异常后更换数据源的处理。这些方法和经验数据，是多年的经验积累，是在一个个项目中一点点地磨炼出来
+的经验总结。这才是 ECL EKF 模块最有价值的地方，因为主要算法可以在短时间内掌握，而这些知识只有靠时间来积淀。
 \end_layout
 
 \begin_layout Standard
-不过 ECL EKF 算法也有值得探讨的地方。现在已经知道，旋转(包括四元数和旋转矩阵)不可以直接用卡尔曼滤波器进行估计，因为旋转是群而不是向量，而卡尔曼滤波器
-里面最核心的概念—协方差—只能处理向量。因此直接把四元数放入卡尔曼滤波器中计算，估计的是四元数而不是旋转。
+不过 ECL EKF 算法也有值得探讨的地方。数学上已经清楚，旋转(包括四元数和旋转矩阵)不可以直接用卡尔曼滤波器进行估计，因为旋转是群而不是向量，而卡尔曼滤波
+器里面最核心的概念
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+协方差
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+只能处理向量。因此直接把四元数放入卡尔曼滤波器中计算，估计的是四元数而不是旋转。
 \end_layout
 
 \begin_layout Standard
 此外，对比误差状态EKF算法，就会发现这里的 Jacobian 矩阵展开后十分复杂，只要涉及旋转(包括四元数和旋转矩阵)的方程的 Jacobian
- 矩阵都很复杂。而在误差状态EKF算法中，误差大多在零点附近抖动，因此有较好的近线性特性，因此 Jacobian 矩阵和标准的KF的矩阵很类似，因此计算速度会快
-一些，精度也会高一些。
+ 矩阵都很复杂，并且难以解释。而在误差状态EKF算法中，误差大多在零点附近抖动，因此有较好的近线性特性，因此 Jacobian 矩阵和标准的KF的矩阵很类似，因
+此计算速度会快一些，理论上精度也会高一些，并且容易解释。
 \end_layout
 
 \begin_layout Standard
@@ -4929,8 +6227,8 @@ literal "false"
 \begin_layout Enumerate
 \begin_inset CommandInset href
 LatexCommand href
-name "PX4 State Estimation Overview"
-target "https://youtu.be/HkYRJJoyBwQ"
+name "Extended Kalman Filter"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html"
 literal "false"
 
 \end_inset
@@ -4942,7 +6240,7 @@ literal "false"
 \begin_inset CommandInset href
 LatexCommand href
 name "Recursive Attitude Estimation in the Presence of Multi-rate and Multi-delay Vector Measurements"
-target "https://www.researchgate.net/profile/Alireza-Khosravian/publication/277143039_Recursive_Attitude_Estimation_in_the_Presence_of_Multi-rate_and_Multi-delay_Vector_Measurements/links/556a5ea108aec22683035ed3/Recursive-Attitude-Estimation-in-the-Presence-of-Multi-rate-and-Multi-delay-Vector-Measurements.pdf"
+target "http://users.cecs.anu.edu.au/~trumpf/pubs/khosravian_trumpf_mahony_hamel_ACC2015.pdf"
 literal "false"
 
 \end_inset

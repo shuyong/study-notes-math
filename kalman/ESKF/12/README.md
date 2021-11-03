@@ -34,5 +34,6 @@
 
 17. [Bottom to top explanation of the Mahalanobis distance?](https://stats.stackexchange.com/questions/62092/bottom-to-top-explanation-of-the-mahalanobis-distance)
 
+18. [A Methodology for Design and Analysis of Sensor Fusion with Real Data in UAV Platforms](https://www.preprints.org/manuscript/201801.0077/v1)
 
 
