@@ -2121,7 +2121,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-注意：输出的数据项和状态向量中的数据不完全相同，而是使用输出互补滤波器进行修正的数据，参见文档[12]中的算法。
+注意：输出的数据项和状态向量中的数据不完全相同，而是使用输出互补滤波器进行校正的数据，参见文档[12]中的算法。
 \end_layout
 
 \begin_layout Subsection
@@ -3928,6 +3928,7 @@ M_{Z}
 \frac{2\left(q_{1}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)+2q_{2}\left(q_{0}q_{3}+q_{1}q_{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
 \frac{2\left(q_{0}\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)+2q_{3}\left(q_{0}q_{3}+q_{1}q_{2}\right)\right)}{4\left(q_{0}q_{3}+q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)^{2}}
 \end{array}\right]^{\mathrm{T}} & \text{for yaw321}\\
+\\
 \left[\begin{array}{c}
 \frac{2\left(-2q_{0}\left(q_{0}q_{3}-q_{1}q_{2}\right)+q_{3}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
 \frac{2\left(2q_{1}\left(q_{0}q_{3}-q_{1}q_{2}\right)-q_{2}\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)\right)}{4\left(q_{0}q_{3}-q_{1}q_{2}\right)^{2}+\left(q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\right)^{2}}\\
@@ -4971,7 +4972,7 @@ EKF-GSF 偏航估计器描述
 \end_layout
 
 \begin_layout Standard
-该算法能在没有磁强计或外部偏航传感器的情况下运行，其目的是自动修正偏航误差引起的起飞后导航损失。它可以从不良磁偏航引起的起飞后导航故障中快速自动恢复。
+该算法能在没有磁强计或外部偏航传感器的情况下运行，其目的是自动校正偏航误差引起的起飞后导航损失。它可以从不良磁偏航引起的起飞后导航故障中快速自动恢复。
 \end_layout
 
 \begin_layout Standard
@@ -5001,7 +5002,7 @@ EKF-GSF算法也是在
 \end_layout
 
 \begin_layout Itemize
-空速(测量或估计)用于固定翼飞行期间的向心加速度修正。
+空速(测量或估计)用于固定翼飞机飞行期间的向心加速度校正。
 \end_layout
 
 \end_deeper
@@ -5050,7 +5051,7 @@ GPS的向北(N)、向东(E)速度作为观测值。
 
 \begin_layout Itemize
 输出偏航角
-\begin_inset Formula $\psi$
+\begin_inset Formula $\psi_{GSF}$
 \end_inset
 
 估计值，这是单个EKF估计值的加权平均值。
@@ -5147,7 +5148,7 @@ EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面�
 \end_inset
 
 水平面的向北(N)、向东(E)的增量速度和绕
-\begin_inset Formula $Z$
+\begin_inset Formula $z$
 \end_inset
 
 轴旋转的增量角度所驱动，所以偏航角的测量误差也和这
@@ -5455,8 +5456,8 @@ AHRS预测
 \begin_inset Formula $\left[T\right]_{B}^{N}$
 \end_inset
 
-被IMU数据驱动往前旋转了一个角度。所用数据为IMU数据及真实空速，并用加速度融合增益系数和陀螺仪偏差增益系数进行计算。最后计算得到一个校正后的增量角度，将其应
-用到姿态矩阵
+被IMU数据驱动往前旋转了一个角度。所用数据为IMU数据及真实空速(固定翼飞机)，并用加速度融合增益系数和陀螺仪偏差增益系数进行计算。最后计算得到一个校正后的增
+量角度，将其应用到姿态矩阵
 \begin_inset Formula $\left[T\right]_{B}^{N}$
 \end_inset
 
@@ -6047,7 +6048,7 @@ y & =\sum_{i=1}^{5}W_{i}\cdot\sin\left(\psi_{i}\right)\\
 \end_layout
 
 \begin_layout Standard
-该算法使用当前时间范围内的最新IMU数据实现惯性导航。该算法缓冲惯性导航状态，并计算延迟融合时间范围内与EKF状态的差异。根据差值计算增量角、增量速度和速度修正
+该算法使用当前时间范围内的最新IMU数据实现惯性导航。该算法缓冲惯性导航状态，并计算延迟融合时间范围内与EKF状态的差异。根据差值计算增量角、增量速度和速度校正
 ，并在当前时间范围内应用它们，以便惯性导航状态在延迟融合时间范围内跟踪EKF状态。使用互补滤波器校正EKF中的时间延迟的灵感来源于参考文档[12]的工作。
 \end_layout
 
