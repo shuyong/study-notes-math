@@ -1,0 +1,2768 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "姿态估计中的扩展卡尔曼滤波器"
+\pdf_author "https://ahrs.readthedocs.io/"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "姿态估计中的扩展卡尔曼滤波器"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "ahrs.readthedocs.io"
+target "https://ahrs.readthedocs.io"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2021
+\end_layout
+
+\begin_layout Section
+扩展卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+扩展卡尔曼滤波是目前世界上使用最多的算法之一，本模块将使用它来计算四元数姿态，并用三轴陀螺仪、加速度计和磁强计作为观测值。
+\end_layout
+
+\begin_layout Standard
+这个
+\series bold
+状态(state)
+\series default
+是物理状态，可以用动态变量描述。这个
+\series bold
+噪音(noise)
+\series default
+在测量中意味着它们的不确定性程度
+\begin_inset CommandInset href
+LatexCommand href
+name "[Hartikainen2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#hartikainen2011"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "动力系统"
+target "https://en.wikipedia.org/wiki/Dynamical_system"
+literal "false"
+
+\end_inset
+
+是一个状态随时间演化的系统，因此通常使用微分方程对其进行建模
+\begin_inset CommandInset href
+LatexCommand href
+name "[Labbe2015]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#labbe2015"
+literal "false"
+
+\end_inset
+
+。系统动力学中也存在噪声，即
+\series bold
+过程噪声(process noise)
+\series default
+，这意味着我们不能完全确定，但我们可以得到间接噪声测量值。
+\end_layout
+
+\begin_layout Standard
+这里，术语
+\series bold
+滤波(filtering)
+\series default
+指的是过滤掉(
+\emph on
+filtering out
+\emph default
+)测量中的噪声的过程，以提供给定观测测量的状态的最佳估计。
+\end_layout
+
+\begin_layout Standard
+系统的瞬时状态用通过离散时间增量更新的向量表示，以生成下一个状态。最简单的状态空间模型是线性模型
+\begin_inset CommandInset href
+LatexCommand href
+name "[Hartikainen2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#hartikainen2011"
+literal "false"
+
+\end_inset
+
+，可以用以下形式的方程表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{x}_{t} & = & \mathbf{Fx}_{t-1}+\mathbf{w}_{x}\\
+\mathbf{z}_{t} & = & \mathbf{Hx}_{t}+\mathbf{w}_{z}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{x}_{t}\in\mathbb{R}^{n}$
+\end_inset
+
+是系统的
+\series bold
+状态(state)
+\series default
+，描述时间
+\begin_inset Formula $t$
+\end_inset
+
+时
+\begin_inset Formula $n$
+\end_inset
+
+个元素的状况。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{z}_{t}\in\mathbb{R}^{m}$
+\end_inset
+
+是时间
+\begin_inset Formula $t$
+\end_inset
+
+的
+\series bold
+测量值(measurement)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{w}_{x}\sim\mathcal{N}(\mathbf{0},\mathbf{Q}_{t})$
+\end_inset
+
+是时间
+\begin_inset Formula $t$
+\end_inset
+
+的
+\series bold
+过程噪声(process noise)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{w}_{z}\sim\mathcal{N}(\mathbf{0},\mathbf{R}_{t})$
+\end_inset
+
+是时间
+\begin_inset Formula $t$
+\end_inset
+
+的
+\series bold
+测量噪声(measurement noise)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{F}\in\mathbb{R}^{n\times n}$
+\end_inset
+
+称为
+\series bold
+状态转移矩阵(State Transition Matrix)
+\series default
+或
+\series bold
+基本矩阵(Fundamental Matrix)
+\series default
+，有时用
+\begin_inset Formula $\boldsymbol{\Phi}$
+\end_inset
+
+表示。这取决于文献。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+是测量模型矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+许多线性模型也采用以下形式的连续时间状态方程进行描述：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{\mathbf{x}}_{t}=\frac{\mathrm{d}\mathbf{x}_{t}}{\mathrm{d}t}=\mathbf{Ax}_{t}+\mathbf{Lw}_{t}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{L}$
+\end_inset
+
+是表征模型行为的
+\series bold
+常数(constant)
+\series default
+矩阵，
+\begin_inset Formula $\mathbf{w}_{t}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "功率谱密度"
+target "https://en.wikipedia.org/wiki/Spectral_density#Power_spectral_density"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Formula $\sigma_{\mathbf{w}}^{2}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "白噪声"
+target "https://en.wikipedia.org/wiki/White_noise#Mathematical_definitions"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+主要的区别在于
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+模拟了一组
+\begin_inset CommandInset href
+LatexCommand href
+name "线性微分方程"
+target "https://en.wikipedia.org/wiki/Linear_differential_equation"
+literal "false"
+
+\end_inset
+
+，并且是连续的。
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+是离散的，表示一组线性方程组(不是微分方程组)，在离散的时间步长
+\begin_inset Formula $\Delta t$
+\end_inset
+
+中从
+\begin_inset Formula $\mathbf{x}_{t-1}$
+\end_inset
+
+转换到
+\begin_inset Formula $\mathbf{x}_{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+获取
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+的一种常见方法是使用
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵指数"
+target "https://en.wikipedia.org/wiki/Matrix_exponential"
+literal "false"
+
+\end_inset
+
+，它可以用
+\begin_inset CommandInset href
+LatexCommand href
+name "泰勒级数"
+target "https://en.wikipedia.org/wiki/Taylor_series"
+literal "false"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sola]"
+target "https://ahrs.readthedocs.io/en/latest/quaternion/quaternion.html#sola"
+literal "false"
+
+\end_inset
+
+展开：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{F}=e^{\mathbf{A}\Delta t}=\mathbf{I}+\mathbf{A}\Delta t+\frac{(\mathbf{A}\Delta t)^{2}}{2!}+\frac{(\mathbf{A}\Delta t)^{3}}{3!}+\cdots=\sum_{k=0}^{\infty}\frac{(\mathbf{A}\Delta t)^{k}}{k!}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "[Kalman 1960]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#kalman1960"
+literal "false"
+
+\end_inset
+
+提出的解决方案，用一组
+\begin_inset Formula $n$
+\end_inset
+
+阶微分方程对系统进行建模，将其转换为一组等价的一阶微分方程，并将其放入矩阵形式
+\begin_inset Formula $\dot{\mathbf{x}}=\mathbf{Ax}$
+\end_inset
+
+。一旦进入这种形式，就会使用一些技术将这些线性微分方程转换成递归方程
+\begin_inset Formula $\mathbf{x}_{t}=\mathbf{Fx}_{t-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波器有两个步骤：
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+预测步骤(prediction step)
+\series default
+在时间
+\begin_inset Formula $t$
+\end_inset
+
+时，给定时间
+\begin_inset Formula $t-1$
+\end_inset
+
+时的上一个状态，估计系统的下一个状态及其协方差。
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\hat{\mathbf{x}}_{t} & = & \mathbf{F}\mathbf{x}_{t-1}+\mathbf{Bu}_{t}\\
+\hat{\mathbf{P}}_{t} & = & \mathbf{F}\mathbf{P}_{t-1}\mathbf{F}^{\mathrm{T}}+\mathbf{Q}_{t}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+校正步骤(correction step)
+\series default
+在时间
+\begin_inset Formula $t$
+\end_inset
+
+时用一组测量值
+\begin_inset Formula $\boldsymbol{z}$
+\end_inset
+
+校正估计。
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{v}_{t} & = & \mathbf{z}_{t}-\mathbf{H}\hat{\mathbf{x}}_{t}\\
+\mathbf{S}_{t} & = & \mathbf{H}\hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}+\mathbf{R}\\
+\mathbf{K}_{t} & = & \hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}\mathbf{S}_{t}^{-1}\\
+\mathbf{x}_{t} & = & \hat{\mathbf{x}}_{t}+\mathbf{K}_{t}\mathbf{v}_{t}\\
+\mathbf{P}_{t} & = & \hat{\mathbf{P}}_{t}-\mathbf{K}_{t}\mathbf{S}_{t}\mathbf{K}_{t}^{\mathrm{T}}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\hat{\mathbf{P}}_{t}\in\mathbb{R}^{n\times n}$
+\end_inset
+
+是看到测量值
+\begin_inset Formula $\mathbf{z}_{t}$
+\end_inset
+
+之前状态的
+\series bold
+预测协方差(Predicted Covariance)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{P}_{t}\in\mathbb{R}^{n\times n}$
+\end_inset
+
+是看到测量值
+\begin_inset Formula $\mathbf{z}_{t}$
+\end_inset
+
+后状态的
+\series bold
+估计协方差(Estimated Covariance)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{u}_{t}\in\mathbb{R}^{k}$
+\end_inset
+
+是定义系统预期行为的
+\series bold
+控制输入向量(Control input vector)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{B}\in\mathbb{R}^{n\times k}$
+\end_inset
+
+是
+\series bold
+控制输入模型(Control input model)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{H}\in\mathbb{R}^{m\times n}$
+\end_inset
+
+是连接预测状态和测量值的
+\series bold
+观测模型(Observation model)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{v}_{t}\in\mathbb{R}^{m}$
+\end_inset
+
+是
+\series bold
+新息(Innovation)
+\series default
+或
+\series bold
+测量残差(Measurement residual)
+\series default
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{S}_{t}\in\mathbb{R}^{m\times m}$
+\end_inset
+
+是
+\series bold
+测量预测协方差(Measurement Prediction Covariance
+\series default
+)。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{K}_{t}\in\mathbb{R}^{n\times m}$
+\end_inset
+
+是滤波器
+\series bold
+增益
+\series default
+(
+\emph on
+gain
+\emph default
+)，又称
+\series bold
+卡尔曼增益(Kalman Gain)
+\series default
+，表示预测应被校正的量。
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+预测
+\series default
+(
+\emph on
+predicted
+\emph default
+)状态
+\begin_inset Formula $\hat{\mathbf{x}}_{t}$
+\end_inset
+
+是在第一步中根据先前计算的状态
+\begin_inset Formula $\mathbf{x}_{t-1}$
+\end_inset
+
+估计的，随后在第二步中被“
+\series bold
+校正
+\series default
+(
+\emph on
+corrected
+\emph default
+)”，以获得最终的估计
+\begin_inset Formula $\mathbf{x}_{t}$
+\end_inset
+
+。类似的计算发生在其协方差
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+上。
+\end_layout
+
+\begin_layout Standard
+注释：
+\begin_inset CommandInset href
+LatexCommand href
+name "帽子符号"
+target "https://en.wikipedia.org/wiki/Hat_operator#Estimated_value"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\hat{\ }$
+\end_inset
+
+ (主要)用于表示估计值。它在这里标记在时间
+\begin_inset Formula $t$
+\end_inset
+
+时的预测步骤中对状态的计算。
+\end_layout
+
+\begin_layout Standard
+循环从先验(prior)均值
+\begin_inset Formula $\mathbf{x}_{0}$
+\end_inset
+
+和先验协方差
+\begin_inset Formula $\mathbf{P}_{0}$
+\end_inset
+
+开始，这是由系统模型定义的。
+\end_layout
+
+\begin_layout Subsection
+扩展卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+到目前为止，这些函数都是高斯和线性的，因此，输出总是另一个高斯，但是高斯在非线性函数下是不封闭的。
+\end_layout
+
+\begin_layout Standard
+EKF通过使用基于
+\begin_inset CommandInset href
+LatexCommand href
+name "泰勒级数"
+target "https://en.wikipedia.org/wiki/Taylor_series"
+literal "false"
+
+\end_inset
+
+的变换对状态
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+和测量值
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+的联合分布形成高斯近似来处理非线性问题
+\begin_inset CommandInset href
+LatexCommand href
+name "[Hartikainen2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#hartikainen2011"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+同样地，EKF也分为两个步骤：
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+预测(Prediction)
+\series default
+
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\hat{\mathbf{x}}_{t} & = & \mathbf{f}(\mathbf{x}_{t-1},\mathbf{u}_{t})\\
+\hat{\mathbf{P}}_{t} & = & \mathbf{F}(\mathbf{x}_{t-1},\mathbf{u}_{t})\mathbf{P}_{t-1}\mathbf{F}^{\mathrm{T}}(\mathbf{x}_{t-1},\mathbf{u}_{t})+\mathbf{Q}_{t}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+校正(Correction)
+\series default
+
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{v}_{t} & = & \mathbf{z}_{t}-\mathbf{h}(\mathbf{x}_{t})\\
+\mathbf{S}_{t} & = & \mathbf{H}(\mathbf{x}_{t})\hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}(\mathbf{x}_{t})+\mathbf{R}_{t}\\
+\mathbf{K}_{t} & = & \hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}(\mathbf{x}_{t})\mathbf{S}_{t}^{-1}\\
+\mathbf{x}_{t} & = & \hat{\mathbf{x}}_{t}+\mathbf{K}_{t}\mathbf{v}_{t}\\
+\mathbf{P}_{t} & = & \big(\mathbf{I}_{4}-\mathbf{K}_{t}\mathbf{H}(\mathbf{x}_{t})\big)\hat{\mathbf{P}}_{t}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+是非线性动态模型函数，并且
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+是非线性测量模型函数。矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+分别是
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "Jacobian"
+target "https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant"
+literal "false"
+
+\end_inset
+
+矩阵：
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{F}(\mathbf{x}_{t-1},\mathbf{u}_{t}) & = & \frac{\partial\mathbf{f}(\mathbf{x}_{t-1},\mathbf{u}_{t})}{\partial\mathbf{x}}\\
+\mathbf{H}(\mathbf{x}_{t}) & = & \frac{\partial\mathbf{h}(\mathbf{x}_{t})}{\partial\mathbf{x}}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，正常KF的矩阵
+\begin_inset Formula $\mathbf{F}_{t-1}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{H}_{t}$
+\end_inset
+
+分别被EKF中的Jacobian矩阵
+\begin_inset Formula $\mathbf{F}(\mathbf{x}_{t-1},\mathbf{u}_{t})$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{H}(\hat{\mathbf{x}}_{t})$
+\end_inset
+
+取代。预测的状态
+\begin_inset Formula $\hat{\mathbf{x}}_{t}$
+\end_inset
+
+以及预测的残差
+\begin_inset Formula $\mathbf{v}_{t}$
+\end_inset
+
+的计算方法也不同。
+\end_layout
+
+\begin_layout Standard
+敬告：状态转移和观测模型
+\series bold
+必须
+\series default
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "可微"
+target "https://en.wikipedia.org/wiki/Differentiable_function"
+literal "false"
+
+\end_inset
+
+函数。
+\end_layout
+
+\begin_layout Section
+四元数扩展卡尔曼滤波器
+\end_layout
+
+\begin_layout Standard
+在这种情况下，我们将使用EKF来估计表示为四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的方向。首先，我们使用陀螺仪的即时测量值
+\series bold
+预测
+\series default
+(
+\emph on
+predict
+\emph default
+)新的状态(最新方向)，然后使用加速度计和磁强计的测量值
+\series bold
+校正
+\series default
+(
+\emph on
+correct
+\emph default
+)此状态。
+\end_layout
+
+\begin_layout Standard
+假设所有传感器都具有固定的采样率
+\begin_inset Formula $(f=\frac{1}{\Delta t})$
+\end_inset
+
+，即使时间步长可以在任何样本
+\begin_inset Formula $n$
+\end_inset
+
+处计算为
+\begin_inset Formula $\Delta t=t_{n}-t_{n-1}$
+\end_inset
+
+。数值积分将给出一组离散的
+\begin_inset Formula $n$
+\end_inset
+
+值，即离散时间
+\begin_inset Formula $t_{n}=t_{0}+n\Delta t$
+\end_inset
+
+的近似值。
+\end_layout
+
+\begin_layout Standard
+陀螺仪数据被视为滤波器的外部输入，而不是测量值，其测量噪声作为
+\series bold
+过程噪声
+\series default
+(
+\emph on
+process nois
+\emph default
+e)而不是测量噪声进入滤波器
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sabatini2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#sabatini2011"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于该模型，四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+将是
+\series bold
+状态向量(state vector)
+\series default
+，角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，单位为
+\begin_inset Formula $\mathrm{rad}/s$
+\end_inset
+
+，将是
+\series bold
+控制向量(control vector)
+\series default
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{x} & \triangleq & \mathbf{q}=\begin{bmatrix}q_{w} & \mathbf{q}_{v}\end{bmatrix}^{\mathrm{T}}=\begin{bmatrix}q_{w} & q_{x} & q_{y} & q_{z}\end{bmatrix}^{\mathrm{T}}\\
+\\
+\mathbf{u} & \triangleq & \boldsymbol{\omega}=\begin{bmatrix}\omega_{x} & \omega_{y} & \omega_{z}\end{bmatrix}^{\mathrm{T}}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，变换模型描述为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\dot{\mathbf{q}}_{t} & = & \mathbf{Aq}_{t-1}+\mathbf{B}\boldsymbol{\omega}_{t}+\mathbf{w}_{\mathbf{q}}\\
+\\
+\hat{\mathbf{q}}_{t} & = & \mathbf{Fq}_{t-1}=e^{\mathbf{A}\Delta t}\mathbf{q}_{t-1}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{w}_{\mathbf{q}}$
+\end_inset
+
+做为
+\series bold
+过程噪声(process noise)
+\series default
+。
+\end_layout
+
+\begin_layout Subsection
+预测步骤
+\end_layout
+
+\begin_layout Standard
+在第一步中，时间
+\begin_inset Formula $t$
+\end_inset
+
+时的四元数是通过积分角速率
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+来
+\series bold
+预测(predicted)
+\series default
+的，并将其添加到之前计算的四元数
+\begin_inset Formula $\mathbf{q}_{t-1}$
+\end_inset
+
+中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{q}}_{t}=\mathbf{q}_{t-1}+\int_{t-1}^{t}\boldsymbol{\omega}\,\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种恒定的增量有时被称为
+\series bold
+姿态传播(Attitude Propagation)
+\series default
+。由于没有精确的封闭式积分解，所以需要一种近似的方法。
+\end_layout
+
+\begin_layout Subsubsection
+离散化
+\end_layout
+
+\begin_layout Standard
+使用
+\begin_inset CommandInset href
+LatexCommand href
+name "Euler-Rodrigues旋转公式"
+target "https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Using_quaternion_as_rotations"
+literal "false"
+
+\end_inset
+
+重新定义四元数
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sabatini 2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#sabatini2011"
+literal "false"
+
+\end_inset
+
+，我们发现：
+\begin_inset Formula 
+\[
+\hat{\mathbf{q}}_{t}=\Bigg[\cos\Big(\frac{\|\boldsymbol{\omega}\|\Delta t}{2}\Big)\mathbf{I}_{4}+\frac{2}{\|\boldsymbol{\omega}\|}\sin\Big(\frac{\|\boldsymbol{\omega}\|\Delta t}{2}\Big)\boldsymbol{\Omega}_{t}\Bigg]\mathbf{q}_{t-1}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{I}_{4}$
+\end_inset
+
+为
+\begin_inset Formula $4\times4$
+\end_inset
+
+单位矩阵，并且：
+\begin_inset Formula 
+\[
+\begin{split}\boldsymbol{\Omega}_{t}=\begin{bmatrix}0 & -\boldsymbol{\omega}^{\mathrm{T}}\\
+\boldsymbol{\omega} & \lfloor\boldsymbol{\omega}\rfloor_{\times}
+\end{bmatrix}=\begin{bmatrix}0 & -\omega_{x} & -\omega_{y} & -\omega_{z}\\
+\omega_{x} & 0 & \omega_{z} & -\omega_{y}\\
+\omega_{y} & -\omega_{z} & 0 & \omega_{x}\\
+\omega_{z} & \omega_{y} & -\omega_{x} & 0
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+表达式
+\begin_inset Formula $\lfloor\mathbf{x}\rfloor_{\times}$
+\end_inset
+
+将一个向量
+\begin_inset Formula $\mathbf{x}\in\mathbb{R}^{3}$
+\end_inset
+
+扩展为一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "倾斜对称矩阵"
+target "https://en.wikipedia.org/wiki/Skew-symmetric_matrix"
+literal "false"
+
+\end_inset
+
+。括号内的大项，乘以
+\begin_inset Formula $\mathbf{q}_{t-1}$
+\end_inset
+
+，是一个正交旋转，保留了传播姿态四元数的归一化，我们可能会倾向于认为它等于
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，但它还不是线性的，尽管它
+\series bold
+已经离散(already discrete)
+\series default
+。它必须被线性化才能用于EKF中。
+\end_layout
+
+\begin_layout Subsubsection
+线性化
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $n$
+\end_inset
+
+阶多项式线性化方法可以从时间
+\begin_inset Formula $t=t_{n}$
+\end_inset
+
+时附近的
+\begin_inset Formula $\mathbf{q}(t_{n}+\Delta t)$
+\end_inset
+
+的泰勒级数建立：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{q}_{t}=\mathbf{q}_{t-1}+\dot{\mathbf{q}}_{t-1}\Delta t+\frac{1}{2!}\ddot{\mathbf{q}}_{t-1}\Delta t^{2}+\frac{1}{3!}\dddot{\mathbf{q}}_{t-1}\Delta t^{3}+\cdots
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{\mathbf{q}}=\frac{\mathrm{d}\mathbf{q}}{\mathrm{d}t}$
+\end_inset
+
+是四元数的导数
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+通过反复应用四元数导数的表达式，可以获得
+\begin_inset Formula $\mathbf{q}_{n}$
+\end_inset
+
+的连续导数，其中
+\begin_inset Formula $\ddot{\boldsymbol{\omega}}=0$
+\end_inset
+
+。
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\dot{\mathbf{q}}_{n} & = & \frac{1}{2}\mathbf{q}_{n}\boldsymbol{\omega}_{n}\\
+\ddot{\mathbf{q}}_{n} & = & \frac{1}{4}\mathbf{q}_{n}\boldsymbol{\omega}_{n}^{2}+\frac{1}{2}\mathbf{q}_{n}\dot{\boldsymbol{\omega}}\\
+\dddot{\mathbf{q}}_{n} & = & \frac{1}{6}\mathbf{q}_{n}\boldsymbol{\omega}_{n}^{3}+\frac{1}{4}\mathbf{q}_{n}\dot{\boldsymbol{\omega}}\boldsymbol{\omega}_{n}+\frac{1}{2}\mathbf{q}\boldsymbol{\omega}_{n}\dot{\boldsymbol{\omega}}\\
+\mathbf{q}_{n}^{i\geq4} & = & \frac{1}{2^{i}}\mathbf{q}_{n}\boldsymbol{\omega}_{n}^{i}+\cdots
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\dot{\mathbf{q}} & = & \underset{\Delta t\to0}{\mathrm{lim}}\frac{\mathbf{q}(t+\Delta t)-\mathbf{q}(t)}{\Delta t}\\
+ & = & \frac{1}{2}\boldsymbol{\Omega}_{t}\mathbf{q}_{t-1}\\
+\  & = & \frac{1}{2}\begin{bmatrix}-\omega_{x}q_{x}-\omega_{y}q_{y}-\omega_{z}q_{z}\\
+\omega_{x}q_{w}+\omega_{z}q_{y}-\omega_{y}q_{z}\\
+\omega_{y}q_{w}-\omega_{z}q_{x}+\omega_{x}q_{z}\\
+\omega_{z}q_{w}+\omega_{y}q_{x}-\omega_{x}q_{y}
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+角速率
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+由局部
+\series bold
+传感器坐标系
+\series default
+(
+\emph on
+sensor frame
+\emph default
+)中的陀螺仪测量。因此，该术语描述了相对于局部坐标系的方向演变
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sola]"
+target "https://ahrs.readthedocs.io/en/latest/quaternion/quaternion.html#sola"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+使用
+\begin_inset Formula $\dot{\mathbf{q}}$
+\end_inset
+
+的定义，预测状态
+\begin_inset Formula $\hat{\mathbf{q}}_{t}$
+\end_inset
+
+写为
+\begin_inset CommandInset href
+LatexCommand href
+name "[Wertz]"
+target "https://ahrs.readthedocs.io/en/latest/wmm.html#wertz"
+literal "false"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\hat{\mathbf{q}}_{t} & = & \Bigg(\mathbf{I}_{4}+\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t+\frac{1}{2!}\Big(\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t\Big)^{2}+\frac{1}{3!}\Big(\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t\Big)^{3}+\cdots\Bigg)\mathbf{q}_{t-1}\\
+ &  & \qquad+\frac{1}{4}\dot{\boldsymbol{\Omega}}_{t}\Delta t^{2}\mathbf{q}_{t-1}+\Big[\frac{1}{12}\dot{\boldsymbol{\Omega}}_{t}\boldsymbol{\Omega}_{t}+\frac{1}{24}\boldsymbol{\Omega}_{t}\dot{\boldsymbol{\Omega}}_{t}+\frac{1}{12}\ddot{\boldsymbol{\Omega}}_{t}\Big]\Delta t^{3}\mathbf{q}_{t-1}+\cdots
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设角速率在
+\begin_inset Formula $[t-1,t]$
+\end_inset
+
+期间是恒定的，我们有
+\begin_inset Formula $\dot{\boldsymbol{\omega}}=0$
+\end_inset
+
+，并且我们可以从
+\begin_inset Formula $\boldsymbol{\Omega}$
+\end_inset
+
+的导数中预分离，将级数减少为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{q}}_{t}=\Bigg(\mathbf{I}_{4}+\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t+\frac{1}{2!}\Big(\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t\Big)^{2}+\frac{1}{3!}\Big(\frac{1}{2}\boldsymbol{\Omega}_{t}\Delta t\Big)^{3}+\cdots\Bigg)\mathbf{q}_{t-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，该级数具有矩阵指数已知的形式：
+\begin_inset Formula 
+\[
+e^{\frac{\Delta t}{2}\boldsymbol{\Omega}_{t}}=\sum_{k=0}^{\infty}\frac{1}{k!}\Big(\frac{\Delta t}{2}\boldsymbol{\Omega}_{t}\Big)^{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在高阶或时间步长
+\begin_inset Formula $\Delta t\to0$
+\end_inset
+
+时，近似的误差会迅速消失。我们拥有的项数越多，我们的近似值就越好，但缺点是计算量大。对于简单的体系结构(如嵌入式系统)，我们可以通过将序列截断为其第二项，使其成
+为
+\series bold
+一阶EKF(First Order EKF)
+\series default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+EKF的其他应用在第二项之后截断序列，产生第二、第三或第
+\begin_inset Formula $n$
+\end_inset
+
+阶EKF。这略微提高了模型的精度，但缺点是计算量增加。
+\end_layout
+
+\end_inset
+
+，从而减少这种负担，并获得相当好的结果。因此，我们的
+\series bold
+过程模型(process model)
+\series default
+缩短为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\hat{\mathbf{q}}_{t} & = & \mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})\\
+ & = & \Big(\mathbf{I}_{4}+\frac{\Delta t}{2}\boldsymbol{\Omega}_{t}\Big)\mathbf{q}_{t-1}\\
+\begin{bmatrix}\hat{q_{w}}\\
+\hat{q_{x}}\\
+\hat{q_{y}}\\
+\hat{q_{z}}
+\end{bmatrix} & = & \begin{bmatrix}q_{w}-\frac{\Delta t}{2}\omega_{x}q_{x}-\frac{\Delta t}{2}\omega_{y}q_{y}-\frac{\Delta t}{2}\omega_{z}q_{z}\\
+q_{x}+\frac{\Delta t}{2}\omega_{x}q_{w}-\frac{\Delta t}{2}\omega_{y}q_{z}+\frac{\Delta t}{2}\omega_{z}q_{y}\\
+q_{y}+\frac{\Delta t}{2}\omega_{x}q_{z}+\frac{\Delta t}{2}\omega_{y}q_{w}-\frac{\Delta t}{2}\omega_{z}q_{x}\\
+q_{z}-\frac{\Delta t}{2}\omega_{x}q_{y}+\frac{\Delta t}{2}\omega_{y}q_{x}+\frac{\Delta t}{2}\omega_{z}q_{w}
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，我们简单地计算
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+为
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+在数值上，
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+可用
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵指数"
+target "https://en.wikipedia.org/wiki/Matrix_exponential"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Formula $e^{\mathbf{A}\Delta t}$
+\end_inset
+
+近似。这个函数已经在多个包中大量实现，包括
+\family typewriter
+
+\begin_inset CommandInset href
+LatexCommand href
+name "Scipy"
+target "https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.expm.html"
+literal "false"
+
+\end_inset
+
+
+\family default
+ :
+\family typewriter
+ F=scipy.linalg.expm(A*Dt)
+\family default
+；然而，
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的Jacobian矩阵总是首选的。
+\end_layout
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t}) & = & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial\mathbf{q}}\\
+ & = & \begin{bmatrix}\frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial q_{w}} & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial q_{x}} & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial q_{y}} & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial q_{z}}\end{bmatrix}\\
+ & = & \begin{bmatrix}1 & -\frac{\Delta t}{2}\omega_{x} & -\frac{\Delta t}{2}\omega_{y} & -\frac{\Delta t}{2}\omega_{z}\\
+\frac{\Delta t}{2}\omega_{x} & 1 & \frac{\Delta t}{2}\omega_{z} & -\frac{\Delta t}{2}\omega_{y}\\
+\frac{\Delta t}{2}\omega_{y} & -\frac{\Delta t}{2}\omega_{z} & 1 & \frac{\Delta t}{2}\omega_{x}\\
+\frac{\Delta t}{2}\omega_{z} & \frac{\Delta t}{2}\omega_{y} & -\frac{\Delta t}{2}\omega_{x} & 1
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+过程噪声协方差
+\end_layout
+
+\begin_layout Standard
+根据定义，预测误差状态协方差计算如下：
+\begin_inset Formula 
+\[
+\hat{\mathbf{P}}_{t}=\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})\mathbf{P}_{t-1}\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})^{\mathrm{T}}+\mathbf{Q}_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们已经知道如何计算
+\begin_inset Formula $\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})$
+\end_inset
+
+，但我们仍然需要计算
+\series bold
+过程噪声协方差矩阵
+\series default
+(
+\emph on
+Process Noise Covariance Matrix
+\emph default
+) 
+\begin_inset Formula $\mathbf{Q}_{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+预测阶段的噪声主要存在于控制输入中。因此，
+\begin_inset Formula $\mathbf{Q}_{t}$
+\end_inset
+
+主要来自陀螺仪。
+\end_layout
+
+\begin_layout Standard
+我们定义
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\omega}}^{2}=\begin{bmatrix}\sigma_{\omega x}^{2} & \sigma_{\omega y}^{2} & \sigma_{\omega z}^{2}\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+为各轴上陀螺噪声的谱密度，其标准偏差
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\omega}}$
+\end_inset
+
+被指定为标量，单位为
+\begin_inset Formula $\mathrm{rad}/s$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在不对DSP进行过多的分析的情况下，我们可以坦率地说，一个传感器的频谱密度越小，其信号的噪声就越小，并且我们会倾向于更相信它的读数。通常情况下，这些噪音已经可以
+在传感器制造商提供的数据表中找到。
+\end_layout
+
+\begin_layout Standard
+假定陀螺仪在其轴上是同一类型的，制造商保证它们之间的完美正交性和不相关性，我们构建
+\series bold
+频谱噪声协方差矩阵
+\series default
+(
+\emph on
+spectral noise covariance matrix
+\emph default
+)如下：
+\begin_inset Formula 
+\[
+\begin{split}\boldsymbol{\Sigma}_{\boldsymbol{\omega}}=\begin{bmatrix}\sigma_{\boldsymbol{\omega}x}^{2} & 0 & 0\\
+0 & \sigma_{\boldsymbol{\omega}y}^{2} & 0\\
+0 & 0 & \sigma_{\boldsymbol{\omega}z}^{2}
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最简单的解决方案是假设该噪声是一致的，我们的过程噪声协方差仅为
+\begin_inset Formula $\mathbf{Q}_{t}=\boldsymbol{\Sigma}_{\boldsymbol{\omega}}$
+\end_inset
+
+，但在实际系统中，该协方差随角速度的变化而变化，因此每次预测都需要重新计算。
+\end_layout
+
+\begin_layout Standard
+我们需要知道在离散间隔
+\begin_inset Formula $\Delta t$
+\end_inset
+
+上向系统添加了多少噪声，因此，我们对间隔
+\begin_inset Formula $[0,\Delta t]$
+\end_inset
+
+上的过程噪声进行积分
+\begin_inset Formula 
+\[
+\mathbf{Q}_{t}=\int_{0}^{\Delta t}e^{\mathbf{A}_{t}}\boldsymbol{\Sigma}_{\boldsymbol{\omega}}e^{\mathbf{A}_{t}^{\mathrm{T}}}\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+正如我们所看到的，矩阵指数往往在计算上要求很高，所以，我们选择使用预测的Jacobian矩阵，但相对于角速率：
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{W}_{t} & = & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial\boldsymbol{\omega}}\\
+ & = & \begin{bmatrix}\frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial\omega_{x}} & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial\omega_{y}} & \frac{\partial\mathbf{f}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})}{\partial\omega_{z}}\end{bmatrix}\\
+ & = & \frac{\Delta t}{2}\begin{bmatrix}-q_{x} & -q_{y} & -q_{z}\\
+q_{w} & -q_{z} & q_{y}\\
+q_{z} & q_{w} & -q_{x}\\
+-q_{y} & q_{x} & q_{w}
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，这个Jacobian矩阵与
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+矩阵非常相似，但它对
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+有偏导数。有了噪声值和 Jacobian 矩阵
+\begin_inset Formula $\mathbf{W}_{t}$
+\end_inset
+
+，在每个时间
+\begin_inset Formula $t$
+\end_inset
+
+时计算过程噪声协方差，其中：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Q}_{t}=\mathbf{W}_{t}\boldsymbol{\Sigma}_{\boldsymbol{\omega}}\mathbf{W}_{t}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为方便起见，假设各轴上的噪声相等，且互不影响，产生白色、不相关且
+\begin_inset CommandInset href
+LatexCommand href
+name "各向同性(isotropic)"
+target "https://en.wikipedia.org/wiki/Isotropic_position"
+literal "false"
+
+\end_inset
+
+的噪声
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+三维各向同性协方差描述以原点为中心的球体，这意味着其均值和协方差矩阵在旋转时不变。在代数术语中，各向同性协方差矩阵是一个单位矩阵乘以一个标量。
+\end_layout
+
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\boldsymbol{\Sigma}_{\boldsymbol{\omega}}=\sigma_{\boldsymbol{\omega}}^{2}\mathbf{I}_{3}
+\]
+
+\end_inset
+
+进一步将计算简化为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Q}_{t}=\sigma_{\boldsymbol{\omega}}^{2}\mathbf{W}_{t}\mathbf{W}_{t}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+警告：陀螺仪轴的噪声方差都相等
+\begin_inset Formula $(\sigma_{wx}=\sigma_{wy}=\sigma_{wz})$
+\end_inset
+
+的假设在现实中几乎不成立。通过仔细的建模和校准过程，可以推断出个体差异
+\begin_inset CommandInset href
+LatexCommand href
+name "[Lam2003]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#lam2003"
+literal "false"
+
+\end_inset
+
+。如果这三个不同的值在手边，则建议使用
+\begin_inset Formula $\mathbf{W}_{t}\boldsymbol{\Sigma}_{\boldsymbol{\omega}}\mathbf{W}_{t}^{\mathrm{T}}$
+\end_inset
+
+计算过程噪声协方差。
+\end_layout
+
+\begin_layout Standard
+最后，该模型的预测步骤将传播协方差矩阵，如下所示：
+\begin_inset Formula 
+\[
+\hat{\mathbf{P}}_{t}=\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})\mathbf{P}_{t-1}\mathbf{F}(\mathbf{q}_{t-1},\boldsymbol{\omega}_{t})^{\mathrm{T}}+\sigma_{\boldsymbol{\omega}}^{2}\mathbf{W}_{t}\mathbf{W}_{t}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+校正步骤
+\end_layout
+
+\begin_layout Standard
+到目前为止，陀螺仪测量已被用于预测四元数的新状态，但还有可用的加速计和磁强计读数，可用于校正估计。
+\end_layout
+
+\begin_layout Standard
+从上面的方程式中我们知道，校正状态可以计算为：
+\begin_inset Formula 
+\[
+\mathbf{q}_{t}=\hat{\mathbf{q}}_{t}+\mathbf{K}_{t}\big(\mathbf{z}_{t}-\mathbf{h}(\mathbf{q}_{t})\big)
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{z}_{t}\in\mathbb{R}^{6}$
+\end_inset
+
+是当前测量值。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{h}_{t}\in\mathbb{R}^{6}$
+\end_inset
+
+是预测的测量值。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{K}_{t}\in\mathbb{R}^{4\times6}$
+\end_inset
+
+是卡尔曼增益。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+提示：卡尔曼增益可以被认为是
+\begin_inset Formula $[0.0,1.0]$
+\end_inset
+
+范围内的一个混合值，它决定了多少新息
+\begin_inset Formula $\mathbf{v}_{t}=\mathbf{z}_{t}-\mathbf{h}(\mathbf{q}_{t})$
+\end_inset
+
+将被考虑。例如，你可以看到：
+\end_layout
+
+\begin_layout Itemize
+如果
+\begin_inset Formula $\mathbf{K}=0$
+\end_inset
+
+，则无校正：
+\begin_inset Formula $\mathbf{q}_{t}=\hat{\mathbf{q}}_{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+如果
+\begin_inset Formula $\mathbf{K}=1$
+\end_inset
+
+，则状态将通过所有新息项进行校正：
+\begin_inset Formula $\mathbf{q}_{t}=\hat{\mathbf{q}}_{t}+\mathbf{v}_{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们首先将测量向量定义为：
+\begin_inset Formula 
+\[
+\begin{split}\mathbf{z}_{t}=\begin{bmatrix}\mathbf{a}_{t}\\
+\mathbf{m}_{t}
+\end{bmatrix}=\begin{bmatrix}a_{x}\\
+a_{y}\\
+a_{z}\\
+m_{x}\\
+m_{y}\\
+m_{z}
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这这些都是从传感器获得的数值，其中
+\begin_inset Formula $\mathbf{a}\in\mathbb{R}^{3}$
+\end_inset
+
+是三轴加速度计样本，单位是
+\begin_inset Formula $\frac{m}{s^{2}}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{m}\in\mathbb{R}^{3}$
+\end_inset
+
+是三轴磁力计样本，单位是
+\begin_inset Formula $\mu T$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+它们的噪声
+\begin_inset Formula $\mathbf{w}_{\mathbf{a}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{w}_{\mathbf{m}}$
+\end_inset
+
+假设为独立的白高斯噪声，其协方差分别为零均值的
+\begin_inset Formula $\boldsymbol{\Sigma}_{\mathbf{a}}=\boldsymbol{\sigma}_{\mathbf{a}}^{2}\mathbf{I}_{3}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\Sigma}_{\mathbf{m}}=\boldsymbol{\sigma}_{\mathbf{m}}^{2}\mathbf{I}_{3}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+然而，虽然陀螺仪给出了
+\series bold
+传感器坐标系
+\series default
+(
+\emph on
+sensor frame
+\emph default
+)的测量值，但加速计
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+译注：此处有误。加速计提供的是传感器坐标系的测量值。原文如此，未做修改。
+\end_layout
+
+\end_inset
+
+和磁力计提供了
+\series bold
+全局坐标系
+\series default
+(
+\emph on
+global frame
+\emph default
+)的测量值。如果我们想校正
+\series bold
+传感器坐标系
+\series default
+(
+\emph on
+sensor frame
+\emph default
+)中的估计方向，我们必须表示加速计和磁力计的读数。
+\end_layout
+
+\begin_layout Standard
+预测的四元数
+\begin_inset Formula $\hat{\mathbf{q}}_{t}$
+\end_inset
+
+描述了传感器坐标系相对于全局坐标系的方向。出于这个原因，它将被用于旋转传感器的测量。
+\end_layout
+
+\begin_layout Standard
+为了通过四元数
+\begin_inset Formula $\mathbf{q}\in\mathbb{H}^{4}$
+\end_inset
+
+旋转任意向量
+\begin_inset Formula $\mathbf{x}\in\mathbb{R}^{3}$
+\end_inset
+
+，我们可以使用其所表示的旋转矩阵
+\begin_inset Formula $\mathbf{C}(\mathbf{q})\in\mathbb{R}^{3\times3}$
+\end_inset
+
+。对于估计的四元数
+\begin_inset Formula $\hat{\mathbf{q}}_{t}$
+\end_inset
+
+，这变成了
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{x}' & = & \mathbf{C}(\hat{\mathbf{q}})\mathbf{x}\\
+ & = & \begin{bmatrix}1-2(\hat{q}_{y}^{2}+\hat{q}_{z}^{2}) & 2(\hat{q}_{x}\hat{q}_{y}-\hat{q}_{w}\hat{q}_{z}) & 2(\hat{q}_{x}\hat{q}_{z}+\hat{q}_{w}\hat{q}_{y})\\
+2(\hat{q}_{x}\hat{q}_{y}+\hat{q}_{w}\hat{q}_{z}) & 1-2(\hat{q}_{x}^{2}+\hat{q}_{z}^{2}) & 2(\hat{q}_{y}\hat{q}_{z}-\hat{q}_{w}\hat{q}_{x})\\
+2(\hat{q}_{x}\hat{q}_{z}-\hat{q}_{w}\hat{q}_{y}) & 2(\hat{q}_{w}\hat{q}_{x}+\hat{q}_{y}\hat{q}_{z}) & 1-2(\hat{q}_{x}^{2}+\hat{q}_{y}^{2})
+\end{bmatrix}\begin{bmatrix}x_{1}\\
+x_{2}\\
+x_{3}
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+全局参考坐标系
+\end_layout
+
+\begin_layout Standard
+基于
+\begin_inset CommandInset href
+LatexCommand href
+name "局部切平面"
+target "https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates"
+literal "false"
+
+\end_inset
+
+，有两个主要的全局参照系：
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NED
+\series default
+分别定义了地理的
+\series bold
+北
+\series default
+(
+\emph on
+North
+\emph default
+)、
+\series bold
+东
+\series default
+(
+\emph on
+East
+\emph default
+)和
+\series bold
+地
+\series default
+(
+\emph on
+Down
+\emph default
+)的方向的
+\begin_inset Formula $X$
+\end_inset
+
+、
+\begin_inset Formula $Y$
+\end_inset
+
+和
+\begin_inset Formula $Z$
+\end_inset
+
+轴共线。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+ENU
+\series default
+分别定义了地理的
+\series bold
+东
+\series default
+(
+\emph on
+East
+\emph default
+)、
+\series bold
+北
+\series default
+(
+\emph on
+North
+\emph default
+)和
+\series bold
+天
+\series default
+(
+\emph on
+Up
+\emph default
+)的方向的
+\begin_inset Formula $X$
+\end_inset
+
+、
+\begin_inset Formula $Y$
+\end_inset
+
+和
+\begin_inset Formula $Z$
+\end_inset
+
+轴共线。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+全局
+\emph on
+NED
+\emph default
+坐标系中的重力加速度向量通常定义为
+\begin_inset Formula $\mathbf{g}_{\mathrm{NED}}=\begin{bmatrix}0 & 0 & -9.81\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+，其中法向加速度
+\begin_inset Formula $g_{0}\approx9.81\frac{m}{s^{2}}$
+\end_inset
+
+，仅作用于
+\begin_inset Formula $Z$
+\end_inset
+
+轴
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+正常重力的大小也随地球上的位置而变化。简单的模型只考虑纬度和海平面上的高度来估计这个量级。为便于分析，给出了
+\begin_inset Formula $9.81$
+\end_inset
+
+的通用值。
+\end_layout
+
+\end_inset
+
+。对于
+\emph on
+ENU
+\emph default
+坐标系，它只是沿
+\begin_inset Formula $Z$
+\end_inset
+
+轴翻转符号，
+\begin_inset Formula $\mathbf{g}_{\mathrm{ENU}}=\begin{bmatrix}0 & 0 & 9.81\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+地球磁场也用一个三维向量
+\begin_inset Formula $\mathbf{r}=\begin{bmatrix}r_{x} & r_{y} & r_{z}\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+表示，其值指示磁流的方向。在理想情况下，只有
+\series bold
+北方
+\series default
+(
+\emph on
+North
+\emph default
+)分量持有一个值，产生选项
+\begin_inset Formula $\mathbf{r}_{\mathrm{NED}}=\begin{bmatrix}r_{x} & 0 & 0\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{r}_{\mathrm{ENU}}=\begin{bmatrix}0 & r_{y} & 0\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+然而，地球上的地磁场是不规则的，甚至随时间而变化(详见
+\begin_inset CommandInset href
+LatexCommand href
+name "WMM"
+target "https://ahrs.readthedocs.io/en/latest/wmm.html"
+literal "false"
+
+\end_inset
+
+)。通常，某些作者倾向于抛弃向东的磁性信息来定义这个参考向量，有时借助
+\begin_inset CommandInset href
+LatexCommand href
+name "磁倾"
+target "https://en.wikipedia.org/wiki/Magnetic_dip"
+literal "false"
+
+\end_inset
+
+角度
+\begin_inset Formula $\theta$
+\end_inset
+
+将其大小投影到
+\begin_inset Formula $XY$
+\end_inset
+
+平面，结果是
+\begin_inset Formula $\mathbf{r}_{\mathrm{NED}}=\begin{bmatrix}\cos\theta & 0 & \sin\theta\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{r}_{\mathrm{ENU}}=\begin{bmatrix}0 & \cos\theta & -\sin\theta\end{bmatrix}^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从加速度和磁场来看，只需要它们的方向，而不是它们的大小。因此，我们可以使用其标准化值，将其定义简化为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{g} & = & \left\{ \begin{array}{ll}
+\begin{bmatrix}0 & 0 & -1\end{bmatrix}^{\mathrm{T}} & \mathrm{if}\;\mathrm{NED}\\
+\begin{bmatrix}0 & 0 & 1\end{bmatrix}^{\mathrm{T}} & \mathrm{if}\;\mathrm{ENU}
+\end{array}\right.\\
+\\
+\mathbf{r} & = & \left\{ \begin{array}{ll}
+\frac{1}{\sqrt{\cos^{2}\theta+\sin^{2}\theta}}\begin{bmatrix}\cos\theta & 0 & \sin\theta\end{bmatrix}^{\mathrm{T}} & \mathrm{if}\;\mathrm{NED}\\
+\frac{1}{\sqrt{\cos^{2}\theta+\sin^{2}\theta}}\begin{bmatrix}0 & \cos\theta & -\sin\theta\end{bmatrix}^{\mathrm{T}} & \mathrm{if}\;\mathrm{ENU}
+\end{array}\right.
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了将这些向量与其相应的观测值进行比较，我们还必须将传感器的测量值
+\series bold
+标准化(normalize)
+\series default
+：
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{a} & = & \frac{1}{\sqrt{a_{x}^{2}+a_{y}^{2}+a_{z}^{2}}}\begin{bmatrix}a_{x} & a_{y} & a_{z}\end{bmatrix}^{\mathrm{T}}\\
+\\
+\mathbf{m} & = & \frac{1}{\sqrt{m_{x}^{2}+m_{y}^{2}+m_{z}^{2}}}\begin{bmatrix}m_{x} & m_{y} & m_{z}\end{bmatrix}^{\mathrm{T}}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+测量模型
+\end_layout
+
+\begin_layout Standard
+传感器坐标系中的
+\series bold
+期望
+\series default
+(
+\emph on
+expected
+\emph default
+)重力加速度
+\begin_inset Formula $\hat{\mathbf{a}}$
+\end_inset
+
+可根据
+\series bold
+估计方向
+\series default
+(
+\emph on
+estimated orientation
+\emph default
+)进行估计：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{a}}=\mathbf{C}(\hat{\mathbf{q}})^{\mathrm{T}}\mathbf{g}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样，传感器坐标系中的
+\series bold
+期望磁场
+\series default
+(
+\emph on
+expected magnetic field
+\emph default
+) 
+\begin_inset Formula $\hat{\mathbf{m}}$
+\end_inset
+
+ 为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{m}}=\mathbf{C}(\hat{\mathbf{q}})^{\mathrm{T}}\mathbf{r}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量模型
+\begin_inset Formula $\mathbf{h}(\hat{\mathbf{q}}_{t})$
+\end_inset
+
+及其Jacobian矩阵
+\begin_inset Formula $\mathbf{H}(\hat{\mathbf{q}}_{t})$
+\end_inset
+
+可用于校正预测模型。
+\series bold
+测量模型
+\series default
+(
+\emph on
+Measurement model
+\emph default
+)通过这些变换直接定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{h}(\hat{\mathbf{q}}_{t}) & = & \begin{bmatrix}\hat{\mathbf{a}}\\
+\hat{\mathbf{m}}
+\end{bmatrix}=\begin{bmatrix}\mathbf{C}(\hat{\mathbf{q}})^{\mathrm{T}}\mathbf{g}\\
+\mathbf{C}(\hat{\mathbf{q}})^{\mathrm{T}}\mathbf{r}
+\end{bmatrix}\\
+ & = & 2\begin{bmatrix}g_{x}(\frac{1}{2}-q_{y}^{2}-q_{z}^{2})+g_{y}(q_{w}q_{z}+q_{x}q_{y})+g_{z}(q_{x}q_{z}-q_{w}q_{y})\\
+g_{x}(q_{x}q_{y}-q_{w}q_{z})+g_{y}(\frac{1}{2}-q_{x}^{2}-q_{z}^{2})+g_{z}(q_{w}q_{x}+q_{y}q_{z})\\
+g_{x}(q_{w}q_{y}+q_{x}q_{z})+g_{y}(q_{y}q_{z}-q_{w}q_{x})+g_{z}(\frac{1}{2}-q_{x}^{2}-q_{y}^{2})\\
+r_{x}(\frac{1}{2}-q_{y}^{2}-q_{z}^{2})+r_{y}(q_{w}q_{z}+q_{x}q_{y})+r_{z}(q_{x}q_{z}-q_{w}q_{y})\\
+r_{x}(q_{x}q_{y}-q_{w}q_{z})+r_{y}(\frac{1}{2}-q_{x}^{2}-q_{z}^{2})+r_{z}(q_{w}q_{x}+q_{y}q_{z})\\
+r_{x}(q_{w}q_{y}+q_{x}q_{z})+r_{y}(q_{y}q_{z}-q_{w}q_{x})+r_{z}(\frac{1}{2}-q_{x}^{2}-q_{y}^{2})
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量方程是非线性的，因此必须计算其Jacobian矩阵，如下所示：
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{H}(\hat{\mathbf{q}}_{t}) & = & \frac{\partial\mathbf{h}(\hat{\mathbf{q}}_{t})}{\partial\mathbf{q}}\\
+ & = & \begin{bmatrix}\frac{\partial\mathbf{h}(\hat{\mathbf{q}}_{t})}{\partial q_{w}} & \frac{\partial\mathbf{h}(\hat{\mathbf{q}}_{t})}{\partial q_{x}} & \frac{\partial\mathbf{h}(\hat{\mathbf{q}}_{t})}{\partial q_{y}} & \frac{\partial\mathbf{h}(\hat{\mathbf{q}}_{t})}{\partial q_{z}}\end{bmatrix}\\
+ & = & 2\begin{bmatrix}g_{y}q_{z}-g_{z}q_{y} & g_{y}q_{y}+g_{z}q_{z} & -2g_{x}q_{y}+g_{y}q_{x}-g_{z}q_{w} & -2g_{x}q_{z}+g_{y}q_{w}+g_{z}q_{x}\\
+-g_{x}q_{z}+g_{z}q_{x} & g_{x}q_{y}-2g_{y}q_{x}+g_{z}q_{w} & g_{x}q_{x}+g_{z}q_{z} & -g_{x}q_{w}-2g_{y}q_{z}+g_{z}q_{y}\\
+g_{x}q_{y}-g_{y}q_{x} & g_{x}q_{z}-g_{y}q_{w}-2g_{z}q_{x} & g_{x}q_{w}+g_{y}q_{z}-2g_{z}q_{y} & g_{x}q_{x}+g_{y}q_{y}\\
+r_{y}q_{z}-r_{z}q_{y} & r_{y}q_{y}+r_{z}q_{z} & -2r_{x}q_{y}+r_{y}q_{x}-r_{z}q_{w} & -2r_{x}q_{z}+r_{y}q_{w}+r_{z}q_{x}\\
+-r_{x}q_{z}+r_{z}q_{x} & r_{x}q_{y}-2r_{y}q_{x}+r_{z}q_{w} & r_{x}q_{x}+r_{z}q_{z} & -r_{x}q_{w}-2r_{y}q_{z}+r_{z}q_{y}\\
+r_{x}q_{y}-r_{y}q_{x} & r_{x}q_{z}-r_{y}q_{w}-2r_{z}q_{x} & r_{x}q_{w}+r_{y}q_{z}-2r_{z}q_{y} & r_{x}q_{x}+r_{y}q_{y}
+\end{bmatrix}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该Jacobian矩阵可以重构为：
+\begin_inset Formula 
+\[
+\begin{split}\mathbf{H}(\hat{\mathbf{q}}_{t})=\begin{bmatrix}\frac{\partial\hat{\mathbf{a}}}{\partial\mathbf{q}}\\
+\frac{\partial\hat{\mathbf{m}}}{\partial\mathbf{q}}
+\end{bmatrix}=2\begin{bmatrix}\mathbf{u}_{g} & \lfloor\mathbf{u}_{g}+\hat{q}_{w}\mathbf{g}\rfloor_{\times}+(\hat{\mathbf{q}}_{v}\cdot\mathbf{g})\mathbf{I}_{3}-\mathbf{g}\hat{\mathbf{q}}_{v}^{\mathrm{T}}\\
+\mathbf{u}_{r} & \lfloor\mathbf{u}_{r}+\hat{q}_{w}\mathbf{r}\rfloor_{\times}+(\hat{\mathbf{q}}_{v}\cdot\mathbf{r})\mathbf{I}_{3}-\mathbf{r}\hat{\mathbf{q}}_{v}^{\mathrm{T}}
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{u}_{g} & = & \lfloor\mathbf{g}\rfloor_{\times}\hat{\mathbf{q}}_{v}=\mathbf{g}\times\hat{\mathbf{q}}_{v}\\
+\mathbf{u}_{r} & = & \lfloor\mathbf{r}\rfloor_{\times}\hat{\mathbf{q}}_{v}=\mathbf{r}\times\hat{\mathbf{q}}_{v}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+测量噪声协方差矩阵，
+\begin_inset Formula $\mathbf{R}\in\mathbb{R}^{6\times6}$
+\end_inset
+
+，直接表示为影响每个传感器的测量噪声的统计数据
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sabatini 2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#sabatini2011"
+literal "false"
+
+\end_inset
+
+。传感器噪声被视为不相关的和各向同性噪声，从而产生一个对角矩阵：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\mathbf{R}=\begin{bmatrix}\boldsymbol{\sigma}_{\mathbf{a}}^{2}\mathbf{I}_{3} & \mathbf{0}_{3}\\
+\mathbf{0}_{3} & \boldsymbol{\sigma}_{\mathbf{m}}^{2}\mathbf{I}_{3}
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个定义允许我们获得
+\begin_inset Formula $\mathbf{P}_{t}$
+\end_inset
+
+的简单表达式。校正步骤中的其余EKF元素按照最初定义获得：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{v}_{t} & = & \mathbf{z}_{t}-\mathbf{h}(\hat{\mathbf{q}}_{t})\\
+\mathbf{S}_{t} & = & \mathbf{H}(\hat{\mathbf{q}}_{t})\hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}(\hat{\mathbf{q}}_{t})+\mathbf{R}\\
+\mathbf{K}_{t} & = & \hat{\mathbf{P}}_{t}\mathbf{H}^{\mathrm{T}}(\hat{\mathbf{q}}_{t})\mathbf{S}_{t}^{-1}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，使用以下公式计算时间
+\begin_inset Formula $t$
+\end_inset
+
+时的校正状态(四元数)及其协方差：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\mathbf{q}_{t} & = & \hat{\mathbf{q}}_{t}+\mathbf{K}_{t}\mathbf{v}_{t}\\
+\mathbf{P}_{t} & = & \big(\mathbf{I}_{4}-\mathbf{K}_{t}\mathbf{H}(\hat{\mathbf{q}}_{t})\big)\hat{\mathbf{P}}_{t}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+EKF不是一个最优估计器，可能会因不正确的模型而迅速发散。问题的根源在于四元数的四个分量缺乏独立性，因为它们由单位范数约束关联。最简单的解决方案是规范化已校正的
+状态。
+\begin_inset Formula 
+\[
+\mathbf{q}_{t}\leftarrow\frac{1}{\|\mathbf{q}_{t}\|}\mathbf{q}_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+尽管这种计算最终四元数的“蛮力”方法既不优雅也不最优，但事实证明，这种方法通常效果良好
+\begin_inset CommandInset href
+LatexCommand href
+name "[Sabatini2011]"
+target "https://ahrs.readthedocs.io/en/latest/filters/ekf.html#sabatini2011"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+初始值
+\end_layout
+
+\begin_layout Standard
+EKF状态向量表示四元数，我们必须提供对应于有效四元数的适当初始状态
+\begin_inset Formula $\mathbf{q}_{0}$
+\end_inset
+
+。这意味着，初始状态必须有一个等于
+\begin_inset Formula $1$
+\end_inset
+
+的范数(
+\begin_inset Formula $\|\mathbf{q}_{0}\|=1$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+为了估计初始方向，使用了一种简单的
+\begin_inset CommandInset href
+LatexCommand href
+name "电子罗盘"
+target "https://en.wikipedia.org/wiki/Ecompass"
+literal "false"
+
+\end_inset
+
+方法，该方法需要在静止状态下对三轴加速计和三轴磁强计进行单次观测。
+\end_layout
+
+\begin_layout Standard
+与
+\begin_inset CommandInset href
+LatexCommand href
+name "TRIAD"
+target "https://ahrs.readthedocs.io/en/latest/filters/.triad.html"
+literal "false"
+
+\end_inset
+
+类似，只需对两个传感器进行一次观测即可估计方向。这种估计的旋转矩阵
+\begin_inset Formula $\mathbf{C}\in\mathbb{R}^{3\times3}$
+\end_inset
+
+的计算方法是：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{C}=\begin{bmatrix}(\mathbf{a}_{0}\times\mathbf{m}_{0})\times\mathbf{a}_{0} & \mathbf{a}_{0}\times\mathbf{m}_{0} & \mathbf{a}_{0}\end{bmatrix}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{a}_{0}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{m}_{0}$
+\end_inset
+
+为加速计和磁强计测量值。这个旋转矩阵的每一列都应该被归一化。然后，我们用
+\begin_inset CommandInset href
+LatexCommand href
+name "[Chiaverini]"
+target "https://ahrs.readthedocs.io/en/latest/quaternion/quaternion.html#chiaverini"
+literal "false"
+
+\end_inset
+
+得到初始四元数：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\mathbf{q}_{0}=\begin{bmatrix}\frac{1}{2}\sqrt{c_{11}+c_{22}+c_{33}+1}\\
+\frac{1}{2}\mathrm{sgn}(c_{32}-c_{23})\sqrt{c_{11}-c_{22}-c_{33}+1}\\
+\frac{1}{2}\mathrm{sgn}(c_{13}-c_{31})\sqrt{c_{22}-c_{33}-c_{11}+1}\\
+\frac{1}{2}\mathrm{sgn}(c_{21}-c_{12})\sqrt{c_{33}-c_{11}-c_{22}+1}
+\end{bmatrix}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+初始状态协方差矩阵
+\begin_inset Formula $\mathbf{P}_{0}$
+\end_inset
+
+被设置为等于
+\begin_inset Formula $4\times4$
+\end_inset
+
+单位矩阵
+\begin_inset Formula $\mathbf{I}_{4}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+还应提供适当的
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\omega}}^{2}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{\sigma}_{\mathbf{a}}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\sigma}_{\mathbf{m}}^{2}$
+\end_inset
+
+值。这些值通常可以在每个传感器的数据表中找到。加速计和磁强计的测量噪声方差值增加，从而赋予滤波器预测更多的权重。对于我们的情况，默认值为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{split}\begin{array}{rcl}
+\boldsymbol{\sigma}_{\boldsymbol{\omega}}^{2} & = & 0.3^{2}\\
+\boldsymbol{\sigma}_{\mathbf{a}}^{2} & = & 0.5^{2}\\
+\boldsymbol{\sigma}_{\mathbf{m}}^{2} & = & 0.8^{2}
+\end{array}\end{split}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+最后说明
+\end_layout
+
+\begin_layout Standard
+这里描述和实现的模型不考虑信号中的任何偏差，也可以添加到要动态计算的状态向量。但是，为了提供一个简单的EKF，省略了这个额外的分析。因此，给定的传感器信号被认为
+已经校准。
+\end_layout
+
+\begin_layout Standard
+也不考虑磁干扰的补偿。假设磁强计已在使用环境中校准，因此缩放和偏差误差也被忽略。
+\end_layout
+
+\begin_layout Standard
+该类的模块化允许在估计中进行可伸缩性。例如，如果需要，可以通过简单地设置属性q来扩展状态向量(及其协方差)以包含偏差项。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Itemize
+[Kalman1960] Rudolf Kalman.
+ A New Approach to Linear Filtering and Prediction Problems.
+ 1960.
+ 
+\end_layout
+
+\begin_layout Itemize
+[Hartikainen2011] J.
+ Hartikainen, A.
+ Solin and S.
+ Särkkä.
+ Optimal Filtering with Kalman Filters and Smoothers.
+ 2011 
+\end_layout
+
+\begin_layout Itemize
+[Sabatini2011] Sabatini, A.M.
+ Kalman-Filter-Based Orientation Determination Using Inertial/Magnetic Sensors:
+ Observability Analysis and Performance Evaluation.
+ Sensors 2011, 11, 9182-9206.
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.mdpi.com/1424-8220/11/10/9182
+\end_layout
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+[Labbe2015] Roger R.
+ Labbe Jr.
+ Kalman and Bayesian Filters in Python.
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
+\end_layout
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+[Lam2003] Lam, Quang & Stamatakos, Nick & Woodruff, Craig & Ashton, Sandy.
+ Gyro Modeling and Estimation of Its Random Noise Sources.
+ AAIA 2003.
+ DOI: 10.2514/6.2003-5562.
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.researchgate.net/publication/268554081
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\end_body
+\end_document
