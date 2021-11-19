@@ -53,6 +53,7 @@ subequations
 \spacing single
 \use_hyperref true
 \pdf_title "协方差矩阵特性"
+\pdf_author "rinterested"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
 \pdf_bookmarksopen false
@@ -63,7 +64,7 @@ subequations
 \pdf_backref false
 \pdf_pdfusetitle true
 \papersize a4paper
-\use_geometry false
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -88,6 +89,10 @@ subequations
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -591,12 +596,8 @@ literal "false"
 
 \end_layout
 
-\begin_layout Section
-其它
-\end_layout
-
 \begin_layout Standard
-You can try 
+你可以试试矩阵的Frobenius范数(
 \begin_inset CommandInset href
 LatexCommand href
 name "Frobenius norm"
@@ -605,12 +606,11 @@ literal "false"
 
 \end_inset
 
- of a matrix, which is basically 
+)，它基本上是
 \begin_inset Formula $\mathrm{trace}(\Sigma^{\mathrm{T}}\Sigma)$
 \end_inset
 
-.
- For choosing the threshold, you can add a 
+。要选择阈值，可以在信息增益表达式中添加正则化(
 \begin_inset CommandInset href
 LatexCommand href
 name "Regularization"
@@ -619,8 +619,221 @@ literal "false"
 
 \end_inset
 
- term in the information gain expression.
- 
+)项。
+\end_layout
+
+\begin_layout Section
+样本协方差与相关性
+\end_layout
+
+\begin_layout Standard
+样本协方差矩阵为：
+\begin_inset Formula 
+\[
+\mathbf{S}=\dfrac{1}{n-1}\sum_{j=1}^{n}(\mathbf{X}_{j}-\bar{\mathbf{X}})(\mathbf{X}_{j}-\bar{\mathbf{X}})^{T}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $i=1,\dots,n$
+\end_inset
+
+，标准化随机变量的协方差矩阵为
+\begin_inset Formula $X_{i}/\sigma(X_{i})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $G^{T}G$
+\end_inset
+
+运算中，
+\begin_inset Formula $G^{T}$
+\end_inset
+
+是一个
+\begin_inset Formula $6\times8$
+\end_inset
+
+矩阵，
+\begin_inset Formula $G$
+\end_inset
+
+是一个
+\begin_inset Formula $8\times6$
+\end_inset
+
+矩阵。因此，矩阵乘法将产生一个
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵。
+\end_layout
+
+\begin_layout Standard
+针对评论和根本问题，让我们假设我们有一个对应于不同股票(数据列中)与连续
+\begin_inset Formula $5$
+\end_inset
+
+年(数据行中)回报率的矩阵 — 完全虚构的股票和年份。我们把矩阵称为
+\begin_inset Formula $A$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+A=\left[\begin{array}{cccc}
+ & {\color{red}\text{yah(y)}} & {\color{blue}\text{goog(g)}} & {\color{green}\text{ms(m)}}\\
+\text{Yr.1} & 1 & 8 & 1\\
+\text{Yr.2} & -4 & 9 & 3\\
+\text{Yr.3} & 5 & 10 & 4\\
+\text{Yr.4} & 7 & 3 & 5\\
+\text{Yr.5} & 8 & 7 & 6
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们想计算不同回报向量之间的相关性，每个公司一个，在矩阵
+\begin_inset Formula $A$
+\end_inset
+
+中“打包”。
+\end_layout
+
+\begin_layout Standard
+假设持有量相等，投资组合的方差协方差矩阵为：
+\begin_inset Formula 
+\[
+\sigma(A)=\frac{G^{T}G}{n-1}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $G$
+\end_inset
+
+是以均值为中心的观测值，
+\begin_inset Formula $n−1$
+\end_inset
+
+对应于观测次数减
+\begin_inset Formula $1$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+均值中心(或去均值)矩阵
+\begin_inset Formula $G$
+\end_inset
+
+为：
+\begin_inset Formula 
+\[
+\left[\begin{array}{cccc}
+ & {\color{red}\text{y}} & {\color{blue}\text{g}} & {\color{green}\text{m}}\\
+\text{Yr.1} & -2.4 & 0.6 & -2.8\\
+\text{Yr.2} & -7.4 & 1.6 & -0.8\\
+\text{Yr.3} & 1.6 & 2.6 & 0.2\\
+\text{Yr.4} & 3.6 & -4.4 & 1.2\\
+\text{Yr.5} & 4.6 & -0.4 & 2.2
+\end{array}\right]
+\]
+
+\end_inset
+
+并且方差-协方差矩阵为：
+\begin_inset Formula 
+\[
+\left[\begin{array}{cccc}
+ & {\color{red}y} & {\color{blue}\text{g}} & {\color{green}\text{m}}\\
+{\color{red}y} & 24.30 & -6.70 & 6.85\\
+{\color{blue}\text{g}} & -6.70 & 7.30 & -2.15\\
+{\color{green}\text{m}} & 6.85 & -2.15 & 3.70
+\end{array}\right]
+\]
+
+\end_inset
+
+所以它把
+\begin_inset Formula $5\times3$
+\end_inset
+
+的
+\begin_inset Formula $A$
+\end_inset
+
+矩阵变成了
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵。
+\end_layout
+
+\begin_layout Standard
+计算相关矩阵所涉及的操作类似，但在数据点居中后，通过减去协方差矩阵中的列平均值，将每个数据点除以每个公司(列向量)收益的标准差(standard
+ deviation)，从而对数据点进行标准化：
+\begin_inset Formula 
+\[
+\small cor(A)=\tiny\frac{1}{n-1}\small\begin{bmatrix}\frac{{\color{red}{y_{1}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{red}{y_{2}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{red}{y_{3}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{red}{y_{4}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{red}{y_{5}-\bar{y}}}}{{\color{red}{sd(y)}}}\\
+\frac{{\color{blue}{g_{1}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{blue}{g_{2}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{blue}{g_{3}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{blue}{g_{4}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{blue}{g_{5}-\bar{g}}}}{{\color{blue}{sd(g)}}}\\
+\frac{{\color{green}{m_{1}-\bar{m}}}}{{\color{green}{sd(m)}}} & \frac{{\color{green}{m_{2}-\bar{m}}}}{{\color{green}{sd(m)}}} & \frac{{\color{green}{m_{3}-\bar{m}}}}{{\color{green}{sd(m)}}} & \frac{{\color{green}{m_{4}-\bar{m}}}}{{\color{green}{sd(m)}}} & \frac{{\color{green}{m_{5}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+ &  & {\color{purple}{3\times5\,\text{matrix}}}
+\end{bmatrix}\begin{bmatrix}\frac{{\color{red}{y_{1}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{blue}{g_{1}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{green}{m_{1}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+\frac{{\color{red}{y_{2}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{blue}{g_{2}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{green}{m_{2}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+\frac{{\color{red}{y_{3}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{blue}{g_{3}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{green}{m_{3}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+\frac{{\color{red}{y_{4}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{blue}{g_{4}-\bar{go}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{green}{m_{4}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+\frac{{\color{red}{y_{5}-\bar{y}}}}{{\color{red}{sd(y)}}} & \frac{{\color{blue}{g_{5}-\bar{g}}}}{{\color{blue}{sd(g)}}} & \frac{{\color{green}{m_{5}-\bar{m}}}}{{\color{green}{sd(m)}}}\\
+ & {\color{purple}{5\times3\,\text{matrix}}}
+\end{bmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了完整性起见，还有一件事要做：到目前为止，我们有一个笨拙的矩阵作为结果，但通常我们要估计投资组合方差：1个投资组合；1个方差。为此，我们将
+\begin_inset Formula $A$
+\end_inset
+
+的方差-协方差矩阵左乘和右乘每个股票中包含比例或权重的向量-
+\begin_inset Formula $W$
+\end_inset
+
+。因为我们希望得到一个标量单个数字，所以代数将是：
+\begin_inset Formula $W^{T}\,\sigma(A)\,W$
+\end_inset
+
+，权重向量(分数)也就不足为奇了，在这种情况下，为完全匹配
+\begin_inset Formula $3\times1$
+\end_inset
+
+向量，左侧为
+\begin_inset Formula $W^{T}$
+\end_inset
+
+，右侧为
+\begin_inset Formula $W$
+\end_inset
+
+。
 \end_layout
 
 \end_body
