@@ -1,0 +1,381 @@
+%\documentclass[a4paper]{article}
+%\usepackage{graphicx}
+%\usepackage{eepic}
+%\usepackage{pst-all}
+%\usepackage{amsmath, amsthm,amsfonts, stmaryrd}
+%%\usepackage[latin1]{inputenc}
+%\usepackage[cyr]{aeguill}
+%%\usepackage[francais]{babel}
+%\usepackage{listings}
+%\usepackage{psfrag}
+%\usepackage{epsfig}
+
+%%\usepackage{pdftricks}
+
+%%\usepackage{bookman}
+%%\usepackage{helvet}
+%%\usepackage{newcent}
+%%\usepackage{aeguill}
+
+%
+
+%\DeclareMathOperator{\sinc}{sinc}
+
+%
+%\renewcommand{\v}{\vec} 
+%\renewcommand{\c}{\times} 
+%\renewcommand{\o}{\circ}
+%\renewcommand{\b}{\mathbf} 
+
+%\newcommand{\w}{\vec{\omega}} 
+%\newcommand{\IM}{\vec{\textrm{Im}}} 
+%\newcommand{\RE}{\textrm{Re}} 
+
+%\renewcommand{\wp}{\v{\omega}'}
+%\newcommand{\dwp}{\dot{\v{\omega}}'}
+%\newcommand{\wgpp}{\v{\omega}_g''}
+%\newcommand{\dwgpp}{\dot{\v{\omega}}_g''}
+
+%\newcommand{\bq}{\b{q}}
+%\newcommand{\dbq}{\dot{\b{q}}}
+%\newcommand{\half}{\frac{1}{2}}
+
+%\newcommand{\dG}{\dot{G}}
+
+%
+%%\lstset{language=MATLAB}
+%%\lstset{basicstyle=\footnotesize,frame=single}
+
+%%\newenvironment{nom}[nb_arg]{avant}{aprs}
+
+%\newcommand{\projectName}{\emph{hydroMEX3 }} %current project name
+
+%%MATLAB code listings:
+%\newcommand{\MATcode}
+%{
+%	\lstset{language=MATLAB}
+%	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+%}
+%%MATLAB code line:
+%\newcommand{\MATline}
+%{
+%	\lstset{language=MATLAB}
+%	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+%}
+%%C code listings:
+%\newcommand{\Ccode}
+%{
+%	\lstset{language=C}
+%	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+%}
+%%C code line:
+%\newcommand{\Cline}
+%{
+%	\lstset{language=C}
+%	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+%}
+
+%
+%\newcommand{\vbeg}{\left( \begin{array}{c} } 
+%\newcommand{\vend}{ \end{array} \right)} 
+
+%\definecolor{cBlue}{rgb}{0.0,0.0,1.0}
+%\definecolor{cViol}{rgb}{0.4,0.0,0.6}
+%\definecolor{cRed}{rgb}{0.7,0.0,0.3}
+%\definecolor{cGreen}{rgb}{0.3,0.5,0.0}
+%\definecolor{cGrey}{rgb}{0.2,0.2,0.2}
+%\definecolor{cGreyy}{rgb}{0.5,0.5,0.5}
+%\definecolor{cBlack}{rgb}{0.0,0.0,0.0}
+
+%\newcommand{\Blue}{\color{cBlue}} 
+%\newcommand{\Viol}{\color{cViol}} 
+%\newcommand{\Red}{\color{cRed}} 
+%\newcommand{\Green}{\color{cGreen}} 
+%\newcommand{\Grey}{\color{cGrey}} 
+%\newcommand{\Greyy}{\color{cGreyy}} 
+%\newcommand{\Black}{\color{cBlack}} 
+
+%
+%\begin{document}
+
+%%titre etc...:
+%\title{Derivatives and Quaternions}
+%\author{Basile Graf }
+%\date{\today}
+%\maketitle
+
+
+
+
+
+
+
+\section{导数和四元数}
+
+\subsection{四元数的二次型导数}
+\label{dQuadForm_dq}
+
+为了能够由非惯性四元数模型的 $\bq$ 分量导出拉格朗日方程，需要执行如下操作
+
+\begin{equation*}
+\frac{\partial (\v{v}^TR\v{w})}{\partial \bq} \ \ \ ,  \qquad \qquad   \frac{\partial (\v{v}^TR^T\v{w})}{\partial \bq}
+\end{equation*}
+
+并且还有
+
+\begin{equation*}
+\frac{\partial (\v{u}^TRJR^T\v{u})}{\partial \bq}.
+\end{equation*}
+
+但是因为 $R=EG^T$ 和
+
+\begin{equation*}
+E =
+\left( \begin{array}{cccc}
+-q_1 &  q_0 & -q_3 & q_2  \\
+-q_2 &  q_3 & q_0  & -q_1 \\
+-q_3 & -q_2 & q_1  & q_0  \\
+\end{array} \right)
+\qquad \qquad
+G = 
+\left( \begin{array}{cccc}
+-q_1 &  q_0 & q_3 & -q_2 \\
+-q_2 & -q_3 & q_0  & q_1 \\
+-q_3 & q_2 & -q_1  & q_0 \\
+\end{array} \right)
+\end{equation*}
+
+要导出的二次型矩阵在 $\bq$中不是常数，这意味着这些运算不再是平凡的。然而，由于 $\bq$ 分量中的 $R$ 依赖的特殊形式，高阶张量可以避免，如下所示。
+
+\subsubsection{``Single $R$'' 二次型}
+
+通过计算二次型并取偏导数，我们得到 (将它们放在列向量中)
+
+\begin{equation*}
+\frac{\partial (\v{v}^TR\v{w})}{\partial \bq} =\left( \frac{\partial (\v{v}^TR\v{w})}{\partial \bq_i}\right)_i =
+\end{equation*}
+
+\footnotesize
+$$  2\left( \begin {array}{c} {\it w_1}\,{\it v_1}\,{\it q_0}+{\it w_1}\,{\it v_2}\,{\it q_3}-{\it w_1}\,{\it v_3}\,{\it q_2}-{\it w_2}\,{\it v_1}\,{\it q_3}+{\it w_2}\,{\it v_2}\,{\it q_0}+{\it w_2}\,{\it v_3}\,{\it q_1}+{\it w_3}\,{\it v_1}\,{\it q_2}-{\it w_3}\,{\it v_2}\,{\it q_1}+{\it w_3}\,{\it v_3}\,{\it q_0}\\\noalign{\medskip}{\it w_1}\,{\it v_1}\,{\it q_1}+{\it w_1}\,{\it v_2}\,{\it q_2}+{\it w_1}\,{\it v_3}\,{\it q_3}+{\it w_2}\,{\it v_1}\,{\it q_2}-{\it w_2}\,{\it v_2}\,{\it q_1}+{\it w_2}\,{\it v_3}\,{\it q_0}+{\it w_3}\,{\it v_1}\,{\it q_3}-{\it w_3}\,{\it v_2}\,{\it q_0}-{\it w_3}\,{\it v_3}\,{\it q_1}\\\noalign{\medskip}-{\it w_1}\,{\it v_1}\,{\it q_2}+{\it w_1}\,{\it v_2}\,{\it q_1}-{\it w_1}\,{\it v_3}\,{\it q_0}+{\it w_2}\,{\it v_1}\,{\it q_1}+{\it w_2}\,{\it v_2}\,{\it q_2}+{\it w_2}\,{\it v_3}\,{\it q_3}+{\it w_3}\,{\it v_1}\,{\it q_0}+{\it w_3}\,{\it v_2}\,{\it q_3}-{\it w_3}\,{\it v_3}\,{\it q_2}\\\noalign{\medskip}-{\it w_1}\,{\it v_1}\,{\it q_3}+{\it w_1}\,{\it v_2}\,{\it q_0}+{\it w_1}\,{\it v_3}\,{\it q_1}-{\it w_2}\,{\it v_1}\,{\it q_0}-{\it w_2}\,{\it v_2}\,{\it q_3}+{\it w_2}\,{\it v_3}\,{\it q_2}+{\it w_3}\,{\it v_1}\,{\it q_1}+{\it w_3}\,{\it v_2}\,{\it q_2}+{\it w_3}\,{\it v_3}\,{\it q_3}\end {array} \right) 
+ .$$ \normalsize \\
+
+得到的向量很难看，但可以看出它在 $\bq$ 中是线性的，因此可以用矩阵向量积重写：
+
+\footnotesize
+$$ 2  \underbrace{
+\left( \begin {array}{cccc} {\it v_1}\,{\it w_1}+{\it v_2}\,{\it w_2}+{\it v_3}\,{\it w_3}&{\it v_3}\,{\it w_2}-{\it v_2}\,{\it w_3}&-{\it v_3}\,{\it w_1}+{\it v_1}\,{\it w_3}&{\it v_2}\,{\it w_1}-{\it v_1}\,{\it w_2}\\\noalign{\medskip}{\it v_3}\,{\it w_2}-{\it v_2}\,{\it w_3}&{\it v_1}\,{\it w_1}-{\it v_2}\,{\it w_2}-{\it v_3}\,{\it w_3}&{\it v_1}\,{\it w_2}+{\it v_2}\,{\it w_1}&{\it v_1}\,{\it w_3}+{\it v_3}\,{\it w_1}\\\noalign{\medskip}-{\it v_3}\,{\it w_1}+{\it v_1}\,{\it w_3}&{\it v_1}\,{\it w_2}+{\it v_2}\,{\it w_1}&{\it v_2}\,{\it w_2}-{\it v_1}\,{\it w_1}-{\it v_3}\,{\it w_3}&{\it v_2}\,{\it w_3}+{\it v_3}\,{\it w_2}\\\noalign{\medskip}{\it v_2}\,{\it w_1}-{\it v_1}\,{\it w_2}&{\it v_1}\,{\it w_3}+{\it v_3}\,{\it w_1}&{\it v_2}\,{\it w_3}+{\it v_3}\,{\it w_2}&{\it v_3}\,{\it w_3}-{\it v_1}\,{\it w_1}-{\it v_2}\,{\it w_2}\end {array} \right) 
+}_{\mbox{\normalsize $\Delta[\v{v},\v{w}]$}}
+ \left( \begin {array}{c} {\it q_0}\\\noalign{\medskip}{\it q_1}\\\noalign{\medskip}{\it q_2}\\\noalign{\medskip}{\it q_3}\end {array} \right) $$ \normalsize
+
+
+通过仔细检查 $\Delta[\v{v},\v{w}]$，我们可以确定矩阵中允许紧凑符号的结构
+
+
+\begin{equation}
+\Delta[\v{v},\v{w}] = 
+\left( \begin {array}{cc}
+\v{w} \cdot \v{v}    &      (\v{w} \c \v{v})^T   \\
+\v{w} \c \v{v}         &       \v{w}\v{v}^T + \v{v}\v{w}^T  - \v{w} \cdot \v{v} \ I_3 
+\end {array} \right).
+\label{eqD_DELTA}
+\end{equation}
+
+那就是
+
+
+\begin{equation}
+\frac{\partial (\v{v}^TR\v{w})}{\partial \bq} =
+2 \Delta[\v{v},\v{w}] \bq
+\label{eqD_DELTAq}
+\end{equation}
+
+并且因为 $\v{v}^TR^T\v{w} = \v{w}^TR\v{v}$ ，我们还有
+
+\begin{equation}
+\frac{\partial (\v{v}^TR^T\v{w})}{\partial \bq} =
+2 \Delta[\v{w},\v{v}] \bq
+\label{eqD_DELTAq2}
+\end{equation}
+
+
+\subsubsection{``Double $R$'' 二次型}
+
+我们现在对包含 $RJR^T$的二次型的导数感兴趣，也就是说，与 $\bq$ 相关的矩阵 $R$ 出现两次。 $J$ 是一个惯性矩阵，因此， $J=J^T$ 。这次，左边和右边的向量是一样的，命名为 $\v{u}$ 。
+
+\begin{align*}
+\half\frac{\partial }{\partial \bq} \left( \v{u}^TRJR^T\v{u}\right)  &=
+\half \left(   \v{u}^T  \frac{\partial R}{\partial \bq_i}  JR^T   \v{u}   \right)_i  +
+\half \left(   \v{u}^T RJ  \frac{\partial R^T}{\partial \bq_i}   \v{u}   \right)_i  \\
+  &=   \left(   \v{u}^T  \frac{\partial R}{\partial \bq_i}  JR^T   \v{u}   \right)_i .
+\end{align*}
+
+因此
+
+\begin{equation}
+\half\frac{\partial }{\partial \bq} \left( \v{u}^TRJR^T\v{u}\right)  = 2 \Delta[\v{u},JR^T\v{u}] \bq
+\label{eqD_DELTAq3}
+\end{equation}
+
+\subsubsection{特性}
+
+通过观察方程 \eqref{eqD_DELTA}，可以注意到以下关系
+
+
+\begin{equation}
+ \Delta[\v{v}_1+\v{v}_2,\v{w}] = \Delta[\v{v}_1,\v{w}] + \Delta[\v{v}_2,\v{w}] 
+\label{eqD_DELTA_r1}
+\end{equation}
+
+\begin{equation}
+ \Delta[\v{v},\v{w}_1+\v{w}_2] = \Delta[\v{v},\v{w}_1] + \Delta[\v{v},\v{w}_2] 
+\label{eqD_DELTA_r2}
+\end{equation}
+
+\begin{equation}
+ \Delta \left[\sum_{i=1}^{n}\v{v}_i,\sum_{j=1}^{m}\v{w}_j \right] = \sum_{i=1}^{n} \sum_{j=1}^{m} \Delta[\v{v}_i,\v{w}_j] 
+\label{eqD_DELTA_r3}
+\end{equation}
+
+\begin{equation}
+ \Delta[\alpha \v{v},\beta \v{w}] = \alpha \beta \Delta[\v{v},\v{w}]  
+\label{eqD_DELTA_r4}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{12pt}
+
+%\subsection{Time Derivative of $R\v{w}$ and $R^T\v{w}$}
+%\label{sec_dRv_dt}
+
+%In computing $\frac{\partial}{\partial t}\frac{\partial L}{\partial \dbq}$ in the non-inertial quaternion model, we see that we need to take the time derivative of expressions of the form $R\v{w}$ with $R$ the time dependent rotation matrix. Remembering that $R=EG^T$ and verifying that $\dot{E}G^T=E\dot{G}^T$, we may write
+
+%\begin{align*}
+%\dot{R} &= \dot{E}G^T + E\dot{G}^T = 2 E\dot{G}^T \\
+%\dot{R}^T &= \dot{G}E^T + G\dot{E}^T = 2 G\dot{E}^T.
+%\end{align*}
+
+%We can now concentrate on the products $\dot{G}^T\v{w}$ and $\dot{E}^T\v{w}$
+
+%\begin{equation*}
+%\dot{G}^T\v{w} = 
+% \left( \begin {array}{c} -{\it \dot{q}_1}\,{\it w_1}-{\it \dot{q}_2}\,{\it w_2}-{\it \dot{q}_3}\,{\it w_3}\\\noalign{\medskip}{\it \dot{q}_0}\,{\it w_1}-{\it \dot{q}_3}\,{\it w_2}+{\it \dot{q}_2}\,{\it w_3}\\\noalign{\medskip}{\it \dot{q}_3}\,{\it w_1}+{\it \dot{q}_0}\,{\it w_2}-{\it \dot{q}_1}\,{\it w_3}\\\noalign{\medskip}-{\it \dot{q}_2}\,{\it w_1}+{\it \dot{q}_1}\,{\it w_2}+{\it \dot{q}_0}\,{\it w_3}\end {array} \right)  =
+% \underbrace{
+%  \left( \begin {array}{cccc} 0&-{\it w_1}&-{\it w_2}&-{\it w_3}\\\noalign{\medskip}{\it w_1}&0&{\it w_3}&-{\it w_2}\\\noalign{\medskip}{\it w_2}&-{\it w_3}&0&{\it w_1}\\\noalign{\medskip}{\it w_3}&{\it w_2}&-{\it w_1}&0\end {array} \right) 
+%  }_{\Gamma[ \v{w}]}
+%  \left( \begin {array}{c} {\it \dot{q}_0}\\\noalign{\medskip}{\it \dot{q}_1}\\\noalign{\medskip}{\it \dot{q}_2}\\\noalign{\medskip}{\it \dot{q}_3}\end {array} \right) 
+%\end{equation*}
+
+%\begin{equation*}
+%\dot{E}^T\v{w} = 
+% \left( \begin {array}{c} -{\it \dot{q}_1}\,{\it w_1}-{\it \dot{q}_2}\,{\it w_2}-{\it \dot{q}_3}\,{\it w_3}\\\noalign{\medskip}{\it \dot{q}_0}\,{\it w_1}+{\it \dot{q}_3}\,{\it w_2}-{\it \dot{q}_2}\,{\it w_3}\\\noalign{\medskip}-{\it \dot{q}_3}\,{\it w_1}+{\it \dot{q}_0}\,{\it w_2}+{\it \dot{q}_1}\,{\it w_3}\\\noalign{\medskip}{\it \dot{q}_2}\,{\it w_1}-{\it \dot{q}_1}\,{\it w_2}+{\it \dot{q}_0}\,{\it w_3}\end {array} \right) =
+% \underbrace{
+%  \left( \begin {array}{cccc} 0&-{\it w_1}&-{\it w_2}&-{\it w_3}\\\noalign{\medskip}{\it w_1}&0&-{\it w_3}&{\it w_2}\\\noalign{\medskip}{\it w_2}&{\it w_3}&0&-{\it w_1}\\\noalign{\medskip}{\it w_3}&-{\it w_2}&{\it w_1}&0\end {array} \right) 
+%  }_{\bar{\Gamma}[ \v{w}]}
+%   \left( \begin {array}{c} {\it \dot{q}_0}\\\noalign{\medskip}{\it \dot{q}_1}\\\noalign{\medskip}{\it \dot{q}_2}\\\noalign{\medskip}{\it \dot{q}_3}\end {array} \right) .
+%\end{equation*}
+
+%That is $\frac{\partial}{\partial t}(R\v{w}) = \dot{R}\v{w}+R\dot{\v{w}}$ and $\frac{\partial}{\partial t}(R^T\v{w}) = \dot{R^T}\v{w}+R^T\dot{\v{w}}$ can both be computed using
+
+%\begin{equation}
+% \dot{R}\v{w} = 2E\dot{G}^T\v{w} = 2E \Gamma[\v{w}] \dbq = E \Gamma[\v{w}] G^T \wp
+% \label{dRv_dt}
+%\end{equation}
+
+%\begin{equation}
+% \dot{R}^T\v{w} = 2G\dot{E}^T\v{w} = 2G \bar{\Gamma}[\v{w}] \dbq = G \bar{\Gamma}[\v{w}] G^T \wp
+% \label{dRTv_dt}
+%\end{equation}
+%See next section for a more useful form.
+
+
+\subsection{ $R$ 的时间导数}
+
+首先要注意的是，通过标识，我们可以确认
+\begin{equation}
+G^T G = E^T E = I_4 - \b q \b q^T
+\label{identity_in_R4}
+\end{equation}
+其中 $I_4$ 是 $\mathbb{R}^4$ 中的特征矩阵。也要记住 
+\begin{equation*}
+\Omega' = 2G\dot G^T = -2\dot G G^T \qquad \textrm{with} \qquad \Omega' \v v = \wp \times \v v
+\end{equation*}
+和
+\begin{equation*}
+\wp = 2G \dot{\b q} = -2\dot G \b q.
+\end{equation*}
+
+现在观察
+\begin{align}
+\Omega' R^T &= 2G\dot G^T G E^T \nonumber \\
+                        &= -2\dot G G^T G E^T \nonumber \\
+                        &=-2\dot G (I_4 -\b q \b q^T) E^T \nonumber \\
+                        &=-2\dot G E^T -2\dot G \b q \underbrace{\b q^T E^T}_{(E\b q)^T=\v 0} \nonumber \\
+                        &= -2\dot G E^T = -\dot R^T. \nonumber
+\end{align}
+
+我们终于可以写为 
+
+\begin{gather}
+\dot R^T   = -\Omega' R^T      \label{dotRt_with_Omega} \\
+\dot R       = -R \Omega'^T = R \Omega'.
+\label{dotR_with_Omega}
+\end{gather}
+
+
+
+%     \v{v}
+%     \v{w}
+%     \v{u}
+
+
+
+
+
+
+
+%Bibliographie:
+%\begin{thebibliography}{9}
+
+%\bibitem{QFREP}
+%	Quaternion, Finite Rotation and Euler Parameters\\
+%	Arend L. Schwab \\
+%	\emph{http://tam.cornell.edu/\~{}als93/quaternion.pdf}
+%	
+%\bibitem{Gros}
+%	Quaternion based dynamics - Single Turbine Aircraft - Lagrange and Hamiltonian approaches \\
+%	S. Gros\\
+%	LA, EPFL.
+%		
+%\bibitem{Gold}
+%	Classical Mechanics \\
+%	Herbert Goldstein.
+%	
+%\bibitem{Wells}
+%	Lagrangian Dynamics \\
+%	Dare A. Wells \\
+%	Schaum's Outline Series.
+	
+	
+
+%	\bibitem{lamport94}
+%	  Leslie Lamport,
+%	  \emph{\LaTeX: A Document Preparation System}.
+%	  Addison Wesley, Massachusetts,
+%	  2nd Edition,
+%	  1994.
+
+%rajouter: bouquin de Papa (mcanique), bouquin OpenGL	
+	
+%\end{thebibliography}
+
+
+
+
+
+%\end{document}

@@ -1,0 +1,355 @@
+%!TEX TS-program = pdflatex
+\documentclass{article}
+\usepackage{CJKutf8}
+\usepackage{graphicx}
+\usepackage{eepic}
+\usepackage{pst-all}
+\usepackage{amsmath, amsthm,amsfonts, stmaryrd}
+%\usepackage[latin1]{inputenc}
+\usepackage[cyr]{aeguill}
+%\usepackage[francais]{babel}
+\usepackage{listings}
+\usepackage{psfrag}
+\usepackage{epsfig}
+
+\usepackage{cancel}
+
+%\usepackage{pdftricks}
+
+%\usepackage{bookman}
+%\usepackage{helvet}
+%\usepackage{newcent}
+%\usepackage{aeguill}
+
+
+
+\DeclareMathOperator{\sinc}{sinc}
+
+
+\renewcommand{\v}{\vec} 
+\renewcommand{\c}{\times} 
+\renewcommand{\o}{\circ}
+\renewcommand{\b}{\mathbf} 
+
+\newcommand{\w}{\vec{\omega}} 
+\newcommand{\IM}{\vec{\textrm{Im}}} 
+\newcommand{\RE}{\textrm{Re}} 
+
+\renewcommand{\wp}{\v{\omega}'}
+\newcommand{\dwp}{\dot{\v{\omega}}'}
+\newcommand{\wgpp}{\v{\omega}_g''}
+\newcommand{\dwgpp}{\dot{\v{\omega}}_g''}
+\newcommand{\wg}{\omega_g}
+\newcommand{\dwg}{\dot{\omega}_g}
+\newcommand{\eg}{\hat{e}_g}
+
+\newcommand{\bq}{\b{q}}
+\newcommand{\dbq}{\dot{\b{q}}}
+\newcommand{\half}{\frac{1}{2}}
+
+\newcommand{\dG}{\dot{G}}
+
+\newcommand{\ww}{\vec{w}'}
+
+\newcommand{\spaceup}{\phantom {\textrm{\Huge l \normalsize}}}
+
+%\lstset{language=MATLAB}
+%\lstset{basicstyle=\footnotesize,frame=single}
+
+%\newenvironment{nom}[nb_arg]{avant}{aprs}
+
+\newcommand{\projectName}{\emph{hydroMEX3 }} %current project name
+
+%MATLAB code listings:
+\newcommand{\MATcode}
+{
+	\lstset{language=MATLAB}
+	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+}
+%MATLAB code line:
+\newcommand{\MATline}
+{
+	\lstset{language=MATLAB}
+	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+}
+%C code listings:
+\newcommand{\Ccode}
+{
+	\lstset{language=C}
+	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+}
+%C code line:
+\newcommand{\Cline}
+{
+	\lstset{language=C}
+	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+}
+
+
+\newcommand{\vbeg}{\left( \begin{array}{c} } 
+\newcommand{\vend}{ \end{array} \right)} 
+
+\definecolor{cBlue}{rgb}{0.0,0.0,1.0}
+\definecolor{cViol}{rgb}{0.4,0.0,0.6}
+\definecolor{cRed}{rgb}{0.7,0.0,0.3}
+\definecolor{cGreen}{rgb}{0.3,0.5,0.0}
+\definecolor{cGrey}{rgb}{0.2,0.2,0.2}
+\definecolor{cGreyy}{rgb}{0.5,0.5,0.5}
+\definecolor{cBlack}{rgb}{0.0,0.0,0.0}
+
+\newcommand{\Blue}{\color{cBlue}} 
+\newcommand{\Viol}{\color{cViol}} 
+\newcommand{\Red}{\color{cRed}} 
+\newcommand{\Green}{\color{cGreen}} 
+\newcommand{\Grey}{\color{cGrey}} 
+\newcommand{\Greyy}{\color{cGreyy}} 
+\newcommand{\Black}{\color{cBlack}} 
+
+\newcommand{\n}{ \vec n} 
+\newcommand{\bn}{\vec{\bar n}} 
+
+\newtheorem{proposition}{Proposition}
+%\renewcommand{\epsilon}{\varepsilon}
+
+
+%\newbox\bwk\edef\tempd#1pt{#1\string p\string t}\tempd\def\nbextr#1pt{#1}
+%\def\npts#1{\expandafter\nbextr\the#1\space}
+%\def\ttwplink#1#2{\special{ps:1 0 0 setrgbcolor}#2\special{ps:0 0 0 setrgbcolor}\setbox\bwk=\hbox{#2}\special{ps:( linkto #1)\space\npts{\wd\bwk} \npts{\dp\bwk} -\npts{\ht\bwk} true\space Cpos}}
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+%\nocite{{Khalil, Lovera, Wisniewski, CommentsWisniewski, nCube, QFREP, Gros, Gold, Wells, disturbances, Wertz, Wertz2, Gruber, Slotine}}
+%\bibliographystyle{unsrt}
+
+%titre etc...:
+\title{四元数与动力学}
+\author{Basile Graf \\ \texttt{basile.graf@epfl.ch}}
+\date{February, 2007}
+\maketitle
+\thispagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{摘要}
+本文简单介绍了四元数及其在动力学中的实际应用。详细介绍了刚体动力学。在附录中，给出了一些更为奇异的关系，这些关系允许编写更为复杂的模型，例如，在非惯性参考系中表示的带有惯性轮的卫星模型。众所周知，四元数相对于欧拉角的一个很好的优点是，除了通常的参数外，它允许完全手工记录相当复杂的动力学。 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagebreak
+
+\tableofcontents
+
+%\pagebreak
+
+
+
+%\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Referentials}
+
+%Before we derive the dynamics model of the  satellite, we need to introduce the global geometry and introduce some notations. The SwissCube orbit will be almost circular and sun-synchronous (passing near the poles). It can be sketched as follows.
+
+%\begin{center}
+%	\psfrag{IRF}[l][c][1][0]{IRF ($\vec{x}_{IRF}$)}
+%	\psfrag{ORF}[l][c][1][0]{ORF ($\vec{x}$)}
+%	\psfrag{SRF}[l][c][1][0]{\color{cRed}{SRF} ($\vec{x}'$)}
+%\psfrag{Orbit}[c][c][0.8][0]{Orbit}
+%\psfrag{Earth}[c][c][0.8][0]{Earth}
+%	\epsfig{file=figuresIS/referentials.eps, width=7cm}
+%\end{center}
+
+%We will deal with three different reference frames. An inertial one, fixed to the Earth, an orbital one (ORF), fixed to the orbit with the positive $x$-direction pointing in the direction of displacement and a positive $z$-direction pointing toward the center of the Earth. The last one is the body-fixed referential (BRF). It coincides with the ORF when the satellite has the desired nominal orientation. \\
+%A vector will be denoted by $\v x'$ when expressed in the BRF and by $\v x$ when expressed in the ORF (sometimes also in the IRF, when this is clear from the context). When confusion is possible between IRF and ORF, the notation $\v x_{IRF}$ is used to make the distinction.\\
+
+%Under the term dynamics, we understand the dynamics of the satellite orientation (i.e. attitude) and not the orbital dynamics on which we have no control. The orbital position and speed is considered a pure function of time in this work.\\
+
+%Also, we deal only with the control problem and the state variables are supposed to be known at each time.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\graphicspath{{SubDocuments/CubsatModel/}}
+%\include{SubDocuments/CubsatModel/CubsatModel}
+
+%\graphicspath{{SubDocuments/WheelControllability/}}
+%\include{SubDocuments/WheelControllability/WheelControllability}
+
+%\graphicspath{{SubDocuments/CubesatControl/}}
+%\include{SubDocuments/CubesatControl/CubesatControl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{Conclusions}
+
+%During this project, good theoretical and intuitive comprehension of the system has been acquired. \\
+%The use of one inertia wheel was seen to be problematic, as it would have to be placed along the only axis that is always controllable with the magnetotorquers in nominal attitude and as it would penalize controllability on the other axes if spinning too fast. \\
+%Full magnetic actuation was found to be theoretically feasible, but unfortunately, was also found to be unable to reject the amount of environmental predicted perturbations. \\
+
+%Finally, I would like to thank all the people from the "Laboratoire d'Automatique", in particular my supervisors Philippe Muellhaupt and Sebastien Gros, for their help and valuable advice.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\pagebreak 
+
+\graphicspath{{SubDocuments/Quaternions/}}
+\input{SubDocuments/Quaternions/Quaternions}
+
+\appendix
+\pagebreak 
+
+\graphicspath{{SubDocuments/QuadraticFormDerivative/}}
+\input{SubDocuments/QuadraticFormDerivative/QuadFormDeriv}
+\pagebreak 
+
+\graphicspath{{SubDocuments/SpeedComposition/}}
+\input{SubDocuments/SpeedComposition/SpeedComposition}
+\pagebreak 
+
+\graphicspath{{SubDocuments/Q2E_latex/}}
+\input{SubDocuments/Q2E_latex/Eul2Quat}
+
+\pagebreak 
+
+\clearpage\end{CJK*}
+
+%Bibliographie:
+%\bibliography{bibliography/cubesat_bibliography}
+
+\begin{thebibliography}{9}
+
+\bibitem{QFREP}
+	Quaternion, Finite Rotation and Euler Parameters\\
+	Arend L. Schwab \\
+	\emph{http://tam.cornell.edu/\~{}als93/quaternion.pdf}
+	
+\bibitem{Gros}
+	Quaternion based dynamics - Single Turbine Aircraft - Lagrange and Hamiltonian approaches \\
+	S. Gros\\
+	LA, EPFL.
+		
+\bibitem{Gold}
+	Classical Mechanics \\
+	Herbert Goldstein.
+	
+\bibitem{Wells}
+	Lagrangian Dynamics \\
+	Dare A. Wells \\
+	Schaum's Outline Series.
+	
+	
+	
+\bibitem{mathworksQuat}
+	\emph{http://www.mathworks.com/access/helpdesk/help/toolbox/aeroblks/index.html?}\\
+         \emph{ /access/helpdesk/help/toolbox/aeroblks/euleranglestoquaternions.html}
+	
+%\bibitem{Khalil}
+%	Nonlinear Systems \\
+%	Third Edition \\
+%	Hassan K. Khalil \\
+%	Prentice Hall.
+	
+	
+
+%	\bibitem{lamport94}
+%	  Leslie Lamport,
+%	  \emph{\LaTeX: A Document Preparation System}.
+%	  Addison Wesley, Massachusetts,
+%	  2nd Edition,
+%	  1994.
+
+%rajouter: bouquin de Papa (mÈcanique), bouquin OpenGL	
+	
+\end{thebibliography}
+
+%\begin{thebibliography}{20}
+%
+%\bibitem{Khalil}
+%	Nonlinear Systems\\
+%	Third Edition\\
+%	Hassan K. Khalil\\
+%	Prentice Hall
+%	
+%\bibitem{Lovera}
+%	Spacecraft attitude control using magnetic actuators \\
+%	M. Lovera, A. Astolfi\\
+%	\emph{Automatica} 40 (2004) 1405-1414
+%	
+%	
+%\bibitem{Wisniewski}
+%	Fully magnetic attitude control for spacecraft subject to gravity gradient\\
+%	R. Wi\'{s}niewski, M. Blanke \\
+%	\emph{Automatica} 35 1202-1214
+%	
+%
+%\bibitem{CommentsWisniewski}
+%	Comments on "Fully magnetic attitude control for spacecraft subject to gravity gradient"\\
+%	Christopher J. Damaren \\
+%	\emph{Automatica} 38 (2002) 2189
+%	
+%\bibitem{nCube}
+%	Attitude control for the Norwegian student satellite nCube \\
+%	Eli Jerpseth $\cancel{\textrm{O}}$verby \\
+%	Norwegian University of Science and Technology, Trondheim.
+%
+%
+%\bibitem{QFREP}
+%	Quaternion, Finite Rotation and Euler Parameters\\
+%	Arend L. Schwab \\
+%	\emph{http://tam.cornell.edu/\~{}als93/quaternion.pdf}
+%	
+%\bibitem{Gros}
+%	Quaternion based dynamics - Single Turbine Aircraft - Lagrange and Hamiltonian approaches \\
+%	S. Gros\\
+%	LA, EPFL.
+%		
+%\bibitem{Gold}
+%	Classical Mechanics \\
+%	Herbert Goldstein.
+%	
+%\bibitem{Wells}
+%	Lagrangian Dynamics \\
+%	Dare A. Wells \\
+%	Schaum's Outline Series.
+%	
+%	
+%\bibitem{disturbances}
+%	Phase B.\\
+%	Disturbances and Actuators Dimensioning\\
+%	Bastien Despont\\
+%	(Swisscube internal document)
+%	
+%\bibitem{Wertz}
+%	Spacecraft Attitude Determination and Control\\
+%	Ed. by James R, Wertz\\
+%	Kluwer Academic Publishers.
+%	
+%\bibitem{Wertz2}
+%	 Space Mission Analysis and Design \\
+%	 Third Edition\\
+%	 James R. Wertz, Wiley J. Larson \\
+%	 1999, Microcosm/Kluwer
+%	
+%\bibitem{Gruber}
+%	M\'{e}canique g\'{e}n\'{e}rale \\
+%	Christian Gruber, Willy Benoit \\
+%	1998, Presses polythechniques et universitaires romandes (PPUR).
+%	
+%\bibitem{Slotine}
+%	Applied Nonlinear Control \\
+%	J,-J. Slotine \\ 
+%	1991, Prentice-Hall
+%
+%%	\bibitem{lamport94}
+%%	  Leslie Lamport,
+%%	  \emph{\LaTeX: A Document Preparation System}.
+%%	  Addison Wesley, Massachusetts,
+%%	  2nd Edition,
+%%	  1994.
+%	
+%	
+%\end{thebibliography}
+
+
+
+
+
+\end{document}

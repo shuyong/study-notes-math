@@ -1,0 +1,54 @@
+%\documentclass[11pt]{article}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{a4paper}                   % ... or a4paper or a5paper or ... 
+%\usepackage{graphicx}
+%\usepackage{amssymb}
+%\usepackage{epstopdf}
+%\usepackage{color}
+%\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+%\title{Euler Angles to Quaternions}
+%\author{Basile Graf}
+%%\date{}                                           % Activate to display a given date or no date
+
+%\begin{document}
+%\maketitle
+%%\section{}
+%%\subsection{}
+
+
+
+\section{欧拉角到四元数}
+\label{sec_Eul2Quat}
+
+每个轴绕欧拉角的三个旋转可以被写为 \\
+
+$$ R_{\psi} =  \left[ \begin {array}{ccc} \cos \left( {\it \psi} \right) &-\sin \left( {\it \psi} \right) &0\\\noalign{\medskip}\sin \left( {\it \psi} \right) &\cos \left( {\it \psi} \right) &0\\\noalign{\medskip}0&0&1\end {array} \right] $$\\
+
+$$ R_{\theta} =  \left[ \begin {array}{ccc} \cos \left( {\it \theta} \right) &0&\sin \left( {\it \theta} \right) \\\noalign{\medskip}0&1&0\\\noalign{\medskip}-\sin \left( {\it \theta} \right) &0&\cos \left( {\it \theta} \right) \end {array} \right] $$\\
+
+
+$$ R_{\phi} =  \left[ \begin {array}{ccc} 1&0&0\\\noalign{\medskip}0&\cos \left( {\it \phi} \right) &-\sin \left( {\it \phi} \right) \\\noalign{\medskip}0&\sin \left( {\it \phi} \right) &\cos \left( {\it \phi} \right) \end {array} \right] $$\\
+
+它们结合在一起定义了旋转矩阵 \\
+
+$$ R = R_{\phi} R_{\theta} R_{\psi}. $$\\ 
+
+这三个旋转也可以表示为四元数旋转 \\
+
+\begin{center}
+$ \mathbf{q_{\phi}} =  \left[ \begin {array}{c} \cos \left( \frac{1}{2}\,{\it \phi} \right) \\\noalign{\medskip}\sin \left( \frac{1}{2}\,{\it \phi} \right) \\\noalign{\medskip}0\\\noalign{\medskip}0\end {array} \right] $ $\qquad$ $ \mathbf{q_{\theta}} =  \left[ \begin {array}{c} \cos \left( \frac{1}{2}\,{\it \theta} \right) \\\noalign{\medskip}0\\\noalign{\medskip}\sin \left( \frac{1}{2}\,{\it \theta} \right) \\\noalign{\medskip}0\end {array} \right] $ $\qquad$ $ \mathbf{q_{\psi}} =  \left[ \begin {array}{c} \cos \left( \frac{1}{2}\,{\it \psi} \right) \\\noalign{\medskip}0\\\noalign{\medskip}0\\\noalign{\medskip}\sin \left( \frac{1}{2}\,{\it \psi} \right) \end {array} \right] .$\\
+\end{center}
+
+\vspace{0.8cm}
+然后把这三个数相乘就可以得到四元数 \\
+
+$$ \mathbf{q} = \mathbf{q_{\phi}} \circ \mathbf{q_{\theta}} \circ \mathbf{q_{\psi}} =  \left[ \begin {array}{c} \cos \left( \frac{1}{2}\,{\it \phi} \right) \cos \left( \frac{1}{2}\,{\it \theta} \right) \cos \left( \frac{1}{2}\,{\it \psi} \right) -\sin \left( \frac{1}{2}\,{\it \phi} \right) \sin \left( \frac{1}{2}\,{\it \theta} \right) \sin \left( \frac{1}{2}\,{\it \psi} \right) \\\noalign{\medskip}\cos \left( \frac{1}{2}\,{\it \psi} \right) \cos \left( \frac{1}{2}\,{\it \theta} \right) \sin \left( \frac{1}{2}\,{\it \phi} \right) +\cos \left( \frac{1}{2}\,{\it \phi} \right) \sin \left( \frac{1}{2}\,{\it \theta} \right) \sin \left( \frac{1}{2}\,{\it \psi} \right) \\\noalign{\medskip}\cos \left( \frac{1}{2}\,{\it \psi} \right) \cos \left( \frac{1}{2}\,{\it \phi} \right) \sin \left( \frac{1}{2}\,{\it \theta} \right) -\cos \left( \frac{1}{2}\,{\it \theta} \right) \sin \left( \frac{1}{2}\,{\it \phi} \right) \sin \left( \frac{1}{2}\,{\it \psi} \right) \\\noalign{\medskip}\cos \left( \frac{1}{2}\,{\it \phi} \right) \cos \left( \frac{1}{2}\,{\it \theta} \right) \sin \left( \frac{1}{2}\,{\it \psi} \right) +\cos \left( \frac{1}{2}\,{\it \psi} \right) \sin \left( \frac{1}{2}\,{\it \phi} \right) \sin \left( \frac{1}{2}\,{\it \theta} \right) \end {array} \right]. $$ \\ 
+
+
+
+
+注意：此结果取决于欧拉角和旋转轴的顺序和选择中使用的约定！参见文档\cite{mathworksQuat}
+
+
+%\end{document}  

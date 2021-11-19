@@ -1,0 +1,1039 @@
+%\documentclass[a4paper]{article}
+%\usepackage{graphicx}
+%\usepackage{eepic}
+%\usepackage{pst-all}
+%\usepackage{amsmath, amsthm,amsfonts, stmaryrd}
+%%\usepackage[latin1]{inputenc}
+%\usepackage[cyr]{aeguill}
+%%\usepackage[francais]{babel}
+%\usepackage{listings}
+%\usepackage{psfrag}
+%\usepackage{epsfig}
+
+%%\usepackage{pdftricks}
+
+%%\usepackage{bookman}
+%%\usepackage{helvet}
+%%\usepackage{newcent}
+%%\usepackage{aeguill}
+
+%
+
+%\DeclareMathOperator{\sinc}{sinc}
+
+%
+%\renewcommand{\v}{\vec} 
+%\renewcommand{\c}{\times} 
+%\renewcommand{\o}{\circ}
+%\renewcommand{\b}{\mathbf} 
+
+\renewcommand{\w}{\omega} 
+%\newcommand{\IM}{\vec{\textrm{Im}}} 
+%\newcommand{\RE}{\textrm{Re}} 
+
+%
+
+%%\lstset{language=MATLAB}
+%%\lstset{basicstyle=\footnotesize,frame=single}
+
+%%\newenvironment{nom}[nb_arg]{avant}{aprs}
+
+%\newcommand{\projectName}{\emph{hydroMEX3 }} %current project name
+
+%%MATLAB code listings:
+%\newcommand{\MATcode}
+%{
+%	\lstset{language=MATLAB}
+%	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+%}
+%%MATLAB code line:
+%\newcommand{\MATline}
+%{
+%	\lstset{language=MATLAB}
+%	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+%}
+%%C code listings:
+%\newcommand{\Ccode}
+%{
+%	\lstset{language=C}
+%	\lstset{basicstyle=\footnotesize,frame=single,showstringspaces=false}
+%}
+%%C code line:
+%\newcommand{\Cline}
+%{
+%	\lstset{language=C}
+%	\lstset{basicstyle=\normalsize,frame=none,showstringspaces=false}
+%}
+
+%
+%\newcommand{\vbeg}{\left( \begin{array}{c} } 
+%\newcommand{\vend}{ \end{array} \right)} 
+
+%\definecolor{cBlue}{rgb}{0.0,0.0,1.0}
+%\definecolor{cViol}{rgb}{0.4,0.0,0.6}
+%\definecolor{cRed}{rgb}{0.7,0.0,0.3}
+%\definecolor{cGreen}{rgb}{0.3,0.5,0.0}
+%\definecolor{cGrey}{rgb}{0.2,0.2,0.2}
+%\definecolor{cGreyy}{rgb}{0.5,0.5,0.5}
+%\definecolor{cBlack}{rgb}{0.0,0.0,0.0}
+
+%\newcommand{\Blue}{\color{cBlue}} 
+%\newcommand{\Viol}{\color{cViol}} 
+%\newcommand{\Red}{\color{cRed}} 
+%\newcommand{\Green}{\color{cGreen}} 
+%\newcommand{\Grey}{\color{cGrey}} 
+%\newcommand{\Greyy}{\color{cGreyy}} 
+%\newcommand{\Black}{\color{cBlack}} 
+
+%
+%\begin{document}
+
+%%titre etc...:
+%\title{Quaternions}
+%\author{
+%	Basile Graf 	\vspace{0.1in} \\
+%  Ecole Polytechnique Fdrale de Lausanne\\
+%  \texttt{basile.graf@epfl.ch}}
+%\date{\today}
+%\maketitle
+
+%\pagebreak
+
+%
+
+%
+%% Rsum:
+%\begin{abstract}
+%\end{abstract}
+
+%\vspace{30pt}
+
+%
+%%Table des matire:
+% \tableofcontents
+
+%\newpage
+
+%
+%%Sections:
+%\section*{Introduction}
+
+%
+
+%\section{}
+
+
+\section{四元数}
+\label{quat}
+
+\subsection{基本原则}
+
+关系方程 \eqref{eq1}，以及关联性和分布性都是我们用来推导四元数的基本实际应用的。
+
+\begin{equation}
+\fbox{$i^2 = j^2 = k^2 = ijk = -1$}
+\label{eq1}
+\end{equation}
+
+通过左乘和右乘，在上面的方程中，我们可以写出 
+
+
+\begin{equation*}
+\begin{tabular}{cc}
+	\multicolumn{2}{c}{$i\ ijk = -jk = -i$}  \\
+	\multicolumn{2}{c}{$ijk\ k = -ij = -k$}  \\
+	$j \ jk = -k = ji$  &   $ij \ j = -i = kj$  \\
+	$i \ ij = -j = ik$  &   $ji \ i = -j = -ki$ 
+\end{tabular}
+\end{equation*}
+
+这表明乘积是非交换的(\emph{non commutative})，并给出了基本的乘法规则：
+
+\begin{equation}
+\fbox{
+\begin{tabular}{cc}
+	$ij=k$ & $ji=-k$  \\
+	$jk=i$ & $kj=-i$  \\
+	$ki=j$ & $ik=-j$  \\
+\end{tabular}}
+\label{eq3}
+\end{equation}
+
+
+
+\subsection{符号和定义}
+
+四元数 $q$ 是四个参数的集合，一个实数 $q_0$ 和三个虚数 $q_1i$, $q_2j$, $q_3k$ 以及 $q_1, q_2, q_3 \in  \mathbb{R}$，这可以写为
+ 
+\begin{equation*}
+q=q_0+q_1i+q_2j+q_3k .
+\end{equation*}
+
+然而，这个符号证明自己是非常不实用的。因此，我们将使用两种不同的符号：
+
+\begin{itemize}
+	\item 四元数 $q$ 作为一个实数和一个向量虚数的有序对 \\
+			$q = (q_0, \vec{q})  \qquad\qquad   \RE\big\{ q \big\}=q_0  \qquad  \IM\big\{ q \big\}=\vec{q}=(q_1\ q_2\ q_3)^T$
+	\item 四个参数的列向量 \\
+			$\b{q}=(q_0\ q_1\ q_2\ q_3)^T$
+\end{itemize}
+
+$q$ 的共轭 $\bar{q}$ 被定义为
+
+\begin{equation*}
+\bar{q} = (q_0, -\vec{q})
+\end{equation*}
+
+并且它的范数 (非负实值) 是
+
+\begin{equation*}
+|q| = |\b{q}| = \sqrt{q^2_0+q^2_1+q^2_2+q^2_3}.
+\end{equation*}
+
+如下一节所述，两个四元数的乘积写成一对，将用符号 $\o$ 标记。
+
+
+\subsection{四元数乘积}
+
+根据方程 \eqref{eq3}中给出的规则，我们可以写出 $q$ 和 $p$ 的乘积。 
+
+
+\begin{equation*}
+(q_0 + q_1i +q_2j +q_3k) (p_0 + p_1i +p_2j +p_3k) \ =
+\label{eq4}
+\end{equation*}
+
+\begin{equation*}
+\begin{tabular}{ccccccccc}
+    & \Greyy{$p_0 q_0$}    &$+$&   \Red{$q_0 p_1 \ i$}   &$+$&   \Red{$q_0 p_2 \ j$}   &$+$&   \Red{$q_0 p_3 \ k$}  & \\
+$+$ & \Blue{$q_1 p_0 \ i$} &$+$&   \Green{$q_1 p_1 \ ii$}  &$+$&   $q_1 p_2 \ ij$  &$+$&   $q_1 p_3 \ ik$ & \\
+$+$ & \Blue{$q_2 p_0 \ j$} &$+$&   $q_2 p_1 \ ji$  &$+$&   \Green{$q_2 p_2 \ jj$}  &$+$&   $q_2 p_3 \ jk$ & \\
+$+$ & \Blue{$q_3 p_0 \ k$} &$+$&   $q_3 p_1 \ ki$  &$+$&   $q_3 p_2 \ kj$  &$+$&   \Green{$q_3 p_3 \ kk$} & $=$ \\
+\end{tabular}
+\label{eq5}
+\end{equation*}
+
+
+
+
+\begin{equation*}
+\begin{tabular}{ccccccccc}
+    & \Greyy{$p_0 q_0$}   &$-$&   \Green{$q_1 p_1$}   &$-$&   \Green{$q_2 p_2$}    &$-$&   \Green{$q_3 p_3$}   & \\
+$+$ & \Blue{$(q_1 p_0$}   &$+$&   \Red{$q_0 p_1$}   &$+$&   $q_2 p_3$    &$-$&   $q_3 p_2)\ i$   & \\
+$+$ & \Blue{$(q_2 p_0$}   &$+$&   \Red{$q_0 p_2$}   &$+$&   $q_3 p_1$    &$-$&   $q_1 p_3)\ j$   & \\
+$+$ & \Blue{$(q_3 p_0$}   &$+$&   \Red{$q_0 p_3$}   &$+$&   $q_1 p_2$    &$-$&   $q_2 p_1)\ k$   & \\
+\end{tabular}
+\label{eq6}
+\end{equation*}
+
+\begin{equation}
+q \circ p = (\Greyy{p_0 q_0} - \Green{\v{p}\cdot\v{q}} , \Red{q_0 \v{p}} + \Blue{p_0 \v{q}} + \Black{\v{q}\c\v{p}}).
+\label{eq7}
+\end{equation}
+
+从方程 \eqref{eq7} 可以看出
+
+\begin{equation}
+q \o \bar{q} = \bar{q} \o q = (|q|^2, \vec{0}) = |q|^2
+\label{eqConj}
+\end{equation}
+
+并且如果 $q$ 是赋范的 ($|q|=1$)
+
+\begin{equation}
+q \o \bar{q} = \bar{q} \o q = (1, \vec{0}) = Id.
+\label{eqConjN}
+\end{equation}
+
+在方程 \eqref{eq7} 中我们也看到 
+
+\begin{equation}
+\overline{q \o p} = \bar{p} \o \bar{q}
+\label{eqQoQbar}
+\end{equation}
+
+那就是
+
+\begin{equation*}
+|q \o p|^2 = (q\o p) \o (\overline{q \o p}) = q\o \underbrace{p \o \bar{p}}_{|p|^2} \o \bar{q} = |p|^2 (q\o \bar{q}) = |q|^2|p|^2
+\end{equation*}
+\begin{equation}
+|q \o p|  = |q||p|.
+\label{eqNormProd}
+\end{equation}
+
+
+\subsection{四元数和空间旋转}
+
+首先，注意以下关系
+
+\begin{gather*}
+(\vec{u} \c \vec{v}) \c \vec{w} = (\vec{u} \cdot \vec{w}) \vec{v}   -   (\vec{v} \cdot \vec{w}) \vec{u} \\
+\sin^2\frac{\varphi}{2} = \frac{1-\cos\varphi}{2}  \qquad    \cos^2\frac{\varphi}{2} = \frac{1+\cos\varphi}{2}.
+\end{gather*}
+
+从现在起， $q$ 通常表示一个涉及旋转的赋范四元数 ($|q|=1$) 。现在让我们在四元数 $x$ 的虚部放置一个向量 $\vec{x}\in \mathbb{R}^3$ ，看看它在下面的关系中会发生什么   
+
+\begin{equation*}
+x' = \bar{q} \o x \o q  \qquad \qquad   x = (0,\vec{x}) \qquad  q = (q_0, \vec{q}) .  
+\end{equation*}
+
+使用方程 \eqref{eq7}
+
+\begin{gather*}
+x' = (\vec{q} \cdot \vec{x},\  q_0 \vec{x} - \vec{q} \c \vec{x}) \o q \\
+= (  \underbrace{(\vec{q} \cdot \vec{x})q_0 - (q_0 \vec{x} - \vec{q} \c \vec{x}) \cdot \vec{q}}_{\RE\{ x'  \}},\  
+\underbrace{(\vec{q} \cdot \vec{x}) \vec{q} + q_0(q_0 \vec{x} - \vec{q} \c \vec{x}) +(q_0 \vec{x} - \vec{q} \c \vec{x}) \c \vec{q}}_{\IM\{  x' \}}  )
+\end{gather*}
+
+
+\begin{align*}
+\RE\big\{ x' \big\} &= (\vec{q} \cdot \vec{x})q_0 - q_0(\vec{x} \cdot \vec{q}) - (\vec{q} \c \vec{x}) \cdot \vec{q} = 0 \\
+                    &\Rightarrow \ x' = (0,\vec{x}'), \\
+\IM\big\{ x' \big\} &= \vec{x}' \\
+										&= (\vec{q} \cdot \vec{x}) \vec{q} + q_0^2\vec{x} - q_0(\vec{q}\c\vec{x}) + q_0(\vec{x}\c\vec{q}) - (\vec{q}\c\vec{x}) \c\vec{q} \\
+                    &= (\vec{q} \cdot \vec{x}) \vec{q} + q_0^2\vec{x} + 2 q_0(\vec{x}\c\vec{q}) - (\vec{q}\c\vec{x}) \c\vec{q} \\
+    &= (\vec{q} \cdot \vec{x}) \vec{q} + q_0^2\vec{x} + 2 q_0(\vec{x}\c\vec{q}) - (\vec{q}\cdot\vec{q})\vec{x} + (\vec{x}\cdot\vec{q})\vec{q} \\
+    &= 2(\vec{q} \cdot \vec{x}) \vec{q} + q_0^2\vec{x} + 2 q_0(\vec{x}\c\vec{q}) - (\vec{q}\cdot\vec{q})\vec{x}.
+\end{align*}
+
+
+一个有效的赋范四元数 ($|q|=\sqrt{(q_0^2+q_1^2+q_2^2+q_3^2)}=1$) 将会
+
+\begin{equation*}
+q = (q_0, \vec{q}) = (\cos\frac{\varphi}{2},\ \sin\frac{\varphi}{2}\vec{n}) \qquad \qquad |\vec{n}|=1.
+\end{equation*}
+
+在这种情况下， $\vec{x}'$ 变成 
+
+\begin{align*}
+\vec{x}'  &=  
+2 \sin^2\frac{\varphi}{2} (\vec{n}\cdot\vec{x})\vec{n} + \cos^2\frac{\varphi}{2} \vec{x} + 2 \cos\frac{\varphi}{2} \sin\frac{\varphi}{2} (\vec{x}\c\vec{n}) - \sin^2\frac{\varphi}{2} \vec{x} \\
+         &= (1-\cos\varphi)(\vec{n}\cdot\vec{x}) \vec{n}  + \cos\varphi\ \vec{x} + \sin\varphi\ (\vec{x}\c\vec{n}).
+\end{align*}
+
+最后一个关系是用一个角度 $\varphi$ 绕一个赋范轴矢量 $\vec{n}$ 的旋转公式，如下图所示：
+
+\begin{figure}
+\begin{center}
+\psfrag{0}[l][c][1][0]{$0$}
+\psfrag{n}[l][c][1][0]{$\vec{n}$}
+\psfrag{xnn}[l][c][1][29]{$(\vec{x}\cdot\vec{n})\vec{n}$}
+\psfrag{x}[l][c][1][0]{$\vec{x}$}
+\psfrag{xp}[l][c][1][0]{$\vec{x}'$}
+\psfrag{v1}[l][c][1][0]{$\vec{v}_1$}
+\psfrag{v2}[l][c][1][0]{$\vec{v}_2$}
+\psfrag{v3}[l][c][1][0]{$\vec{v}_3$}
+\psfrag{phi}[l][c][1][0]{$\varphi$}
+\epsfig{file=figures/rotation.eps, width=8cm}
+\end{center}
+\end{figure}
+
+
+\begin{align*}
+\vec{v}_2 &= \cos\varphi\ \vec{v}_1 + \sin\varphi\ \vec{v}_3 \\
+\vec{v}_1 &= \vec{x} - (\vec{x}\cdot\vec{n})\vec{n} \\
+\vec{v}_3 &= \vec{v}_1 \c \vec{n}  \\
+          &= (\vec{x} - (\vec{x}\cdot\vec{n})\vec{n}) \c \vec{n} \\
+          &= (\vec{x}\c\vec{n}) - (\vec{x}\cdot\vec{n})\underbrace{\vec{n}\c\vec{n}}_{\vec{0}} \\
+\Rightarrow\ \vec{v}_2 &= \cos\varphi\ (\vec{x} - (\vec{x}\cdot\vec{n})\vec{n}) + \sin\varphi\ (\vec{x}\c\vec{n}) \phantom{\underbrace{1}_{\vec{1}}}\\
+\vec{x}'  &= (\vec{x}\cdot\vec{n})\vec{n} + \vec{v}_2 \\
+          &= (\vec{x}\cdot\vec{n})\vec{n} + \cos\varphi\ (\vec{x} - (\vec{x}\cdot\vec{n})\vec{n}) + \sin\varphi\ (\vec{x}\c\vec{n}) \\
+          &= (1-\cos\varphi)(\vec{n}\cdot\vec{x}) \vec{n}  + \cos\varphi\ \vec{x} + \sin\varphi\ (\vec{x}\c\vec{n}).
+\end{align*}
+
+而且
+
+\begin{gather*}
+x' = \bar{q} \o x \o q \\
+q \o x' \o \bar{q} = \underbrace{q\o\bar{q}}_{(1,\vec{0})} \o x \o \underbrace{q\o\bar{q}}_{(1,\vec{0})}.
+\end{gather*}
+
+因此我们得到了旋转及其逆的关系
+
+\begin{equation}
+\fbox{$x' = \bar{q} \o x \o q \\   \qquad  x = q \o x' \o \bar{q}$}.
+\end{equation}
+
+
+
+\subsection{四元数和旋转速度}
+
+我们现在将推导旋转速度矢量和四元数时间导数之间的关系。 $\vec{x}'$ 是任意恒定矢量，位于机体参考坐标系(\emph{body (rotating) reference frame})中，并且 $\vec{x}$ 是在固定参考坐标系(\emph{fixed reference frame})中的同一个矢量。如前所述，两个矢量都可以与
+
+\begin{equation*}
+\begin{tabular}{ccc}
+$x = q \o x' \o \bar{q}$ &  & $x' = \bar{q} \o x \o q$.
+\end{tabular}
+\label{eq8}
+\end{equation*}
+
+将时间导数应用于 $x=(0,\vec{x})$，以及 $x'=(0,\vec{x}')$ 和 $\dot{\vec{x}}'=\v{0}$，我们得到
+
+\begin{gather*}
+\dot{x} = \dot{q} \o x' \o \bar{q}  +  q \o x' \o \dot{\bar{q}}  \\
+\dot{x} = \dot{q} \o \bar{q} \o x \o \underbrace{q \o \bar{q}}_{Id}  +  \underbrace{q \o \bar{q}}_{Id} \o x \o q \o \dot{\bar{q}}
+\end{gather*}
+\begin{equation}
+\dot{x} = \dot{q} \o \bar{q} \o x  +   x \o q \o \dot{\bar{q}}  
+\label{eq9.3}
+\end{equation}
+
+并且从方程 \eqref{eq7}
+
+\begin{gather*}
+\dot{q} \o \bar{q} = ( \underbrace{\dot{q_0}q_0 + \dot{\v{q}}\cdot\v{q}}_{\varoast}, -\dot{q_0}\v{q} + q_0\dot{\v{q}} - \dot{\v{q}} \c \v{q}) \\
+\varoast = q_0\dot{q_0} + q_1\dot{q_1} + q_2\dot{q_2} + q_3\dot{q_3} = \b{q} \cdot \dot{\b{q}} = 0
+\end{gather*}
+
+因为 $|\b{q}|=1$。那就是
+
+\begin{equation}
+\dot{q} \o \bar{q} = (0,\v{\nu})  \qquad \textrm{and similarly} \qquad \bar{q} \o \dot{q} = (0,\v{-\nu}). 
+\label{eq10}
+\end{equation}
+
+
+\subsubsection{固定参考系中的转速 $\w$}
+从方程 \eqref{eq9.3} 和 \eqref{eq10} 并且使用 \eqref{eq7} 我们有
+
+\begin{align*}
+\dot{x} & = (0,\v{\nu}) \o x - x \o (0,\v{-\nu})  \\
+\dot{\vec{x}} & = \vec{\nu} \c \vec{x} - \vec{x} \c \vec{\nu} = 2 \vec{\nu} \c \vec{x}
+\end{align*}
+并且从方程 \eqref{eqNormProd} 
+\begin{equation*}
+|\dot{\vec{x}}|=|2\vec{\nu}||\vec{x}|  \qquad \Rightarrow \qquad    \vec{\nu} \bot \vec{x}
+\end{equation*}
+
+
+如果 $\vec{x}$ 经历纯旋转，我们知道这个
+
+\begin{equation*}
+\dot{\vec{x}} = \vec{\w} \c \vec{x}    \qquad \textrm{and} \qquad   \vec{\w} \bot \vec{x}
+\end{equation*}
+
+因此
+
+
+\begin{equation}
+\fbox{ $\w = (0,\vec{\w}) = 2(0,\vec{\nu}) = 2 \dot{q} \o \bar{q} $}.
+\end{equation}
+
+并且右乘以 $q$
+
+\begin{equation*}
+\w \o q= 2 \dot{q} \o \underbrace{\bar{q} \o q}_{Id} \ \  \Rightarrow \ \  \w \o q = 2 \dot{q}
+\end{equation*}
+
+\begin{equation}
+\fbox{$ \dot{q} = \frac{1}{2} \w \o q $}.
+\end{equation}
+
+
+
+
+\subsubsection{机体参考系中的转速 $\w'$}
+
+\begin{align*}
+             \w'      & = \bar{q} \o \w \o q    \qquad \textrm{with} \qquad    \w = 2 \dot{q} \o \bar{q} \\
+\Rightarrow  \ \ \w'  & = 2 \bar{q} \o \dot{q} \o \underbrace{\bar{q} \o q}_{Id}
+\end{align*}
+
+\begin{equation}
+\fbox{ $\w' = 2 \bar{q} \o \dot{q} $}.
+\end{equation}
+
+并且左乘以 $q$
+
+\begin{equation*}
+q \o \w' = 2 \underbrace{q \o \bar{q}}_{Id} \o \dot{q} = 2 \dot{q}
+\end{equation*}
+
+\begin{equation}
+\fbox{$ \dot{q} = \frac{1}{2} q \o \w' $}.
+\end{equation}
+
+
+
+
+\subsubsection{矩阵乘积表示的 $\w$}
+\label{secMat1}
+
+从
+
+\begin{equation*}
+\w = 2 \dot{q} \o \bar{q} 
+\end{equation*}
+
+并且使用方程 \eqref{eq7}
+
+\begin{align*}
+\vec{\w} &= \IM\big\{{2 \dot{q} \o \bar{q}} \big\} = 2(\Red{-\dot{q_0}\vec{q}} \Blue{ + q_0\dot{\vec{q}}} \Black{- \dot{\vec{q}} \c \vec{q})} \\
+         &= 2 \underbrace{\left( \begin{array}{cccc}
+\Red{-q_1} &  \Blue{q_0} & -q_3 & q_2 \\
+\Red{-q_2} &  q_3 & \Blue{q_0}  & -q_1 \\
+\Red{-q_3} & -q_2 & q_1  & \Blue{q_0} \\
+\end{array} \right)}_{E} \left( \begin{array}{c}
+\dot{q_0} \\
+\dot{q_1} \\
+\dot{q_2} \\
+\dot{q_3} \\
+\end{array} \right)
+\end{align*}
+
+\begin{equation*}
+\vec{\w} = 2E\dot{\b{q}} .
+\end{equation*}
+
+更改符号并反转交叉积可以制造另一个标识
+
+\begin{equation*}
+\vec{\w} = -2(-q_0\dot{\vec{q}} + \dot{q_0}\vec{q} - \vec{q} \c \dot{\vec{q}}) 
+\end{equation*}
+
+\begin{equation*}
+\vec{\w} = -2\dot{E}\b{q} .
+\end{equation*}
+
+因此，固定参考系(\emph{fixed reference})中的转速矢量可以写为
+
+\begin{equation}
+\fbox{$ \vec{\w} = 2E\dot{\b{q}} = -2\dot{E}\b{q} $} .
+\end{equation}
+
+
+并且从
+
+\begin{equation*}
+\dot{q} = \frac{1}{2} \w \o q     \qquad \qquad  \w = (0,\vec{\w}) \ \Rightarrow \ \w_0=0
+\end{equation*}
+
+同样，我们也可以发现
+
+\begin{equation*}
+\dot{\b{q}} = \frac{1}{2} \left( \begin{array}{c}
+(-\vec{\w} \cdot \vec{q})\\
+(q_0\vec{\w} + \vec{\w} \c \vec{q})
+\end{array} \right) = \frac{1}{2} E^T\vec{\w}
+\end{equation*}
+
+\begin{equation}
+\fbox{$ \dot{\b{q}} = \frac{1}{2} E^T\vec{\w} $} .
+\label{eq_dotq_w}
+\end{equation}
+
+
+\subsubsection{矩阵乘积表示的 $\w'$}
+\label{secMat2}
+
+从
+
+\begin{equation*}
+\w' = 2 \bar{q} \o \dot{q} 
+\end{equation*}
+
+并且使用方程 \eqref{eq7}
+
+\begin{align*}
+\vec{\w'} &= \IM\big\{{2 \bar{q} \o \dot{q}} \big\} = 2(\Blue{q_0\dot{\vec{q}}} \Red{ - \dot{q_0}\vec{q}} \Black{- \vec{q} \c \dot{\vec{q}})} \\
+         &= 2 \underbrace{\left( \begin{array}{cccc}
+\Red{-q_1} &  \Blue{q_0} & q_3 & -q_2 \\
+\Red{-q_2} & -q_3 & \Blue{q_0}  & q_1 \\
+\Red{-q_3} & q_2 & -q_1  & \Blue{q_0} \\
+\end{array} \right)}_{G} \left( \begin{array}{c}
+\dot{q_0} \\
+\dot{q_1} \\
+\dot{q_2} \\
+\dot{q_3} \\
+\end{array} \right)
+\end{align*}
+
+\begin{equation*}
+\vec{\w'} = 2G\dot{\b{q}} .
+\end{equation*}
+
+改变符号并反转交叉积可以制造另一个标识
+
+\begin{equation*}
+\vec{\w'} = -2(\dot{q_0}\vec{q} - q_0\dot{\vec{q}} - \dot{\vec{q}} \c \vec{q}) 
+\end{equation*}
+
+\begin{equation*}
+\vec{\w'} = -2\dot{G}\b{q} .
+\end{equation*}
+
+所以机体参考系(\emph{body reference})中的旋转速度矢量可以写为
+
+\begin{equation}
+\fbox{$ \vec{\w'} = 2G\dot{\b{q}} = -2\dot{G}\b{q} $} .
+\label{eqGq}
+\end{equation}
+
+
+
+并且从
+
+\begin{equation*}
+\dot{q} = \frac{1}{2} q \o \w'     \qquad \qquad  \w' = (0,\vec{\w'}) \ \Rightarrow \ \w'_0=0
+\end{equation*}
+
+同样，我们也可以发现
+
+\begin{equation*}
+\dot{\b{q}} = \frac{1}{2} \left( \begin{array}{c}
+(-\vec{q} \cdot \vec{\w'})\\
+(q_0\vec{\w'} + \vec{q} \c \vec{\w'})
+\end{array} \right) = \frac{1}{2} G^T\vec{\w'}
+\end{equation*}
+
+\begin{equation}
+\fbox{$ \dot{\b{q}} = \frac{1}{2} G^T\vec{\w'} $} .
+\label{eqqdot}
+\end{equation}
+
+
+
+
+\subsubsection{旋转矩阵 $R$}
+
+我们已经有
+
+\begin{minipage}[left]{0.49 \textwidth}
+	\begin{gather*}
+	   	 \vec{\w} = 2E\dot{\b{q}} = -2\dot{E}\b{q}  \\
+		\dot{\b{q}} = \frac{1}{2} E^T\vec{\w}
+	\end{gather*}
+\end{minipage}
+\begin{minipage}[right]{0.49 \textwidth}
+	\begin{gather*}
+	   	 \vec{\w'} = 2G\dot{\b{q}} = -2\dot{G}\b{q}  \\
+		\dot{\b{q}} = \frac{1}{2} G^T\vec{\w'}
+	\end{gather*}
+\end{minipage}
+
+
+所以我们可以写
+
+\begin{minipage}[left]{0.49 \textwidth}
+	\begin{align*}
+		\vec{\w} &= 2E\dot{\b{q}}   \\
+		         &= 2E(\frac{1}{2} E^T\vec{\w})   \\
+		         &= EE^T \vec{\w}   \\
+		&\Rightarrow \ \fbox{$EE^T = Id$} .
+	\end{align*}
+\end{minipage}
+\begin{minipage}[right]{0.49 \textwidth}
+	\begin{align*}
+		\vec{\w'} &= 2G\dot{\b{q}}   \\
+		         &= 2G(\frac{1}{2} G^T\vec{\w'})   \\
+		         &= GG^T \vec{\w'}   \\
+		&\Rightarrow \ \fbox{$GG^T = Id$} .
+	\end{align*}
+\end{minipage} \\
+
+
+并且两边混合
+
+\begin{gather*}
+	\vec{\w'} = 2G\dot{\b{q}} = 2G(\frac{1}{2} E^T\vec{\w}) = GE^T \vec{\w} \\
+	\vec{\w} = 2E\dot{\b{q}} = 2E(\frac{1}{2} G^T\vec{\w'}) = EG^T \vec{\w'} .
+\end{gather*}
+
+
+我们现在应该记得，$\v{\w}$ 是在固定参考系(\emph{fixed reference frame})中的矢量，并且 $\v{\w}'$ 是同一个矢量位于机体参考系(\emph{body reference frame})，就是说 $\vec{\w} = R \vec{\w'}$。通过与前两个结果的比较，我们发现
+
+\begin{equation}
+\fbox{$ R = EG^T $} \qquad \textrm{and} \qquad \fbox{$R^{-1}=R^T=GE^T $} .
+\label{eqRot}
+\end{equation}
+
+
+
+
+
+
+
+
+\subsubsection{$E\b{p}$ 和 $G\b{p}$}
+
+从在第 \ref{secMat1} 和 \ref{secMat2} 节制造的标识可以看出， $E$ 和 $G$ 与任何四元数 $\b{p}$ 的乘积的一般含义是
+
+\begin{equation}
+E\b{p} = \IM\big\{{p \o \bar{q}}\big\}    \qquad \qquad    G\b{p} = \IM\big\{{\bar{q} \o p} \big\} .
+\label{eqEpGp}
+\end{equation}
+
+并且从
+
+\begin{equation*}
+q \o \bar{q} = \bar{q} \o q = (|q|, \vec{0}) = (1,\vec{0})    
+\end{equation*}
+
+接下来是
+
+\begin{equation*}
+\fbox{$E\b{q} = \vec{0}$}    \qquad \qquad    \fbox{$G\b{q} = \vec{0}$} .
+\end{equation*}
+
+
+
+
+
+
+\subsubsection{最后一个关系}
+
+对于任何 $\vec{v}$ ，由于关联性
+
+\begin{align*}
+\underbrace{(0,\vec{\w'})}_{2 \bar{q} \o \dot{q}} \o (0,\vec{v})  &=  (-\vec{\w'}\cdot\vec{v} , \vec{\w'}\c \vec{v}) \\
+           &= 2 \bar{q} \o \dot{q} \o v \\
+           &=  2(\Greyy{q_0\dot{q_0}} \Green{+\vec{q} \cdot \dot{\vec{q}}},  \Blue{q_0\dot{\vec{q}}} \Red{ - \dot{q_0}\vec{q}} \Black{- \vec{q} \c \dot{\vec{q}})} \o v =
+2 \bar{q} \o (\Greyy{\dot{q_0}v_0} \Green{-\dot{\vec{q}} \cdot \vec{v}},  \Blue{\dot{q_0}\vec{v}} \Red{ + v_0\dot{\vec{q}}} 
+\Black{+ \dot{\vec{q}} \c \vec{v}}) \\
+         &\equiv 2 \left( \begin{array}{cccc}
+\Greyy{q_0} & \Green{q_1} & \Green{q_2} & \Green{q_3} \\
+\hline
+\Red{-q_1} &  \Blue{q_0} & q_3 & -q_2 \\
+\Red{-q_2} & -q_3 & \Blue{q_0}  & q_1 \\
+\Red{-q_3} & q_2 & -q_1  & \Blue{q_0} \\
+\end{array} \right) 
+\left( \begin{array}{c|cccc}
+\Greyy{\dot{ q_0}} &  \Green{\dot{-q_1}} & \Green{\dot{-q_2}} & \Green{\dot{-q_3}}\\
+\Red{\dot{ q_1}} &  \Blue{\dot{ q_0}} & \dot{-q_3} & \dot{ q_2}\\
+\Red{\dot{ q_2}} &  \dot{ q_3} & \Blue{\dot{ q_0}} & \dot{-q_1}\\
+\Red{\dot{ q_3}} &  \dot{-q_2} & \dot{ q_1} & \Blue{\dot{ q_0}}\\
+\end{array} \right) 
+\left( \begin{array}{c}
+0 \\
+\hline
+v_1 \\
+v_2 \\
+v_3 \\
+\end{array} \right) \\
+         &= 2 \left( \begin{array}{c}
+         \b{q}^T \\
+         G  \\
+         \end{array} \right) 
+         \bigg(\begin{array}{cc}
+         \dot{\b{q}} & \dot{G}^T \\
+         \end{array} \bigg) 
+         \bigg(\begin{array}{c}
+         0 \\
+         \vec{v} \\
+         \end{array} \bigg) = 
+         \bigg(\begin{array}{c}
+         -\vec{\w'}\cdot\vec{v} \\
+         \vec{\w'}\c \vec{v}\\
+         \end{array} \bigg)\\
+     &\Rightarrow \ 2G\dot{G}^T\vec{v}=\Omega' \vec{v} = \vec{\w'} \c \vec{v} .
+\end{align*}
+
+与方程 \eqref{eqGq}相比，我们的结论是
+
+\begin{equation}
+\fbox{$ \Omega'= 2G\dot{G}^T = -2\dot{G}G^T \qquad \textrm{and} \qquad  \Omega' \vec{v} = \vec{\w'} \c \vec{v} $} .
+\label{eqCross}
+\end{equation}
+
+
+
+
+
+
+\subsubsection{关系总结}
+
+下表总结了已开发的关系。 $q$ 始终是赋范四元数，即 $q_0^2+q_1^2+q_2^2+q_3^2=1$。 \\
+\begin{center}
+\begin{tabular}{| p{0.249\textwidth} | p{0.249\textwidth} | p{0.249\textwidth} | p{0.249\textwidth} |}
+\hline
+\multicolumn{2}{|c|}{四元数表示法}&
+\multicolumn{2}{|c|}{矩阵表示法}\\
+\hline
+\multicolumn{1}{|c|}{\emph{固定参考系}} &
+\multicolumn{1}{|c|}{\emph{机体参考系}} &
+\multicolumn{1}{|c|}{\emph{固定参考系}} &
+\multicolumn{1}{|c|}{\emph{机体参考系}} \\
+\hline
+$x = q \o x' \o \bar{q}     \phantom{\Bigg(}$  &
+$x' = \bar{q} \o x \o q$  &
+\begin{tabular}{l}
+	$\vec{x}=R\vec{x}'$ \\
+	$R=EG^T$
+\end{tabular}&
+\begin{tabular}{l}
+	$\vec{x}'=R^T\vec{x}$  \\
+	$R^T=R^{-1}=GE^T$ 
+\end{tabular}\\
+\hline
+$\w=(0,\vec{\w})=2\dot{q}\o\bar{q}     \phantom{\Bigg(}$  &
+$\w'=(0,\vec{\w}')=2\bar{q}\o\dot{q}$  &
+$\vec{\w}=2E\dot{\b{q}}=-2\dot{E}\b{q}$  &
+$\vec{\w}'=2G\dot{\b{q}}=-2\dot{G}\b{q}$ \\
+\hline
+$\dot{q}=\frac{1}{2}\w \o q     \phantom{\Bigg(}$  &
+$\dot{q}=\frac{1}{2} q \o \w'$  &
+$\dot{\b{q}}=\frac{1}{2}E^T\vec{\w}$  &
+$\dot{\b{q}}=\frac{1}{2}G^T\vec{\w}'$  \\
+\hline
+&
+&
+$EE^T=Id     \phantom{\Bigg(}$  &
+$GG^T=Id$  \\
+\hline
+\multicolumn{2}{|c|}{$q\o\bar{q} = \bar{q}\o q = (|q|,\vec{0})     \phantom{\Bigg(}$} &
+$E\b{q}=\vec{0}$ &
+$G\b{q}=\vec{0}$ \\
+\hline
+$     \phantom{\Bigg(}$   &
+\begin{tabular}{l}
+	$(0,\vec{\w}) \o (0,\vec{v}) = $ \\
+	$(-\vec{\w'}\cdot\vec{v},\vec{\w'}\c\vec{v})$ 
+\end{tabular}&
+&
+\begin{tabular}{l}
+	$\Omega' = 2G\dot{G}^T$ \\
+	$\ \ \ \  = -2\dot{G}G^T$  \\
+	$\Omega'\vec{v} = \vec{\w'}\c\vec{v}$ 
+\end{tabular}\\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{equation*}
+E =
+\left( \begin{array}{cccc}
+-q_1 &  q_0 & -q_3 & q_2  \\
+-q_2 &  q_3 & q_0  & -q_1 \\
+-q_3 & -q_2 & q_1  & q_0  \\
+\end{array} \right)
+\qquad \qquad
+G = 
+\left( \begin{array}{cccc}
+-q_1 &  q_0 & q_3 & -q_2 \\
+-q_2 & -q_3 & q_0  & q_1 \\
+-q_3 & q_2 & -q_1  & q_0 \\
+\end{array} \right)
+\end{equation*}
+
+
+
+
+
+
+
+\subsection{刚体旋转动力学}
+\label{quat_rigid_dyn_IN}
+
+我们现在来看看一个自由旋转的刚体的动力学，这个刚体上应用了动量 $\v T'$ 。不讨论物体的平移 (它可以与旋转动力学分离，而且相当容易)。我们还将考虑一个无势系统，这样拉格朗日方程只恢复到转动动能
+
+\begin{equation}
+L=E_{\textrm{rot}}=\frac{1}{2}\vec{\w}'^TJ\vec{\w}'.
+\end{equation}
+
+使用四元数 $\b{q}$ 作为坐标，且有约束 $C=\b{q}^T\b{q}=1$，拉格朗日动力学给出
+
+\begin{equation}
+\frac{d}{dt}\frac{\partial L}{\partial \dot{\b{q}}} - \frac{\partial L}{\partial \b{q}} = \b{F_q} + {\lambda} \frac{\partial C}{\partial \b{q}}.
+\label{eqLDyn}
+\end{equation}
+
+$\b{F_q}$ 是广义力的 4-vector，稍后将用施加的扭矩表示。 $\b{\lambda}$ 是用来满足约束 $C$ 的拉格朗日乘子。
+
+\subsubsection{$L$ 的导数}
+
+注意以下提醒
+
+\begin{center}
+\begin{tabular}{c}
+$\frac{\displaystyle \partial A\b{x}}{\displaystyle \partial \b{x}} = A      \phantom{\Bigg(}$ \\
+$\frac{\displaystyle \partial \b{a}^T\b{x}}{\displaystyle \partial \b{x}} = \frac{\displaystyle \partial \b{x}^T\b{a}}{\displaystyle \partial \b{x}} = \b{a}$ \\
+$\frac{\displaystyle \partial \b{x}^T A\b{x}}{\displaystyle \partial \b{x}} = (A^T +A)\b{x} \stackrel{\textrm{if }A=A^T}{=} 2A\b{x}     \phantom{\Big(}$ \\
+(写成列向量)\\
+$(AB)^T=B^TA^T \ .  \phantom{\Bigg(}$\\
+\end{tabular}
+\end{center}
+
+我们现在导出方程 \eqref{eqLDyn} 左边的每一项。首先，让我们用两种不同的方法重写 $L$ 。
+ 
+
+\begin{equation*}
+L=\frac{1}{2}\vec{\w}'^TJ\vec{\w}' = 2(G\dot{\b{q}})^T J (G\dot{\b{q}}) = 2 (\dot{G}\b{q})^T J (\dot{G}\b{q})
+\end{equation*}
+
+并且在围绕 $J$ 分组
+
+\begin{equation*}
+L=\frac{1}{2}\vec{\w}'^TJ\vec{\w}' = 2\dot{\b{q}}^T (G^T J G) \dot{\b{q}} = 2 \b{q}^T (\dot{G}^T J \dot{G}) \b{q}.
+\end{equation*}
+
+因为 $J$ 是对称的， $(G^T J G)$ 和 $(\dot{G}^T J \dot{G})$ 也是对称的。所以我们有
+
+\begin{equation}
+\frac{\partial L}{\partial \b{q}} = 4 \dot{G}^T J \dot{G} \b{q} = 2 \dot{G}^T J \underbrace{(2\dot{G}\b{q})}_{-\vec{\w}'} =
+-2 \dot{G}^T J \vec{\w}',
+\end{equation}
+
+\begin{equation*}
+\frac{\partial L}{\partial \dot{\b{q}}} = 4 G^T J G \dot{\b{q}} = 2 G^T J \underbrace{(2G\dot{\b{q}})}_{\vec{\w}'} =
+2 G^T J \vec{\w}'
+\end{equation*}
+
+并且
+
+\begin{equation}
+\frac{d}{dt} \frac{\partial L}{\partial \dot{\b{q}}} = \frac{d}{dt} (2 G^T J \vec{\w}') = 2 \dot{G}^T J \vec{\w}' + 2 G^T J \dot{\vec{\w}}'.
+\end{equation}
+
+
+\subsubsection{广义力}
+
+找到相对于坐标 $\b{c}$ 的广义力 $\b{F_c}$ 的一种方法就是识别它于方程 
+
+\begin{equation*}
+\delta W = \b{F_c} \cdot \delta \b{c} .
+\end{equation*}
+
+(一个简单的例子是粒子的纯平移 $\delta \vec{x}$ ，在其上施加一个外力 $\vec{F}$ 。因此，做功是 $\delta W = \b{F}_{\vec{x}} \cdot \delta \vec{x} = \vec{F} \cdot \delta \vec{x}$。因此，在这种情况下，广义力 $\b{F}_{\vec{x}}$ 是简单的 $\vec{F}$ 。) \\
+
+对于一个刚体，施加一个扭矩 $\vec{T}'$，它围绕着轴 $\vec{n}$ ，旋转一个角度 $\delta \varphi$ ，做功可以写为
+
+\begin{equation}
+\delta W = (\vec{n} \cdot \vec{T}') \delta \varphi  \qquad \qquad   |\vec{n}|=1.
+\label{eqWTfi}
+\end{equation}
+
+这种微小的姿态变化可以在一边表示为坐标四元数 $q$ 的微小变化 $\delta q$ ，在另一边表示为从 $q$ 表示的当前姿态(即，组合)操作的旋转四元数 $q_\delta$ 。那就是
+
+\begin{gather*}
+q + \delta q = q \o q_\delta    \\
+|q|=1 \qquad   |q_\delta|=1  \qquad    |\delta q| \ll 1.
+\end{gather*}
+
+我们不需要考虑变量 $\delta q$ 必须保持 $q$的范数这一事实，因为在拉格朗日公式(Lagrange formulation)中引入一个约束，它将自动得到满足。\\
+
+这一边我们可以写
+
+\begin{gather*}
+q + \delta q = q \o q_\delta    \\
+\underbrace{\bar{q} \o q}_{(1,\vec{0})} + \bar{q} \o \delta q = \underbrace{\underbrace{\bar{q} \o q}_{(1,\vec{0})} \o q_\delta}_{q_\delta}    
+\end{gather*}
+
+\begin{equation}
+\Rightarrow \ q_\delta = (1,\vec{0}) + \bar{q} \o \delta q.
+\label{eq_qdelta}
+\end{equation}
+
+在另一边
+
+\begin{equation*}
+q_\delta = (\cos{\frac{\delta \varphi}{2}},\  \sin{\frac{\delta \varphi}{2}}\ \vec{n}).
+\end{equation*}
+
+考虑虚数部分
+
+\begin{gather*}
+\IM\big\{ q_\delta \big\} = \IM\big\{ \bar{q} \o \delta q \big\} = \sin{\frac{\delta \varphi}{2}}\ \vec{n} \approx  \frac{\delta \varphi}{2}\ \vec{n}
+\end{gather*}
+
+与方程 \eqref{eqWTfi} 相比
+
+\begin{equation*}
+\Rightarrow \ \delta W = 2 \  \IM\big\{ \bar{q} \o \delta q \big\} \cdot \vec{T}'
+\end{equation*}
+
+
+并且从方程 \eqref{eqEpGp}
+
+\begin{gather*}
+\IM\big\{ \bar{q} \o \delta q \big\} = G \b{\delta q} \\
+\Rightarrow \ \delta W = 2(G \b{\delta q}) \cdot \vec{T}' = 2 \vec{T}'^T (G \b{\delta q})  = 2(G^T \vec{T}')^T \b{\delta q} = \underbrace{2(G^T \vec{T}')}_{\b{F_q}} \cdot \b{\delta q}
+\end{gather*}
+
+\begin{equation}
+\Rightarrow \ \fbox{$ \b{F_q} = 2G^T \vec{T}'$}.
+\label{eqForce}
+\end{equation}
+
+
+\subsubsection{动力学}
+\label{quat_rigid_dyn_IN_3}
+
+我们现在有一切可以写动力学的知识
+
+\begin{gather*}
+\frac{d}{dt}\frac{\partial L}{\partial \dot{\b{q}}} - \frac{\partial L}{\partial \b{q}} = \b{F_q} + \lambda \frac{\partial C}{\partial \b{q}} \\
+4 \dot{G}^T J \vec{\w}' + 2 G^T J \dot{\vec{\w}}' = 2G^T \vec{T}' + \lambda \b{q}. \\
+\end{gather*}
+
+左乘以 $G$
+
+\begin{gather*}
+\underbrace{4 G \dot{G}^T}_{2\Omega'} J \vec{\w}' + 2 \underbrace{GG^T}_{Id} J \dot{\vec{\w}}' = 2 \underbrace{GG^T}_{Id} \vec{T}' + \lambda \underbrace{G \b{q}}_{\vec{0}} \\
+\Omega' J \vec{\w}' +  J \dot{\vec{\w}}' =  \vec{T}' \\
+\vec{\w}' \c J \vec{\w}' +  J \dot{\vec{\w}}' =  \vec{T}' \\
+J \dot{\vec{\w}}' =  \vec{T}' - \vec{\w}' \c J \vec{\w}'.  
+\end{gather*}
+
+最后一个关系就是旋转机体的欧拉运动方程。与方程 \eqref{eqqdot} 一起，我们得到了完全动力学
+
+\begin{equation}
+\begin{tabular}{|rcl|}
+	\hline
+	$\dot{\vec{\w}}'$ & $=$ & $J^{-1} \vec{T}' - J^{-1} (\vec{\w}' \c J \vec{\w}')   \phantom{\Big(}$ \\
+	$\dot{\b{q}}$     & $=$ & $\frac{1}{2} G^T\vec{\w}'.   \phantom{\Big(}$ \\
+	\hline
+\end{tabular}
+\label{rigid_euler_IN}
+\end{equation}
+
+
+%%\IM\big\{{2 \bar{q} \o \dot{q}} \big\}
+
+%
+%%Bibliographie:
+%\begin{thebibliography}{9}
+
+%\bibitem{QFREP}
+%	Quaternion, Finite Rotation and Euler Parameters\\
+%	Arend L. Schwab \\
+%	\emph{http://tam.cornell.edu/\~{}als93/quaternion.pdf}
+%	
+%\bibitem{Gros}
+%	Quaternion based dynamics - Single Turbine Aircraft - Lagrange and Hamiltonian approaches \\
+%	S. Gros\\
+%	LA, EPFL.
+%		
+%\bibitem{Gold}
+%	Classical Mechanics \\
+%	Herbert Goldstein.
+%	
+%\bibitem{Wells}
+%	Lagrangian Dynamics \\
+%	Dare A. Wells \\
+%	Schaum's Outline Series.
+%	
+%%\bibitem{Khalil}
+%%	Nonlinear Systems \\
+%%	Third Edition \\
+%%	Hassan K. Khalil \\
+%%	Prentice Hall.
+%	
+%	
+
+%%	\bibitem{lamport94}
+%%	  Leslie Lamport,
+%%	  \emph{\LaTeX: A Document Preparation System}.
+%%	  Addison Wesley, Massachusetts,
+%%	  2nd Edition,
+%%	  1994.
+
+%%rajouter: bouquin de Papa (mcanique), bouquin OpenGL	
+%	
+%\end{thebibliography}
+
+%
+
+%
+
+%\end{document}
