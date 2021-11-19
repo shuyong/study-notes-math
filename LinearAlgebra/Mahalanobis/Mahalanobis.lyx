@@ -1,0 +1,1006 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Mahalanobis distance"
+\pdf_author "https://en.wikipedia.org/"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "马哈拉诺比斯距离"
+target "https://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "wikipedia"
+target "https://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+2 August 2021
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+马哈兰诺比斯距离(Mahalanobis distance)
+\series default
+是的一个衡量点
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "概率分布"
+target "https://en.wikipedia.org/wiki/Probability_distribution"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $D$
+\end_inset
+
+ 之间距离的方法，由 
+\begin_inset CommandInset href
+LatexCommand href
+name "P. C. Mahalanobis"
+target "https://en.wikipedia.org/wiki/Prasanta_Chandra_Mahalanobis"
+literal "false"
+
+\end_inset
+
+ 在1936年提出[1]。它是对衡量
+\begin_inset Formula $P$
+\end_inset
+
+距离
+\begin_inset Formula $D$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "均值"
+target "https://en.wikipedia.org/wiki/Mean"
+literal "false"
+
+\end_inset
+
+有多少
+\begin_inset CommandInset href
+LatexCommand href
+name "标准差"
+target "https://en.wikipedia.org/wiki/Standard_deviations"
+literal "false"
+
+\end_inset
+
+的概念的多维概括。
+\begin_inset Formula $P$
+\end_inset
+
+在
+\begin_inset Formula $D$
+\end_inset
+
+的均值处的距离为零，并随着
+\begin_inset Formula $P$
+\end_inset
+
+沿每个
+\begin_inset CommandInset href
+LatexCommand href
+name "主分量"
+target "https://en.wikipedia.org/wiki/Principal_component"
+literal "false"
+
+\end_inset
+
+轴远离均值而增长。如果这些轴中的每一个都被重新标定为具有单位方差，那么马哈拉诺比斯距离就对应于变换空间中的标准
+\begin_inset CommandInset href
+LatexCommand href
+name "欧几里德距离"
+target "https://en.wikipedia.org/wiki/Euclidean_distance"
+literal "false"
+
+\end_inset
+
+。因此，马哈兰诺比斯距离是
+\begin_inset CommandInset href
+LatexCommand href
+name "无单位"
+target "https://en.wikipedia.org/wiki/Unitless"
+literal "false"
+
+\end_inset
+
+的、
+\begin_inset CommandInset href
+LatexCommand href
+name "尺度不变"
+target "https://en.wikipedia.org/wiki/Scale_invariance"
+literal "false"
+
+\end_inset
+
+的，并考虑到了
+\begin_inset CommandInset href
+LatexCommand href
+name "数据集"
+target "https://en.wikipedia.org/wiki/Data_set"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "相关性"
+target "https://en.wikipedia.org/wiki/Correlations"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+定义和性质
+\end_layout
+
+\begin_layout Standard
+一组观测值为
+\begin_inset Formula $\vec{x}=\left(x_{1},x_{2},x_{3},\ldots,x_{N}\right)^{\top}$
+\end_inset
+
+与一组具有均值
+\begin_inset Formula $\vec{\mu}=\left(\mu_{1},\mu_{2},\mu_{3},\ldots,\mu_{N}\right)^{\top}$
+\end_inset
+
+及其
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ 的观测值的马哈拉诺比斯距离定义为[2] 。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D_{M}(\vec{x})=\sqrt{(\vec{x}-\vec{\mu})^{\top}\mathbf{S}^{-1}(\vec{x}-\vec{\mu})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+马哈兰诺比斯距离(或其平方值即为“广义的点间距离的平方”[3])也可以定义为两个
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_vector"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\vec{y}$
+\end_inset
+
+ 的
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ 的相同的
+\begin_inset CommandInset href
+LatexCommand href
+name "概率分布"
+target "https://en.wikipedia.org/wiki/Probability_distribution"
+literal "false"
+
+\end_inset
+
+之间的不相似度测量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d(\vec{x},\vec{y})=\sqrt{(\vec{x}-\vec{y})^{\top}\mathbf{S}^{-1}(\vec{x}-\vec{y})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+是协方差矩阵，它是
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定"
+target "https://en.wikipedia.org/wiki/Definite_symmetric_matrix"
+literal "false"
+
+\end_inset
+
+的，并且半正定矩阵的逆也是半正定的，我们得到的
+\begin_inset Formula $\mathbf{S}^{-1}$
+\end_inset
+
+也是半正定的。这就解释了为什么可以取平方根，因为所有的值都是正数[4]。
+\end_layout
+
+\begin_layout Standard
+如果协方差矩阵是单位矩阵，则马哈拉诺比斯距离就会退化为
+\begin_inset CommandInset href
+LatexCommand href
+name "欧几里德距离"
+target "https://en.wikipedia.org/wiki/Euclidean_distance"
+literal "false"
+
+\end_inset
+
+。如果协方差矩阵是
+\begin_inset CommandInset href
+LatexCommand href
+name "对角"
+target "https://en.wikipedia.org/wiki/Diagonal_matrix"
+literal "false"
+
+\end_inset
+
+的，则产生的距离度量称为
+\series bold
+标准化欧几里德距离
+\series default
+(
+\emph on
+standardized Euclidean distance
+\emph default
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d(\vec{x},\vec{y})=\sqrt{\sum_{i=1}^{N}\frac{\left(x_{i}-y_{i}\right)^{2}}{s_{i}^{2}}}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $s_{i}$
+\end_inset
+
+是
+\begin_inset Formula $x_{i}$
+\end_inset
+
+和
+\begin_inset Formula $y_{i}$
+\end_inset
+
+在样本集上的
+\begin_inset CommandInset href
+LatexCommand href
+name "标准偏差"
+target "https://en.wikipedia.org/wiki/Standard_deviation"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+马哈拉诺比斯距离在数据
+\begin_inset CommandInset href
+LatexCommand href
+name "所跨越的"
+target "https://en.wikipedia.org/wiki/Linear_span"
+literal "false"
+
+\end_inset
+
+空间的满秩线性变换下保持不变。这意味着，如果数据具有非平凡的
+\begin_inset CommandInset href
+LatexCommand href
+name "零空间"
+target "https://en.wikipedia.org/wiki/Nullspace"
+literal "false"
+
+\end_inset
+
+，则可以在将数据(非退化地)投影到数据的适当维度的任意空间后计算马哈拉诺比斯距离。
+\end_layout
+
+\begin_layout Standard
+我们可以找到有用的马哈拉诺比斯距离的平方分解，这有助于解释多变量观测值离群的一些原因，也为识别离群值提供了一个图形工具[5]。
+\end_layout
+
+\begin_layout Section
+直观的解释
+\end_layout
+
+\begin_layout Standard
+考虑估计
+\begin_inset Formula $N$
+\end_inset
+
+维欧几里德空间中的一个测试点属于集合的概率的问题，其中我们得到的样本点肯定属于该集合。我们的第一步是找到样本点的中心点或质心。直观地说，测试点离这个质心越近，它
+就越有可能属于这个集合。
+\end_layout
+
+\begin_layout Standard
+但是，我们还需要知道集合是分布在大范围内还是小范围内，这样我们就可以确定距中心的给定距离是否值得注意。最简单的方法是估计样本点到质心距离的标准偏差。如果测试点与
+质心之间的距离小于一个标准偏差，则我们可以得出结论，测试点极有可能属于集合。距离越远，测试点越有可能不属于集合。
+\end_layout
+
+\begin_layout Standard
+通过将测试点和集合之间的标准化距离定义为
+\begin_inset Formula $\frac{\|x-\mu\|_{2}}{\sigma}$
+\end_inset
+
+，可以量化这种直观的方法，其可解释为：
+\begin_inset Formula $\frac{\text{ testpoint }-\text{ sample mean }}{\text{ standard deviation }}$
+\end_inset
+
+。通过将其插入正态分布，我们可以得出测试点属于集合的概率。
+\end_layout
+
+\begin_layout Standard
+上述方法的缺点是，我们假设样本点以球形方式围绕质心分布。如果分布是明显的非球形的，例如椭球形的，那么我们期望测试点属于集合的概率不仅取决于与质心的距离，还取决于
+方向。在椭球体具有短轴的方向上，测试点必须更近，而在那些长轴的方向上，测试点可以离中心更远。
+\end_layout
+
+\begin_layout Standard
+将其置于数学基础上，可以通过构建样本的协方差矩阵来估计最能代表集合概率分布的椭球体。马哈拉诺比斯距离是测试点到质心的距离除以测试点方向上椭球的宽度。
+\end_layout
+
+\begin_layout Section
+正态分布
+\end_layout
+
+\begin_layout Standard
+对于任意维数的
+\begin_inset CommandInset href
+LatexCommand href
+name "正态分布"
+target "https://en.wikipedia.org/wiki/Multivariate_normal_distribution"
+literal "false"
+
+\end_inset
+
+，观测的概率密度
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+由马哈拉诺比斯距离
+\begin_inset Formula $d$
+\end_inset
+
+唯一确定：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Pr}[\vec{x}]d\vec{x}=\frac{1}{\sqrt{\mathrm{det}(2\pi\mathbf{S})}}\exp\left(-\frac{(\vec{x}-\vec{\mu})^{\top}\mathbf{S}^{-1}(\vec{x}-\vec{\mu})}{2}\right)d\vec{x}=\frac{1}{\sqrt{\mathrm{det}(2\pi\mathbf{S})}}\exp\left(-d^{2}/2\right)d\vec{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+具体而言，
+\begin_inset Formula $d^{2}$
+\end_inset
+
+遵循具有
+\begin_inset Formula $n$
+\end_inset
+
+维自由度的
+\begin_inset CommandInset href
+LatexCommand href
+name "卡方分布"
+target "https://en.wikipedia.org/wiki/Chi-squared_distribution"
+literal "false"
+
+\end_inset
+
+，其中
+\begin_inset Formula $n$
+\end_inset
+
+是正态分布的维数。例如，如果维数为
+\begin_inset Formula $2$
+\end_inset
+
+，则特定计算的
+\begin_inset Formula $d$
+\end_inset
+
+小于某个阈值
+\begin_inset Formula $t$
+\end_inset
+
+的概率为
+\begin_inset Formula $1-e^{-t^{2}/2}$
+\end_inset
+
+。要确定实现特定概率的阈值，
+\begin_inset Formula $p$
+\end_inset
+
+，对于
+\begin_inset Formula $2$
+\end_inset
+
+维来说，使用
+\begin_inset Formula $t=\sqrt{-2\ln(1-p)}$
+\end_inset
+
+。对于
+\begin_inset Formula $2$
+\end_inset
+
+以外的维度数，应参考累积卡方分布。
+\end_layout
+
+\begin_layout Standard
+在正态分布中，马哈拉诺比斯距离小于
+\begin_inset Formula $1$
+\end_inset
+
+的区域(即距离为
+\begin_inset Formula $1$
+\end_inset
+
+的椭球体内部区域)正是概率分布为
+\begin_inset CommandInset href
+LatexCommand href
+name "凹形"
+target "https://en.wikipedia.org/wiki/Concave_function"
+literal "false"
+
+\end_inset
+
+的区域。
+\end_layout
+
+\begin_layout Standard
+对于正态分布，马哈拉诺比斯距离与负的
+\begin_inset CommandInset href
+LatexCommand href
+name "对数似然"
+target "https://en.wikipedia.org/wiki/Log-likelihood"
+literal "false"
+
+\end_inset
+
+的平方根成正比(在添加一个常数后，最小值为零)。
+\end_layout
+
+\begin_layout Section
+与正态随机变量的关系
+\end_layout
+
+\begin_layout Standard
+一般来说，给定一个正态(
+\begin_inset CommandInset href
+LatexCommand href
+name "高斯"
+target "https://en.wikipedia.org/wiki/Gaussian"
+literal "false"
+
+\end_inset
+
+)随机变量
+\begin_inset Formula $X$
+\end_inset
+
+，其方差为
+\begin_inset Formula $S=1$
+\end_inset
+
+且均值为
+\begin_inset Formula $\mu=0$
+\end_inset
+
+。任意其他正态随机变量
+\begin_inset Formula $R$
+\end_inset
+
+(其均值为
+\begin_inset Formula $\mu_{1}$
+\end_inset
+
+且方差为
+\begin_inset Formula $S_{1}$
+\end_inset
+
+)可以通过
+\begin_inset Formula $X$
+\end_inset
+
+的各项用方程
+\begin_inset Formula $R=\mu_{1}+\sqrt{S_{1}}X$
+\end_inset
+
+定义。相反，为了从任意正态随机变量中恢复一个正态随机变量，通常可以求解
+\begin_inset Formula $X=\left(R-\mu_{1}\right)/\sqrt{S_{1}}$
+\end_inset
+
+。如果我们两边都平方，并取平方根，我们将得到一个与马哈兰诺比斯距离非常相似的度量方程：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D=\sqrt{X^{2}}=\sqrt{\left(R-\mu_{1}\right)^{2}/S_{1}}=\sqrt{\left(R-\mu_{1}\right)S_{1}^{-1}\left(R-\mu_{1}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此产生的幅度总是非负的，并随着数据与平均值的距离而变化，这些属性在试图为数据定义一个模型时非常方便。
+\end_layout
+
+\begin_layout Section
+与杠杆统计的关系
+\end_layout
+
+\begin_layout Standard
+马哈兰诺比斯距离与
+\begin_inset CommandInset href
+LatexCommand href
+name "杠杆统计"
+target "https://en.wikipedia.org/wiki/Leverage_(statistics)"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $h$
+\end_inset
+
+ 密切相关，但有一个不同的尺度[6]：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D^{2}=(N-1)\left(h-\frac{1}{N}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+应用
+\end_layout
+
+\begin_layout Standard
+马哈拉诺比斯的定义是由1927年根据测量结果确定头骨相似性的问题引起的[7]。
+\end_layout
+
+\begin_layout Standard
+马哈拉诺比斯距离广泛应用于
+\begin_inset CommandInset href
+LatexCommand href
+name "聚类分析"
+target "https://en.wikipedia.org/wiki/Data_clustering"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "分类"
+target "https://en.wikipedia.org/wiki/Statistical_classification"
+literal "false"
+
+\end_inset
+
+技术中。它与用于多变量统计测试的
+\begin_inset CommandInset href
+LatexCommand href
+name "霍特林的T平方分布"
+target "https://en.wikipedia.org/wiki/Hotelling%27s_T-square_distribution"
+literal "false"
+
+\end_inset
+
+和用于
+\begin_inset CommandInset href
+LatexCommand href
+name "监督分类"
+target "https://en.wikipedia.org/wiki/Supervised_classification"
+literal "false"
+
+\end_inset
+
+的费舍尔的
+\begin_inset CommandInset href
+LatexCommand href
+name "线性判别分析"
+target "https://en.wikipedia.org/wiki/Linear_Discriminant_Analysis"
+literal "false"
+
+\end_inset
+
+密切相关[8]。
+\end_layout
+
+\begin_layout Standard
+为了使用马哈拉诺比斯距离将测试点分类为属于
+\begin_inset Formula $N$
+\end_inset
+
+个类别中的一个类别，首先为每个类别
+\begin_inset CommandInset href
+LatexCommand href
+name "估计协方差矩阵"
+target "https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices"
+literal "false"
+
+\end_inset
+
+，通常基于已知属于每个类别的样本。然后，给定一个测试样本，计算到每个类别的马哈拉诺比斯距离，并将测试点分类为属于马哈拉诺比斯距离最小的类别。
+\end_layout
+
+\begin_layout Standard
+马哈拉诺比斯距离和杠杆作用通常用于检测
+\begin_inset CommandInset href
+LatexCommand href
+name "离群点"
+target "https://en.wikipedia.org/wiki/Outlier"
+literal "false"
+
+\end_inset
+
+，尤其是在
+\begin_inset CommandInset href
+LatexCommand href
+name "线性回归"
+target "https://en.wikipedia.org/wiki/Linear_regression"
+literal "false"
+
+\end_inset
+
+模型的开发中。与其他样本点群有较大的马哈拉诺比斯距离的点被认为具有较高的杠杆作用，因为它对回归方程的斜率或系数有较大的影响。马哈拉诺比斯距离也用于确定多变量的离
+群点。回归技术可用于通过两个或多个变量得分的组合确定样本总体中的一个特定案例是否是离群点。即使对于正态分布来说，一个点也可以是多变量离群点，即使它对任意变量来说
+都不是一个单变量的离群点(例如，考虑沿着线
+\begin_inset Formula $x_{1}=x_{2}$
+\end_inset
+
+集中的概率密度)，使得马哈拉诺比斯距离成为比单独检查维度更敏感的度量。
+\end_layout
+
+\begin_layout Section
+References 
+\end_layout
+
+\begin_layout Enumerate
+Mahalanobis, Prasanta Chandra (1936).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "``On the generalised distance in statistics''"
+target "http://insa.nic.in/writereaddata/UpLoadedFiles/PINSA/Vol02_1936_1_Art05.pdf"
+literal "false"
+
+\end_inset
+
+(PDF).
+ Proceedings of the National Institute of Sciences of India.
+ 2 (1): 49–55.
+ Retrieved 2016-09-27.
+ 
+\end_layout
+
+\begin_layout Enumerate
+De Maesschalck, R.; Jouan-Rimbaud, D.; Massart, D.
+ L.
+ ``The Mahalanobis distance''.
+ Chemometrics and Intelligent Laboratory Systems.
+ 50 (1): 1–18.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "doi:10.1016/s0169-7439(99)00047-7"
+target "https://doi.org/10.1016%2Fs0169-7439%2899%2900047-7"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gnanadesikan, R.; Kettenring, J.
+ R.
+ (1972).
+ ``Robust Estimates, Residuals, and Outlier Detection with Multiresponse
+ Data''.
+ Biometrics.
+ 28 (1): 81–124.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "doi:10.2307/2528963"
+target "https://doi.org/10.2307%2F2528963"
+literal "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "JSTOR 2528963"
+target "https://www.jstor.org/stable/2528963"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "``Inverse matrix's eigenvalue?''"
+target "https://math.stackexchange.com/questions/237871/inverse-matrixs-eigenvalue"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Kim, M.
+ G.
+ (2000).
+ ``Multivariate outliers and decompositions of Mahalanobis distance''.
+ Communications in Statistics – Theory and Methods.
+ 29 (7): 1511–1526.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "doi:10.1080/03610920008832559"
+target "https://doi.org/10.1080%2F03610920008832559"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Weiner, Irving B.; Schinka, John A.; Velicer, Wayne F.
+ (23 October 2012).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Handbook of Psychology, Research Methods in Psychology"
+target "https://books.google.com/books?id=WcgORxTJ9XkC"
+literal "false"
+
+\end_inset
+
+.
+ John Wiley & Sons.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 978-1-118-28203-8"
+target "https://en.wikipedia.org/wiki/Special:BookSources/978-1-118-28203-8"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Mahalanobis, Prasanta Chandra (1927); Analysis of race mixture in Bengal,
+ Journal and Proceedings of the Asiatic Society of Bengal, 23:301–333.
+ 
+\end_layout
+
+\begin_layout Enumerate
+McLachlan, Geoffrey (4 August 2004).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Discriminant Analysis and Statistical Pattern Recognition"
+target "https://books.google.com/books?id=O_qHDLaWpDUC&pg=PR13"
+literal "false"
+
+\end_inset
+
+.
+ John Wiley & Sons.
+ pp.
+ 13–.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 978-0-471-69115-0"
+target "https://en.wikipedia.org/wiki/Special:BookSources/978-0-471-69115-0"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document

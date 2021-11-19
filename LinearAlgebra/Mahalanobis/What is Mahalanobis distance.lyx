@@ -1,0 +1,504 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "什么是马哈拉诺比斯距离？"
+\pdf_author "Rick Wicklin"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "什么是马哈拉诺比斯距离？"
+target "https://blogs.sas.com/content/iml/2012/02/15/what-is-mahalanobis-distance.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Rick Wicklin"
+target "https://blogs.sas.com/content/author/rickwicklin/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+February 15, 2012
+\end_layout
+
+\begin_layout Standard
+我之前描述过如何利用马哈拉诺比斯距离寻找多元数据中的离群值.
+ 本文将更深入地了解马哈拉诺比斯距离。接下来的文章将描述如何计算马哈拉诺比斯距离。
+\end_layout
+
+\begin_layout Section
+以标准单位表示的距离
+\end_layout
+
+\begin_layout Standard
+在统计学中，我们有时根据数据的规模来衡量“接近”或“远离”。通常“标度”意味着“标准差”。对于单变量数据，我们说，与均值相差一个标准差的观测值比三个标准差的观测
+值更接近均值。(你也可以通过指定两个观测值之间的标准差来指定它们之间的距离。)
+\end_layout
+
+\begin_layout Standard
+对于许多分布，如正态分布，这种标度的选择也说明了概率。具体地说，它更可能观测到与均值约为一个标准差的观测值，而不是观测到几个标准差的观测值。为什么？因为概率密度
+函数在均值附近更高，当你离开许多标准差时，概率密度函数几乎为零。
+\end_layout
+
+\begin_layout Standard
+对于正态分布的数据，你可以通过计算所谓的
+\begin_inset CommandInset href
+LatexCommand href
+name "z-score"
+target "http://en.wikipedia.org/wiki/Z-score"
+literal "false"
+
+\end_inset
+
+来指定与平均值的距离。对于一个值
+\begin_inset Formula $x$
+\end_inset
+
+，
+\begin_inset Formula $x$
+\end_inset
+
+的z-score为
+\begin_inset Formula $z=(x-\mu)/\sigma$
+\end_inset
+
+，其中
+\begin_inset Formula $\mu$
+\end_inset
+
+为总体均值，
+\begin_inset Formula $\sigma$
+\end_inset
+
+为总体标准差。这是一个无量纲的量，你可以解释为
+\begin_inset Formula $x$
+\end_inset
+
+与均值的标准差的数量。
+\end_layout
+
+\begin_layout Section
+距离并不总是看起来的那样
+\end_layout
+
+\begin_layout Standard
+你可以把这些概念推广到多元正态分布。下图显示了模拟的双元正态数据，并与
+\begin_inset CommandInset href
+LatexCommand href
+name "预测椭圆"
+target "http://support.sas.com/documentation/cdl/en/procstat/63963/HTML/default/viewer.htm#procstat_corr_sect021.htm"
+literal "false"
+
+\end_inset
+
+相叠加。图中的椭圆是生成数据的双元正态分布的
+\begin_inset Formula $10\%$
+\end_inset
+
+(最里面)、
+\begin_inset Formula $20\%$
+\end_inset
+
+、...和
+\begin_inset Formula $90\%$
+\end_inset
+
+(最外面)的预测椭圆。预测椭圆是双元正态密度函数的等值线。靠近原点的椭圆，如
+\begin_inset Formula $10\%$
+\end_inset
+
+的预测椭圆，其概率密度很高。对于较远的椭圆，如
+\begin_inset Formula $90\%$
+\end_inset
+
+的预测椭圆，其密度较低。
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename mahal.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在图中，用红星作为标记，显示了两个观测结果。第一个观测值在坐标
+\begin_inset Formula $(4,0)$
+\end_inset
+
+，而第二个观测值在
+\begin_inset Formula $(0,2)$
+\end_inset
+
+。问题是：哪个标记更接近原点？(原点是这个分布的多元中心)。
+\end_layout
+
+\begin_layout Standard
+答案是，“这取决于你如何测量距离。”欧几里德距离分别是
+\begin_inset Formula $4$
+\end_inset
+
+和
+\begin_inset Formula $2$
+\end_inset
+
+，所以你可以得出结论，在
+\begin_inset Formula $(0，2)$
+\end_inset
+
+处的点更接近原点。然而，对于这种分布，
+\begin_inset Formula $Y$
+\end_inset
+
+方向的方差小于
+\begin_inset Formula $X$
+\end_inset
+
+方向的方差，因此在某种意义上，点
+\begin_inset Formula $(0,2)$
+\end_inset
+
+距离原点的“标准差”比
+\begin_inset Formula $(4,0)$
+\end_inset
+
+大。
+\end_layout
+
+\begin_layout Standard
+注意这两个观测点相对于椭圆的位置。点
+\begin_inset Formula $(0,2)$
+\end_inset
+
+位于
+\begin_inset Formula $90\%$
+\end_inset
+
+预测椭圆处，而
+\begin_inset Formula $(4,0)$
+\end_inset
+
+处的点位于约
+\begin_inset Formula $75\%$
+\end_inset
+
+预测椭圆处。这是什么意思？这意味着
+\begin_inset Formula $(4,0)$
+\end_inset
+
+处的点与原点“更接近”，因为在
+\begin_inset Formula $(4,0)$
+\end_inset
+
+附近观测的可能性比在
+\begin_inset Formula $(0,2)$
+\end_inset
+
+附近观测的可能性大。在
+\begin_inset Formula $(4,0)$
+\end_inset
+
+附近的概率密度高于在
+\begin_inset Formula $(0,2)$
+\end_inset
+
+附近的概率密度。
+\end_layout
+
+\begin_layout Standard
+从这个意义上说，预测椭圆是“标准差单位”的多元概括。你可以使用双元概率等值线来比较与双元均值的距离。如果包含
+\begin_inset Formula $p$
+\end_inset
+
+的等值线嵌套在包含
+\begin_inset Formula $q$
+\end_inset
+
+的等值线内，则点
+\begin_inset Formula $p$
+\end_inset
+
+比点
+\begin_inset Formula $q$
+\end_inset
+
+更接近。
+\end_layout
+
+\begin_layout Section
+定义马哈拉诺比斯距离
+\end_layout
+
+\begin_layout Standard
+你可以用概率等值线来定义
+\begin_inset CommandInset href
+LatexCommand href
+name "马哈拉诺比斯距离"
+target "http://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+。 马哈拉诺比斯距离具有以下特性：
+\end_layout
+
+\begin_layout Itemize
+它解释了一个事实，即每个方向的方差是不同的。 
+\end_layout
+
+\begin_layout Itemize
+它解释了变量之间的协方差。 
+\end_layout
+
+\begin_layout Itemize
+对于具有单位方差的不相关变量，它可以归结为常见的欧几里德距离。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于单变量正态数据，单变量z-score标准化了分布(使其具有均值
+\begin_inset Formula $0$
+\end_inset
+
+和单位方差)，并给出了一个无量纲的量，用数据的标度来指定从观测值到均值的距离。对于均值
+\begin_inset Formula $\mu$
+\end_inset
+
+和协方差矩阵
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的多元正态数据，
+\begin_inset CommandInset href
+LatexCommand href
+name "通过应用Cholesky变换，你可以对变量进行去相关化并使分布标准化"
+target "https://blogs.sas.com/content/iml/2012/02/08/use-the-cholesky-transformation-to-correlate-and-uncorrelate-variables/"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $z=L^{-1}(x-\mu)$
+\end_inset
+
+，其中
+\begin_inset Formula $L$
+\end_inset
+
+是
+\begin_inset Formula $\Sigma$
+\end_inset
+
+的Cholesky因子，
+\begin_inset Formula $\Sigma=LL^{\top}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对数据进行转换后，你可以计算出点
+\begin_inset Formula $z$
+\end_inset
+
+到原点的标准欧几里德距离。为了去掉平方根，我将计算欧几里德距离的平方，即
+\begin_inset Formula $\mathrm{dist}^{2}(z,0)=z^{\top}z$
+\end_inset
+
+。它测量一个点离原点有多远，它是z-score的多元泛化。
+\end_layout
+
+\begin_layout Standard
+你可以用原来的相关变量来重写
+\begin_inset Formula $z^{\top}z$
+\end_inset
+
+表。平方距离
+\begin_inset Formula $\mathrm{Mahal}^{2}(x,\mu)$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Mahal}^{2}(x,\mu) & =z^{\top}z\\
+ & =\left(L^{-1}\left(x-\mu\right)\right)^{\top}\left(L^{-1}\left(x-\mu\right)\right)\\
+ & =\left(x-\mu\right)^{\top}\left(LL^{\top}\right)^{-1}\left(x-\mu\right)\\
+ & =\left(x-\mu\right)^{\top}\Sigma^{-1}\left(x-\mu\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一个公式是平方马哈拉诺比斯距离的定义。推导过程中使用了几个矩阵特性，如
+\begin_inset Formula $(AB)^{\top}=B^{\top}A^{\top}$
+\end_inset
+
+，
+\begin_inset Formula $(AB)^{-1}=B^{-1}A^{-1}$
+\end_inset
+
+，以及
+\begin_inset Formula $(A^{-1})^{\top}=(A^{\top})^{-1}$
+\end_inset
+
+。注意，如果
+\begin_inset Formula $\Sigma$
+\end_inset
+
+是单位矩阵，那么马哈拉诺比斯距离就简化为
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $\mu$
+\end_inset
+
+之间的标准的欧几里得距离。
+\end_layout
+
+\begin_layout Standard
+马哈拉诺比斯距离解释了每个变量的方差和变量之间的协方差。在几何上，它通过将数据转换为标准化的不相关数据，并计算转换后数据的普通欧几里德距离来实现这一点。这样，马
+哈拉诺比斯距离就像一个单变量的z-score：它提供了一种考虑数据规模的测量距离的方法。
+\end_layout
+
+\end_body
+\end_document
