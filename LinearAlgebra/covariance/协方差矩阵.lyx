@@ -1,0 +1,2387 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "协方差矩阵"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+wikipedia
+\end_layout
+
+\begin_layout Date
+15 October 2021
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset CommandInset href
+LatexCommand href
+name "概率论"
+target "https://en.wikipedia.org/wiki/Probability_theory"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "统计学"
+target "https://en.wikipedia.org/wiki/Statistics"
+literal "false"
+
+\end_inset
+
+中，
+\series bold
+协方差矩阵(covariance matrix)
+\series default
+，也称为
+\series bold
+自动协方差矩阵(auto-covariance matrix)
+\series default
+、
+\series bold
+色散矩阵(dispersion matrix)
+\series default
+、
+\series bold
+方差矩阵(variance matrix
+\series default
+)或
+\series bold
+方差-协方差矩阵(variance–covariance matrix)
+\series default
+，是一个平方
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)"
+literal "false"
+
+\end_inset
+
+，给出给定
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_vector"
+literal "false"
+
+\end_inset
+
+的每对元素之间的
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+。任意
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+矩阵都是
+\begin_inset CommandInset href
+LatexCommand href
+name "对称的"
+target "https://en.wikipedia.org/wiki/Symmetric_matrix"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定的"
+target "https://en.wikipedia.org/wiki/Positive_semi-definite_matrix"
+literal "false"
+
+\end_inset
+
+矩阵，且其主对角线包含
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance"
+literal "false"
+
+\end_inset
+
+(即每个元素自身的协方差)。
+\end_layout
+
+\begin_layout Standard
+直观地说，协方差矩阵将方差的概念推广到多维。例如，二维空间中随机点集合的变化不能完全用一个数字表示，在
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+方向上的变化也不能包含所有必要的信息；需要一个
+\begin_inset Formula $2\times2$
+\end_inset
+
+矩阵来充分描述二维变化。
+\end_layout
+
+\begin_layout Standard
+随机向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的协方差矩阵通常由
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+或
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+表示。
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+通过本文，粗体无下标的
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+用于引用随机向量，非粗体有下标
+\begin_inset Formula $X_{i}$
+\end_inset
+
+和
+\begin_inset Formula $Y_{i}$
+\end_inset
+
+用于引用标量随机变量。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset CommandInset href
+LatexCommand href
+name "列向量"
+target "https://en.wikipedia.org/wiki/Column_vector"
+literal "false"
+
+\end_inset
+
+的条目
+\begin_inset Formula 
+\[
+\mathbf{X}=(X_{1},X_{2},...,X_{n})^{\mathrm{T}}
+\]
+
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_variable"
+literal "false"
+
+\end_inset
+
+，每个变量都有有限的
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "期望值"
+target "https://en.wikipedia.org/wiki/Expected_value"
+literal "false"
+
+\end_inset
+
+，那么协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+是其
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+的矩阵[1]: p.
+ 177
+\begin_inset Formula 
+\[
+\mathrm{K}_{X_{i}X_{j}}=\mathrm{cov}[X_{i},X_{j}]=\mathrm{E}[(X_{i}-\mathrm{E}[X_{i}])(X_{j}-\mathrm{E}[X_{j}])]
+\]
+
+\end_inset
+
+其中算子
+\begin_inset Formula $\mathrm{E}$
+\end_inset
+
+表示其参数的期望值(均值)。
+\end_layout
+
+\begin_layout Standard
+换句话说，
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\begin{bmatrix}\mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{n}-\mathrm{E}[X_{n}])]\\
+\mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{n}-\mathrm{E}[X_{n}])]\\
+\vdots & \vdots & \ddots & \vdots\\
+\mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{n}-\mathrm{E}[X_{n}])]
+\end{bmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上述定义等同于矩阵等式
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathrm{K}_{\mathbf{X}\mathbf{X}}=\mathrm{cov}[\mathbf{X},\mathbf{X}]=\mathrm{E}[(\mathbf{X}-\boldsymbol{\mu}_{\mathbf{X}})(\mathbf{X}-\boldsymbol{\mu}_{\mathbf{X}})^{{\rm T}}]=\mathrm{E}[\mathbf{X}\mathbf{X}^{\mathrm{T}}]-\boldsymbol{\mu}_{\mathbf{X}}\boldsymbol{\mu}_{\mathbf{X}}^{\mathrm{T}}}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\mu}_{\mathbf{X}}=\mathrm{E}[\mathbf{X}]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+方差的推广
+\end_layout
+
+\begin_layout Standard
+这种形式，方程式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，可视为标量值方差向更高维度的推广。记住，对于标量值随机变量
+\begin_inset Formula $X$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\sigma_{X}^{2}=\mathrm{var}(X)=\mathrm{E}[(X-\mathrm{E}[X])^{2}]=\mathrm{E}[(X-\mathrm{E}[X])\cdot(X-\mathrm{E}[X])].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+实际上，自动协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+的对角线上的条目是向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的每个元素的方差。
+\end_layout
+
+\begin_layout Subsection
+相互冲突的术语与符号
+\end_layout
+
+\begin_layout Standard
+在资料中所用名称各不相同。一些统计学家追随概率论学者 
+\begin_inset CommandInset href
+LatexCommand href
+name "William Feller"
+target "https://en.wikipedia.org/wiki/William_Feller"
+literal "false"
+
+\end_inset
+
+ 在他的两卷书《概率论及其应用概论》[2]中的观点，将矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+称为随机向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的
+\series bold
+方差(variance)
+\series default
+，因为它是一维方差向更高维度的自然推广。其他人称之为
+\series bold
+协方差矩阵(covariance matrix)
+\series default
+，因为它是向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的标量分量之间的协方差矩阵。
+\begin_inset Formula 
+\[
+\mathrm{var}(\mathbf{X})=\mathrm{cov}(\mathbf{X})=\mathrm{E}\left[(\mathbf{X}-\mathrm{E}[\mathbf{X}])(\mathbf{X}-\mathrm{E}[\mathbf{X}])^{{\rm T}}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这两种形式都非常标准，它们之间没有歧义。矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+也经常被称为
+\series bold
+方差-协方差矩阵
+\series default
+(
+\emph on
+variance-covariance matrix
+\emph default
+)，因为对角项实际上是方差。
+\end_layout
+
+\begin_layout Standard
+通过比较，两个向量之间的
+\begin_inset CommandInset href
+LatexCommand href
+name "互协方差矩阵 (cross-covariance matrix)"
+target "https://en.wikipedia.org/wiki/Cross-covariance_matrix"
+literal "false"
+
+\end_inset
+
+ 的记号为
+\begin_inset Formula 
+\[
+\mathrm{cov}(\mathbf{X},\mathbf{Y})=\mathrm{K}_{\mathbf{X}\mathbf{Y}}=\mathrm{E}\left[(\mathbf{X}-\mathrm{E}[\mathbf{X}])(\mathbf{Y}-\mathrm{E}[\mathbf{Y}])^{{\rm T}}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+性质
+\end_layout
+
+\begin_layout Subsection
+与自动相关矩阵的关系
+\end_layout
+
+\begin_layout Standard
+自动协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+与
+\begin_inset CommandInset href
+LatexCommand href
+name "自动相关矩阵 (autocorrelation matrix)"
+target "https://en.wikipedia.org/wiki/Autocorrelation_matrix"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathrm{R}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+的关系为
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\mathrm{E}[(\mathbf{X}-\mathrm{E}[\mathbf{X}])(\mathbf{X}-\mathrm{E}[\mathbf{X}])^{{\rm T}}]=\mathrm{R}_{\mathbf{X}\mathbf{X}}-\mathrm{E}[\mathbf{X}]\mathrm{E}[\mathbf{X}]^{{\rm T}}
+\]
+
+\end_inset
+
+其中，自相关矩阵定义为
+\begin_inset Formula $\mathrm{R}_{\mathbf{X}\mathbf{X}}=\mathrm{E}[\mathbf{X}\mathbf{X}^{{\rm T}}]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+与相关矩阵的关系
+\end_layout
+
+\begin_layout Standard
+与协方差矩阵密切相关的实体是随机向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+中每个随机变量之间的
+\begin_inset CommandInset href
+LatexCommand href
+name "皮尔逊积矩相关系数矩阵"
+target "https://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient"
+literal "false"
+
+\end_inset
+
+，其可写为
+\begin_inset Formula 
+\[
+\mathrm{corr}(\mathbf{X})=\big(\mathrm{diag}(\mathrm{K}_{\mathbf{X}\mathbf{X}})\big)^{-\frac{1}{2}}\,\mathrm{K}_{\mathbf{X}\mathbf{X}}\,\big(\mathrm{diag}(\mathrm{K}_{\mathbf{X}\mathbf{X}})\big)^{-\frac{1}{2}},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{diag}(\mathrm{K}_{\mathbf{X}\mathbf{X}})$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+的对角元素的矩阵(即，对于
+\begin_inset Formula $i=1,\dots,n$
+\end_inset
+
+，
+\begin_inset Formula $X_{i}$
+\end_inset
+
+的方差的
+\begin_inset CommandInset href
+LatexCommand href
+name "对角矩阵"
+target "https://en.wikipedia.org/wiki/Diagonal_matrix"
+literal "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+等效地，对于
+\begin_inset Formula $i=1,\dots,n$
+\end_inset
+
+，相关矩阵可视为
+\begin_inset CommandInset href
+LatexCommand href
+name "标准化随机变量"
+target "https://en.wikipedia.org/wiki/Standardized_variable"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $X_{i}/\sigma(X_{i})$
+\end_inset
+
+ 的协方差矩阵。
+\begin_inset Formula 
+\[
+\mathrm{corr}(\mathbf{X})=\begin{bmatrix}1 & \frac{\mathrm{E}[(X_{1}-\mu_{1})(X_{2}-\mu_{2})]}{\sigma(X_{1})\sigma(X_{2})} & \cdots & \frac{\mathrm{E}[(X_{1}-\mu_{1})(X_{n}-\mu_{n})]}{\sigma(X_{1})\sigma(X_{n})}\\
+\frac{\mathrm{E}[(X_{2}-\mu_{2})(X_{1}-\mu_{1})]}{\sigma(X_{2})\sigma(X_{1})} & 1 & \cdots & \frac{\mathrm{E}[(X_{2}-\mu_{2})(X_{n}-\mu_{n})]}{\sigma(X_{2})\sigma(X_{n})}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\mathrm{E}[(X_{n}-\mu_{n})(X_{1}-\mu_{1})]}{\sigma(X_{n})\sigma(X_{1})} & \frac{\mathrm{E}[(X_{n}-\mu_{n})(X_{2}-\mu_{2})]}{\sigma(X_{n})\sigma(X_{2})} & \cdots & 1
+\end{bmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相关矩阵主对角线上的每个元素都是随机变量与其自身的相关性，它始终等于
+\begin_inset Formula $1$
+\end_inset
+
+。每个
+\begin_inset CommandInset href
+LatexCommand href
+name "非对角元素"
+target "https://en.wikipedia.org/wiki/Off-diagonal_element"
+literal "false"
+
+\end_inset
+
+位于位于
+\begin_inset Formula $-1$
+\end_inset
+
+和
+\begin_inset Formula $+1$
+\end_inset
+
+之间 。
+\end_layout
+
+\begin_layout Subsection
+协方差矩阵的逆矩阵
+\end_layout
+
+\begin_layout Standard
+该矩阵的逆矩阵，
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}^{-1}$
+\end_inset
+
+，如果它存在，为逆协方差矩阵，也称为浓度矩阵或
+\begin_inset CommandInset href
+LatexCommand href
+name "精度"
+target "https://en.wikipedia.org/wiki/Precision_(statistics)"
+literal "false"
+
+\end_inset
+
+矩阵[3]。
+\end_layout
+
+\begin_layout Subsection
+基本性质
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}=\mathrm{var}(\mathbf{X})=\mathrm{E}\left[\left(\mathbf{X}-\mathrm{E}[\mathbf{X}]\right)\left(\mathbf{X}-\mathrm{E}[\mathbf{X}]\right)^{{\rm T}}\right]$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\mu}_{\mathbf{X}}=\mathrm{E}[\textbf{X}]$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{X}=(X_{1},\ldots,X_{n})^{{\rm T}}$
+\end_inset
+
+是一个
+\begin_inset Formula $n$
+\end_inset
+
+维随机变量，以下基本属性适用[4]：
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}=\mathrm{E}(\mathbf{XX^{{\rm T}}})-\boldsymbol{\mu}_{\mathbf{X}}\boldsymbol{\mu}_{\mathbf{X}}^{{\rm T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}\,$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定的"
+target "https://en.wikipedia.org/wiki/Positive-semidefinite_matrix"
+literal "false"
+
+\end_inset
+
+，即
+\begin_inset Formula $\mathbf{a}^{\mathrm{T}}\mathrm{K}_{\mathbf{X}\mathbf{X}}\mathbf{a}\geq0$
+\end_inset
+
+ ，对于所有的
+\begin_inset Formula $\mathbf{a}\in\mathbb{R}^{n}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}\,$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "对称的"
+target "https://en.wikipedia.org/wiki/Symmetric_matrix"
+literal "false"
+
+\end_inset
+
+，即
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}^{{\rm T}}=\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+对于任意常数(即非随机) 
+\begin_inset Formula $m\times n$
+\end_inset
+
+矩阵
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+和常数
+\begin_inset Formula $m\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+ ，有
+\begin_inset Formula $\mathrm{var}(\mathbf{AX}+\mathbf{a})=\mathbf{A}\,\mathrm{var}(\mathbf{X})\,\mathbf{A}^{{\rm T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+如果
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+是另一个与
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+维数相同的随机向量，则
+\begin_inset Formula $\mathrm{var}(\mathbf{X}+\mathbf{Y})=\mathrm{var}(\mathbf{X})+\mathrm{cov}(\mathbf{X},\mathbf{Y})+\mathrm{cov}(\mathbf{Y},\mathbf{X})+\mathrm{var}(\mathbf{Y})$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathrm{cov}(\mathbf{X},\mathbf{Y})$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "互协方差矩阵"
+target "https://en.wikipedia.org/wiki/Cross-covariance_matrix"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+块矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+的联合均值
+\begin_inset Formula $\mu$
+\end_inset
+
+和联合协方差矩阵
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+可写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\mu}=\begin{bmatrix}\boldsymbol{\mu}_{\mathbf{X}}\\
+\boldsymbol{\mu}_{\mathbf{Y}}
+\end{bmatrix},\qquad\boldsymbol{\Sigma}=\begin{bmatrix}\mathrm{K}_{\mathbf{XX}} & \mathrm{K}_{\mathbf{XY}}\\
+\mathrm{K}_{\mathbf{YX}} & \mathrm{K}_{\mathbf{YY}}
+\end{bmatrix}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{K}_{\mathbf{XX}}=\mathrm{var}(\mathbf{X})$
+\end_inset
+
+，
+\begin_inset Formula $\mathrm{K}_{\mathbf{YY}}=\mathrm{var}(\mathbf{Y})$
+\end_inset
+
+，并且
+\begin_inset Formula $\mathrm{K}_{\mathbf{XY}}=\mathrm{K}_{\mathbf{YX}}^{{\rm T}}=\mathrm{cov}(\mathbf{X},\mathbf{Y})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{K}_{\mathbf{XX}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{K}_{\mathbf{YY}}$
+\end_inset
+
+可以分别识别为
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "边际分布"
+target "https://en.wikipedia.org/wiki/Marginal_distribution"
+literal "false"
+
+\end_inset
+
+的方差矩阵。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "联合正态分布"
+target "https://en.wikipedia.org/wiki/Multivariate_normal_distribution"
+literal "false"
+
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{X},\mathbf{Y}\sim\ \mathcal{N}(\boldsymbol{\mu},\mathrm{K}),
+\]
+
+\end_inset
+
+则给定
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+对于
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "条件分布"
+target "https://en.wikipedia.org/wiki/Conditional_distribution"
+literal "false"
+
+\end_inset
+
+如下所示[5]：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Y}\mid\mathbf{X}\sim\ \mathcal{N}(\boldsymbol{\mu}_{\mathbf{Y|X}},\mathrm{K}_{\mathbf{Y|X}}),
+\]
+
+\end_inset
+
+其由
+\begin_inset CommandInset href
+LatexCommand href
+name "条件均值"
+target "https://en.wikipedia.org/wiki/Conditional_mean"
+literal "false"
+
+\end_inset
+
+定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\mu}_{\mathbf{Y|X}}=\boldsymbol{\mu}_{\mathbf{Y}}+\mathrm{K}_{\mathbf{YX}}\mathrm{K}_{\mathbf{XX}}^{-1}\left(\mathbf{X}-\boldsymbol{\mu}_{\mathbf{X}}\right)
+\]
+
+\end_inset
+
+并且
+\begin_inset CommandInset href
+LatexCommand href
+name "条件方差"
+target "https://en.wikipedia.org/wiki/Conditional_variance"
+literal "false"
+
+\end_inset
+
+为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{Y|X}}=\mathrm{K}_{\mathbf{YY}}-\mathrm{K}_{\mathbf{YX}}\mathrm{K}_{\mathbf{XX}}^{-1}\mathrm{K}_{\mathbf{XY}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{YX}}\mathrm{K}_{\mathbf{XX}}^{-1}$
+\end_inset
+
+被称为
+\begin_inset CommandInset href
+LatexCommand href
+name "回归"
+target "https://en.wikipedia.org/wiki/Regression_analysis"
+literal "false"
+
+\end_inset
+
+系数矩阵，而在线性代数中，
+\begin_inset Formula $\mathrm{K}_{\mathbf{Y|X}}$
+\end_inset
+
+是在
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+中的
+\begin_inset Formula $\mathrm{K}_{\mathbf{XX}}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "舒尔补"
+target "https://en.wikipedia.org/wiki/Schur_complement"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+回归系数矩阵通常可以转置形式给出，
+\begin_inset Formula $\mathrm{K}_{\mathbf{XX}}^{-1}\mathrm{K}_{\mathbf{XY}}$
+\end_inset
+
+，适用于解释变量
+\begin_inset Formula $\mathbf{X}^{\mathrm{T}}$
+\end_inset
+
+的行向量的右乘，而不是列向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的左乘。在这种形式中，它们相当于通过最小二乘法(
+\begin_inset CommandInset href
+LatexCommand href
+name "ordinary least squares"
+target "https://en.wikipedia.org/wiki/Ordinary_least_squares"
+literal "false"
+
+\end_inset
+
+, OLS)的
+\begin_inset CommandInset href
+LatexCommand href
+name "正则方程"
+target "https://en.wikipedia.org/wiki/Normal_equations"
+literal "false"
+
+\end_inset
+
+的逆矩阵而获得的系数。
+\end_layout
+
+\begin_layout Section
+偏协方差矩阵
+\end_layout
+
+\begin_layout Standard
+所有非零元素的协方差矩阵告诉我们，所有单个随机变量都是相互关联的。这意味着变量不仅直接相关，还通过其他变量间接相关。通常，这种间接的共模关联是琐碎和无趣的。它们
+可以通过计算部分协方差矩阵来抑制，部分协方差矩阵仅显示相关的有趣部分。
+\end_layout
+
+\begin_layout Standard
+如果随机变量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+的两个向量通过另一个向量
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+关联，则后一个关联在矩阵中被抑制[6]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{XY\mid I}}=\mathrm{pcov}(\mathbf{X},\mathbf{Y}\mid\mathbf{I})=\mathrm{cov}(\mathbf{X},\mathbf{Y})-\mathrm{cov}(\mathbf{X},\mathbf{I})\mathrm{cov}(\mathbf{I},\mathbf{I})^{-1}\mathrm{cov}(\mathbf{I},\mathbf{Y}).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+偏协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{XY\mid I}}$
+\end_inset
+
+实际上是简单的协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{XY}}$
+\end_inset
+
+，就好像无趣的随机变量
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+保持不变一样。
+\end_layout
+
+\begin_layout Section
+作为分布参数的协方差矩阵
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $n$
+\end_inset
+
+个可能相关的随机变量的列向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+为
+\begin_inset CommandInset href
+LatexCommand href
+name "联合正态分布"
+target "https://en.wikipedia.org/wiki/Multivariate_normal_distribution"
+literal "false"
+
+\end_inset
+
+，或更一般的
+\begin_inset CommandInset href
+LatexCommand href
+name "椭圆分布"
+target "https://en.wikipedia.org/wiki/Elliptical_distribution"
+literal "false"
+
+\end_inset
+
+，则其
+\begin_inset CommandInset href
+LatexCommand href
+name "概率密度函数"
+target "https://en.wikipedia.org/wiki/Probability_density_function"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathrm{f}(\mathbf{X})$
+\end_inset
+
+ 可以用协方差矩阵
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+表示如下[6]
+\begin_inset Formula 
+\[
+\mathrm{f}(\mathbf{X})=(2\pi)^{-n/2}|\boldsymbol{\Sigma}|^{-1/2}\exp\left(-\tfrac{1}{2}\mathbf{(X-\mu)^{{\rm T}}\boldsymbol{\Sigma}^{-1}(X-\mu)}\right),
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mu=\mathrm{E}[\mathbf{X}]$
+\end_inset
+
+，并且
+\begin_inset Formula $|\boldsymbol{\Sigma}|$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+的行列式。
+\end_layout
+
+\begin_layout Section
+作为线性算子的协方差矩阵
+\end_layout
+
+\begin_layout Standard
+应用于一个向量，协方差矩阵将随机变量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的线性组合
+\begin_inset Formula $\mathbf{c}$
+\end_inset
+
+映射到具有这些变量的协方差向量：
+\begin_inset Formula $\mathbf{c}^{{\rm T}}\boldsymbol{\Sigma}=\mathrm{cov}(\mathbf{c}^{{\rm T}}\mathbf{X},\mathbf{X})$
+\end_inset
+
+。作为双线性形式处理，它产生两个线性组合之间的协方差：
+\begin_inset Formula $\mathbf{d}^{{\rm T}}\boldsymbol{\Sigma}\mathbf{c}=\mathrm{cov}(\mathbf{d}^{{\rm T}}\mathbf{X},\mathbf{c}^{{\rm T}}\mathbf{X})$
+\end_inset
+
+。则线性组合的方差是
+\begin_inset Formula $\mathbf{c}^{{\rm T}}\boldsymbol{\Sigma}\mathbf{c}$
+\end_inset
+
+，是它与自身的协方差。
+\end_layout
+
+\begin_layout Standard
+类似地，(伪)逆协方差矩阵提供内积
+\begin_inset Formula $\langle c-\mu|\Sigma^{+}|c-\mu\rangle$
+\end_inset
+
+，它产生了 
+\begin_inset CommandInset href
+LatexCommand href
+name "Mahalanobis距离"
+target "https://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+，这是
+\begin_inset Formula $c$
+\end_inset
+
+的“非似然”的度量。
+\end_layout
+
+\begin_layout Section
+哪些矩阵是协方差矩阵？
+\end_layout
+
+\begin_layout Standard
+根据上面的恒等式，令
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+是一个
+\begin_inset Formula $(p\times1)$
+\end_inset
+
+实数值向量，则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{var}(\mathbf{b}^{{\rm T}}\mathbf{X})=\mathbf{b}^{{\rm T}}\mathrm{var}(\mathbf{X})\mathbf{b},\,
+\]
+
+\end_inset
+
+其结果必须总是非负的，因为它是实值随机变量的
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance#Properties"
+literal "false"
+
+\end_inset
+
+，所以协方差矩阵总是
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定矩阵"
+target "https://en.wikipedia.org/wiki/Positive-semidefinite_matrix"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+上述论点可以展开如下：
+\begin_inset Formula 
+\begin{align*}
+w^{{\rm T}}\mathrm{E}\left[(\mathbf{X}-\mathrm{E}[\mathbf{X}])(\mathbf{X}-\mathrm{E}[\mathbf{X}])^{{\rm T}}\right]w & =\mathrm{E}\left[w^{{\rm T}}(\mathbf{X}-\mathrm{E}[\mathbf{X}])(\mathbf{X}-\mathrm{E}[\mathbf{X}])^{{\rm T}}w\right]\\
+ & =\mathrm{E}\big[\big(w^{{\rm T}}(\mathbf{X}-\mathrm{E}[\mathbf{X}])\big)^{2}\big]\geq0,
+\end{align*}
+
+\end_inset
+
+其中，从观察结果得到的最后一个不等式
+\begin_inset Formula $w^{{\rm T}}(\mathbf{X}-\mathrm{E}[\mathbf{X}])$
+\end_inset
+
+是一个标量。
+\end_layout
+
+\begin_layout Standard
+相反，每个对称半正定矩阵都是协方差矩阵。为此，假设
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+是一个
+\begin_inset Formula $p\times p$
+\end_inset
+
+对称半正定矩阵。从
+\begin_inset CommandInset href
+LatexCommand href
+name "谱定理"
+target "https://en.wikipedia.org/wiki/Spectral_theorem"
+literal "false"
+
+\end_inset
+
+的有限维情况来看，
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+有一个非负对称
+\begin_inset CommandInset href
+LatexCommand href
+name "平方根"
+target "https://en.wikipedia.org/wiki/Square_root_of_a_matrix"
+literal "false"
+
+\end_inset
+
+，可以用
+\begin_inset Formula $\mathbf{M}^{1/2}$
+\end_inset
+
+表示。设
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+为任意
+\begin_inset Formula $p\times1$
+\end_inset
+
+列向量值随机变量，其协方差矩阵为
+\begin_inset Formula $p\times p$
+\end_inset
+
+单位矩阵。则
+\begin_inset Formula 
+\[
+\mathrm{var}(\mathbf{M}^{1/2}\mathbf{X})=\mathbf{M}^{1/2}\,\mathrm{var}(\mathbf{X})\,\mathbf{M}^{1/2}=\mathbf{M}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+复随机向量
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "复数"
+target "https://en.wikipedia.org/wiki/Complex_number"
+literal "false"
+
+\end_inset
+
+
+\series bold
+标量值
+\series default
+随机变量与期望值
+\begin_inset Formula $\mu$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance#Generalizations"
+literal "false"
+
+\end_inset
+
+通常使用
+\begin_inset CommandInset href
+LatexCommand href
+name "复共轭"
+target "https://en.wikipedia.org/wiki/Complex_conjugation"
+literal "false"
+
+\end_inset
+
+定义：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{var}(Z)=\mathrm{E}\left[(Z-\mu_{Z})\overline{(Z-\mu_{Z})}\right],
+\]
+
+\end_inset
+
+其中复数
+\begin_inset Formula $z$
+\end_inset
+
+的复共轭表示为
+\begin_inset Formula $\overline{z}$
+\end_inset
+
+；因此，复随机变量的方差是实数。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{Z}=(Z_{1},\ldots,Z_{n})^{\mathrm{T}}$
+\end_inset
+
+是复值随机变量的列向量，则
+\begin_inset CommandInset href
+LatexCommand href
+name "共轭转置"
+target "https://en.wikipedia.org/wiki/Conjugate_transpose"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{Z}^{\mathrm{H}}$
+\end_inset
+
+ 由转置和共轭两部分构成。在下面的表达式中，向量与其共轭转置的乘积产生一个称为
+\series bold
+协方差矩阵
+\series default
+的平方矩阵，正如其期望值[7]: p.
+ 293：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{Z}\mathbf{Z}}=\mathrm{cov}[\mathbf{Z},\mathbf{Z}]=\mathrm{E}\left[(\mathbf{Z}-\boldsymbol{\mu}_{\mathbf{Z}})(\mathbf{Z}-\boldsymbol{\mu}_{\mathbf{Z}})^{\mathrm{H}}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这样得到的矩阵将是
+\begin_inset CommandInset href
+LatexCommand href
+name "厄米特"
+target "https://en.wikipedia.org/wiki/Hermitian_matrix"
+literal "false"
+
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定的"
+target "https://en.wikipedia.org/wiki/Positive-semidefinite_matrix"
+literal "false"
+
+\end_inset
+
+[8]，实数在主对角线上，复数在非对角线上。
+\end_layout
+
+\begin_layout Subsection
+性质
+\end_layout
+
+\begin_layout Itemize
+协方差矩阵是
+\begin_inset CommandInset href
+LatexCommand href
+name "厄米特矩阵"
+target "https://en.wikipedia.org/wiki/Hermitian_matrix"
+literal "false"
+
+\end_inset
+
+，即
+\begin_inset Formula $\mathrm{K}_{\mathbf{Z}\mathbf{Z}}^{\mathrm{H}}=\mathrm{K}_{\mathbf{Z}\mathbf{Z}}$
+\end_inset
+
+。[1]: p.
+ 179 
+\end_layout
+
+\begin_layout Itemize
+协方差矩阵的对角元素是实数。[1]: p.
+ 179 
+\end_layout
+
+\begin_layout Subsection
+伪协方差矩阵
+\end_layout
+
+\begin_layout Standard
+对于复随机向量，另一种第二中心矩，
+\series bold
+伪协方差矩阵
+\series default
+(
+\series bold
+pseudo-covariance matrix
+\series default
+)，也称为
+\series bold
+关系矩阵
+\series default
+(
+\series bold
+relation matrix
+\series default
+)，定义如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{J}_{\mathbf{Z}\mathbf{Z}}=\mathrm{cov}[\mathbf{Z},\overline{\mathbf{Z}}]=\mathrm{E}\left[(\mathbf{Z}-\boldsymbol{\mu}_{\mathbf{Z}})(\mathbf{Z}-\boldsymbol{\mu}_{\mathbf{Z}})^{\mathrm{T}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与上面定义的协方差矩阵不同，定义中的厄米转置被转置所取代。其对角线元素可以是复数；它是一个
+\begin_inset CommandInset href
+LatexCommand href
+name "复对称矩阵"
+target "https://en.wikipedia.org/wiki/Complex_symmetric_matrix"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+估计
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{M}_{\mathbf{X}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{M}_{\mathbf{Y}}$
+\end_inset
+
+分别是维数为
+\begin_inset Formula $p\times n$
+\end_inset
+
+和
+\begin_inset Formula $q\times n$
+\end_inset
+
+的中心
+\begin_inset CommandInset href
+LatexCommand href
+name "数据矩阵"
+target "https://en.wikipedia.org/wiki/Data_matrix_(multivariate_statistics)"
+literal "false"
+
+\end_inset
+
+，也就是说，对于
+\begin_inset Formula $p$
+\end_inset
+
+行和
+\begin_inset Formula $q$
+\end_inset
+
+行变量的
+\begin_inset Formula $n$
+\end_inset
+
+列观测值，行均值已从中减去，那么，如果行均值是从数据中估计的，则样本协方差矩阵
+\begin_inset Formula $\mathbf{Q}_{\mathbf{XX}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Q}_{\mathbf{XY}}$
+\end_inset
+
+可以定义为
+\begin_inset Formula 
+\[
+\mathbf{Q}_{\mathbf{XX}}=\frac{1}{n-1}\mathbf{M}_{\mathbf{X}}\mathbf{M}_{\mathbf{X}}^{{\rm T}},\qquad\mathbf{Q}_{\mathbf{XY}}=\frac{1}{n-1}\mathbf{M}_{\mathbf{X}}\mathbf{M}_{\mathbf{Y}}^{{\rm T}}
+\]
+
+\end_inset
+
+或者，如果行均值是先验的，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Q}_{\mathbf{XX}}=\frac{1}{n}\mathbf{M}_{\mathbf{X}}\mathbf{M}_{\mathbf{X}}^{{\rm T}},\qquad\mathbf{Q}_{\mathbf{XY}}=\frac{1}{n}\mathbf{M}_{\mathbf{X}}\mathbf{M}_{\mathbf{Y}}^{{\rm T}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些经验样本协方差矩阵是协方差矩阵最直接和最常用的估计量，但也存在其他估计量，包括正则或收缩估计量，它们可能具有更好的性质。
+\end_layout
+
+\begin_layout Section
+应用
+\end_layout
+
+\begin_layout Standard
+协方差矩阵是许多不同领域的有用工具。从中可以导出一个
+\begin_inset CommandInset href
+LatexCommand href
+name "变换矩阵"
+target "https://en.wikipedia.org/wiki/Transformation_matrix"
+literal "false"
+
+\end_inset
+
+，称为
+\begin_inset CommandInset href
+LatexCommand href
+name "白化变换"
+target "https://en.wikipedia.org/wiki/Whitening_transformation"
+literal "false"
+
+\end_inset
+
+，它允许从一个完全消除数据的相关性的视角，或者从其它不同的视角，找到以紧凑方式表示数据的最佳基(有关协方差矩阵的形式证明和附加属性，请参见
+\begin_inset CommandInset href
+LatexCommand href
+name "瑞利商(Rayleigh Quotient) "
+target "https://en.wikipedia.org/wiki/Rayleigh_quotient"
+literal "false"
+
+\end_inset
+
+)。这被称为主成分分析(
+\begin_inset CommandInset href
+LatexCommand href
+name "principal component analysis"
+target "https://en.wikipedia.org/wiki/Principal_component_analysis"
+literal "false"
+
+\end_inset
+
+, PCA)和Karhunen–Loève变换(
+\begin_inset CommandInset href
+LatexCommand href
+name "Karhunen–Loève transform"
+target "https://en.wikipedia.org/wiki/Karhunen%E2%80%93Lo%C3%A8ve_transform"
+literal "false"
+
+\end_inset
+
+, KL-transform)。
+\end_layout
+
+\begin_layout Standard
+协方差矩阵在
+\begin_inset CommandInset href
+LatexCommand href
+name "金融经济学"
+target "https://en.wikipedia.org/wiki/Financial_economics"
+literal "false"
+
+\end_inset
+
+中起着关键作用，特别是在
+\begin_inset CommandInset href
+LatexCommand href
+name "投资组合理论"
+target "https://en.wikipedia.org/wiki/Modern_portfolio_theory"
+literal "false"
+
+\end_inset
+
+及其
+\begin_inset CommandInset href
+LatexCommand href
+name "互助基金分离定理"
+target "https://en.wikipedia.org/wiki/Mutual_fund_separation_theorem"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "资本资产定价模型"
+target "https://en.wikipedia.org/wiki/Capital_asset_pricing_model"
+literal "false"
+
+\end_inset
+
+中。在某些假设下，各种资产回报之间的协方差矩阵用于确定投资者应该(在
+\begin_inset CommandInset href
+LatexCommand href
+name "规范分析"
+target "https://en.wikipedia.org/wiki/Normative_economics"
+literal "false"
+
+\end_inset
+
+中)或预计(在
+\begin_inset CommandInset href
+LatexCommand href
+name "实证分析"
+target "https://en.wikipedia.org/wiki/Positive_economics"
+literal "false"
+
+\end_inset
+
+中)在
+\begin_inset CommandInset href
+LatexCommand href
+name "多元化"
+target "https://en.wikipedia.org/wiki/Diversification_(finance)"
+literal "false"
+
+\end_inset
+
+背景下选择持有的不同资产的相对金额。
+\end_layout
+
+\begin_layout Subsection
+协方差映射
+\end_layout
+
+\begin_layout Standard
+在协方差映射中，
+\begin_inset Formula $\mathrm{cov}(\mathbf{X},\mathbf{Y})$
+\end_inset
+
+或
+\begin_inset Formula $\mathrm{pcov}(\mathbf{X},\mathbf{Y}\mid\mathbf{I})$
+\end_inset
+
+矩阵绘制为二维图。当向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+是离散
+\begin_inset CommandInset href
+LatexCommand href
+name "随机函数"
+target "https://en.wikipedia.org/wiki/Random_function"
+literal "false"
+
+\end_inset
+
+时，该图显示随机函数不同区域之间的统计关系。统计上独立的函数区域在地图上显示为零级平地，而正相关或负相关分别显示为丘陵或山谷。
+\end_layout
+
+\begin_layout Standard
+在实践中，列向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+是作为
+\begin_inset Formula $n$
+\end_inset
+
+个样本的行通过实验获得的，例如：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+[\mathbf{X}_{1},\mathbf{X}_{2},...\mathbf{X}_{n}]=\begin{bmatrix}X_{1}(t_{1}) & X_{2}(t_{1}) & \cdots & X_{n}(t_{1})\\
+X_{1}(t_{2}) & X_{2}(t_{2}) & \cdots & X_{n}(t_{2})\\
+\vdots & \vdots & \ddots & \vdots\\
+X_{1}(t_{m}) & X_{2}(t_{m}) & \cdots & X_{n}(t_{m})
+\end{bmatrix},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $X_{j}(t_{i})$
+\end_inset
+
+是随机函数
+\begin_inset Formula $X(t)$
+\end_inset
+
+的样本
+\begin_inset Formula $j$
+\end_inset
+
+中的第
+\begin_inset Formula $i$
+\end_inset
+
+个离散值。协方差公式中所需的期望值使用
+\begin_inset CommandInset href
+LatexCommand href
+name "样本均值"
+target "https://en.wikipedia.org/wiki/Sample_mean"
+literal "false"
+
+\end_inset
+
+进行估计，例如：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\langle\mathbf{X}\rangle=\frac{1}{n}\sum_{j=1}^{n}\mathbf{X}_{j}
+\]
+
+\end_inset
+
+并且利用
+\begin_inset CommandInset href
+LatexCommand href
+name "样本协方差"
+target "https://en.wikipedia.org/wiki/Sample_covariance"
+literal "false"
+
+\end_inset
+
+矩阵估计协方差矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{cov}(\mathbf{X},\mathbf{Y})\approx\langle\mathbf{XY^{{\rm T}}}\rangle-\langle\mathbf{X}\rangle\langle\mathbf{Y}^{{\rm T}}\rangle,
+\]
+
+\end_inset
+
+其中，角括号表示与之前一样的样本平均值，但应进行
+\begin_inset CommandInset href
+LatexCommand href
+name "贝塞尔校正"
+target "https://en.wikipedia.org/wiki/Bessel%27s_correction"
+literal "false"
+
+\end_inset
+
+以避免
+\begin_inset CommandInset href
+LatexCommand href
+name "偏差"
+target "https://en.wikipedia.org/wiki/Bias_of_an_estimator"
+literal "false"
+
+\end_inset
+
+。使用该估计，可计算部分协方差矩阵，如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{pcov}(\mathbf{X},\mathbf{Y}\mid\mathbf{I})=\mathrm{cov}(\mathbf{X},\mathbf{Y})-\mathrm{cov}(\mathbf{X},\mathbf{I})\left(\mathrm{cov}(\mathbf{I},\mathbf{I})\backslash\mathrm{cov}(\mathbf{I},\mathbf{Y})\right),
+\]
+
+\end_inset
+
+其中，反斜杠表示
+\begin_inset CommandInset href
+LatexCommand href
+name "左矩阵除法"
+target "https://en.wikipedia.org/wiki/Division_(mathematics)#Left_and_right_division"
+literal "false"
+
+\end_inset
+
+算子，它绕过了矩阵求逆的要求，在一些计算包(如
+\begin_inset CommandInset href
+LatexCommand href
+name "Matlab"
+target "https://en.wikipedia.org/wiki/Matlab"
+literal "false"
+
+\end_inset
+
+)中可用[9]。
+\end_layout
+
+\begin_layout Standard
+图1说明了如何在Hamburg的 
+\begin_inset CommandInset href
+LatexCommand href
+name "FLASH"
+target "https://en.wikipedia.org/wiki/DESY#FLASH"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "自由电子激光器"
+target "https://en.wikipedia.org/wiki/Free-electron_laser"
+literal "false"
+
+\end_inset
+
+上进行的实验示例上构造部分协方差图[10]。随机函数
+\begin_inset Formula $X(t)$
+\end_inset
+
+是氮分子
+\begin_inset CommandInset href
+LatexCommand href
+name "库仑爆炸"
+target "https://en.wikipedia.org/wiki/Coulomb_explosion"
+literal "false"
+
+\end_inset
+
+产生的离子的
+\begin_inset CommandInset href
+LatexCommand href
+name "飞行时间"
+target "https://en.wikipedia.org/wiki/Time-of-flight_mass_spectrometry"
+literal "false"
+
+\end_inset
+
+谱，被激光脉冲电离。由于每个激光脉冲只有几百个分子电离，因此单次激发的光谱高度波动。然而，典型地收集
+\begin_inset Formula $m=10^{4}$
+\end_inset
+
+这样的光谱，
+\begin_inset Formula $\mathbf{X}_{j}(t)$
+\end_inset
+
+，并在
+\begin_inset Formula $j$
+\end_inset
+
+上平均它们产生平滑的光谱
+\begin_inset Formula $\langle\mathbf{X}(t)\rangle$
+\end_inset
+
+，在图1底部以红色显示。平均光谱
+\begin_inset Formula $\langle\mathbf{X}\rangle$
+\end_inset
+
+以其动能加宽的峰形式揭示了几个氮离子，但要找到电离阶段和离子动量之间的相关性，需要计算协方差图。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Stages_of_partial_covariance_mapping.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+构造自由电子激光诱导的经历库仑爆炸的
+\begin_inset Formula $N_{2}$
+\end_inset
+
+分子的部分协方差图[10]。面板
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+绘制协方差矩阵的两项，如图
+\begin_inset Formula $\mathbf{c}$
+\end_inset
+
+所示。面板
+\begin_inset Formula $\mathbf{d}$
+\end_inset
+
+通过激光的强度波动绘制共模关联图。面板
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+映射针对强度波动校正的部分协方差矩阵。面板
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+显示
+\begin_inset Formula $10\%$
+\end_inset
+
+的过度校正改善了图像，并使离子关联清晰可见。由于动量守恒，这些相关性显示为近似垂直于自相关线(以及探测器振铃引起的周期调制)的线。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在图1的示例中，光谱
+\begin_inset Formula $\mathbf{X}_{j}(t)$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}_{j}(t)$
+\end_inset
+
+是相同的，只是飞行时间
+\begin_inset Formula $t$
+\end_inset
+
+的范围不同。面板
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+显示
+\begin_inset Formula $\langle\mathbf{XY^{{\rm T}}}\rangle$
+\end_inset
+
+，面板
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+显示
+\begin_inset Formula $\langle\mathbf{X}\rangle\langle\mathbf{Y^{{\rm T}}}\rangle$
+\end_inset
+
+，以及面板
+\begin_inset Formula $\mathbf{c}$
+\end_inset
+
+显示了它们的差异，即
+\begin_inset Formula $\mathrm{cov}(\mathbf{X},\mathbf{Y})$
+\end_inset
+
+，注意色阶的变化。不幸的是，这张图被一个镜头到另一个镜头的激光强度波动引起的无趣的共模关联所淹没。为了抑制这种相关性，在每次拍摄时记录激光强度
+\begin_inset Formula $I_{j}$
+\end_inset
+
+，并将其放入
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+中，并且
+\begin_inset Formula $\mathrm{pcov}(\mathbf{X},\mathbf{Y}\mid\mathbf{I})$
+\end_inset
+
+计算为面板
+\begin_inset Formula $\mathbf{d}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+显示出来。然而，抑制无趣相关性是不完美的，因为除了激光强度之外还有其他共模波动源，原则上所有这些源都应该在向量
+\begin_inset Formula $\mathbf{I}$
+\end_inset
+
+中进行监测。然而，在实践中，如面板
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+所示，过度补偿偏协方差校正通常是足够的，其中离子动量的有趣关联现在清晰可见，为以氮原子电离阶段为中心的直线。
+\end_layout
+
+\begin_layout Subsection
+二维红外光谱
+\end_layout
+
+\begin_layout Standard
+二维红外光谱利用
+\begin_inset CommandInset href
+LatexCommand href
+name "相关分析"
+target "https://en.wikipedia.org/wiki/Two-dimensional_correlation_analysis"
+literal "false"
+
+\end_inset
+
+获得
+\begin_inset CommandInset href
+LatexCommand href
+name "凝聚相"
+target "https://en.wikipedia.org/wiki/Condensed_matter_physics"
+literal "false"
+
+\end_inset
+
+的二维光谱。此分析有两种版本：
+\begin_inset CommandInset href
+LatexCommand href
+name "同步"
+target "https://en.wikipedia.org/wiki/Two-dimensional_correlation_analysis#Calculation_of_the_synchronous_spectrum"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "异步"
+target "https://en.wikipedia.org/wiki/Two-dimensional_correlation_analysis#Calculation_of_the_asynchronous_spectrum"
+literal "false"
+
+\end_inset
+
+。在数学上，前者用样本协方差矩阵表示，该技术相当于协方差映射[11]。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+Park,Kun Il (2018).
+ Fundamentals of Probability and Stochastic Processes with Applications
+ to Communications.
+ Springer.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 978-3-319-68074-3"
+target "https://en.wikipedia.org/wiki/Special:BookSources/978-3-319-68074-3"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+William Feller (1971).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "An introduction to probability theory and its applications"
+target "https://books.google.com/books?id=K7kdAQAAMAAJ"
+literal "false"
+
+\end_inset
+
+.
+ Wiley.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 978-0-471-25709-7"
+target "https://en.wikipedia.org/wiki/Special:BookSources/978-0-471-25709-7"
+literal "false"
+
+\end_inset
+
+.
+ Retrieved 10 August 2012.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Wasserman, Larry (2004).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "All of Statistics: A Concise Course in Statistical Inference"
+target "https://archive.org/details/springer_10.1007-978-0-387-21736-9"
+literal "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 0-387-40272-1"
+target "https://en.wikipedia.org/wiki/Special:BookSources/0-387-40272-1"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Taboga, Marco (2010).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "``Lectures on probability theory and mathematical statistics''"
+target "http://www.statlect.com/varian2.htm"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Eaton, Morris L.
+ (1983).
+ Multivariate Statistics: a Vector Space Approach.
+ John Wiley and Sons.
+ pp.
+ 116–117.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 0-471-02776-6"
+target "https://en.wikipedia.org/wiki/Special:BookSources/0-471-02776-6"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+W J Krzanowski "Principles of Multivariate Analysis" (Oxford University
+ Press, New York, 1988), Chap.
+ 14.4; K V Mardia, J T Kent and J M Bibby "Multivariate Analysis (Academic
+ Press, London, 1997), Chap.
+ 6.5.3; T W Anderson "An Introduction to Multivariate Statistical Analysis"
+ (Wiley, New York, 2003), 3rd ed., Chaps.
+ 2.5.1 and 4.3.1.
+\end_layout
+
+\begin_layout Enumerate
+Lapidoth, Amos (2009).
+ A Foundation in Digital Communication.
+ Cambridge University Press.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISBN 978-0-521-19395-5"
+target "https://en.wikipedia.org/wiki/Special:BookSources/978-0-521-19395-5"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Brookes, Mike.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "``The Matrix Reference Manual''"
+target "http://www.ee.ic.ac.uk/hp/staff/dmb/matrix/expect.html"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+L J Frasinski "Covariance mapping techniques" J.
+ Phys.
+ B: At.
+ Mol.
+ Opt.
+ Phys.
+ 49 152004 (2016), 
+\begin_inset CommandInset href
+LatexCommand href
+name "open access"
+target "http://iopscience.iop.org/article/10.1088/0953-4075/49/15/152004"
+literal "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+O Kornilov, M Eckstein, M Rosenblatt, C P Schulz, K Motomura, A Rouzée,
+ J Klei, L Foucar, M Siano, A Lübcke, F.
+ Schapper, P Johnsson, D M P Holland, T Schlatholter, T Marchenko, S Düsterer,
+ K Ueda, M J J Vrakking and L J Frasinski ``Coulomb explosion of diatomic
+ molecules in intense XUV fields mapped by partial covariance'' J.
+ Phys.
+ B: At.
+ Mol.
+ Opt.
+ Phys.
+ 46 164028 (2013), 
+\begin_inset CommandInset href
+LatexCommand href
+name "open access"
+target "http://hdl.handle.net/10044/1/12267"
+literal "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+I Noda ``Generalized two-dimensional correlation method applicable to infrared,
+ Raman, and other types of spectroscopy'' Appl.
+ Spectrosc.
+ 47 1329–36 (1993)
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,876 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "如何绘制协方差误差椭圆？"
+\pdf_author "Vincent Spruyt"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "如何绘制协方差误差椭圆？"
+target "https://www.visiondummy.com/2014/04/draw-error-ellipse-representing-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Vincent Spruyt"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+April 3, 2014
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+序言
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我将展示如何为2D正态分布数据绘制一个误差椭圆，也称为置信椭圆(confidence ellipse)。误差椭圆表示高斯分布的iso轮廓，并允许您
+可视化2D置信区间。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了一组2D正态分布数据样本的
+\begin_inset Formula $95\%$
+\end_inset
+
+置信椭圆。该置信椭圆定义了包含
+\begin_inset Formula $95\%$
+\end_inset
+
+可从基本高斯分布中提取的所有样本的区域。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename error_ellipse1.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+正态分布数据的2D置信椭圆
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在下一节中，我们将讨论如何获得不同置信值(例如
+\begin_inset Formula $99\%$
+\end_inset
+
+置信区间)的置信椭圆，并且我们将展示如何使用Matlab或C++代码绘制这些椭圆。
+\end_layout
+
+\begin_layout Section
+轴对齐置信椭圆
+\end_layout
+
+\begin_layout Standard
+在推导获得误差椭圆的一般方法之前，让我们先看看椭圆长轴与
+\begin_inset Formula $X$
+\end_inset
+
+轴对齐的特殊情况，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename error_ellipse_axisaligned.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+不相关的高斯数据的置信椭圆
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 说明了椭圆的角度是由数据的协方差决定的。在这种情况下，协方差为零，因此数据不相关，导致轴对齐误差椭圆。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.4213
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.9387
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示数据的协方差矩阵
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，很明显，椭圆轴的大小取决于数据的方差。在我们的例子中，最大的方差在
+\begin_inset Formula $X$
+\end_inset
+
+轴方向，而最小的方差在
+\begin_inset Formula $Y$
+\end_inset
+
+轴方向。
+\end_layout
+
+\begin_layout Standard
+通常，长轴长度为
+\begin_inset Formula $2a$
+\end_inset
+
+、短轴长度为
+\begin_inset Formula $2b$
+\end_inset
+
+、以原点为中心的轴对齐椭圆方程由以下方程定义：
+\begin_inset Formula 
+\begin{equation}
+\left(\dfrac{x}{a}\right)^{2}+\left(\dfrac{y}{b}\right)^{2}=1\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在我们的例子中，轴的长度由数据的标准偏差
+\begin_inset Formula $\sigma_{x}$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{y}$
+\end_inset
+
+定义，因此误差椭圆的方程变为：
+\begin_inset Formula 
+\begin{equation}
+\left(\dfrac{x}{\sigma_{x}}\right)^{2}+\left(\dfrac{y}{\sigma_{y}}\right)^{2}=s\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $s$
+\end_inset
+
+定义椭圆的比例，可以是任意数字(例如
+\begin_inset Formula $s=1$
+\end_inset
+
+)。现在的问题是如何选择
+\begin_inset Formula $s$
+\end_inset
+
+，使得生成的椭圆的比例表示所选的置信水平(例如，
+\begin_inset Formula $95\%$
+\end_inset
+
+的置信水平对应于
+\begin_inset Formula $s=5.991$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+我们的2D数据是从一个协方差为零的多元高斯模型中采样的。这意味着
+\begin_inset Formula $x$
+\end_inset
+
+值和
+\begin_inset Formula $y$
+\end_inset
+
+值也是正态分布的。因此，等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的左侧实际上表示独立正态分布数据样本的平方和。已知高斯数据点的平方和根据所谓的
+\begin_inset CommandInset href
+LatexCommand href
+name "卡方分布"
+target "https://en.wikipedia.org/wiki/Chi-squared_distribution"
+literal "false"
+
+\end_inset
+
+进行分布。卡方分布定义为“自由度”，表示未知量的数量。在我们的例子中，有
+\begin_inset Formula $2$
+\end_inset
+
+个未知数，因此有
+\begin_inset Formula $2$
+\end_inset
+
+个自由度。
+\end_layout
+
+\begin_layout Standard
+因此，通过计算卡方似然，我们可以很容易地获得上述总和，因此
+\begin_inset Formula $s$
+\end_inset
+
+等于特定值的概率。事实上，由于我们对置信区间感兴趣，我们正在寻找
+\begin_inset Formula $s$
+\end_inset
+
+小于或等于特定值的概率，该值可以使用累积卡方分布轻松获得。由于统计学家是懒惰的人，我们通常不尝试计算这种概率，而只是在概率表中查找：
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://people.richland.edu/james/lecture/m170/tbl-chi.html
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+例如，使用此概率表，我们可以很容易地发现，在
+\begin_inset Formula $2$
+\end_inset
+
+个自由度的情况下：
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+P(s<5.991)=1-0.05=0.95
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $95\%$
+\end_inset
+
+的置信区间对应于
+\begin_inset Formula $s=5.991$
+\end_inset
+
+。换句话说，
+\begin_inset Formula $95\%$
+\end_inset
+
+的数据将落在椭圆内，椭圆定义为：
+\begin_inset Formula 
+\begin{equation}
+\left(\frac{x}{\sigma_{x}}\right)^{2}+\left(\frac{y}{\sigma_{y}}\right)^{2}=5.991\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+同样，
+\begin_inset Formula $99\%$
+\end_inset
+
+置信区间对应于
+\begin_inset Formula $s=9.210$
+\end_inset
+
+，
+\begin_inset Formula $90\%$
+\end_inset
+
+置信区间对应于
+\begin_inset Formula $s=4.605$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的误差椭圆可以绘制为长轴长度等于
+\begin_inset Formula $2\sigma_{x}\sqrt{5.991}$
+\end_inset
+
+且短轴长度等于
+\begin_inset Formula $2\sigma_{y}\sqrt{5.991}$
+\end_inset
+
+的椭圆。
+\end_layout
+
+\begin_layout Section
+任意置信椭圆
+\end_layout
+
+\begin_layout Standard
+在数据不相关的情况下，如存在协方差，则产生的误差椭圆不会与轴对齐。在这种情况下，只有当我们临时定义一个新的坐标系，使椭圆与轴对齐，然后旋转生成的椭圆时，上述段落
+的推理才成立。
+\end_layout
+
+\begin_layout Standard
+换句话说，虽然我们在前面计算了平行于
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴的方差
+\begin_inset Formula $\sigma_{x}$
+\end_inset
+
+和
+\begin_inset Formula $\sigma_{y}$
+\end_inset
+
+，但我们现在需要计算平行于置信椭圆长轴和短轴的方差。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的粉红色和绿色箭头说明了需要计算这些差异的方向。
+\end_layout
+
+\begin_layout Standard
+这些方向实际上是数据变化最大的方向，由协方差矩阵定义。协方差矩阵可以看作是对一些原始数据进行线性变换以获得当前观测数据的矩阵。在前一篇关于
+\begin_inset CommandInset href
+LatexCommand href
+name "特征向量和特征值"
+target "https://www.visiondummy.com/2014/03/eigenvalues-eigenvectors/"
+literal "false"
+
+\end_inset
+
+的文章中，我们证明了沿着这种线性变换的方向向量是变换矩阵的特征向量。实际上，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中粉红色和绿色箭头所示的向量是数据协方差矩阵的特征向量，而向量的长度对应于特征值。
+\end_layout
+
+\begin_layout Standard
+因此，特征值表示数据在特征向量方向上的传播。换句话说，特征值表示数据在特征向量方向上的方差。在轴对齐误差椭圆的情况下，即当协方差等于零时，特征值等于协方差矩阵的
+方差，且特征向量等于
+\begin_inset Formula $x$
+\end_inset
+
+轴和
+\begin_inset Formula $y$
+\end_inset
+
+轴的定义。在任意相关数据的情况下，特征向量表示数据最大扩展的方向，而特征值定义了该扩展的实际大小。
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $95\%$
+\end_inset
+
+置信椭圆的定义类似于轴对齐情况，长轴长度为
+\begin_inset Formula $2\sqrt{5.991\lambda_{1}}$
+\end_inset
+
+，短轴长度为
+\begin_inset Formula $2\sqrt{5.991\lambda_{2}}$
+\end_inset
+
+，其中
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\lambda_{2}$
+\end_inset
+
+表示协方差矩阵的特征值。
+\end_layout
+
+\begin_layout Standard
+为了获得椭圆的方向，我们只需计算最大特征向量相对于
+\begin_inset Formula $x$
+\end_inset
+
+轴的角度：
+\begin_inset Formula 
+\begin{equation}
+\alpha=\arctan\frac{\mathbf{v}_{1}(y)}{\mathbf{v}_{1}(x)}\label{eq:4}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{v}_{1}$
+\end_inset
+
+是对应于最大特征值的协方差矩阵的特征向量。
+\end_layout
+
+\begin_layout Standard
+基于短轴和长轴长度以及长轴和
+\begin_inset Formula $x$
+\end_inset
+
+轴之间的角度
+\begin_inset Formula $\alpha$
+\end_inset
+
+，绘制置信椭圆变得很简单。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了几个置信值的误差椭圆。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename error_ellipse_isocontours.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+正态分布数据的置信椭圆
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Source Code
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Matlab source code"
+target "https://www.visiondummy.com/wp-content/uploads/2014/04/error_ellipse.m"
+literal "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "C++ source code (uses OpenCV)"
+target "https://www.visiondummy.com/wp-content/uploads/2014/04/error_ellipse.cpp"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+在这篇文章中，我们展示了如何根据选择的置信值获得2D正态分布数据的误差椭圆。这在可视化或分析数据时通常很有用，在以后关于 
+\begin_inset CommandInset href
+LatexCommand href
+name "PCA"
+target "https://www.visiondummy.com/2014/05/feature-extraction-using-pca/"
+literal "false"
+
+\end_inset
+
+ 的文章中会引起兴趣。
+\end_layout
+
+\begin_layout Standard
+If you’re new to this blog, don’t forget to subscribe, or 
+\begin_inset CommandInset href
+LatexCommand href
+name "follow me on twitter"
+target "https://twitter.com/vincent_spruyt"
+literal "false"
+
+\end_inset
+
+!
+\end_layout
+
+\end_body
+\end_document
