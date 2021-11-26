@@ -1,0 +1,1798 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "理解和分析协方差矩阵"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+理解和分析协方差矩阵
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+前言
+\end_layout
+
+\begin_layout Standard
+分析协方差矩阵的文章已经很多，本文主要从几何的角度出发，直观地显示协方差矩阵的特点，为今后应用和分析协方差矩阵建立直觉。
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset CommandInset href
+LatexCommand href
+name "概率论"
+target "https://en.wikipedia.org/wiki/Probability_theory"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "统计学"
+target "https://en.wikipedia.org/wiki/Statistics"
+literal "false"
+
+\end_inset
+
+中，
+\series bold
+协方差矩阵(covariance matrix)
+\series default
+，也称为
+\series bold
+自动协方差矩阵(auto-covariance matrix)
+\series default
+、
+\series bold
+色散矩阵(dispersion matrix)
+\series default
+、
+\series bold
+方差矩阵(variance matrix
+\series default
+)或
+\series bold
+方差-协方差矩阵(variance–covariance matrix)
+\series default
+，是一个平方
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)"
+literal "false"
+
+\end_inset
+
+，给出给定
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_vector"
+literal "false"
+
+\end_inset
+
+的每对元素之间的
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+。任意
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+矩阵都是
+\begin_inset CommandInset href
+LatexCommand href
+name "对称的"
+target "https://en.wikipedia.org/wiki/Symmetric_matrix"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定的"
+target "https://en.wikipedia.org/wiki/Positive_semi-definite_matrix"
+literal "false"
+
+\end_inset
+
+矩阵，且其主对角线包含
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance"
+literal "false"
+
+\end_inset
+
+(即每个元素自身的协方差)。
+\end_layout
+
+\begin_layout Standard
+直观地说，协方差矩阵将方差的概念推广到多维。例如，二维空间中随机点集合的变化不能完全用一个数字表示，在
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+方向上的变化也不能包含所有必要的信息；需要一个
+\begin_inset Formula $2\times2$
+\end_inset
+
+矩阵来充分描述二维变化。
+\end_layout
+
+\begin_layout Standard
+随机向量
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+的协方差矩阵通常由
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+或
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+表示。
+\end_layout
+
+\begin_layout Standard
+在本文中，粗体无下标的
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+用于引用随机向量，非粗体有下标
+\begin_inset Formula $X_{i}$
+\end_inset
+
+和
+\begin_inset Formula $Y_{i}$
+\end_inset
+
+用于引用标量随机变量。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset CommandInset href
+LatexCommand href
+name "列向量"
+target "https://en.wikipedia.org/wiki/Column_vector"
+literal "false"
+
+\end_inset
+
+的条目
+\begin_inset Formula 
+\[
+\mathbf{X}=(X_{1},X_{2},...,X_{n})^{\mathrm{T}}
+\]
+
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_variable"
+literal "false"
+
+\end_inset
+
+，每个变量都有有限的
+\begin_inset CommandInset href
+LatexCommand href
+name "方差"
+target "https://en.wikipedia.org/wiki/Variance"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "期望值"
+target "https://en.wikipedia.org/wiki/Expected_value"
+literal "false"
+
+\end_inset
+
+，那么协方差矩阵
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}$
+\end_inset
+
+是其
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差"
+target "https://en.wikipedia.org/wiki/Covariance"
+literal "false"
+
+\end_inset
+
+的矩阵
+\begin_inset Formula 
+\[
+\mathrm{K}_{X_{i}X_{j}}=\mathrm{cov}[X_{i},X_{j}]=\mathrm{E}[(X_{i}-\mathrm{E}[X_{i}])(X_{j}-\mathrm{E}[X_{j}])]
+\]
+
+\end_inset
+
+其中算子
+\begin_inset Formula $\mathrm{E}$
+\end_inset
+
+表示其参数的期望值(均值)。
+\end_layout
+
+\begin_layout Standard
+换句话说，
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\begin{bmatrix}\mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{1}-\mathrm{E}[X_{1}])(X_{n}-\mathrm{E}[X_{n}])]\\
+\mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{2}-\mathrm{E}[X_{2}])(X_{n}-\mathrm{E}[X_{n}])]\\
+\vdots & \vdots & \ddots & \vdots\\
+\mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{1}-\mathrm{E}[X_{1}])] & \mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{2}-\mathrm{E}[X_{2}])] & \cdots & \mathrm{E}[(X_{n}-\mathrm{E}[X_{n}])(X_{n}-\mathrm{E}[X_{n}])]
+\end{bmatrix}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上述定义等同于矩阵等式
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathrm{K}_{\mathbf{X}\mathbf{X}}=\mathrm{cov}[\mathbf{X},\mathbf{X}]=\mathrm{E}[(\mathbf{X}-\boldsymbol{\mu}_{\mathbf{X}})(\mathbf{X}-\boldsymbol{\mu}_{\mathbf{X}})^{{\rm T}}]=\mathrm{E}[\mathbf{X}\mathbf{X}^{\mathrm{T}}]-\boldsymbol{\mu}_{\mathbf{X}}\boldsymbol{\mu}_{\mathbf{X}}^{\mathrm{T}}}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\mu}_{\mathbf{X}}=\mathrm{E}[\mathbf{X}]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+性质
+\end_layout
+
+\begin_layout Standard
+在线性代数教材中，有相当多的章节分析了实对称矩阵的特性，因此有不少特性可以直接拿来描述协方差矩阵。再加上半正定的特性，协方差矩阵的特性有：
+\end_layout
+
+\begin_layout Enumerate
+对称性
+\end_layout
+
+\begin_layout Enumerate
+半正定性(可为
+\begin_inset CommandInset href
+LatexCommand href
+name "零"
+target "http://stats.stackexchange.com/a/56833/67822"
+literal "false"
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+实特征值和正特征值
+\end_layout
+
+\begin_layout Enumerate
+矩阵迹(trace)为正(矩阵迹为特征值之和)
+\end_layout
+
+\begin_layout Enumerate
+行列式是正的(行列式是特征值的乘积)
+\end_layout
+
+\begin_layout Enumerate
+对角线条目都是正数
+\end_layout
+
+\begin_layout Enumerate
+正交特征向量
+\end_layout
+
+\begin_layout Enumerate
+可对角化为
+\begin_inset Formula $Q\Lambda Q^{\mathrm{T}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "可以得到Cholesky分解"
+target "http://mathoverflow.net/q/155147/74150"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $A^{\top}A$
+\end_inset
+
+的秩与
+\begin_inset Formula $A$
+\end_inset
+
+的秩相同。
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\text{ker}(A^{\top}A)=\text{ker}(A)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从几何的角度看，最重要的特性就是协方差矩阵是可正交对角化的
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{-1}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+是以特征向量为列向量构成的正交矩阵，并且有特性
+\begin_inset Formula $\boldsymbol{R}^{-1}=\boldsymbol{R}^{\mathrm{T}},\ \boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}=\boldsymbol{I},\ \det\left(\boldsymbol{R}\right)=1$
+\end_inset
+
+，因此
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+实际上是
+\begin_inset Formula $\mathrm{SO}(n)$
+\end_inset
+
+的旋转矩阵；
+\begin_inset Formula $\boldsymbol{\Sigma}^{2}$
+\end_inset
+
+是由特征值，在这里是方差
+\begin_inset Formula $\sigma_{1}^{2},\ldots,\sigma_{n}^{2}$
+\end_inset
+
+构成的对角矩阵。对上式稍做变形
+\begin_inset Formula 
+\begin{align*}
+\mathrm{K}_{\mathbf{X}\mathbf{X}} & =\boldsymbol{R}\boldsymbol{\Sigma}\boldsymbol{\Sigma}\boldsymbol{R}^{\mathrm{T}}\\
+ & =\left(\boldsymbol{\Sigma}\boldsymbol{R}^{\mathrm{T}}\right)^{\mathrm{T}}\left(\boldsymbol{\Sigma}\boldsymbol{R}^{\mathrm{T}}\right)\\
+ & =\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{A}=\boldsymbol{\Sigma}\boldsymbol{R}^{\mathrm{T}}$
+\end_inset
+
+。矩阵
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+又被称为Gramian矩阵。矩阵
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+(
+\begin_inset CommandInset href
+LatexCommand href
+name "Gramian矩阵"
+target "https://en.wikipedia.org/wiki/Gramian_matrix"
+literal "false"
+
+\end_inset
+
+)具有以下性质：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+是一个关键的矩阵结构，因为它在正交投影中起着重要的作用。协方差矩阵只是特例。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+是协方差矩阵—你可以定义多元正态分布，其中
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+是协方差矩阵，参见
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "http://math.stackexchange.com/a/1896633/152225"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+这相当于讨论对称半正定矩阵(
+\begin_inset CommandInset href
+LatexCommand href
+name "symmetric positive semidefinite matrices"
+target "https://en.wikipedia.org/wiki/Positive-definite_matrix"
+literal "false"
+
+\end_inset
+
+, s.p.s.d.) — 对于某些矩阵
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+，每个对称半正定矩阵都可以写成
+\begin_inset Formula $\boldsymbol{A}^{\mathrm{T}}\boldsymbol{A}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+协方差矩阵几何解释
+\end_layout
+
+\begin_layout Standard
+我们回到协方差矩阵是正交对角化形式
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{\mathrm{T}}
+\]
+
+\end_inset
+
+当协方差矩阵只有变量自身的方差而无变量之间的协方差时，矩阵可表示为
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{I}\boldsymbol{\Sigma}^{2}\boldsymbol{I}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们有高斯白色数据集合，表示为一个圆或一个球，
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过上式的线性变换，圆或球被拉伸为椭圆或椭球，数据在各轴的缩放程度由各轴的方差
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+决定。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果协方差矩阵变量之间的协方差不为零，则椭圆或椭球发生了旋转，因为
+\begin_inset Formula $\det\left(\boldsymbol{R}\right)=1$
+\end_inset
+
+，所以各个数据点到椭圆或椭球的中心的距离不会发生改变，也就是椭圆或椭球的形状不会发生改变。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+小结：
+\end_layout
+
+\begin_layout Standard
+对于高斯白色数据，协方差矩阵中的变量方差将圆拉伸为椭圆，变量协方差将椭圆旋转到新的方向，
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+中的列向量为新坐标系的正交基，但是新/旧坐标系的原点重合。最终的椭圆的形状，由
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+，也就是特征向量决定方向，由
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+，也就是特征值决定各个方向的大小。是数据中的非零均值，或称偏差(bias)，将新坐标的原点移动到新的位置。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-04.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们经常在三维空间中估计姿态，姿态的不确定性，也就是其
+\begin_inset Formula $3\times3$
+\end_inset
+
+协方差矩阵，方向为该矩阵的
+\begin_inset Formula $3$
+\end_inset
+
+个特征向量，一个圆球由
+\begin_inset Formula $3$
+\end_inset
+
+个特征值拉伸成的椭球，椭球的中心就是概率中心，就是姿态真实值最有可能存在的地方。在每一个穿过概率中心的直线上取概率密度，得到的就是真实值在各个方向上的高斯分布。
+\end_layout
+
+\begin_layout Standard
+其实，
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{\mathrm{T}}$
+\end_inset
+
+是椭圆方程的二次型矩阵形式
+\begin_inset Formula 
+\begin{equation}
+\left(\dfrac{x_{1}}{\sigma_{x_{1}}}\right)^{2}+\left(\dfrac{x_{2}}{\sigma_{x_{2}}}\right)^{2}+\cdots+\left(\dfrac{x_{n}}{\sigma_{x_{n}}}\right)^{2}=s\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $s$
+\end_inset
+
+定义椭圆的比例，表示所选的置信水平。等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的左侧实际上表示独立正态分布数据样本的平方和。已知高斯数据点的平方和根据所谓的
+\begin_inset CommandInset href
+LatexCommand href
+name "卡方分布"
+target "https://en.wikipedia.org/wiki/Chi-squared_distribution"
+literal "false"
+
+\end_inset
+
+进行分布。卡方分布定义为“自由度”，表示未知量的数量。因此，通过计算卡方似然，我们可以很容易地获得上述总和，因此
+\begin_inset Formula $s$
+\end_inset
+
+等于特定值的概率。事实上，由于我们对置信区间感兴趣，我们正在寻找
+\begin_inset Formula $s$
+\end_inset
+
+小于或等于特定值的概率，该值可以使用累积卡方分布轻松获得。如果想偷懒，我们通常不需要计算这种概率，而只用在概率表中查找：
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://people.richland.edu/james/lecture/m170/tbl-chi.html
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+协方差矩阵最小化
+\end_layout
+
+\begin_layout Standard
+协方差矩阵代表数据的不确定性，也就是数据在各维的扩散程度。在进行最优估计时，我们希望估计出来的数据最精确，首先需要对经过协方差矩阵变换后数据的总体扩散程度做一个
+度量，方法是计算矩阵的范数。我们知道，度量向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的大小用的是向量的欧几里德范数：
+\begin_inset Formula 
+\[
+\left\Vert \boldsymbol{x}\right\Vert =\sqrt{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}}
+\]
+
+\end_inset
+
+如果用类似的思路将矩阵看成是一个可以展开的折叠向量，则矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的范数可以表示为
+\begin_inset Formula 
+\[
+{\displaystyle \|A\|_{\text{F}}=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}|a_{ij}|^{2}}}
+\]
+
+\end_inset
+
+这种范数称为Frobenius范数(
+\begin_inset CommandInset href
+LatexCommand href
+name "Frobenius norm"
+target "https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm"
+literal "false"
+
+\end_inset
+
+)，也称为Hilbert–Schmidt范数，后者在(可能无限维的)Hilbert空间上的算子上下文中使用得更频繁。经过一系列的变换和证明，Frobenius范
+数可表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\displaystyle \|A\|_{\text{F}}=\sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n}|a_{ij}|^{2}}=\sqrt{\mathrm{trace}\left(A^{*}A\right)}=\sqrt{\sum_{i=1}^{\min\{m,n\}}\sigma_{i}^{2}(A)}}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\sigma_{i}(A)$
+\end_inset
+
+是矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的奇异值。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $n\times n$
+\end_inset
+
+的矩阵
+\begin_inset Formula $A$
+\end_inset
+
+，它的特征值和矩阵的行列式和矩阵的迹有下面的关系：
+\begin_inset Formula 
+\begin{align*}
+\prod_{i=1}^{n}\lambda_{i} & =\det\left(A\right)\\
+\sum_{i=1}^{n}\lambda_{i} & =\mathrm{trace}\left(A\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由上可知，矩阵的迹表示的是该矩阵所有特征值之和。因为特征值的几何意义是在特征向量方向上的缩放的程度，所以矩阵的迹(特征值之和)的几何意义就是所有线性无关的特征向
+量的缩放程度之和。因为协方差矩阵的特点，
+\begin_inset Formula $\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{\mathrm{T}}$
+\end_inset
+
+，并且
+\begin_inset Formula $\det\left(\boldsymbol{R}\right)=1$
+\end_inset
+
+，根据上一节的几何解释，是方差
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+决定了椭圆的拉伸程度，也就是数据的扩散程度，所以，如果我们要度量协方差矩阵的总体扩散程度，只需要简单地计算
+\begin_inset Formula $\mathrm{trace}(\boldsymbol{\Sigma}^{\mathrm{T}}\boldsymbol{\Sigma})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从另外一个方面理解，把
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+的对角线元素看成是标准差向量，则
+\begin_inset Formula $\mathrm{trace}(\boldsymbol{\Sigma}^{\mathrm{T}}\boldsymbol{\Sigma})$
+\end_inset
+
+计算的是方差向量的范数。最小化矩阵的迹，就是从总体上最小化方差向量的范数。
+\end_layout
+
+\begin_layout Standard
+在证明卡尔曼滤波器过程中要使得协方差矩阵的总体扩散程度最小，就要最小化协方差矩阵，使用的算法是最小化该矩阵的迹，所以，卡尔曼滤波器也被称为计算状态向量在Hilb
+ert空间上的正交投影。
+\end_layout
+
+\begin_layout Section
+数据分析的直觉
+\end_layout
+
+\begin_layout Standard
+如果我们相信多元数据的分布大多数是高斯分布，则协方差矩阵代表其不确定性，其形状为椭圆或椭球。由此可以更好地理解数据本身的意义。
+\end_layout
+
+\begin_layout Standard
+假如我们测量得到这样的数据集合，
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-05.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当坐标轴被忽略时，我们能做什么？
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-06.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+引用数据本身建议的坐标。
+\series bold
+原点
+\series default
+将位于各点的中心点(各点均值的点)。
+\series bold
+第一个坐标轴
+\series default
+(下图中的蓝色)将沿着点的“尖峰”延伸，这(根据定义)是方差最大的任意方向。
+\series bold
+第二个坐标轴
+\series default
+(图中的红色)将垂直于第一个坐标轴延伸。(在两个以上的维度中，将选择方差尽可能大的垂直方向，以此类推。)
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-07.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们需要一个
+\series bold
+刻度
+\series default
+。沿每个轴的标准偏差将很好地确定沿轴的单位。记住
+\begin_inset Formula $68-95-99.7$
+\end_inset
+
+规则：大约三分之二(
+\begin_inset Formula $68\%$
+\end_inset
+
+)的点应该在原点的一个单位内(沿轴)；大约
+\begin_inset Formula $95\%$
+\end_inset
+
+应该在两个单位内。这样就很容易找到正确的单位。为便于参考，下图包括以下单位中的单位圆：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-08.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+那看起来不像一个圆，是吗？这是因为这张图像被扭曲了(两个轴上的数字之间的间距不同就证明了这一点)。让我们用轴的正确方向(从左到右，从下到上)和单位纵横比重新绘制
+它，这样水平方向上的一个单位实际上等于垂直方向上的一个单位：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-09.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们是在这张图像中测量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的Mahalanobis距离并对其进行比较，而不是在原始图像中。
+\end_layout
+
+\begin_layout Standard
+这里发生了什么？我们让数据告诉我们如何构建一个坐标系，以便在散点图中进行测量。仅此而已。尽管我们在这一过程中有一些选择(我们总是可以反转其中一个或两个轴；在极少
+数情况下，沿着“尖峰”的方向
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+主方向
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+不是唯一的)，但它们不会改变最终绘图中的距离。
+\end_layout
+
+\begin_layout Paragraph
+小结： 
+\end_layout
+
+\begin_layout Itemize
+沿着新的坐标轴的单位向量是
+\series bold
+特征向量
+\series default
+(协方差矩阵或其逆矩阵)。
+\end_layout
+
+\begin_layout Itemize
+我们注意到，将沿着每个特征向量的距离
+\series bold
+除以
+\series default
+标准偏差(协方差的平方根)，将不失真地把椭圆变成一个圆。让
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+代表协方差函数，两点
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+之间的新的距离(Mahalanobis距离)是
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的距离除以
+\begin_inset Formula $\mathbf{S}(\boldsymbol{x}-\boldsymbol{y},\boldsymbol{x}-\boldsymbol{y})$
+\end_inset
+
+的平方根。相应的代数运算，现在认为
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+表示为矩阵，
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+表示为向量，写为
+\begin_inset Formula $\sqrt{(\boldsymbol{x}-\boldsymbol{y})^{\top}\mathbf{S}^{-1}(\boldsymbol{x}-\boldsymbol{y})}$
+\end_inset
+
+。
+\series bold
+无论用什么基来表示向量和矩阵
+\series default
+，这都是有效的。特别是，这是
+\series bold
+在原始坐标中
+\series default
+Mahalanobis距离的正确公式。
+\end_layout
+
+\begin_layout Itemize
+在最后一步中，轴被扩展的量是逆协方差矩阵的(平方根)
+\series bold
+特征值
+\series default
+。等价地，轴被协方差矩阵的(根)特征值
+\series bold
+收缩
+\series default
+。因此，散射越多，将椭圆转换为圆所需的收缩就越多。
+\end_layout
+
+\begin_layout Itemize
+尽管此过程始终适用于任意数据集，但对于近似多元正态分布的数据，它看起来非常漂亮(经典足球形状的云)。在其他情况下，平均点可能无法很好地表示数据中心，或者无法使用
+方差作为传播的度量以准确识别“尖峰”(数据的一般趋势)。
+\end_layout
+
+\begin_layout Itemize
+坐标原点的移动、轴的旋转和扩展共同形成
+\series bold
+仿射变换
+\series default
+。除了初始偏移外，这是一个基的改变，从原来的基(使用指向正坐标方向的单位向量)到新的基(使用单位特征向量的选择)。注意这里所说的仿射变换，指的是：先是平移，然后
+是基的改变。因为我们必须对``基的改变''做一些自由的理解，以包括不可逆转的线性变换：这是一个对PCA很重要的问题，它有效地放弃了一些基础元素。
+\end_layout
+
+\begin_layout Itemize
+这与
+\begin_inset CommandInset href
+LatexCommand href
+name "主成分分析 (PCA)"
+target "https://stats.stackexchange.com/questions/2691/making-sense-of-principal-component-analysis-eigenvectors-eigenvalues"
+literal "false"
+
+\end_inset
+
+ 密切相关。由此可见，让数据决定你用来描述它们和测量它们的差异的坐标，是及其优雅和实用性的。
+\end_layout
+
+\begin_layout Itemize
+对于多元正态分布(我们可以使用概率密度的特性而不是点云的类似特性进行相同的构造)，Mahalanobis距离(到新原点)出现在描述标准正态分布的概率密度的表达式
+\begin_inset Formula $\exp(-\frac{1}{2}x^{2})$
+\end_inset
+
+中，以取代``
+\begin_inset Formula $x$
+\end_inset
+
+''。因此，在新坐标系中，当投影到通过原点的任意直线上时，多元正态分布看起来像是
+\series bold
+标准正态分布
+\series default
+。特别是，它在每个新坐标中都是标准正态分布。从这个角度来看，多元正态分布之间唯一本质上的区别在于它们使用了多少维度。(注意，该维度数量可能是，而且有时是，小于维
+度尺寸数量。)
+\end_layout
+
+\begin_layout Section
+Mahalanobis距离
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Mahalanobis距离(Mahalanobis distance)
+\series default
+是的一个衡量点
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "概率分布"
+target "https://en.wikipedia.org/wiki/Probability_distribution"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $D$
+\end_inset
+
+ 之间距离的方法，由 
+\begin_inset CommandInset href
+LatexCommand href
+name "P. C. Mahalanobis"
+target "https://en.wikipedia.org/wiki/Prasanta_Chandra_Mahalanobis"
+literal "false"
+
+\end_inset
+
+ 在1936年提出。它是对衡量
+\begin_inset Formula $P$
+\end_inset
+
+距离
+\begin_inset Formula $D$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "均值"
+target "https://en.wikipedia.org/wiki/Mean"
+literal "false"
+
+\end_inset
+
+有多少
+\begin_inset CommandInset href
+LatexCommand href
+name "标准差"
+target "https://en.wikipedia.org/wiki/Standard_deviations"
+literal "false"
+
+\end_inset
+
+的概念的多维概括。
+\begin_inset Formula $P$
+\end_inset
+
+在
+\begin_inset Formula $D$
+\end_inset
+
+的均值处的距离为零，并随着
+\begin_inset Formula $P$
+\end_inset
+
+沿每个
+\begin_inset CommandInset href
+LatexCommand href
+name "主分量"
+target "https://en.wikipedia.org/wiki/Principal_component"
+literal "false"
+
+\end_inset
+
+轴远离均值而增长。如果这些轴中的每一个都被重新标定为具有单位方差，那么Mahalanobis距离就对应于变换空间中的标准
+\begin_inset CommandInset href
+LatexCommand href
+name "欧几里德距离"
+target "https://en.wikipedia.org/wiki/Euclidean_distance"
+literal "false"
+
+\end_inset
+
+。因此，Mahalanobis距离是
+\begin_inset CommandInset href
+LatexCommand href
+name "无单位"
+target "https://en.wikipedia.org/wiki/Unitless"
+literal "false"
+
+\end_inset
+
+的、
+\begin_inset CommandInset href
+LatexCommand href
+name "尺度不变"
+target "https://en.wikipedia.org/wiki/Scale_invariance"
+literal "false"
+
+\end_inset
+
+的，并考虑到了
+\begin_inset CommandInset href
+LatexCommand href
+name "数据集"
+target "https://en.wikipedia.org/wiki/Data_set"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "相关性"
+target "https://en.wikipedia.org/wiki/Correlations"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+定义和性质
+\end_layout
+
+\begin_layout Standard
+一组观测值为
+\begin_inset Formula $\boldsymbol{x}=\left(x_{1},x_{2},x_{3},\ldots,x_{N}\right)^{\top}$
+\end_inset
+
+与一组具有均值
+\begin_inset Formula $\boldsymbol{\mu}=\left(\mu_{1},\mu_{2},\mu_{3},\ldots,\mu_{N}\right)^{\top}$
+\end_inset
+
+及其
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ 的观测值的Mahalanobis距离定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D_{M}(\boldsymbol{x})=\sqrt{(\boldsymbol{x}-\boldsymbol{\mu})^{\top}\mathbf{S}^{-1}(\boldsymbol{x}-\boldsymbol{\mu})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mahalanobis距离(或其平方值即为“广义的点间距离的平方”)也可以定义为两个
+\begin_inset CommandInset href
+LatexCommand href
+name "随机向量"
+target "https://en.wikipedia.org/wiki/Random_vector"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ 的
+\begin_inset CommandInset href
+LatexCommand href
+name "协方差矩阵"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+ 的相同的
+\begin_inset CommandInset href
+LatexCommand href
+name "概率分布"
+target "https://en.wikipedia.org/wiki/Probability_distribution"
+literal "false"
+
+\end_inset
+
+之间的不相似度测量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d(\boldsymbol{x},\boldsymbol{y})=\sqrt{(\boldsymbol{x}-\boldsymbol{y})^{\top}\mathbf{S}^{-1}(\boldsymbol{x}-\boldsymbol{y})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+是协方差矩阵，它是
+\begin_inset CommandInset href
+LatexCommand href
+name "半正定"
+target "https://en.wikipedia.org/wiki/Definite_symmetric_matrix"
+literal "false"
+
+\end_inset
+
+的，并且半正定矩阵的逆也是半正定的，我们得到的
+\begin_inset Formula $\mathbf{S}^{-1}$
+\end_inset
+
+也是半正定的。这就解释了为什么可以取平方根，因为所有的值都是正数。
+\end_layout
+
+\begin_layout Standard
+如果协方差矩阵是单位矩阵，则Mahalanobis距离就会退化为
+\begin_inset CommandInset href
+LatexCommand href
+name "欧几里德距离"
+target "https://en.wikipedia.org/wiki/Euclidean_distance"
+literal "false"
+
+\end_inset
+
+。如果协方差矩阵是
+\begin_inset CommandInset href
+LatexCommand href
+name "对角"
+target "https://en.wikipedia.org/wiki/Diagonal_matrix"
+literal "false"
+
+\end_inset
+
+的，则产生的距离度量称为
+\series bold
+标准化欧几里德距离
+\series default
+(
+\emph on
+standardized Euclidean distance
+\emph default
+)：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d(\boldsymbol{x},\boldsymbol{y})=\sqrt{\sum_{i=1}^{N}\frac{\left(x_{i}-y_{i}\right)^{2}}{\sigma_{i}^{2}}}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\sigma_{i}$
+\end_inset
+
+是
+\begin_inset Formula $x_{i}$
+\end_inset
+
+和
+\begin_inset Formula $y_{i}$
+\end_inset
+
+在样本集合上的
+\begin_inset CommandInset href
+LatexCommand href
+name "标准偏差"
+target "https://en.wikipedia.org/wiki/Standard_deviation"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+Mahalanobis距离在数据
+\begin_inset CommandInset href
+LatexCommand href
+name "所跨越的"
+target "https://en.wikipedia.org/wiki/Linear_span"
+literal "false"
+
+\end_inset
+
+空间的满秩线性变换下保持不变。这意味着，如果数据具有非平凡的
+\begin_inset CommandInset href
+LatexCommand href
+name "零空间"
+target "https://en.wikipedia.org/wiki/Nullspace"
+literal "false"
+
+\end_inset
+
+，则可以在将数据(非退化地)投影到数据的适当维度的任意空间后计算Mahalanobis距离。
+\end_layout
+
+\begin_layout Standard
+我们可以找到有用的Mahalanobis距离的平方分解，这有助于解释多变量观测值离群的一些原因，也为识别离群值提供了一个图形工具。
+\end_layout
+
+\begin_layout Subsection
+直观的解释
+\end_layout
+
+\begin_layout Standard
+考虑估计
+\begin_inset Formula $N$
+\end_inset
+
+维欧几里德空间中的一个测试点属于集合的概率的问题，其中我们得到的样本点肯定属于该集合。我们的第一步是找到样本点的中心点或质心。直观地说，测试点离这个质心越近，它
+就越有可能属于这个集合。
+\end_layout
+
+\begin_layout Standard
+但是，我们还需要知道集合是分布在大范围内还是小范围内，这样我们就可以确定距中心的给定距离是否值得注意。最简单的方法是估计样本点到质心距离的标准偏差。如果测试点与
+质心之间的距离小于一个标准偏差，则我们可以得出结论，测试点极有可能属于集合。距离越远，测试点越有可能不属于集合。
+\end_layout
+
+\begin_layout Standard
+通过将测试点和集合之间的标准化距离定义为
+\begin_inset Formula $\frac{\|x-\mu\|_{2}}{\sigma}$
+\end_inset
+
+，可以量化这种直观的方法，其可解释为：
+\begin_inset Formula $\frac{\text{ testpoint }-\text{ sample mean }}{\text{ standard deviation }}$
+\end_inset
+
+。通过将其插入正态分布，我们可以得出测试点属于集合的概率。
+\end_layout
+
+\begin_layout Standard
+上述方法的缺点是，我们假设样本点以球形方式围绕质心分布。如果分布是明显的非球形的，例如椭球形的，那么我们期望测试点属于集合的概率不仅取决于与质心的距离，还取决于
+方向。在椭球体具有短轴的方向上，测试点必须更近，而在那些长轴的方向上，测试点可以离中心更远。
+\end_layout
+
+\begin_layout Standard
+将其置于数学基础上，可以通过构建样本的协方差矩阵来估计最能代表集合概率分布的椭球体。Mahalanobis距离是测试点到质心的距离除以测试点方向上椭球的宽度。
+\end_layout
+
+\begin_layout Subsection
+小结
+\end_layout
+
+\begin_layout Standard
+回到上一章“分析数据直觉”的解释，Mahalanobis距离定义为
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})=\sqrt{(\boldsymbol{x}-\boldsymbol{y})^{\top}\mathbf{S}^{-1}(\boldsymbol{x}-\boldsymbol{y})}$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+是某些数据的协方差矩阵的估计；这意味着它是对称的。如果用于估计
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+的列不是线性相关的，则
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+是正定的。对称矩阵是可对角化的，其特征值和特征向量是实数。协方差矩阵的特征值均为正。特征向量可以选择为具有单位长度，并且是正交的，因此我们可以写为
+\begin_inset Formula $\mathbf{S}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{\top}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{S}^{-1}=\boldsymbol{R}^{\top}\boldsymbol{\Sigma}\boldsymbol{\Sigma}\boldsymbol{R}$
+\end_inset
+
+。将其插入到距离定义中，
+\begin_inset Formula 
+\[
+d(\boldsymbol{x},\boldsymbol{y})=\sqrt{\left[(\boldsymbol{x}-\boldsymbol{y})^{\top}\boldsymbol{R}^{\top}\right]\boldsymbol{\Sigma}\boldsymbol{\Sigma}\left[\boldsymbol{R}(\boldsymbol{x}-\boldsymbol{y})\right]}=\sqrt{\boldsymbol{z}^{\top}\boldsymbol{z}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+显然，方括号中的乘积是转置，乘以
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+的效果是将向量
+\begin_inset Formula $(\boldsymbol{x}-\boldsymbol{y})$
+\end_inset
+
+旋转到一个正交基。最后，
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+是对角矩阵，由对角线上的每个元素倒置，然后取平方根来生成，是对每个向量的每个元素进行重新缩放。事实上，
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+正是正交空间中每个特征的逆标准偏差(即
+\begin_inset Formula $\left(\boldsymbol{\Sigma}^{2}\right)^{-1}$
+\end_inset
+
+是一个精度矩阵，由于数据是在正交基上，所以矩阵是对角线的)。其效果是通过“扁平化”其轴线，将旋转椭圆的物体变换成一个圆形。很明显，
+\begin_inset Formula $\boldsymbol{z}^{\top}\boldsymbol{z}$
+\end_inset
+
+是以平方单位测量的，所以取平方根会将距离返回到原始单位。
+\end_layout
+
+\begin_layout Standard
+也就是，对于经过协方差矩阵变换的数据，由数据的各维方差将圆形白化数据拉伸成了椭圆，沿各正交轴上的数据刻度不再相同，因此在此空间中的数据不好相互比较。这时需要逆向
+操作，将椭圆变换回圆形，最后数据是在欧几里德空间中比较各自到概率中心的距离。
+\end_layout
+
+\begin_layout Section
+应用案例
+\end_layout
+
+\begin_layout Standard
+卡尔曼滤波属于动态递归的最优化算法，协方差矩阵在算法里面起着核心作用。所以对于卡尔曼滤波器当前的质量状态，可以通过对当前的协方差矩阵状态进行判断。具体就是使用残
+差向量和残差协方差计算Mahalanobis距离进行判断。我们可以设置一个阈值，比如
+\begin_inset Formula $5$
+\end_inset
+
+，代表着
+\begin_inset Formula $\pm5$
+\end_inset
+
+倍的标准差，根据常识，
+\begin_inset Formula $\pm3$
+\end_inset
+
+倍的标准差已经包含
+\begin_inset Formula $99.7\%$
+\end_inset
+
+的数据，因此如果残差的Mahalanobis距离超过阈值则说明该估计值已经不可信。
+\end_layout
+
+\begin_layout Standard
+因为在卡尔曼滤波器中，协方差矩阵是由残差驱动而动态变化的。因为统计学上杠杆效应问题，距离概率中心越远的离群值，对协方差矩阵的影响越大。如果频繁发生Mahalan
+obis距离超过阈值的事件，说明协方差矩阵质量出现了问题。
+\end_layout
+
+\begin_layout Standard
+在卡尔曼滤波器的具体应用中，即位姿估计，也有一个有意思的比较。用卡尔曼滤波器进行位姿估计，有两大类算法，一种是直接法，即对位姿直接用卡尔曼滤波器进行估计，另一种
+是间接法，即对位姿的误差用卡尔曼滤波器进行估计，再将其作用到标称位姿，则标称位姿就是最优估计。
+\end_layout
+
+\begin_layout Standard
+抛开数学上的争议(即姿态是群而不是向量，因此不能使用减法，而协方差的核心算子就是减法)，我们从数据变化的可能性考虑，还是间接法比较好一些。
+\end_layout
+
+\begin_layout Standard
+因为直接法是直接对位姿进行最优估计，而位姿是有可能剧烈变化的。突变的位姿残差，就会在循环迭代中使得残差的Mahalanobis距离增大，影响协方差矩阵质量。这时
+候我们怎么判断这是外部的位姿剧烈变化还是我们的卡尔曼滤波器出现了问题？
+\end_layout
+
+\begin_layout Standard
+但是对于间接法，误差依赖于传感器的特性，即测量偏差和随机游走噪声。我们可以对系统内部的传感器进行充分测试，它的特性会比较稳定，变化缓慢，很少有突变，因此协方差矩
+阵的方向、形状和偏差位置就相对稳定，估计出来的误差也相对稳定，因此理论上间接法会比较好。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+协方差矩阵是许多不同领域的有用工具。从中可以导出一个
+\begin_inset CommandInset href
+LatexCommand href
+name "变换矩阵"
+target "https://en.wikipedia.org/wiki/Transformation_matrix"
+literal "false"
+
+\end_inset
+
+，称为
+\begin_inset CommandInset href
+LatexCommand href
+name "白化变换"
+target "https://en.wikipedia.org/wiki/Whitening_transformation"
+literal "false"
+
+\end_inset
+
+，它允许从一个完全消除数据的相关性的视角，找到以紧凑方式表示数据的最佳基(有关协方差矩阵的形式证明和附加属性，请参见
+\begin_inset CommandInset href
+LatexCommand href
+name "瑞利商(Rayleigh Quotient) "
+target "https://en.wikipedia.org/wiki/Rayleigh_quotient"
+literal "false"
+
+\end_inset
+
+)。这被称为主成分分析(
+\begin_inset CommandInset href
+LatexCommand href
+name "principal component analysis"
+target "https://en.wikipedia.org/wiki/Principal_component_analysis"
+literal "false"
+
+\end_inset
+
+, PCA)和Karhunen–Loève变换(
+\begin_inset CommandInset href
+LatexCommand href
+name "Karhunen–Loève transform"
+target "https://en.wikipedia.org/wiki/Karhunen%E2%80%93Lo%C3%A8ve_transform"
+literal "false"
+
+\end_inset
+
+, KL-transform)。
+\end_layout
+
+\begin_layout Standard
+协方差矩阵代表着多元数据的不确定性，它各维数据自身的方差驱动白化数据由圆形变成椭圆，数据之间的协方差驱动椭圆旋转。而为了度量数据点之间的差异，又需要将椭圆变成圆
+形，所用算法为Mahalanobis距离。所有一切的直觉，就是让数据决定你用来描述它们和测量它们的差异的坐标。
+\end_layout
+
+\begin_layout Section
+参考资料
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Covariance Matrix"
+target "https://en.wikipedia.org/wiki/Covariance_matrix"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A geometric interpretation of the covariance matrix"
+target "https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "The matrix A^T A (Gramian matrix) has the following properties"
+target "http://rinterested.github.io/statistics/covariance.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Properties of the Covariance Matrix"
+target "https://www.robots.ox.ac.uk/~davidc/pubs/tt2015_dac1.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Mahalanobis Distance"
+target "https://en.wikipedia.org/wiki/Mahalanobis_distance"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Bottom to top explanation of the Mahalanobis distance?"
+target "https://stats.stackexchange.com/questions/62092/bottom-to-top-explanation-of-the-mahalanobis-distance"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
