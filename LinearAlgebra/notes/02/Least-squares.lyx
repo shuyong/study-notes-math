@@ -1,0 +1,2088 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8
+\use_default_options true
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package none
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "最小二乘法与协方差矩阵"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+最小二乘法与协方差矩阵
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align right
+— 题记：知识要乱搭，美味要乱炖。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+把涉及最小二乘法的知识乱搭在一起，龙卷风来随风飘。
+\end_layout
+
+\begin_layout Section
+柯西-施瓦兹不等式的向量形式
+\end_layout
+
+\begin_layout Subsection
+定理证明
+\end_layout
+
+\begin_layout Paragraph
+柯西-施瓦兹不等式的向量形式：
+\end_layout
+
+\begin_layout Standard
+若有向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\left|\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right|\leq\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert 
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-1\leq\dfrac{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}}{\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert }\leq1
+\]
+
+\end_inset
+
+当且仅当其中一个向量为
+\begin_inset Formula $\boldsymbol{0}$
+\end_inset
+
+，或一个向量为另外一个向量的倍数时，等号成立。
+\end_layout
+
+\begin_layout Paragraph
+证明：
+\end_layout
+
+\begin_layout Standard
+有向量
+\begin_inset Formula $\boldsymbol{\epsilon}=\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+，我们计算它的范数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left\Vert \boldsymbol{\epsilon}\right\Vert ^{2} & \geq0\\
+\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right)^{\mathrm{T}}\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right) & \geq0\\
+\left(\boldsymbol{x}^{\mathrm{T}}-\lambda\boldsymbol{y}^{\mathrm{T}}\right)\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right) & \geq0\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}-\boldsymbol{x}^{\mathrm{T}}\lambda\boldsymbol{y}-\lambda\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}+\lambda^{2}\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y} & \geq0\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}-\lambda\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)+\lambda^{2}\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y} & \geq0\\
+\text{Let}\;a=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y},\;b=\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right),\;c=\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}\\
+a\lambda^{2}-b\lambda+c & \geq0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对下式求极值
+\begin_inset Formula 
+\[
+a\lambda^{2}-b\lambda+c=0
+\]
+
+\end_inset
+
+这是开口向上的抛物线函数，有极值
+\begin_inset Formula 
+\begin{align*}
+2a\lambda-b & =0\\
+\lambda & =\dfrac{b}{2a}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\lambda$
+\end_inset
+
+代入上式得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+a\left(\dfrac{b}{2a}\right)^{2}-b\left(\dfrac{b}{2a}\right)+c & \geq0\\
+\dfrac{b^{2}}{4a}-\dfrac{b^{2}}{2a}+c & \geq0\\
+c & \geq\dfrac{b^{2}}{4a}
+\end{align*}
+
+\end_inset
+
+根据向量的内积公式，我们有
+\begin_inset Formula $\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}$
+\end_inset
+
+，并且向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的欧几里德范数为：
+\begin_inset Formula $\left\Vert \boldsymbol{x}\right\Vert =\sqrt{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}}$
+\end_inset
+
+。将上述数值代回公式得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{2}}{4\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+ & \because\;\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{4\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}}{4\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right) & \geq\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}\\
+\left\Vert \boldsymbol{x}\right\Vert ^{2}\left\Vert \boldsymbol{y}\right\Vert ^{2} & \geq\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}\\
+\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert  & \geq\left\Vert \boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right\Vert 
+\end{align*}
+
+\end_inset
+
+同时有
+\begin_inset Formula 
+\begin{align*}
+\lambda & =\dfrac{b}{2a}\\
+ & =\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}\\
+ & =\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的向量投影(vector projection)为
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{p}=\dfrac{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}}{\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\boldsymbol{y}
+\]
+
+\end_inset
+
+可以看到，
+\begin_inset Formula $\lambda$
+\end_inset
+
+是向量的投影系数。
+\end_layout
+
+\begin_layout Subsection
+几何解释
+\end_layout
+
+\begin_layout Standard
+从几何上，有向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+，
+\begin_inset Formula $\lambda$
+\end_inset
+
+代表比例因子，
+\begin_inset Formula $\boldsymbol{\epsilon}=\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+则代表从
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+指向
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的向量。柯西-施瓦兹不等式的含义是调整
+\begin_inset Formula $\lambda$
+\end_inset
+
+的大小，找到向量
+\begin_inset Formula $\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+的最小范数，就是向量
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+到向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的最短距离。当向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和向量
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+共线时，该距离为
+\begin_inset Formula $0$
+\end_inset
+
+。而
+\begin_inset Formula $\lambda=\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}$
+\end_inset
+
+，则意味着当
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+为向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的向量投影时(
+\begin_inset Formula $\boldsymbol{\epsilon}\bot\boldsymbol{y}$
+\end_inset
+
+)，
+\begin_inset Formula $\boldsymbol{\epsilon}$
+\end_inset
+
+有最小范数。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename Schwarz-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据向量的内积公式，有
+\begin_inset Formula $\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}$
+\end_inset
+
+，我们将公式
+\begin_inset Formula $\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)\geq\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}$
+\end_inset
+
+做变形，以待以后的比较：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}}{\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)}{\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+柯西-施瓦兹不等式的矩阵形式
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+定理证明
+\end_layout
+
+\begin_layout Paragraph
+矩阵施瓦兹不等式(Matrix Schwarz inequality)：
+\end_layout
+
+\begin_layout Standard
+若
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Q}$
+\end_inset
+
+分别是
+\begin_inset Formula $m\times n$
+\end_inset
+
+和
+\begin_inset Formula $m\times l$
+\end_inset
+
+矩阵，
+\begin_inset Formula $\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}$
+\end_inset
+
+非奇异，则
+\begin_inset Formula 
+\[
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q}\geq\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)^{\mathrm{T}}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)^{-1}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)
+\]
+
+\end_inset
+
+此外，对于某些
+\begin_inset Formula $n\times l$
+\end_inset
+
+矩阵
+\begin_inset Formula $\boldsymbol{S}$
+\end_inset
+
+，当且仅当
+\begin_inset Formula $\boldsymbol{Q}=\boldsymbol{P}\boldsymbol{S}$
+\end_inset
+
+时，上式的等号成立。该定理来自于参考文献[3]。
+\end_layout
+
+\begin_layout Paragraph
+证明：
+\end_layout
+
+\begin_layout Standard
+有矩阵
+\begin_inset Formula $\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}$
+\end_inset
+
+，则
+\begin_inset Formula $\left(\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}\right)^{\mathrm{T}}\left(\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}\right)$
+\end_inset
+
+非负定，所以有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}\right)^{\mathrm{T}}\left(\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}\right) & \geq\boldsymbol{0}\\
+\left(\boldsymbol{Q}^{\mathrm{T}}-\boldsymbol{S}^{\mathrm{T}}\boldsymbol{P}^{\mathrm{T}}\right)\left(\boldsymbol{Q}-\boldsymbol{P}\boldsymbol{S}\right) & \geq\boldsymbol{0}\\
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q}-\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{P}\boldsymbol{S}-\boldsymbol{S}^{\mathrm{T}}\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}+\boldsymbol{S}^{\mathrm{T}}\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\boldsymbol{S} & \geq\boldsymbol{0}\\
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q} & \geq\boldsymbol{S}^{\mathrm{T}}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)+\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)^{\mathrm{T}}\boldsymbol{S}-\boldsymbol{S}^{\mathrm{T}}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)\boldsymbol{S}\\
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q} & \geq\boldsymbol{S}^{\mathrm{T}}\left(\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)-\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)\boldsymbol{S}\right)+\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)^{\mathrm{T}}\boldsymbol{S}
+\end{align*}
+
+\end_inset
+
+令
+\begin_inset Formula 
+\[
+\boldsymbol{S}=\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)^{-1}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)
+\]
+
+\end_inset
+
+则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q} & \geq\boldsymbol{S}^{\mathrm{T}}\left(\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)-\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)^{-1}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)\right)+\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)^{\mathrm{T}}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)^{-1}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)\\
+\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q} & \geq\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)^{\mathrm{T}}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{P}\right)^{-1}\left(\boldsymbol{P}^{\mathrm{T}}\boldsymbol{Q}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+几何解释
+\end_layout
+
+\begin_layout Standard
+该不等式粗略看起来很不直观。我们可以从
+\begin_inset Formula $\boldsymbol{Q}$
+\end_inset
+
+的列向量的角度考虑，也就是
+\begin_inset Formula $\boldsymbol{Q}$
+\end_inset
+
+的列向量之间的内积，要大于某一个向它投影的矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+的列向量和它的列向量的内积。
+\end_layout
+
+\begin_layout Standard
+其实
+\begin_inset Formula $\boldsymbol{Q}^{\mathrm{T}}\boldsymbol{Q}$
+\end_inset
+
+是一个半正定的实对称矩阵，有十分广泛的应用，如协方差矩阵，权重矩阵(增益矩阵)等等。在后面该定理的在最小二乘的应用中，就有更直观的含义。
+\end_layout
+
+\begin_layout Section
+普通最小二乘法
+\end_layout
+
+\begin_layout Subsection
+定义
+\end_layout
+
+\begin_layout Standard
+一个超定方程组含有的方程多于变量数。这种方程组通常是不相容的。因此，给定一个
+\begin_inset Formula $m\times n$
+\end_inset
+
+的方程组
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+，其中
+\begin_inset Formula $m>n$
+\end_inset
+
+，一般我们不能期望找到一个向量
+\begin_inset Formula $\boldsymbol{x}\in\boldsymbol{R}^{n}$
+\end_inset
+
+，使得
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+。事实上，可以寻找一个向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+，使得
+\begin_inset Formula $A\boldsymbol{x}$
+\end_inset
+
+“最接近”
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+。正如所期望的，正交性在求
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的过程中扮演了重要的角色。
+\end_layout
+
+\begin_layout Standard
+给定一个超定方程组
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+，其中
+\begin_inset Formula $A$
+\end_inset
+
+为一个
+\begin_inset Formula $m\times n\left(m>n\right)$
+\end_inset
+
+矩阵，并且
+\begin_inset Formula $\boldsymbol{b}\in\boldsymbol{R}^{m}$
+\end_inset
+
+，则对每一个
+\begin_inset Formula $\boldsymbol{x}\in\boldsymbol{R}^{n}$
+\end_inset
+
+，可以构造一个残差(residual)
+\begin_inset Formula 
+\[
+r\left(\boldsymbol{x}\right)=\boldsymbol{b}-A\boldsymbol{x}
+\]
+
+\end_inset
+
+则
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+和
+\begin_inset Formula $A\boldsymbol{x}$
+\end_inset
+
+之间的距离为
+\begin_inset Formula 
+\[
+\left\Vert \boldsymbol{b}-A\boldsymbol{x}\right\Vert =\left\Vert r\left(\boldsymbol{x}\right)\right\Vert 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们希望寻找一个向量
+\begin_inset Formula $\boldsymbol{x}\in\boldsymbol{R}^{n}$
+\end_inset
+
+，使得
+\begin_inset Formula $\left\Vert r\left(\boldsymbol{x}\right)\right\Vert $
+\end_inset
+
+最小。最小化
+\begin_inset Formula $\left\Vert r\left(\boldsymbol{x}\right)\right\Vert $
+\end_inset
+
+等价于最小化
+\begin_inset Formula $\left\Vert r\left(\boldsymbol{x}\right)\right\Vert ^{2}$
+\end_inset
+
+。达到最小值的向量
+\begin_inset Formula $\hat{\boldsymbol{x}}$
+\end_inset
+
+称为方程组
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+的最小二乘(least squares)解，这是一个近似解。
+\end_layout
+
+\begin_layout Standard
+若
+\begin_inset Formula $\hat{\boldsymbol{x}}$
+\end_inset
+
+为方程组
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+的最小二乘解，且
+\begin_inset Formula $\boldsymbol{p}=A\hat{\boldsymbol{x}}$
+\end_inset
+
+，则
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+就是
+\begin_inset Formula $A$
+\end_inset
+
+的列空间中和
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+最接近的向量(投影)。
+\end_layout
+
+\begin_layout Subsection
+证明
+\end_layout
+
+\begin_layout Standard
+简单而快速证明如下：
+\end_layout
+
+\begin_layout Itemize
+最小化残差平方的范数，
+\begin_inset Formula 
+\[
+\left\Vert r\left(\boldsymbol{x}\right)\right\Vert ^{2}=\boldsymbol{x}^{\mathrm{T}}A^{\mathrm{T}}A\boldsymbol{x}-2\boldsymbol{b}^{\mathrm{T}}A\boldsymbol{x}+\boldsymbol{b}^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+把这看成是开口向上的抛物线函数，可以有极小值。
+\end_layout
+
+\begin_layout Itemize
+相对于
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+将梯度设置为
+\begin_inset Formula $0$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\nabla_{\boldsymbol{x}}\left\Vert r\left(\boldsymbol{x}\right)\right\Vert ^{2}=2A^{\mathrm{T}}A\boldsymbol{x}-2A^{\mathrm{T}}\boldsymbol{b}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+得出正规方程：
+\begin_inset Formula 
+\[
+A^{\mathrm{T}}A\boldsymbol{x}=A^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+上述方程表示的
+\begin_inset Formula $n\times n$
+\end_inset
+
+线性方程组称为正规方程组(normal equations)。它有唯一解
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{x}}=\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+且
+\begin_inset Formula $\hat{\boldsymbol{x}}$
+\end_inset
+
+为方程组
+\begin_inset Formula $A\boldsymbol{x}=\boldsymbol{b}$
+\end_inset
+
+唯一的最小二乘解。
+\end_layout
+
+\begin_layout Itemize
+在上式中，
+\begin_inset Formula 
+\[
+A^{\dagger}=\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}
+\]
+
+\end_inset
+
+称为
+\begin_inset Formula $A$
+\end_inset
+
+的伪逆矩阵，并且
+\begin_inset Formula $A^{\dagger}$
+\end_inset
+
+是矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的(满秩，瘦型)左逆：
+\begin_inset Formula 
+\[
+A^{\dagger}A=\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}A=I
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+投影向量
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{p}=A\hat{\boldsymbol{x}}=A\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+为
+\begin_inset Formula $A$
+\end_inset
+
+的列空间中
+\begin_inset Formula $C(A)$
+\end_inset
+
+中的元素，并在最小二乘意义下最接近
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+，也就是
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{b}$
+\end_inset
+
+在
+\begin_inset Formula $A$
+\end_inset
+
+的列空间中的投影，
+\begin_inset Formula $\boldsymbol{\epsilon}=\boldsymbol{b}-\boldsymbol{p}$
+\end_inset
+
+为残差(误差)向量。矩阵
+\begin_inset Formula $P=A\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}$
+\end_inset
+
+称为投影矩阵(projection matrix)。
+\end_layout
+
+\begin_layout Itemize
+投影矩阵
+\begin_inset Formula $P$
+\end_inset
+
+为对称矩阵，并且有性质：
+\begin_inset Formula $P^{2}=P$
+\end_inset
+
+ 。
+\end_layout
+
+\begin_layout Subsection
+几何解释
+\end_layout
+
+\begin_layout Standard
+我们可以基于QR分解去直观地理解最小二乘法：
+\end_layout
+
+\begin_layout Itemize
+矩阵
+\begin_inset Formula $A\in\boldsymbol{R}^{m\times n},\ m>n$
+\end_inset
+
+，是满秩，瘦型矩阵。
+\end_layout
+
+\begin_layout Itemize
+将其进行QR分解，
+\begin_inset Formula $A=QR$
+\end_inset
+
+，其中
+\begin_inset Formula $Q^{\mathrm{T}}Q=I$
+\end_inset
+
+，并且
+\begin_inset Formula $R\in\boldsymbol{R}^{n\times n}$
+\end_inset
+
+为上三角矩阵且可逆。
+\end_layout
+
+\begin_layout Itemize
+伪逆矩阵为
+\begin_inset Formula 
+\[
+\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}=\left(R^{\mathrm{T}}Q^{\mathrm{T}}QR\right)^{-1}R^{\mathrm{T}}Q^{\mathrm{T}}=R^{-1}Q^{\mathrm{T}}
+\]
+
+\end_inset
+
+所以
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{x}}=R^{-1}Q^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+投影到
+\begin_inset Formula $A$
+\end_inset
+
+的列空间
+\begin_inset Formula $C(A)$
+\end_inset
+
+中的矩阵为
+\begin_inset Formula 
+\[
+A\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}=AR^{-1}Q^{\mathrm{T}}=QQ^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+矩阵
+\begin_inset Formula $A$
+\end_inset
+
+的完全QR因子分解为：
+\begin_inset Formula 
+\[
+A=\left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]\left[\begin{array}{c}
+R_{1}\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]\in\boldsymbol{R}^{m\times m}$
+\end_inset
+
+且为正交矩阵，
+\begin_inset Formula $R_{1}\in\boldsymbol{R}^{n\times n}$
+\end_inset
+
+为上三角矩阵且可逆。
+\end_layout
+
+\begin_layout Itemize
+与正交矩阵相乘不改变矩阵范数，所以
+\begin_inset Formula 
+\begin{align*}
+\left\Vert A\boldsymbol{x}-\boldsymbol{b}\right\Vert ^{2} & =\left\Vert \left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]\left[\begin{array}{c}
+R_{1}\\
+0
+\end{array}\right]\boldsymbol{x}-\boldsymbol{b}\right\Vert ^{2}\\
+ & =\left\Vert \left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]^{\mathrm{T}}\left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]\left[\begin{array}{c}
+R_{1}\\
+0
+\end{array}\right]\boldsymbol{x}-\left[\begin{array}{cc}
+Q_{1} & Q_{2}\end{array}\right]^{\mathrm{T}}\boldsymbol{b}\right\Vert ^{2}\\
+ & =\left\Vert \left[\begin{array}{c}
+R_{1}\boldsymbol{x}-Q_{1}^{\mathrm{T}}\boldsymbol{b}\\
+-Q_{2}^{\mathrm{T}}\boldsymbol{b}
+\end{array}\right]\right\Vert ^{2}\\
+ & =\left\Vert R_{1}\boldsymbol{x}-Q_{1}^{\mathrm{T}}\boldsymbol{b}\right\Vert ^{2}+\left\Vert Q_{2}^{\mathrm{T}}\boldsymbol{b}\right\Vert ^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+这显然可以通过选择最小化
+\begin_inset Formula $\hat{\boldsymbol{x}}$
+\end_inset
+
+，即上式左边第一项为
+\begin_inset Formula $0$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\hat{\boldsymbol{x}}=R_{1}^{-1}Q_{1}^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+则
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的最优化的残差为
+\begin_inset Formula 
+\[
+\boldsymbol{\epsilon}=A\hat{\boldsymbol{x}}-\boldsymbol{b}=-Q_{2}Q_{2}^{\mathrm{T}}\boldsymbol{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+矩阵
+\begin_inset Formula $Q_{1}Q_{1}^{\mathrm{T}}$
+\end_inset
+
+给出了到
+\begin_inset Formula $A$
+\end_inset
+
+的列空间
+\begin_inset Formula $C(A)$
+\end_inset
+
+中的的投影。
+\end_layout
+
+\begin_layout Itemize
+矩阵
+\begin_inset Formula $Q_{2}Q_{2}^{\mathrm{T}}$
+\end_inset
+
+给出了到列空间的正交空间
+\begin_inset Formula $C(A)^{\perp}$
+\end_inset
+
+，即
+\begin_inset Formula $A^{\mathrm{T}}$
+\end_inset
+
+的零空间
+\begin_inset Formula $N(A^{\mathrm{T}})$
+\end_inset
+
+的投影。
+\end_layout
+
+\begin_layout Itemize
+列空间
+\begin_inset Formula $C(A)$
+\end_inset
+
+的满秩为
+\begin_inset Formula $n$
+\end_inset
+
+，则零空间
+\begin_inset Formula $N(A^{\mathrm{T}})$
+\end_inset
+
+的秩为
+\begin_inset Formula $m-n$
+\end_inset
+
+，两者的秩之和为
+\begin_inset Formula $m$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上述关系的示意图如下：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename Least-squares-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+基于权重的最小二乘法
+\end_layout
+
+\begin_layout Standard
+令
+\begin_inset Formula $\left\{ \underline{\boldsymbol{\xi}}_{k}\right\} $
+\end_inset
+
+为一系列的随机向量，称为
+\series bold
+随机序列
+\series default
+(
+\emph on
+random sequence
+\emph default
+)。符号表示
+\begin_inset Formula $E\left(\underline{\boldsymbol{\xi}}_{k}\right)=\underline{\boldsymbol{\mu}}_{k},\mathrm{Cov}\left(\underline{\boldsymbol{\xi}}_{k},\underline{\boldsymbol{\xi}}_{j}\right)=R_{kj}$
+\end_inset
+
+，则
+\begin_inset Formula $\mathrm{Var}\left(\underline{\boldsymbol{\xi}}_{k}\right)=R_{kk}:=R_{k}$
+\end_inset
+
+。如果随机向量有协方差矩阵
+\begin_inset Formula $\mathrm{Cov}\left(\underline{\boldsymbol{\xi}}_{k},\underline{\boldsymbol{\xi}}_{j}\right)=R_{kj}=R_{k}\delta_{kj}$
+\end_inset
+
+，其中当
+\begin_inset Formula $k=j$
+\end_inset
+
+时，
+\begin_inset Formula $\delta_{kj}=1$
+\end_inset
+
+，当
+\begin_inset Formula $k\neq j$
+\end_inset
+
+时，
+\begin_inset Formula $\delta_{kj}=0$
+\end_inset
+
+，则该随机向量
+\begin_inset Formula $\left\{ \underline{\boldsymbol{\xi}}_{k}\right\} $
+\end_inset
+
+称为
+\series bold
+白噪声序列
+\series default
+(
+\emph on
+white noise sequence
+\emph default
+)。如果每个
+\begin_inset Formula $\underline{\boldsymbol{\xi}}_{k}$
+\end_inset
+
+都是白色且正态的，则
+\begin_inset Formula $\left\{ \underline{\boldsymbol{\xi}}_{k}\right\} $
+\end_inset
+
+称为
+\series bold
+高斯或正态白噪声序列
+\series default
+(
+\emph on
+sequence of Gaussian or normal white noise
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+考虑观测数据受噪声污染的线性系统的观测方程，即：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{v}_{k}=C_{k}\mathbf{x}_{k}+D_{k}\mathbf{u}_{k}+\underline{\boldsymbol{\xi}}_{k},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\left\{ \mathbf{x}_{k}\right\} $
+\end_inset
+
+通常是状态序列，
+\begin_inset Formula $\left\{ \mathbf{u}_{k}\right\} $
+\end_inset
+
+是控制序列，
+\begin_inset Formula $\left\{ \mathbf{v}_{k}\right\} $
+\end_inset
+
+是量测数据序列。我们假设，对于每个
+\begin_inset Formula $k$
+\end_inset
+
+，
+\begin_inset Formula $q\times n$
+\end_inset
+
+常数矩阵
+\begin_inset Formula $C_{k}$
+\end_inset
+
+、即量测矩阵，
+\begin_inset Formula $q\times p$
+\end_inset
+
+常数矩阵
+\begin_inset Formula $D_{k}$
+\end_inset
+
+、即控制矩阵，以及确定性控制的
+\begin_inset Formula $p$
+\end_inset
+
+维控制向量
+\begin_inset Formula $\mathbf{u}_{k}$
+\end_inset
+
+是给定的。通常，系统噪声
+\begin_inset Formula $\left\{ \underline{\boldsymbol{\xi}}_{k}\right\} $
+\end_inset
+
+未知，但将其假定为一个零均值高斯白噪声序列，即：对于
+\begin_inset Formula $k,j=1,2,\cdots$
+\end_inset
+
+，
+\begin_inset Formula $E\left(\underline{\boldsymbol{\xi}}_{k}\right)=0$
+\end_inset
+
+并且
+\begin_inset Formula $E\left(\underline{\boldsymbol{\xi}}_{k}\underline{\boldsymbol{\xi}}_{j}^{\top}\right)=R_{kj}\delta_{kj}$
+\end_inset
+
+，其中系统噪声协方差矩阵
+\begin_inset Formula $R_{k}$
+\end_inset
+
+是对称且正定的矩阵。
+\end_layout
+
+\begin_layout Standard
+我们的目标是从量测数据
+\begin_inset Formula $\left\{ \mathbf{v}_{k}\right\} $
+\end_inset
+
+的信息中获得状态向量
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的最优估计
+\begin_inset Formula $\hat{\mathbf{y}}_{k}$
+\end_inset
+
+。如果没有噪音，那么很明显
+\begin_inset Formula $\mathbf{z}_{k}-C_{k}\hat{\mathbf{y}}_{k}=0$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{z}_{k}:=\mathbf{v}_{k}-D_{k}\mathbf{u}_{k}$
+\end_inset
+
+，每当线性系统有解时；否则，一些测量误差
+\begin_inset Formula $\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}$
+\end_inset
+
+必须在所有
+\begin_inset Formula $\mathbf{y}_{k}$
+\end_inset
+
+中最小化。一般来说，当数据被噪声污染时，我们将在所有
+\begin_inset Formula $n$
+\end_inset
+
+维向量
+\begin_inset Formula $\mathbf{y}_{k}$
+\end_inset
+
+上，最小化测量误差(残差)的平方范数的数量：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F\left(\mathbf{y}_{k},W_{k}\right)=E\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $W_{k}$
+\end_inset
+
+是正定对称
+\begin_inset Formula $q\times q$
+\end_inset
+
+矩阵，称为
+\series bold
+权重矩阵
+\series default
+(
+\emph on
+weight matrix
+\emph default
+)，也称
+\series bold
+增益矩阵
+\series default
+(
+\emph on
+gain matrix
+\emph default
+) 
+\begin_inset Formula $G_{k}$
+\end_inset
+
+。也就是说，我们希望找到一个
+\begin_inset Formula $\hat{\mathbf{y}}_{k}=\hat{\mathbf{y}}_{k}\left(W_{k}\right)$
+\end_inset
+
+，使得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F\left(\hat{\mathbf{y}}_{k},W_{k}\right)=\min_{\mathbf{y}_{k}}F\left(\mathbf{y}_{k},W_{k}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外，我们希望确定
+\series bold
+最优权重
+\series default
+(
+\emph on
+optimal weight
+\emph default
+) 
+\begin_inset Formula $\hat{W}_{k}$
+\end_inset
+
+。为了找到
+\begin_inset Formula $\hat{\mathbf{y}}_{k}=\hat{\mathbf{y}}_{k}\left(W_{k}\right)$
+\end_inset
+
+，假设
+\begin_inset Formula $\left(C_{k}^{\top}W_{k}C_{k}\right)$
+\end_inset
+
+是非奇异的，我们重写方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}F\left(\mathbf{y}_{k},W_{k}\right) & =E\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)\\
+ & =E\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]\\
+ & \quad+E\left(\mathbf{z}_{k}^{\top}\left[I-W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}\right]W_{k}\mathbf{z}_{k}\right),
+\end{aligned}
+\]
+
+\end_inset
+
+其中右边的第一项为非负定项。为了最小化
+\begin_inset Formula $F\left(\mathbf{y}_{k},W_{k}\right)$
+\end_inset
+
+，右边的第一项必须消失，则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{y}}_{k}=\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，如果
+\begin_inset Formula $\left(C_{k}^{\top}W_{k}C_{k}\right)$
+\end_inset
+
+是奇异的，则
+\begin_inset Formula $\hat{\mathbf{y}}_{k}$
+\end_inset
+
+不是唯一的。为了找到最优的权重
+\begin_inset Formula $\hat{W}_{k}$
+\end_inset
+
+，让我们考虑
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F\left(\hat{\mathbf{y}}_{k},W_{k}\right)=E\left(\mathbf{z}_{k}-C_{k}\hat{\mathbf{y}}_{k}\right)^{\top}W_{k}\left(\mathbf{z}_{k}-C_{k}\hat{\mathbf{y}}_{k}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+很明显，在正定权重
+\begin_inset Formula $W_{k}$
+\end_inset
+
+下，该数量不会达到最小值，因为
+\begin_inset Formula $W_{k}=0$
+\end_inset
+
+会导致该最小值。因此，我们需要另一个测量量来确定最优
+\begin_inset Formula $\hat{W}_{k}$
+\end_inset
+
+。注意到原始问题是用
+\begin_inset Formula $\hat{\mathbf{y}}_{k}\left(W_{k}\right)$
+\end_inset
+
+估计状态向量
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+，考虑误差
+\begin_inset Formula $\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(W_{k}\right)\right)$
+\end_inset
+
+的测量量是自然的。但是，由于对
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的所知不多，并且只能测量带噪声的数据，因此应通过误差的方差来确定该测量量。也就是说，在所有正定对称矩阵
+\begin_inset Formula $W_{k}$
+\end_inset
+
+之上，我们将最小化
+\begin_inset Formula $\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(W_{k}\right)\right)$
+\end_inset
+
+。我们简记
+\begin_inset Formula $\hat{\mathbf{y}}_{k}=\hat{\mathbf{y}}_{k}\left(W_{k}\right)$
+\end_inset
+
+并有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}\mathbf{x}_{k}-\hat{\mathbf{y}}_{k} & =\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{x}_{k}-\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+ & =\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\left(C_{k}\mathbf{x}_{k}-\mathbf{z}_{k}\right)\\
+ & =-\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\underline{\boldsymbol{\xi}}_{k}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，通过期望运算的线性特性，我们有
+\begin_inset Formula 
+\[
+\begin{aligned}\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\right) & =\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}E\left(\underline{\boldsymbol{\xi}}_{k}\underline{\boldsymbol{\xi}}_{k}^{\top}\right)W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\\
+ & =\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}R_{k}W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这就是要最小化的数量，即误差的方差与系统噪声的方差正相关。为了把它写成一个完全平方方程，我们需要正定对称矩阵
+\begin_inset Formula $R_{k}$
+\end_inset
+
+的
+\series bold
+正平方根
+\series default
+(
+\emph on
+positive square root
+\emph default
+)，定义如下：设系统噪声的协方差矩阵
+\begin_inset Formula $R_{k}$
+\end_inset
+
+的特征值为
+\begin_inset Formula $\lambda_{1},\cdots,\lambda_{n}$
+\end_inset
+
+，它们都是正值，并且写为
+\begin_inset Formula $R_{k}=U^{\top}\mathrm{diag}\left[\lambda_{1},\cdots,\lambda_{n}\right]U$
+\end_inset
+
+，其中
+\begin_inset Formula $U$
+\end_inset
+
+是酉矩阵(由
+\begin_inset Formula $\lambda_{i},i=1,\cdots,n$
+\end_inset
+
+对应的正规化特征向量组成)。然后我们定义
+\begin_inset Formula $R_{k}^{1/2}=U^{\top}\mathrm{diag}\left[\sqrt{\lambda}_{1},\cdots,\sqrt{\lambda}_{n}\right]U$
+\end_inset
+
+，其给出
+\begin_inset Formula $\left(R_{k}^{1/2}\right)\left(R_{k}^{1/2}\right)^{\top}=R_{k}$
+\end_inset
+
+。因此
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\right)=Q^{\top}Q,
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $Q=\left(R_{k}^{1/2}\right)^{\top}W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}$
+\end_inset
+
+。根据
+\series bold
+矩阵施瓦兹不等式
+\series default
+(
+\emph on
+matrix Schwarz inequality
+\emph default
+)，参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章，在假设
+\begin_inset Formula $P$
+\end_inset
+
+是
+\begin_inset Formula $q\times n$
+\end_inset
+
+矩阵且
+\begin_inset Formula $P^{\top}P$
+\end_inset
+
+非奇异的情况下，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q^{\top}Q\geq\left(P^{\top}Q\right)^{\top}\left(P^{\top}P\right)^{-1}\left(P^{\top}Q\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，如果
+\begin_inset Formula $\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)$
+\end_inset
+
+是非奇异的，我们可以选择
+\begin_inset Formula $P=\left(R_{k}^{1/2}\right)^{-1}C_{k}$
+\end_inset
+
+，以便
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P^{\top}P=C_{k}^{\top}\left(\left(R_{k}^{1/2}\right)^{\top}\right)^{-1}\left(R_{k}^{1/2}\right)^{-1}C_{k}=C_{k}^{\top}R_{k}^{-1}C_{k}
+\]
+
+\end_inset
+
+是非奇异的，并且不等式的等号成立，则
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}\left(P^{\top}Q\right)^{\top}\left(P^{\top}P\right)^{-1}\left(P^{\top}Q\right) & =\left[C_{k}^{\top}\left(\left(R_{k}^{1/2}\right)^{-1}\right)^{\top}\left(R_{k}^{1/2}\right)^{\top}W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\right]^{\top}\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)^{-1}\\
+ & \quad\cdot\left[C_{k}^{\top}\left(\left(R_{k}^{1/2}\right)^{-1}\right)^{\top}\left(R_{k}^{1/2}\right)^{\top}W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\right]\\
+ & =\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)^{-1}\\
+ & =\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(R_{k}^{-1}\right)\right).
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，对于所有正定对称权重矩阵
+\begin_inset Formula $W_{k}$
+\end_inset
+
+，有
+\begin_inset Formula $\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(W_{k}\right)\right)\geq\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(R_{k}^{-1}\right)\right)$
+\end_inset
+
+。因此，最优权重矩阵为
+\begin_inset Formula $\hat{W}_{k}=R_{k}^{-1}$
+\end_inset
+
+，即协方差矩阵
+\begin_inset Formula $R_{k}$
+\end_inset
+
+的逆矩阵，使用该最优权重的状态向量
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的最优估计为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mathbf{x}}_{k}:=\hat{\mathbf{y}}_{k}\left(R_{k}^{-1}\right)=\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)^{-1}C_{k}^{\top}R_{k}^{-1}\left(\mathbf{v}_{k}-D_{k}\mathbf{u}_{k}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们称
+\begin_inset Formula $\hat{\mathbf{x}}_{k}$
+\end_inset
+
+为
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的
+\series bold
+最小二乘最优估计
+\series default
+(
+\emph on
+least-squares optimal estimate
+\emph default
+)。注意，
+\begin_inset Formula $\hat{\mathbf{x}}_{k}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的
+\series bold
+线性估计
+\series default
+(
+\emph on
+linear estimate
+\emph default
+)。作为数据
+\begin_inset Formula $\mathbf{v}_{k}-D_{k}\mathbf{u}_{k}$
+\end_inset
+
+的线性变换的图像，它给出了在
+\begin_inset Formula $E\hat{\mathbf{x}}_{k}=E\mathbf{x}_{k}$
+\end_inset
+
+意义上的
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的
+\series bold
+无偏估计
+\series default
+(
+\emph on
+unbiased estimate
+\emph default
+)，即
+\begin_inset Formula 
+\begin{align*}
+E\hat{\mathbf{x}}_{k} & =\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)^{-1}C_{k}^{\top}R_{k}^{-1}E\left(\mathbf{v}_{k}-D_{k}\mathbf{u}_{k}\right)\\
+ & =\left(C_{k}^{\top}R_{k}^{-1}C_{k}\right)^{-1}C_{k}^{\top}R_{k}^{-1}E\left(C_{k}\mathbf{x}_{k}-\boldsymbol{\eta}_{k}\right)\\
+ & =E\mathbf{x}_{k}
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\eta}_{k}$
+\end_inset
+
+为测量噪声向量，并且它还给出了
+\begin_inset Formula $\mathbf{x}_{k}$
+\end_inset
+
+的
+\series bold
+最小方差估计
+\series default
+(
+\emph on
+minimum variance estimate
+\emph default
+)，因为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{x}}_{k}\right)\leq\mathrm{Var}\left(\mathbf{x}_{k}-\hat{\mathbf{y}}_{k}\left(W_{k}\right)\right)
+\]
+
+\end_inset
+
+对于所有正定对称权重矩阵
+\begin_inset Formula $W_{k}$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Section
+几何解释
+\end_layout
+
+\begin_layout Standard
+基于权重的最小二乘法的算法相当复杂，不容易理解。但是如果从协方差矩阵的角度去理解，就相当明了。
+\end_layout
+
+\begin_layout Standard
+我们测量得到这样的数据集合
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们知道一些这个系统的状态变量和变换方程。但是因为各种原因，系统存在误差，因此这是一个超定方程，没有解析解。但是我们可以用最小二乘法计算得出近似解。
+\end_layout
+
+\begin_layout Standard
+我们假定数据按照高斯分布，并且系统噪声为零均值的白高斯噪声。我们知道，是变量自身的方差在坐标轴上拉伸了图像，是变量之间的协方差旋转了图像，但是该旋转并没有改变各
+数据点到数据中心的距离，因此我们可以在算法中直接忽略变量之间的协方差，并在数据中心建立新的坐标系。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，因为各轴的方差不一样，因此各轴的数据变形程度也不一样，体现在数据刻度不一样。这时直接在这样的数据集合上进行估计并不是最优估计。因此我们需要引入权重矩阵
+\begin_inset Formula $W$
+\end_inset
+
+以校正这种变形。经过推导，数据的误差的方差和系统噪声的方差正相关。根据矩阵施瓦兹不等式，我们有
+\begin_inset Formula 
+\[
+Q^{\top}Q\geq\left(P^{\top}Q\right)^{\top}\left(P^{\top}P\right)^{-1}\left(P^{\top}Q\right)
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $Q^{\top}Q$
+\end_inset
+
+为数据的误差协方差矩阵，因此
+\begin_inset Formula $Q$
+\end_inset
+
+为误差的标准差矩阵，矩阵
+\begin_inset Formula $P$
+\end_inset
+
+为经过权重矩阵
+\begin_inset Formula $W$
+\end_inset
+
+校正过后的量测矩阵，以抵消系统噪声的协方差矩阵
+\begin_inset Formula $R$
+\end_inset
+
+的影响。
+\end_layout
+
+\begin_layout Standard
+其它的推导就是复杂且累人的矩阵代数运算，根据实对称矩阵的一些特性以及一些配元的技巧，最终得到的最优权重矩阵为
+\begin_inset Formula $\hat{W}=R^{-1}$
+\end_inset
+
+，因此对冲了系统噪声的影响，这很符合直觉。这时上述不等式的等号成立，数据的误差最小。最终，我们是在校正后的数据集合上进行最小二乘估计，并且此时的估计为无偏估计。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该算法如果应用在动态递归的估计系统中，就成了卡尔曼滤波器的核心部分。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+《线性代数》Steven J.Leon — 第5章 正交性
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lecture 5 — Least-squares"
+target "https://see.stanford.edu/materials/lsoeldsee263/05-ls.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+《卡尔曼滤波及其实时应用》 — 第1.3节 最小二乘初步
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+草稿纸
+\end_layout
+
+\begin_layout Standard
+整理并验证方程相等
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned} & \left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)\\
+ & =\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]\\
+ & \quad+\left(\mathbf{z}_{k}^{\top}\left[I-W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}\right]W_{k}\mathbf{z}_{k}\right)
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+展开等式左边
+\begin_inset Formula 
+\begin{align*}
+\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(\mathbf{z}_{k}-C_{k}\mathbf{y}_{k}\right) & =\mathbf{z}_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+ & -\left(C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\mathbf{z}_{k}\\
+ & -\mathbf{z}_{k}^{\top}W_{k}\left(C_{k}\mathbf{y}_{k}\right)\\
+ & +\left(C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(C_{k}\mathbf{y}_{k}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+展开等式右边
+\begin_inset Formula 
+\[
+\begin{array}{l}
+\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left[\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}-C_{k}^{\top}W_{k}\mathbf{z}_{k}\right]\\
+=\left(\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\\
+-\left(\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+-\left(C_{k}^{\top}W_{k}\mathbf{z}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\\
++\left(C_{k}^{\top}W_{k}\mathbf{z}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}
+\end{array}
+\]
+
+\end_inset
+
+并有余项
+\begin_inset Formula 
+\[
+\mathbf{z}_{k}^{\top}\left[I-W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}\right]W_{k}\mathbf{z}_{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用对称矩阵
+\begin_inset Formula $W_{k}=W_{k}^{\top}$
+\end_inset
+
+展开各项并整理
+\end_layout
+
+\begin_layout Enumerate
+右边第1项
+\begin_inset Formula 
+\[
+\begin{array}{l}
+\left(\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\\
+=\left(\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\right)^{\top}\mathbf{y}_{k}\\
+=\left(C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\left(C_{k}\mathbf{y}_{k}\right)
+\end{array}
+\]
+
+\end_inset
+
+与左边第4项相等。
+\end_layout
+
+\begin_layout Enumerate
+右边第2项
+\begin_inset Formula 
+\[
+\begin{array}{l}
+-\left(\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+=-\left(C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}C_{k}\left(W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+=-\left(C_{k}\mathbf{y}_{k}\right)^{\top}W_{k}\mathbf{z}_{k}
+\end{array}
+\]
+
+\end_inset
+
+与左边第2项相等。
+\end_layout
+
+\begin_layout Enumerate
+右边第3项
+\begin_inset Formula 
+\[
+\begin{array}{l}
+-\left(C_{k}^{\top}W_{k}\mathbf{z}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}\left(C_{k}^{\top}W_{k}C_{k}\right)\mathbf{y}_{k}\\
+=-\left(C_{k}^{\top}W_{k}\mathbf{z}_{k}\right)^{\top}\mathbf{y}_{k}\\
+=-\mathbf{z}_{k}^{\top}W_{k}\left(C_{k}\mathbf{y}_{k}\right)
+\end{array}
+\]
+
+\end_inset
+
+与左边第3项相等。
+\end_layout
+
+\begin_layout Enumerate
+剩下各项凑成余项
+\begin_inset Formula 
+\[
+\begin{array}{l}
+\mathbf{z}_{k}^{\top}W_{k}\mathbf{z}_{k}-\left(C_{k}^{\top}W_{k}\mathbf{z}_{k}\right)^{\top}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+=\mathbf{z}_{k}^{\top}W_{k}\mathbf{z}_{k}-\mathbf{z}_{k}^{\top}W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}W_{k}\mathbf{z}_{k}\\
+=\mathbf{z}_{k}^{\top}\left(I-W_{k}C_{k}\left(C_{k}^{\top}W_{k}C_{k}\right)^{-1}C_{k}^{\top}\right)W_{k}\mathbf{z}_{k}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以两式相等。
+\end_layout
+
+\end_body
+\end_document
