@@ -1,0 +1,143 @@
+% !TEX root = micro_Lie_theory.tex
+
+
+\section{二维刚体运动群 $SE(2)$}
+\label{sec:SE2}
+
+
+我们将刚体运动群 $\SE(2)$ 的元素写为
+%
+\begin{align}
+\bfM= \begin{bmatrix}
+\bfR & \bft \\ \bf0 & 1
+\end{bmatrix} \in \SE(2) \subset \bbR^{3\times3}
+~,
+\end{align}
+%
+其中 $\bfR\in\SO(2)$ 是一个旋转，而 $\bft\in\bbR^2$ 是一个平移。
+Lie 代数和向量的正切是由这些类型的元素形成的
+%
+\begin{align} 
+\bftau^\wedge
+  &= \begin{bmatrix}\hatx{\theta} & \bfrho \\ \bf0 & 0\end{bmatrix} \in \se(2)
+  ~~,
+& 
+\bftau
+  &= \begin{bmatrix}\bfrho \\ \theta\end{bmatrix}\in\bbR^3 
+~.
+\end{align}
+%
+
+\subsection{求逆、组合}
+
+求逆和组合分别用矩阵的求逆和乘积执行，
+%
+\begin{align}
+\bfM\inv &= \begin{bmatrix}
+\bfR\tr & -\bfR\tr\bft \\ \bf0 & 1
+\end{bmatrix} 
+\\
+\bfM_a\,\bfM_b &= \begin{bmatrix}
+\bfR_a\bfR_b & \bft_a+\bfR_a\bft_b \\ \bf0 & 1
+\end{bmatrix} 
+~.
+\end{align}
+
+\subsection{Exp 和 Log 映射}
+
+Exp 和 Log 通过指数映射直接从标量的切空间 $\bbR^3\cong\se(2)=\mtan{\SE(2)}$ 实现 ---  有关推导，参见文献 \cite{EADE-Lie}，
+%
+\begin{align}
+  \bfM = \Exp(\bftau) 
+    &\te \begin{bmatrix}\Exp(\theta) & \bfV(\theta)\,\bfrho \\ \bf0 & 1  \end{bmatrix}  \label{equ:SE2_Exp} \\
+  \bftau = \Log(\bfM) 
+    &\te \begin{bmatrix} \bfV\inv(\theta)\, \bfp \\ \Log(\bfR) \end{bmatrix}~.
+\end{align}
+%
+其中
+%
+\begin{align}
+  \bfV(\theta)
+  &= 
+  \frac{\sin\theta}{\theta}\bfI + \frac{1-\cos\theta}{\theta}\hatx{1}
+  ~.
+\end{align}
+
+\subsection{Jacobian矩阵块}
+\label{sec:derivatives_SE2}
+
+\subsubsection{伴随}
+
+从方程 \eqRef{equ:Adj4} 中利用平面旋转可交换的事实很容易找到伴随，
+%
+\begin{align*}
+\Ad[\SE(2)]{\bfM} \bftau &= (\bfM \bftau^\wedge \bfM\inv)^\vee 
+= \begin{bmatrix}
+\bfR\bfrho-\hatx{\theta}\bft \\ \theta
+\end{bmatrix} = \Ad[\SE(2)]{\bfM} \begin{bmatrix}
+\bfrho\\\theta
+\end{bmatrix}
+~,
+\end{align*}
+%
+导致
+%
+\begin{align}
+\Ad[\SE(2)]{\bfM} = \begin{bmatrix}
+\bfR & -\hatx{1}\bft \\ \bf0 & 1
+\end{bmatrix}
+~.
+\end{align}
+
+
+\subsubsection{求逆、组合}
+
+从 \secRef{sec:jacs_elementary} 我们有，
+%
+\begin{align}
+\mjac{\bfM\inv}{\bfM} &= -\Ad[\SE(2)]{\bfM} = \begin{bmatrix} -\bfR & \hatx{1}\bft \\ \bf0 & -1 \end{bmatrix}  \\
+\mjac{\bfM_a\bfM_b}{\bfM_a} &= \Ad[\SE(2)]{\bfM_b}\inv ~= \begin{bmatrix} \bfR_b\tr & \bfR_b\tr\hatx{1}\bft_b \\ \bf0 & 1 \end{bmatrix} \\
+\mjac{\bfM_a\bfM_b}{\bfM_b} &= \bfI 
+~.
+\end{align}
+
+\subsubsection{右Jacobian矩阵和左Jacobian矩阵}
+
+从文献 \cite[pag.~36]{CHIRIKJIAN-11} 我们有，
+%
+\begin{align}
+\mjac{}{r} &= \begin{bsmallmatrix}
+\sin\theta/\theta & (1-\cos\theta)/\theta & (\theta \rho_1 - \rho_2 + \rho_2 \cos\theta - \rho_1 \sin\theta)/\theta^2 \\
+(\cos\theta-1)/\theta & \sin\theta/\theta & (\rho_1 + \theta \rho_2 - \rho_1 \cos\theta - \rho_2 \sin\theta)/\theta^2 \\
+0 & 0 & 1
+\end{bsmallmatrix} \\
+\mjac{}{l} &= \begin{bsmallmatrix}
+\sin\theta/\theta & (\cos\theta-1)/\theta & (\theta \rho_1 + \rho_2 - \rho_2 \cos\theta - \rho_1 \sin\theta)/\theta^2 \\
+(1-\cos\theta)/\theta & \sin\theta/\theta & (-\rho_1 + \theta \rho_2 + \rho_1 \cos\theta - \rho_2 \sin\theta)/\theta^2 \\
+0 & 0 & 1
+\end{bsmallmatrix} 
+~.
+\end{align}
+
+\subsubsection{刚体运动作用}
+
+在点 $\bfp$ 上我们有作用，
+%
+\begin{align}
+\bfM\cdot\bfp &\te \bft+\bfR\bfp
+~,
+\end{align}
+%
+因此，从方程 \eqRef{equ:SE2_Exp} ，
+%
+\begin{align}
+\mjac{\bfM\cdot\bfp}{\bfM} 
+  &= 
+  \lim_{\bftau\to0}\frac{\bfM\Exp(\bftau)\cdot\bfp - \bfM\cdot\bfp}{\bftau}
+  = 
+  \begin{bmatrix}\bfR & \bfR\hatx{1}\bfp\end{bmatrix} \\
+\mjac{\bfM\cdot\bfp}{\bfp} &= \bfR 
+~.
+\end{align}
+%
+

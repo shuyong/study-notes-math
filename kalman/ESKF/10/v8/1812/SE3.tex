@@ -1,0 +1,172 @@
+% !TEX root = micro_Lie_theory.tex
+
+
+\section{三维刚体运动群 $SE(3)$}
+\label{sec:SE3}
+
+
+我们将三维刚体运动群 $\SE(3)$  的元素写为
+%
+\begin{align}
+\bfM= \begin{bmatrix}
+\bfR & \bft \\ \bf0 & 1
+\end{bmatrix} \in \SE(3) \subset \bbR^{4\times4}
+~,
+\end{align}
+%
+其中 $\bfR\in\SO(3)$ 是一个旋转，并且 $\bft\in\bbR^3$ 是一个平移向量。
+Lie 代数和向量的正切是由这些类型的元素形成的
+%
+\begin{align}
+\bftau^\wedge
+  &= \begin{bmatrix}\hatx{\bth} & \bfrho \\ \bf0 & 0\end{bmatrix} \in \se(3)
+  ~~,
+& 
+\bftau
+  &= \begin{bmatrix}\bfrho \\ \bth\end{bmatrix}\in\bbR^6 
+~.
+\end{align}
+%
+
+
+\subsection{求逆、组合}
+
+求逆和组合分别用矩阵的求逆和乘积执行，
+%
+\begin{align}
+\bfM\inv &= \begin{bmatrix}
+\bfR\tr & -\bfR\tr\bft \\ \bf0 & 1
+\end{bmatrix} 
+\\
+\bfM_a\,\bfM_b &= \begin{bmatrix}
+\bfR_a\bfR_b & \bft_a+\bfR_a\bft_b \\ \bf0 & 1
+\end{bmatrix} 
+~.
+\end{align}
+
+
+
+\subsection{Exp 和 Log 映射}
+
+Exp 和 Log 通过指数映射直接从向量的切空间 $\bbR^6\cong\se(3)=\mtan{\SE(3)}$ 实现 ---  有关推导，参见文献 \cite{EADE-Lie}，
+%
+\begin{align}
+  \bfM = \Exp(\bftau) 
+    &\te \begin{bmatrix}\Exp(\bth) & \bfV(\bth)\,\bfrho \\ \bf0 & 1  \end{bmatrix} \label{equ:SE3_Exp} \\
+  \bftau = \Log(\bfM) 
+    &\te \begin{bmatrix} \bfV\inv(\bth)\, \bfp \\ \Log(\bfR) \end{bmatrix}~.
+\end{align}
+%
+其中 (回想对于 $\Log(\bfM)$ 这个 $\bth=\theta\bfu=\Log(\bfR)$)
+%
+\begin{align}
+\bfV(\bth) = \bfI 
+  + \frac{1-\cos\theta}{\theta^2}\hatx{\bftheta}
+  + \frac{\theta-\sin\theta}{\theta^3}\hatx{\bftheta}^2
+~
+\end{align}
+%
+其中，注意，这与方程 \eqRef{equ:SO3_Jl} 完全匹配。
+
+\subsection{Jacobian矩阵块}
+\label{sec:derivatives_SE3}
+
+\subsubsection{伴随}
+
+我们有 (参见 \exRef{ex:SE3_adjoint})，
+%
+\begin{align}
+\Ad[\SE(3)]{\bfM}\bftau 
+  &= (\bfM\bftau^\wedge\bfM\inv)^\vee \notag 
+  = \begin{bmatrix}
+  \bfR\bfrho+\hatx{\bft}\bfR\bth \\
+  \bfR\bth
+  \end{bmatrix} \notag 
+  = \Ad[\SE(3)]{\bfM}\begin{bmatrix}
+  \bfrho \\ \bth
+  \end{bmatrix} \notag 
+\end{align}
+%
+因此，
+%
+\begin{align}
+  \Ad[\SE(3)]{\bfM} &= \begin{bmatrix}
+  \bfR & \hatx{\bft}\bfR \\ 0 & \bfR
+  \end{bmatrix} \in \bbR^{6\times6}
+  ~.
+\end{align}
+
+\subsubsection{求逆、组合}
+
+从 \secRef{sec:jacs_elementary} 我们有，
+%
+\begin{align}
+\mjac{\bfM\inv}{\bfM} &= - \begin{bmatrix}
+  \bfR & \hatx{\bft}\bfR \\ 0 & \bfR
+  \end{bmatrix} \\
+\mjac{\bfM_a\bfM_b}{\bfM_a} &=   \begin{bmatrix}
+  \bfR_b\tr & -\bfR_b\tr\hatx{\bft_b} \\ 0 & \bfR_b\tr
+  \end{bmatrix} \\
+\mjac{\bfM_a\bfM_b}{\bfM_b} &= \bfI_6  
+~.
+\end{align}
+
+\subsubsection{右Jacobian矩阵和左Jacobian矩阵}
+
+左Jacobian矩阵的封闭形式及其逆式由 Barfoot 在文献 \cite{BARFOOT-14} 中给出，
+%
+\begin{subequations}
+\begin{align}
+\mjac{}{l}(\bfrho,\bth) &= \begin{bsmallmatrix}
+\mjac{}{l}(\bth) & \bfQ(\bfrho,\bth) \\
+\bf0 & \mjac{}{l}(\bth)
+\end{bsmallmatrix}
+\\
+\mjac{-1}{l}(\bfrho,\bth) &= \begin{bsmallmatrix}
+\mjac{-1}{l}(\bth) & -\mjac{-1}{l}(\bth)\,\bfQ(\bfrho,\bth)\,\mjac{-1}{l}(\bth) \\
+\bf0 & \mjac{-1}{l}(\bth)
+\end{bsmallmatrix}
+\end{align}
+\end{subequations}
+%
+其中 $\mjac{}{l}(\bth)$ 是 $\SO(3)$ 的左 Jacobian 矩阵, 参见方程 \eqRef{equ:SO3_Jl} ，并且
+%
+\newcommand{\rhox}{\bfrho_\times}
+\newcommand{\bthx}{\bth_\times}
+%
+\begin{align}
+\bfQ(\bfrho,\bth) =& 
+  \frac12\rhox 
+  + \frac{\theta\!-\!\sin\theta}{\theta^3}(\bthx\rhox+\rhox\bthx+\bthx\rhox\bthx) 
+  \notag\\
+  &- \frac{1\! - \!\frac{\theta^2}{2}\! -\! \cos\theta}{\theta^4}(\bthx^2\rhox+\rhox\bthx^2-3\bthx\rhox\bthx)
+  \notag\\
+  &-\frac12\left(\frac{1 -  \frac{\theta^2}{2} - \cos\theta}{\theta^4} 
+                  - 3\frac{\theta-\sin\theta-\frac{\theta^3}{6}}{\theta^5}\right)
+  \notag\\
+  &\times (\bthx\rhox\bthx^2 + \bthx^2\rhox\bthx)
+~.
+\end{align}
+%
+右Jacobian矩阵及其逆矩阵使用方程 \eqRef{equ:Jr_minus} 获得，即， $\mjac{}{r}(\bfrho,\bth)=\mjac{}{l}(-\bfrho,-\bth)$ 。
+
+\subsubsection{刚体运动作用}
+\label{sec:jac_SE3_action}
+%
+在点 $\bfp$ 上我们有作用，
+%
+\begin{align}
+\bfM\cdot\bfp &\te \bft+\bfR\bfp
+~,
+\end{align}
+%
+因此，从方程 \eqRef{equ:SE3_Exp} ，
+%
+\begin{align}
+\mjac{\bfM\cdot\bfp}{\bfM} 
+  &= 
+  \lim_{\bftau\to0}\frac{\bfM\Exp(\bftau)\cdot\bfp - \bfM\cdot\bfp}{\bftau}
+  = \begin{bmatrix}\bfR & -\bfR\hatx{\bfp} \end{bmatrix} \\
+\mjac{\bfM\cdot\bfp}{\bfp} &= \bfR
+~.
+\end{align}

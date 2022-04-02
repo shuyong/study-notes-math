@@ -1,0 +1,94 @@
+% !TEX root = micro_Lie_theory.tex
+
+
+\section{组合流形}
+
+以失去与Lie理论的某些一致性为代价，但以获得符号和操作方面的一些优势为好处，人们可以将大的和非均匀的状态视为流形组合(或捆绑)。
+
+
+\if \examples y \input{example_composite} \fi
+
+
+一个组合流形(\emph{composite manifold}) $\cM=\langle\cM_1,\cdots,\cM_M\rangle$ 不小于 $M$ 个非相互作用的流形的级联。
+这源于幺元、逆元的定义，以及单独地在每一个块上的组合作用的组合，
+%
+\begin{align}
+\cE_\diamond &\te \begin{bmatrix}
+\cE_1 \\ \vdots \\ \cE_M
+\end{bmatrix},
+&
+\cX^\diamond &\te \begin{bmatrix}
+\cX\inv \\ \vdots \\ \cX_M\inv
+\end{bmatrix},
+&
+\cX\diamond\cY &\te \begin{bmatrix}
+\cX\circ\cY_1 \\
+\vdots\\
+\cX_M\circ\cY_M 
+\end{bmatrix}
+,
+\end{align}
+%
+从而实现了群公理，以及一个非相互作用的收回映射，为了统一符号(注意尖括号)，我们还将其标记为“指数映射”，
+%
+\begin{align}\label{equ:exp_composite}
+\Exp\langle\bftau\rangle &\te \begin{bmatrix}
+\Exp(\bftau_1) \\ \vdots \\ \Exp(\bftau_M)
+\end{bmatrix}
+\,,
+&
+\Log\langle\cX\rangle &\te \begin{bmatrix}
+\Log(\cX) \\ \vdots \\ \Log(\cX_M)
+\end{bmatrix}
+,
+\end{align}
+% 
+从而确保平滑。
+这些产生了组合的右结合(right-)的加号和减号(注意菱形符号)，
+%
+\begin{align}
+\cX\dplus\bftau &\te \cX\diamond\Exp\langle\bftau\rangle \\
+\cY\dminus\cX &\te \Log\langle\cX^\diamond\diamond\cY\rangle
+~.
+\end{align}
+
+这些考虑的关键结果%
+\if\examples y{ (参见 Ex.~\ref{ex:sen_sonxrn_comp}) }\else { }\fi 
+是可以定义新的导数，\footnotemark\ 使用 $\dplus$ 和 $\dminus$ ，
+\footnotetext{这里我们假设右导数，但同样适用于左导数。}
+%
+\begin{align}
+\ndpar{f(\cX)}{\cX} \te \lim_{\bftau\to0}\frac{f(\cX\dplus\bftau)\dminus f(\cX)}{\bftau}
+\label{equ:Jacobian_composite}
+~.
+\end{align}
+%
+利用这个导数，作用在组合流形上的函数 $f:\cM\to\cN$ 的Jacobian矩阵可以按块计算来确定，这就产生了只需要知道组合的流形块的简单表达式，
+%
+\begin{align}
+\ndpar{f(\cX)}{\cX} &= \begin{bmatrix}
+\ndpar{f_1}{\cX_1} & \cdots & \ndpar{f_1}{\cX_M} \\
+\vdots             & \ddots & \vdots \\
+\ndpar{f_N}{\cX_1} & \cdots & \ndpar{f_N}{\cX_M} \\
+\end{bmatrix}
+~,
+\end{align}
+%
+其中， $\ndpar{f_i}{\cX_j}$ 分别用方程 \eqRef{equ:Jacobian} 计算。 
+对于 $\bftau$ 的小值，以下方程成立，
+%
+\begin{align}\label{equ:lin_approx_composite}
+f(\cX\dplus\bftau) \xrightarrow[{\bftau}\to0]{} f(\cX)\dplus\ndpar{f(\cX)}{\cX}\,{\bftau}
+\quad \in \cN
+~.
+\end{align}
+
+当使用这些导数时，协方差和不确定性传播必须遵循约定。特别是，协方差矩阵方程 \eqRef{equ:cov} 变成
+%
+\begin{align}\label{equ:cov_composite}
+\bfSigma_\cX \te \bbE[(\cX \dminus \bar\cX)(\cX \dminus \bar\cX)\tr]~\in\bbR^{n\times n}
+~,
+\end{align}
+%
+对于线性化传播方程 \eqRef{equ:cov_propagation} ，使用方程 \eqRef{equ:Jacobian_composite} 以应用它。
+

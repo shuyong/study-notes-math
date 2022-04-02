@@ -1,0 +1,225 @@
+%!TEX TS-program = xelatex
+
+%\pdfoutput=1
+
+% IRI report class
+%\documentclass{iritr}
+%\IRIreport{18}{01}
+%\coriri{Joan Sol\`a}{1 7337}{jsola}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% doc class %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% IEEE
+\documentclass{IEEEtran}
+\usepackage[fontset=founder]{ctex} % 增加中文格式的支持。
+%\usepackage[fontset=founder,11pt]{ctex} % 小字体，紧凑一点。
+
+% Article
+%\documentclass[11pt]{article}
+%\usepackage{a4wide}
+%\usepackage{appendix}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[english]{babel}
+\usepackage{amsfonts, amssymb, amsmath} 
+\usepackage{bm} 
+%\usepackage{cancel}
+\usepackage{mathtools}
+%\usepackage{multirow}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\usepackage{lastpage} % Count nbr of pages
+\usepackage{balance}  % equalize columns in last page
+
+\usepackage{xparse}
+
+% For example boxes
+\usepackage{mdframed}
+\mdfsetup{skipabove=0pt,skipbelow=-2pt}
+\usepackage{float}
+
+% For prettier tables
+\usepackage{booktabs} 
+
+% Latex drawing
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+
+% Customization packages
+\usepackage{customCommands} % Joan Sola's macros
+
+
+% Define new plus and minus operators with diamond shape
+\usepackage{scalerel}
+\def\dplus{\,\scalerel*{\includegraphics{./symbols/dplus.pdf}}{X\rule[-.5ex]{0pt}{1pt}\rule[1.4ex]{0pt}{1pt}}\,}
+\def\dminus{\,\scalerel*{\includegraphics{./symbols/dminus.pdf}}{X\rule[-.5ex]{0pt}{1pt}\rule[1.4ex]{0pt}{1pt}}\,}
+
+\renewcommand\Re{\operatorname{Re}}
+\renewcommand\Im{\operatorname{Im}}
+
+% Comments
+\newcommand{\COM}[1]{{\color{red}#1}}
+%\renewcommand{\COM}[1]{}
+
+% Define a few useful shortcuts
+\newcommand{\bw}{{\bfomega}}
+\newcommand{\bth}{{\bftheta}}
+\newcommand{\bphi}{{\bfphi}}
+\newcommand{\nth}{\norm{\bth}}
+\newcommand{\ab}{{\bfa_b}}
+\newcommand{\wb}{{\bw_b}}
+\newcommand{\D}{\Delta}
+\newcommand{\Dzero}{{\D^0}}
+\newcommand{\Dp}{{\D\bfp}}
+\newcommand{\Dv}{{\D\bfv}}
+\newcommand{\Dth}{{\D\bth}}
+\newcommand{\Dq}{{\D\bfq}}
+\newcommand{\DR}{{\D\bfR}}
+\newcommand{\DP}{{\D\bfP}}
+\newcommand{\DV}{{\D\bfV}}
+\newcommand{\DTH}{{\D\bfTheta}}
+\newcommand{\Dw}{{\D\bw}}
+\newcommand{\DW}{{\D\bfOmega}}
+\newcommand{\dpp}{{\delta\bfp}}
+\newcommand{\dv}{{\delta\bfv}}
+\newcommand{\dth}{{\delta\bth}}
+\newcommand{\dq}{{\delta\bfq}}
+\newcommand{\dR}{{\delta\bfR}}
+\newcommand{\dP}{{\delta\bfP}}
+\newcommand{\dV}{{\delta\bfV}}
+\newcommand{\dTH}{{\delta\bfTheta}}
+\newcommand{\dw}{{\delta\bw}}
+\newcommand{\hhat}{^\wedge}
+\newcommand{\vvee}{^\vee}
+
+\newcommand{\mtan}[1]{T#1}
+\newcommand{\mtanat}[2]{T_{#2}{#1}}
+
+% Derivatives and Jacobians
+% -----------------------------------------
+\renewcommand{\mjac}[2]{\jac{#1}{#2}} % Do not use fancy style for jacs in manifold
+
+\newcommand{\der}{D}
+%\newcommand{\der}{\partial}
+\newcommand{\ndpar}[2]{\frac{\der#1}{\der#2}}
+\NewDocumentCommand{\dparat}{ O{} O{} m m}{\frac{{^{#1}}\der#3}{{^{#2}}\der#4}}
+\renewcommand{\rdpar}[2]{\dparat[#2][]{#1}{#2}}
+\renewcommand{\ldpar}[2]{\dparat[\cE][]{#1}{#2}}
+\newcommand{\rldpar}[2]{\dparat[#1][\cE]{#1}{#2}}
+\newcommand{\lrdpar}[2]{\dparat[\cE][#2]{#1}{#2}}
+\newcommand{\rrdpar}[2]{\dparat[#1][#2]{#1}{#2}}
+\newcommand{\lldpar}[2]{\dparat[\cE][\cE]{#1}{#2}}
+
+
+% Attemps to have better Derivatives notation
+% -----------------------------------------
+%\renewcommand{\rdpar}[2]{\frac{\lambda#1}{\lambda#2}}
+%\renewcommand{\ldpar}[2]{\frac{\gamma#1}{\gamma#2}}
+%\renewcommand{\rldpar}[2]{\frac{\lambda#1}{\gamma#2}}
+%\renewcommand{\lrdpar}[2]{\frac{\gamma#1}{\lambda#2}}
+%\renewcommand{\rrdpar}[2]{\frac{\lambda#1}{\lambda#2}}
+%\renewcommand{\lldpar}[2]{\frac{\gamma#1}{\gamma#2}}
+% -----------------------------------------
+
+
+\newcommand{\manif}{\texttt{manif}}
+
+
+% Aligned algorithm
+\newcommand{\algalign}[1]{$\displaystyle
+\begin{aligned}#1\end{aligned}$\\}
+
+% EXAMPLE environment
+% MDFRAMED
+\mdtheorem[nobreak=true]{example}{Example}
+% FLOAT
+\floatstyle{plain}
+\newfloat{float}{t}{lop}
+
+\newenvironment{fexample}[1]
+{
+\begin{float}
+\begin{example}[#1]
+}
+{
+\end{example}
+\end{float}
+}
+
+% Hyperref always the last one!
+\usepackage[bookmarks,%
+			colorlinks = true,%
+			linkcolor  = black,%
+			citecolor  = blue,%
+			pdfauthor  = {Joan\ Sola},%
+			pdftitle   = {微型Lie理论},%
+			xetex
+			]{hyperref}
+
+
+\title{微型Lie理论\\ 面向机器人状态估计}
+\author{Joan Sol\`a, Jeremie Deray, Dinesh Atchuthan}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% EXAMPLES ? %%%%%%%%%%%%%%%%%%%%%%%%%%%
+\let \examples=y
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\input{abstract}
+
+%\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Theory
+\input{intro.tex}
+\input{manifolds.tex}
+\input{derivation_rules.tex}
+
+% Extras
+\input{composite.tex}
+
+% Examples
+%\input{homogeneous.tex}
+\input{localization}
+
+% Applications
+%\input{self_calib.tex}
+%\input{imu_preintegration.tex}
+%\input{imu.tex}
+%\input{diff_drive.tex}
+%%%%%%\input{flow.tex}
+
+% Conclusion
+\input{conclusion.tex}
+
+%================================================================
+
+% Appendices
+\begin{appendices}
+
+\input{SO2.tex}
+\input{SO3.tex}
+\input{SE2.tex}
+\input{SE3.tex}
+\balance
+\input{Rn.tex}
+
+\end{appendices}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% BIBLIOGRAPHIES
+\bibliographystyle{IEEEtran}
+\bibliography{bibSLAM,diff_drive_bib}
+
+
+
+\end{document}

@@ -1,0 +1,213 @@
+% !TEX root = micro_Lie_theory.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{三维旋转群 $S^3$ 和 $SO(3)$}
+\label{sec:S3_SO3}
+
+Lie群 $S^3$ 是四元数乘法下的单位四元数群。
+它的拓扑结构是 $\bbR^4$ 中的单位三维球面，因此名为 $S^3$。
+四元数 (请参阅 \cite{SOLA-17-Quaternion} 以获得深入的参考) 可以用这些等价形式表示，
+%
+\begin{align}
+\begin{split}		
+\bfq 
+&= w+ix+jy+kz
+=w+\bfv ~~ \in\bbH
+\\
+&
+=\begin{bmatrix}w&x&y&z\end{bmatrix}\tr 
+~\,=\begin{bmatrix}w\\\bfv\end{bmatrix} \quad~\, \in\bbH
+~,
+\end{split}
+\end{align}
+%
+其中 $w,x,y,z\in\bbR$ ，并且 $i,j,k$ 是三个单位虚数，使得 $i^2=j^2=k^2=ijk=-1$ 。
+标量 $w$ 被称为标量或实部，并且 $\bfv\in\bbH_p$ 称为向量或虚部。
+我们标记 $\bbH_p$ 为纯虚四元数的集合，即标量部分为空，向量维数为3。
+求逆和组合是通过共轭 $\bfq\inv = \bfq^*$ 达成的，其中 $\bfq^*\te w-\bfv$ 是共轭，并且乘积为 $\bfq_a\circ\bfq_b = \bfq_a\,\bfq_b$。
+
+群 $\SO(3)$ 是三维空间中特殊正交矩阵或旋转矩阵在矩阵乘法下的群。
+求逆和组合是通过转置和乘积实现的，就像在所有的群 $\SO(n)$ 中一样。
+
+两个群都是旋转$3$参数向量。 
+它们有同构的切空间，其元素可用 $\bbR^3$ 中的旋转向量标识，所以我们把它们放在一起研究。
+正是在这个空间 $\bbR^3$ 中，我们定义旋转率  $\bw\te\bfu\omega$、角-轴 $\bth\te\bfu\theta$，以及所有扰动和不确定性的向量。
+
+四元数流形 $S^3$ 是 $\SO(3)$ 的双倍覆盖，即 $\bfq$ 和 $-\bfq$ 表示相同的旋转 $\bfR$。
+第一个覆盖对应于正实部 $w>0$ 的四元数。
+这两个群可以被认为是同构的第一覆盖。
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Exp 和 Log 映射}
+
+Exp 和 Log 映射可以定义为 $S^3$ 的四元数和 $SO(3)$ 的旋转矩阵。
+对于四元数 $\bfq=(w,\bfv)\in\bbH$ 我们有%
+%
+\if \examples y (参见 \exRef{ex:S3})， \else, \fi
+%
+%
+\begin{align}
+\bfq= \Exp(\theta\bfu) &\te \cos(\theta/2) + \bfu\sin(\theta/2) &&\in\bbH\\ 
+\theta\bfu = \Log(\bfq) &\te 2\,\bfv\frac{\arctan({\norm{\bfv},w})}{\norm{\bfv}}&&\in\bbR^3
+~.
+\end{align}
+%
+我们可以避免由于 $\bfq$ 的双倍覆盖而导致的最终问题，在执行 $\Log$ 之前确保其标量部分 $w$ 为正。
+如果不是，我们可以在 $\Log$ 之前用 $-\bfq$ 替换 $\bfq$ 。
+
+对于旋转矩阵我们有% 
+%
+\if \examples y (参见 \exRef{ex:SO3_exp})， \else, \fi
+%
+\begin{align}
+\bfR= \Exp(\theta\bfu) &\te \bfI + \sin\theta\hatx{\bfu} + (1-\cos\theta)\hatx{\bfu}^2~ \label{equ:rodrigues} \in\bbR^{3\tcross3}\\ 
+\theta\bfu = \Log(\bfR) &\te \frac{\theta(\bfR-\bfR\tr)^\vee}{2\sin\theta} \quad\in\bbR^3
+~,
+\end{align}
+%
+其中 $\theta=\cos\inv\big(\frac{\trace(\bfR)-1}{2}\big)$ 。
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{旋转作用}
+
+给定上述四元数和旋转矩阵的表达式，四元数在$3$参数向量上的旋转作用是由双四元数积来完成的，
+%
+\begin{align}
+\bfx' &= \bfq\,\bfx\,\bfq^* \\
+\intertext{当旋转矩阵使用单个矩阵积时，}
+\bfx' &= \bfR\bfx
+~.
+\end{align}
+%
+两者相当于一个围绕轴 $\bfu$ 旋转角度 $\theta$ 弧度(rad)的右手旋转。
+在它们中标识 $\bfx$ 和 $\bfx'$ ，得到一个特征
+%
+\begin{align}\label{equ:q2R}
+%\tiny
+\bfR
+(\bfq) \!=\!\! 
+%=
+\begin{bsmallmatrix}
+w^2+x^2-y^2-z^2 &~ 2(xy-wz) &~ 2(xz+wy) \\ 
+2(xy+wz) &~ w^2-x^2+y^2-z^2 &~ 2(yz-wx) \\
+2(xz-wy) &~ 2(yz+wx) &~ w^2-x^2-y^2+z^2
+\end{bsmallmatrix}\!
+\end{align}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{初等Jacobian矩阵块}
+
+由于我们定义的导数映射切向量空间，并且这些空间重叠于 $S^3$ 和 $SO(3)$ 的三维旋转流形，即，$\bth=\Log(\bfq)=\Log(\bfR)$，因此Jacobian矩阵独立于所使用的表示($\bfq$ 或 $\bfR$)。
+因此，我们考虑通用的3D旋转元素，并用无衬线字体 $\sR$ 来标记它们。
+%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{伴随}
+
+从方程 \eqRef{equ:Adj4} 我们有
+%
+\begin{align*}
+\Ad{\sR} \bth
+&= (\bfR\hatx{\bth}\bfR\tr)^\vee 
+= (\hatx{(\bfR\bth)})^\vee 
+= \bfR\bth
+\end{align*}
+%
+因此
+%
+\begin{align}
+\Ad{\sR} = \bfR~,
+\end{align}
+%
+这意味着，再次澄清这个 $\Ad[S^3]{\bfq}=\bfR(\bfq)$ ，参见方程 \eqRef{equ:q2R} ，还有 $\Ad[\SO(3)]{\bfR}=\bfR$ 。
+
+\subsubsection{求逆、组合}
+\label{sec:SO3_inv_comp}
+
+从 \secRef{sec:jacs_elementary} 我们有，
+%
+\begin{align}
+\mjac{\sR\inv}{\sR} &= -\Ad{\sR} ~= -\bfR \\
+\mjac{\sQ\sR}{\sQ} &= \Ad{\sR}\inv = ~\bfR\tr \\
+\mjac{\sQ\sR}{\sR} &= \bfI ~.
+\end{align}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{右Jacobian矩阵和左Jacobian矩阵}
+
+他们承认封闭形式 \cite[pag.~40]{CHIRIKJIAN-11}， 
+%
+\begin{align}
+\mjac{}{r}(\bth) &= \bfI \!-\! \frac{1\!-\!\cos\theta}{\theta^2}\hatx{\bth} + \frac{\theta\!-\!\sin\theta}{\theta^3}\hatx{\bth}^2\\
+\mjac{}{r}\inv(\bth) &= \bfI \!+\! \frac12\hatx{\bth} \!+\! \left(\frac{1}{\theta^2} \!-\! \frac{1\!+\!\cos\theta}{2\theta\sin\theta}\right)\hatx{\bth}^2 \\
+\mjac{}{l}(\bth) &= \bfI + \frac{1-\cos\theta}{\theta^2}\hatx{\bth} + \frac{\theta-\sin\theta}{\theta^3}\hatx{\bth}^2  \label{equ:SO3_Jl} \\
+\mjac{}{l}\inv(\bth) &= \bfI - \frac12\hatx{\bth} + \left(\frac1{\theta^2} - \frac{1+\cos\theta}{2\theta\sin\theta}\right)\hatx{\bth}^2 \label{equ:SO3_Jl_inv}
+\end{align}
+%
+其中我们可以观察到
+%
+\begin{align}
+\mjac{}{l} &= \mjac{}{r}\tr 
+~,
+&
+\mjac{}{l}\inv &= \mjac{}{r}^{-\top}
+~.
+\end{align}
+
+\subsubsection{右结合(right-)加号和减号}
+
+对于 $\bth=\sQ\om\sR$ 我们有，
+%
+\begin{align}
+\mjac{\sR\op\bth}{\sR}    
+  &=  \bfR(\bth)\tr 
+  &
+\mjac{\sR\op\bth}{\bth} 
+  &=  \mjac{}{r}(\bth)
+  \\
+\mjac{\sQ\om\sR}{\sQ} 
+  &=  \mjac{-1}{r}(\bth)
+  &
+\mjac{\sQ\om\sR}{\sR} 
+  &= -\mjac{-1}{l}(\bth) 
+\end{align}
+%
+
+
+\subsubsection{旋转作用} 
+\label{sec:jac_SO3_action}
+
+我们有
+\begin{align}
+\mjac{\sR\cdot\bfv}{\sR} 
+\small
+&\te \lim_{\bth\to0}\frac{(\bfR\op\bth)\bfv-\bfR\bfv}{\bth} = \notag \\
+\lim_{\bth\to0}\frac{\bfR\Exp(\bth)\bfv-\bfR\bfv}{\bth} 
+&= \lim_{\bth\to0}\frac{\bfR(\bfI\!+\!\hatx{\bth})\bfv-\bfR\bfv}{\bth} \notag \\
+= \lim_{\bth\to0}\frac{\bfR\hatx{\bth}\bfv}{\bth} 
+&= \lim_{\bth\to0}\frac{-\bfR\hatx{\bfv}\bth}{\bth} 
+= -\bfR\hatx{\bfv} 
+\end{align}
+%
+其中我们使用属性 $\Exp(\bth) \approx \bfI + \hatx{\bth}$ 和  $\hatx{\bfa}\bfb = -\hatx{\bfb}\bfa$ 。
+第二个Jacobian矩阵产生，
+%
+\begin{align}
+\mjac{\sR\cdot\bfv}{\bfv}
+&\te \lim_{\partial\bfv\to0}\frac{\bfR(\bfv+\partial\bfv)-\bfR\bfv}{\partial\bfv} 
+= \bfR
+~.
+\end{align}
+
+
+
+

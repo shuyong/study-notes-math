@@ -1,0 +1,232 @@
+% !TEX root = micro_Lie_theory.tex
+
+\section{差动驱动自校正}
+\label{sec:diff_drive}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{概述}
+
+差动驱动模型由两种驱动轮组成，一种在单轴上，一种位于机器人基座的每一侧，
+其原点坐标系位于轴线的中心。
+机器人的参数化由
+它的轮子的半径 $(r_l, r_r)$ 和轴线的长度 $d$ 确定。
+与每一个参数中的相关联的是一个校正因子，使得
+$\bfc=[c_l~c_r~c_d]\tr$ 是内在参数校正向量。
+%
+通常通过车轮编码器测量运动，报告车轮增量角度 $\bfy=[\delta\psi_l, \delta\psi_r]+\bfn$ ，
+在每个时间步长 $\delta t$ 处，其中 $\bfn$ 是加性高斯噪声。
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{State and delta definitions}
+%
+We define the states of position and orientation angle
+$\bfx = (\bfp,\theta)$, which act as a compact representation of $SE(2)$.
+Consequently, state increments or deltas $\D_{ij}$ and $\delta_k$ are also in $SE(2)$.
+
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Delta pre-integration}
+
+For convenience, we define the body magnitudes 
+$\bfb = (\delta l,\delta \theta)=f_b(\bfy,\bfc,\bfn)$ as
+%
+%
+\begin{align}
+\label{equ:diff_drive_psis}
+\begin{split}
+\delta l &= \tfrac12(r_r c_r \delta\psi_r + r_l c_l\delta\psi_l)  \\
+\delta \theta &= \tfrac{1}{D}(r_r c_r \delta\psi_r - r_l c_l\delta\psi_l) 
+~.
+\end{split}
+\end{align}
+%
+with $D=d\,c_d$. 
+Its components, respectively, highlight the common (along track length), and differential (turn) components of the wheels reported motions.
+
+Assuming constant control inputs over the sampling time period $[t_j,t_k]$, the robot
+moves along an arc of circle of radius
+%
+\begin{align}
+R = \frac{\delta l}{\delta \theta} 
+~.
+\end{align}
+%
+The motion increment $\delta_k$ can be expressed in $SE(2)$ as
+%
+\begin{align}
+\label{equ:diff_drive_exact_inte}
+\delta x &= R\sin(\delta\theta) \notag\\
+\delta y &= R(1-\cos(\delta\theta)) \\
+\delta\theta &= \delta \theta \notag 
+~,
+\end{align}
+%
+which is exactly $\delta=\Exp(\tau)\in SE(2)$ with $\tau=[\delta l,0,\delta \theta]\in\se(2)$, \ie, assuming no lateral wheel slippage.
+%
+In case the robot follows a straight trajectory, we have $\delta \theta\to0$,
+and $R\to+\infty$.
+This case is handled by means of the approximation %using a mid-point integration:
+%
+\begin{align}
+\label{equ:diff_drive_runge_kutta_inte}
+%
+%
+\delta x &= \delta l \cos(\delta\theta/2) \notag \\
+%
+\delta y &= \delta l \sin(\delta\theta/2) \\
+%
+\delta\theta &= \delta \theta \notag 
+~.
+\end{align}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Motion integration}
+
+The delta integration is simply the composition in $SE(2)$,
+%
+\begin{align}\label{equ:diff_drive_composition}
+\begin{split}
+\Dp_{ik} &= \Dp_{ij} + \D\bfR_{ij}\delta \bfp_k \\
+\D\theta_{ik} &= \D\theta_{ij} + \delta\theta_k
+\end{split}
+\end{align}
+%
+where $\D\bfR_{ij}=\Exp(\D\theta_{ij})$ is the rotation matrix delta corresponding to the
+rotation angle of $\D\theta_{ij}$, see \eqRef{equ:R_SO2}, and $\delta \bfp_k=(\delta x,\delta y)$ is the translation vector delta of $\delta_k$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Jacobians}
+\label{sec:diff_drive_jacs}
+%
+\subsubsection{Jacobians of the motion components}
+%
+From \eqRef{equ:diff_drive_psis},
+%
+\begin{subequations}
+\label{equ:diff_drive_psis_jac}
+\begin{align}
+\jac{\bfb}{\bfy} = \jac{\bfb}{\bfn} &= \begin{bmatrix}
+\frac12 r_l c_l & \frac12 r_r c_r  \\
+- r_l c_l       & r_r c_r
+\end{bmatrix}
+&&\in \bbR^{2\tcross2}
+\\
+\jac{\bfb}{\bfc} &= \begin{bmatrix}
+\frac12 \psi_{l} r_l & \frac12 \psi_{r} r_r & 0\\
+-\psi_{l} r_l        & \psi_{r} r_r & -\frac{\delta\theta}{c_d}
+\end{bmatrix}
+&&\in \bbR^{2\tcross3}
+\end{align}
+\end{subequations}
+
+
+
+\subsubsection{Jacobians of the current delta}
+
+From \eqRef{equ:diff_drive_exact_inte},
+%
+\begin{align}\label{equ:diff_drive_exact_inte_jac}
+\jac{\delta_k}{\bfb} &= 
+\begin{bmatrix}
+\frac{\sin(\delta\theta)}{\delta\theta} 
+&
+R\big(\cos(\delta\theta)-\frac{\sin(\delta\theta)}{\delta\theta}\big)\\
+\frac{1-cos(\delta\theta)}{\delta\theta} 
+&
+R\big(\sin(\delta\theta)-\frac{1-\cos(\delta\theta)}{\delta\theta}\big)\\
+0 & 1
+\end{bmatrix}
+\in \bbR^{3\tcross2}
+\end{align}
+%
+Similarly, from \eqRef{equ:diff_drive_runge_kutta_inte},
+%
+\begin{align}\label{equ:diff_drive_runge_kutta_meas_jac}
+\jac{\delta_k}{\bfb} &=
+\begin{bmatrix}
+\cos(\delta\theta/2) &-\frac12\delta l\sin(\delta\theta/2)\\
+\sin(\delta\theta/2) &\phantom{-}\frac12\delta l\cos(\delta\theta/2)\\
+0 & 1
+\end{bmatrix}
+\in \bbR^{3\tcross2}
+\end{align}
+%
+\subsubsection{Jacobians of the delta composition}
+%
+From \eqRef{equ:diff_drive_composition}, % is in $SE(2)$
+%
+\begin{subequations}\label{equ:jac_composition_DD}
+\begin{align}
+\jac{\D_{ik}}{\D_{ij}} &= \begin{bmatrix}
+\bfI & \DR_{ij}\hatx{1}\delta\bfp_k \\
+\bf0 & 1
+\end{bmatrix}
+&&\in \bbR^{3\tcross3}
+\\
+\jac{\D_{ik}}{\delta_k} &= \begin{bmatrix}
+\DR_{ij} & \bf0 \\
+\bf0        & 1
+\end{bmatrix}
+&&\in \bbR^{3\tcross3}
+\end{align}
+\end{subequations}
+%
+with $\hatx{1}=\begin{bsmallmatrix}0 & -1 \\ 1 & 0
+\end{bsmallmatrix}$, see \appRef{sec:derivatives_SO2}.
+%
+%where $\DR_{ij}$ is the rotation matrix delta corresponding to the rotation angle of $\D_{ij}$
+%and $\delta \bfp_k$ is the translation vector delta corresponding to $\delta_k$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Integration of the delta covariance and the Jacobian}
+
+We follow the general procedure, obtaining $\bfQ_k$ from \eqRef{equ:Q_d}.
+Here, $\bfQ_s$ is a small noise diagonal covariance accounting for wheel slippage, and $\bfQ_n$ is defined by, 
+%
+\begin{align}
+\label{equ:diff_drive_meas_cov}
+\bfQ_n &=
+\begin{bmatrix}
+\sigma^2_{\psi_l}+\alpha^2 & 0\\
+0 & \sigma^2_{\psi_r}+\alpha^2
+\end{bmatrix}, \\
+\sigma_{\psi_l}^2&=k_l \delta\psi_l,~~\sigma_{\psi_r}^2=k_r \delta\psi_r,~~\alpha=\tfrac12(\mu_l+\mu_r)  \notag
+~,
+\end{align}
+%
+where $k_r$ and $k_l$ are constant parameters,
+and $\alpha$ acts as an offset equal to half the wheels encoders resolution $\mu_l$ and $\mu_r$
+\cite{siegwart2011introduction}.
+The pre-integrated delta covariance $\bfQ_{ik}$ is then integrated normally with \eqRef{equ:Q_D}, starting at $\bfQ_{ii}={\bf0}_{3\tcross3}$.
+
+For the Jacobian we use  \eqRef{equ:jac_integration}, starting at $\jac{\D_{ii}}{\bfc} = {\bf0}_{3\tcross 3}$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Residual}
+
+Following \algRef{alg:residual_lupton} with $\dminus$ for errors, we have
+%
+\begin{align}\label{equ:diff_drive_residual}
+\widehat\D_{ij} &= \begin{bmatrix}
+\bfR_{i}\tr(\bfp_j-\bfp_i) \\ \theta_j-\theta_i 
+\end{bmatrix} \\
+\D_{ij} &= \D_{ij} \oplus \jac{\D_{ij}}{\bfc}(\bfc_i-\ol\bfc_i) \\
+\bfr(\bfx_i,\bfx_j,\bfc_{i})
+&= \bfOmega_{ij}^{\top/2} \begin{bmatrix}
+\widehat{\Dp}_{ij}-\Dp_{ij} \\
+\widehat{\D\theta}_{ij} - \D\theta_{ij}
+\end{bmatrix}
+\in \bbR^3
+~,
+\end{align}
+%
+where the angle differences must be brought to $(-\pi,\pi\,]$.
+The information matrix is given by $\bfOmega_{ij}=\bfQ_{\D ij}\inv$.
+
+
+
