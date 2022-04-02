@@ -2,11 +2,12 @@
 * * *
 # 课程安排
 1. [Intro: A New Way to Start Linear Algebra](https://www.youtube.com/watch?v=YrHlHbtiSM0)
-1. [Part 1: The Column Space of a Matrix](https://www.youtube.com/watch?v=azzrfdysfI0&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=2&t=283s)
+1. [Part 1: The Column Space of a Matrix](https://www.youtube.com/watch?v=azzrfdysfI0&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=2)
 1. [Part 2: The Big Picture of Linear Algebra](https://www.youtube.com/watch?v=rwLOfdfc4dw&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=3)
 1. [Part 3: Orthogonal Vectors](https://www.youtube.com/watch?v=j8hEnyOiwhw&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=4)
 1. [Part 4: Eigenvalues and Eigenvectors](https://www.youtube.com/watch?v=GyC3gl6weYo&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=5)
 1. [Part 5: Singular Values and Singular Vectors](https://www.youtube.com/watch?v=IHO7_n7Y09s&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=6)
+1. [Part 6: Finding the Nullspace: Solving Ax = 0 by Elimination](https://www.youtube.com/watch?v=JFIaRtKNP2E&list=PLUl4u3cNGP61iQEFiWLE21EJCxwmWvvek&index=7)
 1. [课件原文](https://ocw.mit.edu/resources/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/videos/MITRES_18_010S20_LA_Slides.pdf)
 1. [中文资源](https://cloud.189.cn/t/BjyUnmb2IjYn)
 1. [课件中文](https://wws.lanzous.com/i4E0iget4ng)：翻译错误挺多的。经常把‘行’写成‘列’。
