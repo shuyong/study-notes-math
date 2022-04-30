@@ -147,8 +147,20 @@ literal "false"
 \end_layout
 
 \begin_layout Author
-Rajan Gill, Mark W.
- Mueller and Raffaello D’Andrea
+Rajan Gill
+\begin_inset Formula $^{*}$
+\end_inset
+
+, Mark W.
+ Mueller
+\begin_inset Formula $^{\dagger}$
+\end_inset
+
+ and Raffaello D'Andrea
+\begin_inset Formula $^{\ddagger}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Date
@@ -156,10 +168,10 @@ Rajan Gill, Mark W.
 \end_layout
 
 \begin_layout Abstract
-由于旋转流形的限制，包括姿态在内的状态Kalman滤波带来了挑战。标准方法之一是考虑一个偏差姿态，以简化的3元向量参数化的形式，到一些标称参考姿态，由卡尔曼滤波
-器跟踪。在对该偏差的统计信息进行更新之后，执行复位步骤来调整参考姿态。此复位步骤调整偏差的统计信息，这在文献中通常被忽略。本文提出了一种将偏差表示为旋转向量的算
-法。提出了复位操作后均值和协方差的调整，并用蒙特卡罗抽样进行了评估，并与文献中使用的其他方法进行了比较。最终的结果可能很容易实现，并且计算成本很低。与乘法扩展卡
-尔曼滤波(MEKF)、无迹四元数估计(USQUE)和李群卡尔曼滤波(LG-KF)进行了连接和比较，并以刚体为例进行了仿真。
+由于旋转流形的限制，包括姿态在内的状态Kalman滤波带来了挑战。标准方法之一是考虑一个偏差姿态，以简化的3元向量参数化的形式，由卡尔曼滤波器跟踪，再作用到一些
+标称参考姿态。在对该偏差的统计信息进行更新之后，执行重置步骤来调整参考姿态。此重置步骤调整偏差的统计信息，这在文献中通常被忽略。本文提出了一种将偏差表示为旋转向
+量的算法。提出了重置操作后均值和协方差的调整，并用蒙特卡罗抽样进行了评估，并与文献中使用的其他方法进行了比较。最终的结果可能很容易实现，并且计算成本很低。与乘性
+扩展卡尔曼滤波(MEKF)、无迹四元数估计(USQUE)和李群卡尔曼滤波(LG-KF)进行了连接和比较，并以刚体为例进行了仿真。
 \end_layout
 
 \begin_layout Section
@@ -167,23 +179,180 @@ Rajan Gill, Mark W.
 \end_layout
 
 \begin_layout Standard
-实时确定刚体的姿态是20世纪60年代太空竞赛期间研究的一个问题[1]，至今仍是一个研究课题[2–6]。由于其计算效率和鲁棒性，Kalman滤波器是许多应用的理想
-选择，并已被用于解决实时姿态估计问题。然而，如文献所示，应用卡尔曼滤波器估计姿态并不是一个简单的问题。这在很大程度上是由于缺乏一个向量空间结构的共同奇点自由姿态
-表示，如欧拉对称参数，今后称为单位四元数，或旋转矩阵。因此，在定义这样一个空间的概率描述时必须小心，更不用说应用Kalman滤波工具了。然而，许多工作[7–14
-]忽略了这一事实，直接应用卡尔曼滤波器来估计姿态的单位四元数参数化。其他人确实指出，这样做的实际后果是病态的，甚至是奇异协方差矩阵[15]。其他工作至少在使用特
-别解决方案的测量更新中规避了这个问题，即对已知产生次优估计的测量值进行预滤波[15–17]，或故意遵守奇异和高度非线性表示(即欧拉角)，以避免上述问题[18]。
+实时确定刚体的姿态是20世纪60年代太空竞赛期间研究的一个问题[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，至今仍是一个研究课题[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。由于其计算效率和鲁棒性，Kalman滤波器是许多应用的理想选择，并已被用于解决实时姿态估计问题。然而，如文献所示，应用卡尔曼滤波器估计姿态并不是一个简单的问
+题。这在很大程度上是由于缺乏一个向量空间结构的共同奇点自由姿态表示，如欧拉对称参数，今后称为单位四元数，或旋转矩阵。因此，在定义这样一个空间的概率描述时必须小心
+，更不用说应用Kalman滤波工具了。然而，许多工作[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]忽略了这一事实，直接应用卡尔曼滤波器来估计姿态的单位四元数参数化。其他人确实指出，这样做的实际后果是病态的，甚至是奇异协方差矩阵[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。其他工作至少在使用特别解决方案的测量更新中规避了这个问题，即对已知产生次优估计的测量值进行预滤波[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，或故意遵守奇异和高度非线性表示(即欧拉角)，以避免上述问题[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Standard
-文献[19]提出了一种范数约束Kalman滤波器，它直接应用于姿态的单位四元数参数化估计。这是通过确定最小均方误差(MMSE)来进行测量更新的，该最小均方误差产
-生Kalman更新增益，并通过Lagrange乘数受状态的范数约束。这将产生对协方差更新的加性校正，并导致额外的理论和计算复杂性[20]。
+文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]提出了一种范数约束Kalman滤波器，它直接应用于姿态的单位四元数参数化估计。这是通过确定最小均方误差(MMSE)来进行测量更新的，该最小均方误差产生Kalm
+an更新增益，并通过Lagrange乘数受状态的范数约束。这将产生对协方差更新的加性校正，并导致额外的理论和计算复杂性[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Standard
-另一种方法是考虑将摄动姿态的低维参数化为某个确定性参考姿态，该姿态将由卡尔曼滤波器跟踪；这种方法可归因于1969年的[21]。这一想法引发了大量的研究[2,
- 3, 22–56]，其中一些研究将这一总体想法扩展到了其他Bayesian推断方案，如粒子滤波。在文献中，这个架构通常被称为乘法(扩展)Kalman滤波器(M
-EKF)、间接Kalman滤波器、序贯Kalman滤波器和误差状态Kalman滤波器。在对该扰动状态的每次更新(通过过程模型和/或测量更新的预测)之后，执行所谓
-的复位步骤，其中调整后复位参考姿态，使得后复位扰动状态为零均值。该复位步骤确保参考姿态代表刚体的平均姿态(见第 
+另一种方法是考虑将扰动姿态的低维参数化为某个确定性参考姿态，该姿态将由卡尔曼滤波器跟踪；这种方法可归因于1969年的文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。这一想法引发了大量的研究[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，其中一些研究将这一总体想法扩展到了其他Bayesian推断方案，如粒子滤波。在文献中，这个架构通常被称为乘性(扩展) Kalman 滤波器(MEKF)、间接
+Kalman滤波器、序贯Kalman滤波器和误差状态Kalman滤波器。在对该扰动状态的每次更新(通过过程模型和/或测量更新的预测)之后，执行所谓的重置步骤，其
+中调整后重置参考姿态，使得后重置扰动状态为零均值。该重置步骤确保参考姿态代表刚体的平均姿态(见第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:2.2平均姿态"
@@ -193,16 +362,56 @@ noprefix "false"
 
 \end_inset
 
- 节；不清楚该解释以前是否在文献中被理解)，但更重要的是，确保扰动姿态状态保持“小”以便远离奇点，可做为旋转的无奇点的自由三元向量参数化的存在[23]。
+ 节；不清楚该解释以前是否在文献中被理解)，但更重要的是，确保扰动姿态状态保持“小”以便远离奇点，可做为旋转的无奇点的自由三元向量参数化的存在[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Standard
-已经注意到，关于复位步骤之后对统计数据的调整存在混淆[15, 20]。然而，当偏差姿态由Gibbs-Rodrigues向量
+已经注意到，关于重置步骤之后对统计数据的调整存在混淆[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。然而，当偏差姿态由Gibbs-Rodrigues向量
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-类似的调整在文献[34]中给出，但是有不同的平方根因子。
+类似的调整在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中给出，但是有不同的平方根因子。
 \end_layout
 
 \end_inset
@@ -211,13 +420,42 @@ status open
 \begin_inset Formula $2$
 \end_inset
 
-倍表示时，文献[15]确实给出了正确的调整。在文献[20]中，通过制定复位问题，提出了旋转向量精确调整的一阶近似，更正式地解决了挥之不去的困惑。类似的一阶变换可
-以在文献[57]中找到。
+倍表示时，文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]确实给出了正确的调整。在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中，通过制定重置问题，提出了旋转向量精确调整的一阶近似，更正式地解决了挥之不去的困惑。类似的一阶变换可以在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中找到。
 \end_layout
 
 \begin_layout Standard
 没有协方差调整(零阶)和一阶近似仍然可以在实践中工作，如文献所示，如果刚体相对于采样时间旋转得不太快，如果测量值与预测的测量值吻合，或者通过调整问题数据。然而，
-仍然会有精度上的损失。与先前的方法相比，使用本文使用全阶复位开发的算法的估计可以预期具有更高的质量(示例可以在第 
+仍然会有精度上的损失。与先前的方法相比，使用本文使用全阶重置开发的算法的估计可以预期具有更高的质量(示例可以在第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:5刚体示例"
@@ -251,7 +489,7 @@ noprefix "false"
 
 \end_inset
 
- 节中，讨论了一般的估计问题，给出了姿态复位问题的背景。文中还对刚体中常见的旋转运动学进行了详细的分析，并提出了相应的公式，该公式具有离散时间精确的特点。第
+ 节中，讨论了一般的估计问题，给出了姿态重置问题的背景。文中还对刚体中常见的旋转运动学进行了详细的分析，并提出了相应的公式，该公式具有离散时间精确的特点。第
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -262,8 +500,37 @@ noprefix "false"
 
 \end_inset
 
- 节介绍了全阶姿态复位方法，并与零阶和一阶方法进行了蒙特卡罗和奇异值比较。如果读者只想在MEKF[23]或USQUE[26]的测量更新上实现解决方案，或者在文献
-[20]的基础上升级EKF或UKF的姿态复位，他们可以跳到此节。在第 
+ 节介绍了全阶姿态重置方法，并与零阶和一阶方法进行了蒙特卡罗和奇异值比较。如果读者只想在MEKF[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]或USQUE[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的测量更新上实现解决方案，或者在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的基础上升级EKF或UKF的姿态重置，他们可以跳到此节。在第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:5刚体示例"
@@ -273,8 +540,17 @@ noprefix "false"
 
 \end_inset
 
- 节中，考虑了一个示例刚体，提出了各种EKFs和UKFs，并通过仿真将其与文献中的其他方法(例如MEKF、LG-UKF[4]和USQUE)进行了比较。特别是，在
-备注 
+ 节中，考虑了一个示例刚体，提出了各种EKFs和UKFs，并通过仿真将其与文献中的其他方法(例如MEKF、LG-UKF[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]和USQUE)进行了比较。特别是，在备注 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "remark4"
@@ -303,16 +579,26 @@ name "sec:2旋转"
 \end_layout
 
 \begin_layout Standard
-后面，旋转矩阵将用于表示姿态，以便于后续推导，但在实际实现中，将其替换为单位四元数对应项并不重要。无论哪种情况，只要扰动姿态表示为旋转向量，将要绘制的全阶姿态复
-位映射都保持不变。
+后面，旋转矩阵将用于表示姿态，以便于后续推导，但在实际实现中，将其替换为单位四元数对应项并不重要。无论哪种情况，只要扰动姿态表示为旋转向量，将要绘制的全阶姿态重
+置映射都保持不变。
 \end_layout
 
 \begin_layout Standard
 旋转集合用
-\begin_inset Formula $\mathcal{SO}(3)=\left\{ R\in\mathbb{R}^{3x3}\mid R^{\top}R=I_{3\times3},\mathrm{det}(R)=1\right\} $
+\begin_inset Formula $\mathcal{SO}(3)=\left\{ R\in\mathbb{R}^{3\times3}\mid R^{\top}R=I_{3\times3},\mathrm{det}(R)=1\right\} $
 \end_inset
 
-标志。注意这个集合在矩阵加法下不是封闭的，在矩阵积下也不是交换的。然而，它确实形成了一个由它们的矩阵积构成的旋转组合群[58]。
+标志。注意这个集合在矩阵加法下不是封闭的，在矩阵积下也不是交换的。然而，它确实形成了一个由它们的矩阵积构成的旋转组合群[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:58"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Standard
@@ -353,7 +639,7 @@ a_{3} & 0 & -a_{1}\\
 \end_inset
 
 是
-\begin_inset Formula $\mathbb{R}^{3x3}$
+\begin_inset Formula $\mathbb{R}^{3\times3}$
 \end_inset
 
 中包含的一组斜对称矩阵。类似地，将斜对称矩阵
@@ -372,7 +658,17 @@ a_{3} & 0 & -a_{1}\\
 \end_layout
 
 \begin_layout Standard
-斜对称矩阵集可以参数化任何旋转[59]，通过扩展，三元向量也可以参数化(因为斜对称矩阵和三元向量是同构的)。这是通过以下映射实现的
+斜对称矩阵集可以参数化任意旋转[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:59"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，通过扩展，三元向量也可以参数化(因为斜对称矩阵和三元向量是同构的)。这是通过以下映射实现的
 \begin_inset Formula 
 \begin{align}
 \exp:\mathfrak{so}(3) & \rightarrow\mathcal{SO}(3)\\{}
@@ -402,7 +698,7 @@ I_{3\times3}: & \text{ else }
 \log:\mathcal{SO}(3) & \rightarrow\{[a\times]\in\mathfrak{so}(3)\mid\|a\|<\pi\}\\
 R & \mapsto\sum_{k\geq1}\frac{(-1)^{k+1}}{k}\left(R-I_{3\times3}\right)^{k}=\begin{cases}
 \frac{\theta(R)}{2\sin(\theta(R))}\left(R-R^{\top}\right): & \theta(R)\neq0\\
-0_{3x3}: & \text{ else }
+0_{3\times3}: & \text{ else }
 \end{cases}
 \end{align}
 
@@ -420,11 +716,27 @@ R & \mapsto\sum_{k\geq1}\frac{(-1)^{k+1}}{k}\left(R-I_{3\times3}\right)^{k}=\beg
 \begin_inset Formula $\|a\|<\pi$
 \end_inset
 
-时有效，否则将发生回绕。
-\end_layout
+时有效，否则将发生回绕。如需更彻底的论述，请参见文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:58"
+plural "false"
+caps "false"
+noprefix "false"
 
-\begin_layout Standard
-如需更彻底的论述，请参见文献[58–61]。
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Standard
@@ -452,7 +764,17 @@ R:=R^{\mathrm{ref}}\exp([\delta\times])\label{eq:6}
 \begin_inset Formula $t$
 \end_inset
 
-的依赖性[60]：
+的依赖性[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]：
 \begin_inset Formula 
 \begin{align}
 \dot{\delta} & =\omega+\frac{1}{2}[\delta\times]\omega+\frac{2-\|\delta\|\cot(\|\delta\|/2)}{2\|\delta\|^{2}}[\delta\times]^{2}\omega\label{eq:7}\\
@@ -472,7 +794,7 @@ R:=R^{\mathrm{ref}}\exp([\delta\times])\label{eq:6}
 是物体在机体坐标系中的相对角速度，会产生奇异性，并且
 \begin_inset Formula 
 \begin{align}
-\Gamma & :\mathbb{R}^{3}\rightarrow\mathbb{R}^{3\times3}\\
+\Gamma:\mathbb{R}^{3} & \rightarrow\mathbb{R}^{3\times3}\\
 \delta & \mapsto\Gamma(\delta)=\begin{cases}
 I_{3\times3}-\frac{1-\cos(\|\delta\|)}{\|\delta\|^{2}}[\delta\times]+\frac{\|\delta\|-\sin(\|\delta\|)}{\|\delta\|^{3}}[\delta\times]^{2}: & \|\delta\|\neq0\\
 I_{3\times3}: & \text{ else }
@@ -509,7 +831,7 @@ noprefix "false"
 
 \end_inset
 
- 节中的姿态复位步骤。此外，对于
+ 节中的姿态重置步骤。此外，对于
 \begin_inset Formula $\|\delta\|\neq0$
 \end_inset
 
@@ -532,7 +854,17 @@ noprefix "false"
 status open
 
 \begin_layout Plain Layout
-这个等价的映射似乎是最近在文献[62]中发现的，使用了一个非常不同的推导。
+这个等价的映射似乎是最近在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:62"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中发现的，使用了一个非常不同的推导。
 \end_layout
 
 \end_inset
@@ -545,11 +877,7 @@ status open
 
 \end_inset
 
-如果已经计算了
-\begin_inset Formula $\exp([\delta\times])$
-\end_inset
-
-，与方程(
+其与方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:10"
@@ -559,7 +887,11 @@ noprefix "false"
 
 \end_inset
 
-)相比，这将减少计算量，如第 
+)相比，如果已经计算了
+\begin_inset Formula $\exp\left(\left[\delta\times\right]\right)$
+\end_inset
+
+，将减少计算量，如第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:5.2提议EKF"
@@ -609,7 +941,17 @@ name "subsec:2.2平均姿态"
 \end_layout
 
 \begin_layout Standard
-类似于文献[15]中的讨论，如果
+类似于文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中的讨论，如果
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -623,7 +965,7 @@ noprefix "false"
 
 \end_inset
 
-)中概率分布函数(PDF)为
+)中概率分布函数(Probability Distribution Function, PDF)为
 \begin_inset Formula $p_{\delta}(\cdot)$
 \end_inset
 
@@ -677,7 +1019,17 @@ noprefix "false"
 \begin_inset Formula $\mu_{z}\in\mathbb{R}^{n}$
 \end_inset
 
-被定义为满足文献[63]的值
+被定义为满足文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:63"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的值
 \begin_inset Formula 
 \begin{equation}
 0_{n\times1}=\underset{(z)}{\mathrm{E}}\left[z-\mu_{z}\right]=\int_{\mathbb{R}^{n}}\left(\bar{z}-\mu_{z}\right)p_{z}(\bar{z})\mathrm{d}\bar{z}
@@ -689,11 +1041,11 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-类似地，这里的平均姿态被定义为满足以下条件的
+类似地，这里的平均姿态被定义为
 \begin_inset Formula $\mu_{R}\in\mathcal{SO}(3)$
 \end_inset
 
-
+以满足
 \begin_inset Formula 
 \begin{equation}
 0_{3\times1}=\underset{(R)}{\mathrm{E}}\left[\left[\log\left(\mu_{R}^{\top}R\right)\right]^{\vee}\right]=\int_{\mathbb{R}^{3}}\left[\log\left(\mu_{R}^{\top}R^{\mathrm{ref}}\exp([x\times])\right)\right]^{\vee}p_{\delta}(x)\mathrm{d}x\label{eq:17}
@@ -701,15 +1053,25 @@ noprefix "false"
 
 \end_inset
 
-其中无意识统计学家的法则[64]被用来得到右手边。如果
-\begin_inset Formula $\delta$
+其中无意识统计学家的法则[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:64"
+plural "false"
+caps "false"
+noprefix "false"
+
 \end_inset
 
-是零均值，并且在它的所有随机变量的范数小于
+]被用来得到右手侧。如果在它的所有随机变量的范数小于
 \begin_inset Formula $\pi$
 \end_inset
 
-的意义上很小，那么
+的意义上，
+\begin_inset Formula $\delta$
+\end_inset
+
+是零均值并且很小，则
 \begin_inset Formula 
 \begin{equation}
 \int_{\mathbb{R}^{3}}\left[\log\left(\left(R^{\mathrm{ref}}\right)^{\top}R^{\mathrm{ref}}\exp([x\times])\right)\right]^{\vee}p_{\delta}(x)\mathrm{d}x=\int_{\mathbb{R}^{3}}xp_{\delta}(x)\mathrm{d}x=0_{3\times1}\label{eq:18}
@@ -725,15 +1087,15 @@ noprefix "false"
 \begin_inset Formula $R^{\mathrm{ref}}$
 \end_inset
 
-。这在一定程度上推动了姿态复位步骤，其中
+。这在一定程度上推动了姿态重置步骤，其中
 \begin_inset Formula $\delta$
 \end_inset
 
-的统计信息将以这样的方式传输，以便后复位，平均姿态用
+的统计信息将以这样的方式传播，以便后重置，平均姿态用
 \begin_inset Formula $R^{\mathrm{ref}}$
 \end_inset
 
-表示，后复位的扰动姿态在零均值意义上很小。例如，当
+表示，后重置的扰动姿态在零均值意义上很小。例如，当
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -741,7 +1103,17 @@ noprefix "false"
 \begin_inset Formula $\pi$
 \end_inset
 
-时，那么方程(18)只是一个近似值，尽管如果尾部很小，它是一个很好的近似值。
+时，那么尽管方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)只是一个近似值，如果尾部很小，它是一个很好的近似值。
 \end_layout
 
 \begin_layout Section
@@ -851,8 +1223,27 @@ noprefix "false"
 \end_inset
 
 的统计量是方便的，特别是对于诸如EKF或UKF之类假定Euclidean状态的计算高效的Bayesian跟踪方案。但这并不排除旋转向量，例如Gibbs-Rodr
-igues向量可以如文献[23]所述使用。Gibbs-Rodrigues向量在编码大的不确定性方面也可能更好[15]。然而，使用旋转向量可能更直观，具有很好的特
-性，即
+igues向量可以如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]所述使用。Gibbs-Rodrigues向量在编码大的不确定性方面也可能更好[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。然而，使用旋转向量可能更直观，具有很好的特性，即
 \begin_inset Formula $\|\delta\|$
 \end_inset
 
@@ -860,7 +1251,17 @@ igues向量可以如文献[23]所述使用。Gibbs-Rodrigues向量在编码大�
 \end_layout
 
 \begin_layout Itemize
-过程模型方程(19)通常涉及连续时间运动学方程(
+过程模型方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)通常涉及连续时间运动学方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:14"
@@ -874,7 +1275,17 @@ noprefix "false"
 \begin_inset Formula $R[k]\in\mathcal{SO}(3)$
 \end_inset
 
-的约束，必须执行投影[65]，这增加了复杂性(尽管在单位四元数的情况下较小)。当积分方程(
+的约束，必须执行投影[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:65"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，这增加了复杂性(尽管在单位四元数的情况下较小)。当积分方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:8"
@@ -884,7 +1295,17 @@ noprefix "false"
 
 \end_inset
 
-)时，这不再是一个问题，这可以通过使用旋转向量合成规则[60]通过以下方式来完成，以避免方程(
+)时，这不再是一个问题，这可以通过使用旋转向量合成规则[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:60"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]通过以下方式来完成，以避免方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:8"
@@ -966,7 +1387,27 @@ noprefix "false"
 
 \end_inset
 
-)，则使用旋转向量来描述传播方程可能更自然(参见例如文献[66, 67]，可以扩展到3D)。
+)，则使用旋转向量来描述传播方程可能更自然(参见例如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:66"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，可以扩展到3D)。
 \end_layout
 
 \begin_layout Standard
@@ -1011,11 +1452,11 @@ x[k+1]=f_{k}\left(x[k],\eta^{\mathrm{proc}}[k]\right)\label{eq:23}
 
 \end_inset
 
-当
-\begin_inset Formula $x[k]:=(\xi[k],\delta[k])\in\mathbb{R}^{n}$
+其中
+\begin_inset Formula $x\left[k\right]:=\left(\xi\left[k\right],\delta\left[k\right]\right)\in\mathbb{R}^{n}$
 \end_inset
 
-为新的系统状态时，
+为新的系统状态，并且
 \begin_inset Formula $R_{k}^{\text{ref }}$
 \end_inset
 
@@ -1039,7 +1480,7 @@ y[k]=h_{k}\left(x[k],\eta^{\text{meas}}[k]\right)\label{eq:24}
 \begin_inset Formula $R_{k}^{\text{ref }}$
 \end_inset
 
-被吸收到函数
+再次被吸收到函数
 \begin_inset Formula $h_{k}(\cdot,\cdot)$
 \end_inset
 
@@ -1047,7 +1488,7 @@ y[k]=h_{k}\left(x[k],\eta^{\text{meas}}[k]\right)\label{eq:24}
 \end_layout
 
 \begin_layout Standard
-现在，任何贝叶斯推断方案都可以使用模型方程(
+现在，任意Bayesian推断方案都可以使用模型方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:23"
@@ -1080,11 +1521,60 @@ status open
 \begin_inset Formula $\mathcal{SO}(3)$
 \end_inset
 
-，而不是使用局部参数化方程(6)。然而，使用这种局部参数化和采用姿态复位的好处是通过
+，而不是使用局部参数化方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。然而，使用这种局部参数化和采用姿态重置的好处是通过
 \begin_inset Formula $R_{k}^{\text{ref }}$
 \end_inset
 
-获得(近似)平均姿态，可立即使用方程(30)，并将变换方程(31)应用于每个粒子。此外，本文中的方法可用于混合Kalman粒子滤波方案，参见例如文献[68–72
+获得(近似)平均姿态，可立即使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并将变换方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)应用于每个粒子。此外，本文中的方法可用于混合Kalman粒子滤波方案，参见例如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:72"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
 ]。
 \end_layout
 
@@ -1163,7 +1653,7 @@ end{remark}
 \end_layout
 
 \begin_layout Standard
-接下来，介绍姿态复位的概念。在
+接下来，介绍姿态重置的概念。在
 \begin_inset Formula $\delta[k]$
 \end_inset
 
@@ -1207,7 +1697,7 @@ R[k]=R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])=:R_{k}^{\mathrm{ref},\text{ pos
 \begin_inset Formula $\delta^{\text{post }}[k]$
 \end_inset
 
-为零均值。此后，后复位的变量
+为零均值。此后，后重置的变量
 \begin_inset Formula $R_{k}^{\mathrm{ref},\text{ post }}$
 \end_inset
 
@@ -1215,7 +1705,7 @@ R[k]=R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])=:R_{k}^{\mathrm{ref},\text{ pos
 \begin_inset Formula $\delta^{\text{post }}[k]$
 \end_inset
 
-取代前复位的变量
+取代前重置的变量
 \begin_inset Formula $R_{k}^{\mathrm{ref}}$
 \end_inset
 
@@ -1223,7 +1713,7 @@ R[k]=R_{k}^{\mathrm{ref}}\exp([\delta[k]\times])=:R_{k}^{\mathrm{ref},\text{ pos
 \begin_inset Formula $δ[k]$
 \end_inset
 
-，Bayesian跟踪方案继续进行。执行这种姿态复位的原因如下：
+，Bayesian跟踪方案继续进行。执行这种姿态重置的原因如下：
 \end_layout
 
 \begin_layout Itemize
@@ -1251,7 +1741,7 @@ noprefix "false"
 
 \end_inset
 
- 所述，对于非零平均
+ 所述，对于非零均值
 \begin_inset Formula $\delta[k]$
 \end_inset
 
@@ -1283,7 +1773,27 @@ noprefix "false"
 
 \end_inset
 
- )。因此，对于像EKF或UKF这样的算法来说，最大限度地减小非线性，以便尽可能精确地跟踪统计数据，这是最有意义的文献[68, 73]。
+ )。因此，对于像EKF或UKF这样的算法来说，最大限度地减小非线性，以便尽可能精确地跟踪统计数据，这是最有意义的文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。
 \end_layout
 
 \begin_layout Itemize
@@ -1297,7 +1807,7 @@ noprefix "false"
 
 \end_inset
 
-)的数值积分执行传播，则必须执行复位步骤，以避免
+)的数值积分执行传播，则必须执行重置步骤，以避免
 \begin_inset Formula $\delta[k]$
 \end_inset
 
@@ -1309,7 +1819,7 @@ noprefix "false"
 \begin_inset Formula $\delta[k]$
 \end_inset
 
-为零平均值，则根据第 
+为零均值，则根据第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:2.2平均姿态"
@@ -1337,7 +1847,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在任何情况下，滤波器设计者可以选择在任何时候执行姿态复位。然而，对于上面使用运动学进行预测的前两点，作者建议在每个预测和测量更新步骤之后执行姿态复位，如第
+在任意情况下，滤波器设计者可以选择在任意时候执行姿态重置。然而，对于上面使用运动学进行预测的前两点，作者建议在每个预测和测量更新步骤之后执行姿态重置，如第
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1352,7 +1862,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-如文献[20]中所述，如何执行方程(
+如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中所述，如何执行方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:27"
@@ -1384,7 +1904,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Section
-姿态复位问题及解决方案
+姿态重置问题及解决方案
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:4姿态复位问题及解决方案"
@@ -1433,8 +1953,8 @@ name "problem1"
 ，使得以下为真：
 \begin_inset Formula 
 \begin{align}
-R^{\mathrm{ref}}\exp([\delta\times]) & =R^{\mathrm{ref},\text{ post }}\exp\left(\left[\delta^{\mathrm{post}}\times\right]\right)\label{eq:28}\\
-\underset{\left(\delta^{\text{post }}\right)}{\mathrm{E}}\left[\delta^{\mathrm{post}}\right] & =0_{3\times1}\label{eq:29}
+R^{\mathrm{ref}}\exp([\delta\times]) & =R^{\mathrm{ref},\mathrm{post}}\exp\left(\left[\delta^{\mathrm{post}}\times\right]\right)\label{eq:28}\\
+\underset{\left(\delta^{\mathrm{post}}\right)}{\mathrm{E}}\left[\delta^{\mathrm{post}}\right] & =0_{3\times1}\label{eq:29}
 \end{align}
 
 \end_inset
@@ -1467,22 +1987,42 @@ noprefix "false"
 \end_inset
 
  在
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中一阶的解，即假设
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
-很小，但在前复位
+很小，但在前重置
 \begin_inset Formula $\delta$
 \end_inset
 
 中为全阶。这是一个合理的假设，因为问题的一部分要求是
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
-的均值为零，这是一个“小”的概念。注意，相关工作[20]和间接的工作[57]给出了问题 
+的均值为零，这是一个“小”的概念。注意，相关工作[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]和间接的工作[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]给出了问题 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "problem1"
@@ -1492,7 +2032,7 @@ noprefix "false"
 
 \end_inset
 
- 的近似解，另外假设前复位向量
+ 的近似解，另外假设前重置向量
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -1520,7 +2060,7 @@ name "theorem1"
 \end_inset
 
 对于
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中的一阶，问题 
@@ -1536,8 +2076,8 @@ noprefix "false"
  的解是
 \begin_inset Formula 
 \begin{align}
-R^{\text{ref,post }} & =R^{\text{ref }}\exp([\mu\times])\label{eq:30}\\
-\delta^{\text{post }} & =\Gamma(\mu)(\delta-\mu)\label{eq:31}
+R^{\mathrm{ref},\mathrm{post}} & =R^{\mathrm{ref}}\exp([\mu\times])\label{eq:30}\\
+\delta^{\mathrm{post}} & =\Gamma(\mu)(\delta-\mu)\label{eq:31}
 \end{align}
 
 \end_inset
@@ -1650,13 +2190,13 @@ noprefix "false"
 \end_inset
 
  节中提到的状态
-\begin_inset Formula $x[k]$
+\begin_inset Formula $x\left[k\right]$
 \end_inset
 
-被EKF或UKF跟踪，则后复位协方差由下式给出
+被EKF或UKF跟踪，则后重置协方差由下式给出
 \begin_inset Formula 
 \begin{equation}
-\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)\right)\underset{(x[k])}{\mathrm{Var}}[x[k]]\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)^{\top}\right)\label{eq:32}
+\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)\right)\underset{\left(x\left[k\right]\right)}{\mathrm{Var}}\left[x\left[k\right]\right]\,\mathrm{diag}\left(I_{(n-3)\times(n-3)},\Gamma(\mu)^{\top}\right)\label{eq:32}
 \end{equation}
 
 \end_inset
@@ -1692,19 +2232,19 @@ noprefix "false"
 
 \end_inset
 
-)只适用于前复位
+)只适用于前重置
 \begin_inset Formula $\delta$
 \end_inset
 
 (和
-\begin_inset Formula $\delta^{\text{post}}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
-)中的一阶。事实证明，前复位
+)中的一阶。事实证明，前重置
 \begin_inset Formula $\delta$
 \end_inset
 
-中的全阶也是如此。以往忽略调整后复位协方差的工作可视为将
+中的全阶也是如此。以往忽略调整后重置协方差的工作可视为将
 \begin_inset Formula $\Gamma(\mu)$
 \end_inset
 
@@ -1720,7 +2260,27 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-类似地，文献[57]，[20]的工作提出的一阶解
+类似地，根据文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的工作，文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]提出了一阶解
 \begin_inset Formula 
 \begin{align}
 \Gamma_{1}(\mu) & :=I_{3\times3}-[\mu\times]/2\approx\Gamma(\mu)\label{eq:34}\\
@@ -1741,7 +2301,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-所提出的复位方程(
+所提出的重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:30"
@@ -1765,7 +2325,7 @@ noprefix "false"
 \begin_inset Formula $_{\mathrm{MC}}(\cdot)$
 \end_inset
 
-将用于表示蒙特卡罗特定变量。前复位
+将用于表示蒙特卡罗特定变量。前重置
 \begin_inset Formula $_{\mathrm{MC}}\delta$
 \end_inset
 
@@ -1773,8 +2333,8 @@ noprefix "false"
 \begin_inset Formula $l,c\in\mathbb{R}^{3}$
 \end_inset
 
-参数化的概率分布中选取的。后复位
-\begin_inset Formula $_{\mathrm{MC}}\delta^{\text{post }}$
+参数化的概率分布中选取的。后重置
+\begin_inset Formula $_{\mathrm{MC}}\delta^{\mathrm{post}}$
 \end_inset
 
 可按方程(
@@ -1800,7 +2360,7 @@ noprefix "false"
 )计算：
 \begin_inset Formula 
 \begin{equation}
-_{\mathrm{MC}}\delta^{\text{post }}:=\left[\log\left(\exp\left(\left[-_{\mathrm{MC}}\mu(l,c)\times\right]\right)\exp\left(\left[_{\mathrm{MC}}\delta\times\right]\right)\right)\right]^{\vee}\label{eq:36}
+_{\mathrm{MC}}\delta^{\mathrm{post}}:=\left[\log\left(\exp\left(\left[-_{\mathrm{MC}}\mu(l,c)\times\right]\right)\exp\left(\left[_{\mathrm{MC}}\delta\times\right]\right)\right)\right]^{\vee}\label{eq:36}
 \end{equation}
 
 \end_inset
@@ -1822,7 +2382,7 @@ _{\mathrm{MC}}\mu(l,c):=\underset{\left(_{\mathrm{MC}}\delta|l,c\right)}{\mathrm
 \end_inset
 
 算子的使用，
-\begin_inset Formula $_{\mathrm{MC}}\delta^{\text{post }}$
+\begin_inset Formula $_{\mathrm{MC}}\delta^{\mathrm{post}}$
 \end_inset
 
 的所有变量的范数都小于
@@ -1839,7 +2399,7 @@ noprefix "false"
 
 \end_inset
 
-)计算后复位样本均值和方差，以查看其符合方程(
+)计算后重置样本均值和方差，以查看其符合方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:29"
@@ -1871,7 +2431,7 @@ noprefix "false"
 \begin_inset Formula $_{\mathrm{MC}}\delta$
 \end_inset
 
-的各种概率分布重复该过程，由此构造后复位均值和方差的误差分布。
+的各种概率分布重复该过程，由此构造后重置均值和方差的误差分布。
 \end_layout
 
 \begin_layout Subsubsection
@@ -1894,7 +2454,7 @@ noprefix "false"
 的PDF给出为
 \begin_inset Formula 
 \begin{equation}
-p_{\mathrm{M}}\delta_{i}|l_{i},c_{i}(x):=U\left(x,c_{i}-l_{i}/2,c_{i}+l_{i}/2\right)
+p_{\mathrm{MC}}\delta_{i}|l_{i},c_{i}(x):=U\left(x,c_{i}-l_{i}/2,c_{i}+l_{i}/2\right)
 \end{equation}
 
 \end_inset
@@ -1944,19 +2504,19 @@ noprefix "false"
 
 \end_inset
 
-)给出的映射，计算后复位的样本均值
-\begin_inset Formula $_{\mathrm{MC}}\delta_{\text{s,mean}}^{\text{post }}(l,c)$
+)给出的映射，计算后重置的样本均值
+\begin_inset Formula $_{\mathrm{MC}}\delta_{\mathrm{s,mean}}^{\mathrm{post}}(l,c)$
 \end_inset
 
 和样本协方差
-\begin_inset Formula $_{\mathrm{MC}}\delta_{\text{s,cov}}^{\text{post }}(l,c)$
+\begin_inset Formula $_{\mathrm{MC}}\delta_{\mathrm{s,cov}}^{\mathrm{post}}(l,c)$
 \end_inset
 
 ，得出以下绝对误差度量
 \begin_inset Formula 
 \begin{align}
-\epsilon_{\text{mean}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\text{s,mean}}^{\text{post }}(l,c)\right\Vert \label{eq:40}\\
-\epsilon_{\text{cov}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\text{s,cov}}^{\text{post }}(l,c)-\Gamma\left(_{\mathrm{MC}}\mu(l,c)\underset{_{\left(_{\mathrm{MC}}\delta|l,c\right)}}{\mathrm{Var}}\left[_{\mathrm{MC}}\delta\right]\Gamma\left(_{\mathrm{MC}}\mu(l,c)\right)^{\top}\right)\right\Vert _{F}\label{eq:41}
+\epsilon_{\mathrm{mean}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\mathrm{s,mean}}^{\mathrm{post}}(l,c)\right\Vert \label{eq:40}\\
+\epsilon_{\mathrm{cov}}(l,c) & :=\left\Vert _{\mathrm{MC}}\delta_{\mathrm{s,cov}}^{\mathrm{post}}(l,c)-\Gamma\left(_{\mathrm{MC}}\mu(l,c)\underset{_{\left(_{\mathrm{MC}}\delta|l,c\right)}}{\mathrm{Var}}\left[_{\mathrm{MC}}\delta\right]\Gamma\left(_{\mathrm{MC}}\mu(l,c)\right)^{\top}\right)\right\Vert _{F}\label{eq:41}
 \end{align}
 
 \end_inset
@@ -1982,11 +2542,11 @@ noprefix "false"
 \end_inset
 
 来创建平均误差均值
-\begin_inset Formula $\epsilon_{\text{mean}}(l,c)$
+\begin_inset Formula $\epsilon_{\mathrm{mean}}(l,c)$
 \end_inset
 
 和协方差误差
-\begin_inset Formula $\epsilon_{\text{cov}}(l,c)$
+\begin_inset Formula $\epsilon_{\mathrm{cov}}(l,c)$
 \end_inset
 
 的集合样本，如下所示：
@@ -2067,14 +2627,14 @@ noprefix "false"
 \end_inset
 
 个
-\begin_inset Formula $\epsilon_{\text{mean}}(l,c)$
+\begin_inset Formula $\epsilon_{\mathrm{mean}}(l,c)$
 \end_inset
 
 ， 
-\begin_inset Formula $\epsilon_{\text{cov}}(l,c)$
+\begin_inset Formula $\epsilon_{\mathrm{cov}}(l,c)$
 \end_inset
 
-的值。还将协方差误差与复位映射
+的值。还将协方差误差与重置映射
 \begin_inset Formula $\Gamma(\cdot)$
 \end_inset
 
@@ -2088,11 +2648,11 @@ noprefix "false"
 
 \end_inset
 
-)在前复位变量中是精确的，所以无论前复位平均值
+)在前重置变量中是精确的，所以无论前重置均值
 \begin_inset Formula $r$
 \end_inset
 
-的大小，后复位平均值误差都非常小。例如，当
+的大小，还是后重置均值误差都非常小。例如，当
 \begin_inset Formula $r=0.1$
 \end_inset
 
@@ -2104,7 +2664,11 @@ noprefix "false"
 \begin_inset Formula $10\,\text{rad}$
 \end_inset
 
-时，95%的样本的平均误差分别小于
+时，
+\begin_inset Formula $95\%$
+\end_inset
+
+的样本的平均误差分别小于
 \begin_inset Formula $0.0011$
 \end_inset
 
@@ -2151,7 +2715,7 @@ name "fig:1"
 \begin_inset Formula $r$
 \end_inset
 
-值，即平均前复位旋转向量的范数。顶行显示根据每个方程(
+值，即平均前重置旋转向量的范数。顶行显示根据每个方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:40"
@@ -2211,7 +2775,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-全阶映射的协方差误差始终很小，并且明显优于零阶和一阶映射，尤其是在较大的前复位平均值情况下。例如，在
+全阶映射的协方差误差始终很小，并且明显优于零阶和一阶映射，尤其是在较大的前重置均值情况下。例如，在
 \begin_inset Formula $95\%$
 \end_inset
 
@@ -2261,7 +2825,7 @@ name "tab:1"
 \begin_inset Formula 
 \[
 \begin{array}{lcll}
-\hline\hline  & \multicolumn{3}{c}{r,\mathrm{rad}}\\
+\hline\hline  & \multicolumn{3}{c}{r\left[\mathrm{rad}\right]}\\
 \cline{2-4} & 0.1 & 1.0 & 10\\
 \hline \Gamma_{0}(\cdot) & 0.0044 & 0.042 & 0.085\\
 \Gamma_{1}(\cdot) & 0.00034 & 0.028 & 2.1\\
@@ -2341,11 +2905,21 @@ E_{\exp}(\mu) & :=\Gamma(\mu)-\Gamma_{\exp}(\mu)\\
 \begin_inset Formula $\mu\neq0$
 \end_inset
 
-时，全阶复位矩阵
+时，全阶重置矩阵
 \begin_inset Formula $\Gamma(\mu)$
 \end_inset
 
-与文献中使用的相应近似之间的差。一个合理的标量度量是谱范数(或最大奇异值)，由文献[74]给出
+与文献中使用的相应近似之间的差。一个合理的标量度量是谱范数(或最大奇异值)，由文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]给出
 \begin_inset Formula 
 \begin{equation}
 \epsilon_{i}(\mu):=\left\Vert E_{i}(\mu)\right\Vert :=\max_{\|x\|=1}\left\Vert E_{i}(\mu)x\right\Vert =\sqrt{\lambda_{\max}\left(E_{i}(\mu)^{\top}E_{i}(\mu)\right)},\quad i\in\{0,1,\exp\}\label{eq:52}
@@ -2623,7 +3197,7 @@ name "fig:2"
 
 \end_inset
 
-全阶姿态复位矩阵
+全阶姿态重置矩阵
 \begin_inset Formula $\Gamma(\mu)$
 \end_inset
 
@@ -2655,7 +3229,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-粗略地说，对于前复位平均值不大的Kalman滤波应用，即在预测步骤中，采样时间足够小或者运动本身很慢，并且在测量更新中由于测量而引起的校正很小，一阶映射
+粗略地说，对于前重置均值不大的Kalman滤波应用，即在预测步骤中，采样时间足够小或者运动本身很慢，并且在测量更新中由于测量而引起的校正很小，一阶映射
 \begin_inset Formula $\Gamma_{1}(\cdot)$
 \end_inset
 
@@ -2673,11 +3247,11 @@ noprefix "false"
 \begin_inset Formula $\Gamma(\cdot)$
 \end_inset
 
-，其已经具有很小的复杂性(并且与
+，其已经是很小的复杂性(并且与
 \begin_inset Formula $\Gamma_{\exp}(\cdot)$
 \end_inset
 
-相同的复杂性)，以提高精度。对于已经在姿态复位中使用零阶或一阶映射方程(
+为相同的复杂性)，以提高精度。对于已经在姿态重置中使用零阶或一阶映射方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:33"
@@ -2701,7 +3275,7 @@ noprefix "false"
 \begin_inset Formula $\Gamma(\cdot)$
 \end_inset
 
-进行简单的替换产生到全阶姿态复位的升级。
+进行简单的替换产生到全阶姿态重置的升级。
 \end_layout
 
 \begin_layout Standard
@@ -2724,8 +3298,18 @@ name "remark3"
 
 \end_inset
 
-虽然EKF分别将平均值和协方差传播近似为一阶和三阶[73]，但低阶姿态复位(独立地)会增加额外的误差源。例如，测量更新仍可能导致估计状态的大幅跳变，因此全阶协方
-差复位将有助于减轻总体统计跟踪误差；示例见第 
+虽然EKF分别将均值和协方差传播近似为一阶和三阶[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，但低阶姿态重置(独立地)会增加额外的误差源。例如，测量更新仍可能导致估计状态的大幅跳变，因此全阶协方差重置将有助于减轻总体统计跟踪误差；示例见第
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:5刚体示例"
@@ -2746,10 +3330,10 @@ noprefix "false"
 \end_inset
 
  中看到，其中对于
-\begin_inset Formula $1\,\text{rad}$
+\begin_inset Formula $1\,\mathrm{rad}$
 \end_inset
 
-的前复位平均值，
+的前重置均值，
 \begin_inset Formula $\Gamma_{1}(\cdot)$
 \end_inset
 
@@ -2836,15 +3420,25 @@ name "eq:60"
 \end_inset
 
 为速度，
-\begin_inset Formula $R(t)\in\mathcal{SO}(3),a(t):=(1|\cos(t)|,10|\sin(t)|,100|\cos(t)|)\mathrm{m}/\mathrm{s}^{2}$
+\begin_inset Formula $R(t)\in\mathcal{SO}(3),a(t):=(1|\cos(t)|,10|\sin(t)|,100|\cos(t)|)\,\mathrm{m}/\mathrm{s}^{2}$
 \end_inset
 
 为机体坐标系加速度向量，
-\begin_inset Formula $\omega(t):=(10|\sin(t)|,1|\cos(t)|,0.1|\sin(t)|)\mathrm{rad}/\mathrm{s}$
+\begin_inset Formula $\omega(t):=(10|\sin(t)|,1|\cos(t)|,0.1|\sin(t)|)\,\mathrm{rad}/\mathrm{s}$
 \end_inset
 
-为机体坐标系角速度。采用“嵌入式Runge-Kutta Prince-Dormand”方法对系统进行了数值模拟[75]。初始条件设为
-\begin_inset Formula $p(0):=(100,100,100)\mathrm{m},v(0):=(10,10,10)\mathrm{m}/\mathrm{s}$
+为机体坐标系角速度。采用``embedded Runge-Kutta Prince-Dormand''方法对系统进行了数值模拟[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:75"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。初始条件设为
+\begin_inset Formula $p(0):=(100,100,100)\mathrm{m},v(0):=(10,10,10)\,\mathrm{m}/\mathrm{s}$
 \end_inset
 
 ，并且
@@ -2863,7 +3457,7 @@ name "eq:60"
 \begin_inset Formula $\omega(t)$
 \end_inset
 
-但被零平均白噪声破坏的陀螺仪传感器，每个轴的方差为
+但被零均值白噪声破坏的陀螺仪传感器，每个轴的方差为
 \begin_inset Formula $0.01~\mathrm{rad}^{2}/\mathrm{s}^{2}$
 \end_inset
 
@@ -2875,7 +3469,7 @@ name "eq:60"
 \begin_inset Formula $10\mathrm{~Hz}$
 \end_inset
 
-的位置读数，并且还受到零平均白噪声的破坏，每个轴的方差为
+的位置读数，并且还受到零均值白噪声的破坏，每个轴的方差为
 \begin_inset Formula $100\mathrm{~m}^{2}$
 \end_inset
 
@@ -2912,7 +3506,17 @@ noprefix "false"
 
 \end_inset
 
-)进行离散化。离散化模型使用简单欧拉积分和精确旋转传播方程(22)的组合：
+)进行离散化。离散化模型使用简单欧拉积分和精确旋转传播方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的组合：
 \begin_inset Formula 
 \begin{equation}
 \underbrace{\left[\begin{array}{l}
@@ -2929,7 +3533,7 @@ f_{\mathrm{rv}}\left(\delta[k],\left(\omega[k]+\eta_{\omega}[k]\right)\Delta t\r
 \end_inset
 
 其中
-\begin_inset Formula $\mathrm{Var}\left[\eta_{\omega}[k]\right]=0.01I_{3\times3}$
+\begin_inset Formula $\mathrm{Var}\left[\eta_{\omega}[k]\right]=0.01\,I_{3\times3}$
 \end_inset
 
 ，并且
@@ -2940,7 +3544,17 @@ f_{\mathrm{rv}}\left(\delta[k],\left(\omega[k]+\eta_{\omega}[k]\right)\Delta t\r
 \begin_inset Formula $k$
 \end_inset
 
-处测得的确定性机体坐标系加速度。现在应用标准EKF方程[73]，我们得到了平均预测步长：
+处测得的确定性机体坐标系加速度。现在应用标准EKF方程[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，我们得到了平均预测步长：
 \begin_inset Flex Subequations
 status open
 
@@ -2954,9 +3568,9 @@ name "eq:62"
 
 \begin_inset Formula 
 \begin{align}
-\hat{p}_{k+1\mid k} & =\hat{p}_{k\mid k}+\hat{v}_{k||k}\Delta t+R_{k}^{\text{ref }}a_{k}\Delta t^{2}/2\label{eq:62a}\\
-\hat{v}_{k+1\mid k} & =\hat{v}_{k\mid k}+R_{k}^{\text{ef }}a_{k}\Delta\tau\label{eq:62b}\\
-\hat{\delta}_{k+1\mid k} & =f_{rv}\left(\hat{\delta}_{k\mid k},\bar{\omega}_{k}^{\text{meas }}\Delta t\right)=\overline{\omega_{k}^{\text{meas }}}\Delta t\label{eq:62c}
+\hat{p}_{k+1\mid k} & =\hat{p}_{k\mid k}+\hat{v}_{k||k}\Delta t+R_{k}^{\mathrm{ref}}a_{k}\Delta t^{2}/2\label{eq:62a}\\
+\hat{v}_{k+1\mid k} & =\hat{v}_{k\mid k}+R_{k}^{\mathrm{ref}}a_{k}\Delta\tau\label{eq:62b}\\
+\hat{\delta}_{k+1\mid k} & =f_{\mathrm{rv}}\left(\hat{\delta}_{k\mid k},\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)=\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\label{eq:62c}
 \end{align}
 
 \end_inset
@@ -2967,10 +3581,14 @@ name "eq:62"
 \end_inset
 
 其中，
-\begin_inset Formula $\overline{\omega_{k}^{\text{meas }}}$
+\begin_inset Formula $\overline{\omega_{k}^{\mathrm{meas}}}$
 \end_inset
 
-是随机测量的实现(注意，如果没有关于角速度的先验知识，则给出先验平均值)，在方程(
+是随机测量的实现(注意，如果没有关于角速度的先验知识，则给出
+\series bold
+先验
+\series default
+均值)，在方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:62c"
@@ -2984,7 +3602,7 @@ noprefix "false"
 \begin_inset Formula $\hat{\delta}_{k\mid k}=0$
 \end_inset
 
-，即刚在手之前进行了姿态复位。协方差传播由下式给出
+，即刚在手之前进行了姿态重置。协方差传播由下式给出
 \begin_inset Flex Subequations
 status open
 
@@ -3000,9 +3618,9 @@ name "eq:63"
 \begin{align}
 \hat{P}_{k+1\mid k} & =A_{k}\hat{P}_{k\mid k}A_{k}^{\top}+Q\label{eq:63a}\\
 A_{k} & =\left[\begin{array}{l|c|c}
-I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\right]\Delta t^{2}/2\\
-\hline 0_{3\times3} & I_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\right]\Delta t\\
-\hline 0_{3\times3} & 0_{3\times3} & \Gamma\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\text{meas }}}\Delta t\times\right]\right)
+I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t^{2}/2\\
+\hline 0_{3\times3} & I_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t\\
+\hline 0_{3\times3} & 0_{3\times3} & \Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)
 \end{array}\right]\label{eq:63b}
 \end{align}
 
@@ -3021,7 +3639,11 @@ I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\righ
 \begin_inset Formula $x[k+1]$
 \end_inset
 
-的先验协方差的估计，其中
+的
+\series bold
+先验
+\series default
+协方差的估计，其中
 \begin_inset Formula $\hat{P}_{0\mid0}:=\mathrm{diag}\left(I_{6\times6},0.1I_{3\times3}\right)$
 \end_inset
 
@@ -3029,7 +3651,7 @@ I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\text{ref }}\left[a_{k}\times\righ
 \begin_inset Formula $Q=\mathrm{diag}\left(0_{6\times6},0.01\Delta t^{2}I_{3\times3}\right)$
 \end_inset
 
-。接下来，按如下方式应用姿态复位：
+。接下来，按如下方式应用姿态重置：
 \begin_inset Flex Subequations
 status open
 
@@ -3044,7 +3666,7 @@ name "eq:64"
 \begin_inset Formula 
 \begin{align}
 R_{k+1}^{\mathrm{ref}} & =R_{k}^{\mathrm{ref}}\exp\left(\left[\hat{\delta}_{k+1\mid k}\times\right]\right)\label{eq:64a}\\
-\hat{P}_{k+1\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)\right)\hat{P}_{k+1\mid k}\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)^{\top}\right)\label{eq:64b}\\
+\hat{P}_{k+1\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)\right)\hat{P}_{k+1\mid k}\,\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k+1\mid k}\right)^{\top}\right)\label{eq:64b}\\
 \hat{\delta}_{k+1\mid k} & \leftarrow0\label{eq:64c}
 \end{align}
 
@@ -3078,7 +3700,7 @@ name "remark4"
 
 \end_inset
 
-可以组合传播方程方程(
+可以组合传播方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:62"
@@ -3138,7 +3760,7 @@ name "eq:65"
 \hat{v}_{k+1\mid k} & =\hat{v}_{k\mid k}+R_{k}^{\mathrm{ref}}a_{k}\Delta\tau\label{eq:65b}\\
 \hat{\delta}_{k+1\mid k} & =0\label{eq:65c}\\
 R_{k+1}^{\mathrm{ref}} & =R_{k}^{\mathrm{ref}}\exp\left(\left[\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)\label{eq:65d}\\
-\hat{P}_{k+1\mid k} & =\bar{A}_{k}\hat{P}_{k\mid k}\bar{A}_{k}^{\top}+\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\right)Q\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{\top}\right)\label{eq:65e}\\
+\hat{P}_{k+1\mid k} & =\bar{A}_{k}\hat{P}_{k\mid k}\bar{A}_{k}^{\top}+\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\right)Q\,\mathrm{diag}\left(I_{6\times6},\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{\top}\right)\label{eq:65e}\\
 \bar{A}_{k} & =\left[\begin{array}{c|c|c}
 I_{3\times3} & \Delta tI_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t^{2}/2\\
 \hline 0_{3\times3} & I_{3\times3} & -R_{k}^{\mathrm{ref}}\left[a_{k}\times\right]\Delta t\\
@@ -3222,7 +3844,7 @@ name "eq:66"
 \hat{p}_{k\mid k-1}\\
 \hat{v}_{k\mid k-1}\\
 0_{3\times1}
-\end{array}\right]+K_{k}\left(\overline{y_{k}^{\text{meas }}}-p_{k\mid k-1}\right)\label{eq:66a}\\
+\end{array}\right]+K_{k}\left(\overline{y_{k}^{\mathrm{meas}}}-p_{k\mid k-1}\right)\label{eq:66a}\\
 \hat{P}_{k\mid k} & =\left(I_{9\times9}-K_{k}C\right)\hat{P}_{k\mid k-1}\label{eq:66b}
 \end{align}
 
@@ -3242,7 +3864,17 @@ I_{3\times3} & 0_{3\times3} & 0_{3\times3}\end{array}\right]$
 \begin_inset Formula $K_{k}$
 \end_inset
 
-是使用标准KF方程的Kalman增益[73]。之后，再次应用姿态复位：
+是使用标准KF方程的Kalman增益[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。之后，再次应用姿态重置：
 \begin_inset Flex Subequations
 status open
 
@@ -3257,7 +3889,7 @@ name "eq:67"
 \begin_inset Formula 
 \begin{align}
 R_{k}^{\mathrm{ref}} & \leftarrow R_{k}^{\mathrm{ref}}\exp\left(\left[\hat{\delta}_{k\mid k}\times\right]\right)\label{eq:67a}\\
-\hat{P}_{k\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)\right)\hat{P}_{k\mid k}\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)^{\top}\right)\label{eq:67b}\\
+\hat{P}_{k\mid k} & \leftarrow\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)\right)\hat{P}_{k\mid k}\,\mathrm{diag}\left(I_{6\times6},\Gamma\left(\hat{\delta}_{k\mid k}\right)^{\top}\right)\label{eq:67b}\\
 \hat{\delta}_{k\mid k} & \leftarrow0\label{eq:67c}
 \end{align}
 
@@ -3292,7 +3924,7 @@ noprefix "false"
 
 \end_inset
 
-)的EKF，并使用全阶(F)姿态复位。
+)的EKF，并使用全阶(F)姿态重置。
 \end_layout
 
 \begin_layout Standard
@@ -3325,8 +3957,18 @@ noprefix "false"
 
 \end_inset
 
-)时等效于文献[76]中的LG-EKF。不同之处在于推导，这里是直接在姿态的上下文中使用姿态复位的视角来完成的。这可能使得更容易为其他系统制定EKFs，例如，某
-些固有的离散时间过程模型直接用于旋转向量，如第 
+)时等效于文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中的LG-EKF。不同之处在于推导，这里是直接在姿态的上下文中使用姿态重置的视角来完成的。这可能使得更容易为其他系统制定EKFs，例如，某些固有的离散时间过程
+模型直接用于旋转向量，如第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:3问题设置和解题方法"
@@ -3378,7 +4020,47 @@ noprefix "false"
 \begin_inset Formula $\delta$
 \end_inset
 
-的传播[52, 54–56, 77]：
+的传播[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:52"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:77"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]：
 \begin_inset Formula 
 \begin{equation}
 \delta[k+1]=\delta[k]+\left(I_{3\times3}+[\delta[k]\times]/2\right)\left(\left(\omega[k]+\eta_{\omega}[k]\right)\Delta t\right)\label{eq:68}
@@ -3396,11 +4078,21 @@ noprefix "false"
 
 \end_inset
 
-)中执行姿态复位步骤时，使用一阶近似
+)中执行姿态重置步骤时，使用一阶近似
 \begin_inset Formula $\Gamma(\cdot)\approx\Gamma_{1}(\cdot)$
 \end_inset
 
-。这导致平均传播与方程(62)相同。协方差传播的不同之处在于，在方程方程(
+。这导致平均传播与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:62"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同。协方差传播的不同之处在于，在方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:63"
@@ -3415,11 +4107,11 @@ noprefix "false"
 \end_inset
 
 的
-\begin_inset Formula $\Gamma\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\text{meas }}}\Delta t\times\right]\right)$
+\begin_inset Formula $\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)^{-1}\exp\left(\left[-\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\times\right]\right)$
 \end_inset
 
 项被用近似
-\begin_inset Formula $I_{3\times3}-\left[\overline{\omega_{k}^{\text{meas }}}\times\right]\Delta t/2$
+\begin_inset Formula $I_{3\times3}-\left[\overline{\omega_{k}^{\mathrm{meas}}}\times\right]\Delta t/2$
 \end_inset
 
 代替。测量更新与方程(
@@ -3432,7 +4124,7 @@ noprefix "false"
 
 \end_inset
 
-)相同，应用测量更新后的姿态复位步骤方程(
+)相同，应用测量更新后的姿态重置步骤方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67"
@@ -3466,11 +4158,11 @@ noprefix "false"
 
 \end_inset
 
-)的连续时间运动学的Euler离散化，并且使用协方差复位的一阶近似(在预测和测量更新期间)。
+)的连续时间运动学的Euler离散化，并且使用协方差重置的一阶近似(在预测和测量更新期间)。
 \end_layout
 
 \begin_layout Standard
-另一个常见的变体是采用“ekf-euler-reset-1”滤波器并且省略测量后协方差复位步骤方程(
+另一个常见的变体是采用“ekf-euler-reset-1”滤波器并且省略测量后协方差重置步骤方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -3494,9 +4186,9 @@ noprefix "false"
 
 \end_inset
 
- 显示了上述EKFs的估计器性能。两者都能够恢复系统状态，但很明显，完整的命令“ekf-zoh-reset-F”能够更快、更一致地完成这项工作，并且传播更少。有
-趣的是，如果初始速度误差增加，使得
-\begin_inset Formula $v(0)=(100,100,100)\mathrm{m}/\mathrm{s}$
+ 显示了上述EKFs的估计器性能。两者都能够恢复系统状态，但很明显，全阶“ekf-zoh-reset-F”能够更快、更一致地完成这项工作，并且传播更少。有趣的是
+，如果初始速度误差增加，使得
+\begin_inset Formula $v(0)=(100,100,100)\,\mathrm{m}/\mathrm{s}$
 \end_inset
 
 ，那么“ekf-euler-reset-1”完全失效；见图 
@@ -3509,7 +4201,7 @@ noprefix "false"
 
 \end_inset
 
- 。这里发生的是协方差矩阵的条件变差，当应用协方差复位时，如果
+ 。这里发生的是协方差矩阵的条件变差，当应用协方差重置时，如果
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -3642,7 +4334,7 @@ noprefix "false"
 \end_inset
 
  节中描述的EKFs的位置、速度和姿态误差，但
-\begin_inset Formula $v(0)=(100,100,100)\mathrm{m}/\mathrm{s}$
+\begin_inset Formula $v(0)=(100,100,100)\,\mathrm{m}/\mathrm{s}$
 \end_inset
 
 。进行了100次模拟，实线表示中值，阴影区域表示
@@ -3671,7 +4363,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Subsection
-MEKF
+MEKF[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:5.4MEKF"
@@ -3686,7 +4388,17 @@ name "subsec:5.4MEKF"
 \end_layout
 
 \begin_layout Standard
-文献[23]中的MEKF算法是在连续时间内制定的，适用于实例刚体系统方程(
+文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中的MEKF算法是在连续时间内制定的，适用于实例刚体系统方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:60"
@@ -3749,18 +4461,48 @@ F(t) & =\left[\begin{array}{c|c|c}
 \end_inset
 
 并且
-\begin_inset Formula $Q_{c}=\mathrm{diag}\left(0_{6\times6},0.01\Delta tI_{3\times3}\right)$
+\begin_inset Formula $Q_{c}=\mathrm{diag}\left(0_{6\times6},0.01\Delta t\,I_{3\times3}\right)$
 \end_inset
 
-[73]。由于协方差传播是在连续时间内形成的，因此它们是使用Euler积分方案实现的，如文献[78]，在连续离散时间步长之间，步长为
-\begin_inset Formula $\Delta t_{\text{mekf }}$
+ [
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
 \end_inset
 
-(参见算法1)。计算和实现方面有利于使用这样一个简单的集成方案，更精确的集成将产生更准确的结果；参数
-\begin_inset Formula $\Delta t_{\text{mekf }}$
+]。由于协方差传播是在连续时间内形成的，因此它们是使用Euler积分方案实现的，如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:78"
+plural "false"
+caps "false"
+noprefix "false"
+
 \end_inset
 
-将被改变以探索这一点。注意，在预测步骤中没有显式的姿态复位步骤，因为这已经隐式地完成了。
+]，在连续离散时间步长之间，步长为
+\begin_inset Formula $\Delta t_{\text{mekf}}$
+\end_inset
+
+(参见算法 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。计算和实现方面有利于使用这样一个简单的集成方案，更精确的集成将产生更准确的结果；参数
+\begin_inset Formula $\Delta t_{\text{mekf}}$
+\end_inset
+
+将被改变以探索这一点。注意，在预测步骤中没有显式的姿态重置步骤，因为这已经隐式地完成了。
 \end_layout
 
 \begin_layout Standard
@@ -3841,7 +4583,7 @@ mathrm{ref}}$，积分步长$
 \backslash
 Delta t_{
 \backslash
-text{mekf }}$，离散化时间步长$
+text{mekf}}$，离散化时间步长$
 \backslash
 Delta t$。
 \end_layout
@@ -3918,7 +4660,7 @@ STATE
 \end_inset
 
 
-\begin_inset Formula $N\leftarrow\Delta t/\Delta t_{\text{mekf }}$
+\begin_inset Formula $N\leftarrow\Delta t/\Delta t_{\text{mekf}}$
 \end_inset
 
 
@@ -4075,7 +4817,7 @@ noprefix "false"
 
 \end_inset
 
-)相同。更新之后的姿态复位也与方程(
+)相同。更新之后的姿态重置也与方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67"
@@ -4085,7 +4827,7 @@ noprefix "false"
 
 \end_inset
 
-)相同，只是协方差复位方程(
+)相同，只是协方差重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -4113,7 +4855,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在测量更新之后的姿态复位中，执行步骤方程(
+在测量更新之后的姿态重置中，执行步骤方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -4141,7 +4883,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-如文献[23]所述，由于用于导出滤波器的近似，MEKF中的偏差姿态
+如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]所述，由于用于导出滤波器的近似，MEKF中的偏差姿态
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -4163,7 +4915,7 @@ noprefix "false"
 
 \end_inset
 
-)之后，测试姿态复位方程(
+)之后，测试姿态重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67"
@@ -4191,7 +4943,17 @@ noprefix "false"
 \begin_inset Formula $\exp^{\mathrm{G}}(\cdot)$
 \end_inset
 
-，将Gibbs-Rodrigues向量映射到旋转流形(参见例如文献[23, 方程(18b)]，在协方差复位方程(
+，将Gibbs-Rodrigues向量映射到旋转流形(参见例如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 方程(18b)]，在协方差重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -4217,7 +4979,17 @@ noprefix "false"
 
 \end_inset
 
-其证明见文献[15]的附录。此滤波器变体称为“mekf-G”。
+其证明见文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的附录。此滤波器变体称为“mekf-G”。
 \end_layout
 
 \begin_layout Standard
@@ -4243,7 +5015,17 @@ noprefix "false"
 \begin_inset Formula $2$
 \end_inset
 
-倍到旋转流形(参见例如文献[23, 方程(18d)])，并且将协方差复位方程(
+倍到旋转流形(参见例如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 方程(18d)])，并且将协方差重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -4287,7 +5069,7 @@ noprefix "false"
 \begin_inset Formula $\left\Vert \delta\right\Vert \geq4$
 \end_inset
 
-定义不清，这可能会导致问题，因为在应用大复位的应用中，会创建病态协方差矩阵。这种滤波器变体称为“mekf-qv”。
+定义不清，这可能会导致问题，因为在应用大重置的应用中，会创建病态协方差矩阵。这种滤波器变体称为“mekf-qv”。
 \end_layout
 
 \begin_layout Standard
@@ -4312,7 +5094,7 @@ noprefix "false"
 \end_inset
 
 )的积分方案很敏感，因为左图中使用较大的
-\begin_inset Formula $\Delta t_{\text{mekf }}$
+\begin_inset Formula $\Delta t_{\text{mekf}}$
 \end_inset
 
 会导致所有MEKF变体的性能比“ekf-zoh-reset-F”差。与图 
@@ -4366,7 +5148,7 @@ noprefix "false"
 
 \end_inset
 
- 节所述的各种姿态复位的MEKF的位置、速度和姿态误差。进行了
+ 节所述的各种姿态重置的MEKF的位置、速度和姿态误差。进行了
 \begin_inset Formula $100$
 \end_inset
 
@@ -4439,11 +5221,21 @@ noprefix "false"
 
 \end_inset
 
-)。因此，预计MEKF性能(使用正确的姿态复位)接近“ekf-zoh-reset-F”的性能，极限为
-\begin_inset Formula $\Delta t_{\text{mekf }}\rightarrow0$
+)。因此，预计MEKF性能(使用正确的姿态重置)接近“ekf-zoh-reset-F”的性能，极限为
+\begin_inset Formula $\Delta t_{\text{mekf}}\rightarrow0$
 \end_inset
 
-，尽管对于MEKF来说这意味着计算复杂度的增加[26]。这正是图 
+，尽管对于MEKF来说这意味着计算复杂度的增加[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。这正是图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:5"
@@ -4454,7 +5246,7 @@ noprefix "false"
 \end_inset
 
  右侧较小的
-\begin_inset Formula $\Delta t_{\text{mekf }}$
+\begin_inset Formula $\Delta t_{\text{mekf}}$
 \end_inset
 
 所发生的情况，现在全阶变体“mekf-F”、“mekf-G”和“mekf-qv”在平均性能和一致性方面的表现与“ekf-zoh-reset-F”类似，同时优于“
@@ -4477,7 +5269,37 @@ name "subsec:5.5提议UKF"
 \begin_inset Formula $\hat{P}_{k\mid k}$
 \end_inset
 
-和任何sigma点生成方法[73, 79]，为系统方程(61)生成sigma点
+和任意sigma点生成方法[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，为系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)生成sigma点
 \begin_inset Formula $x_{k\mid k}^{(i)}=\left(p_{k\mid k}^{(i)},v_{k\mid k}^{(i)},\delta_{k\mid k}^{(i)}\right),i=0,\ldots,2n$
 \end_inset
 
@@ -4523,7 +5345,27 @@ x_{k+1\mid k}^{(i)}:=f_{k}\left(x_{k\mid k}^{(i)},0\right),\quad i=0,\ldots,2n
 \begin_inset Formula $w_{m}^{(i)}$
 \end_inset
 
-是加权系数[73, 79]。类似地，估计先验协方差
+是加权系数[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。类似地，估计先验协方差
 \begin_inset Formula 
 \begin{equation}
 \hat{P}_{k+1\mid k}:=\sum_{i=0}^{2n}w_{c}^{(i)}\left(x_{k+1\mid k}^{(i)}-\hat{x}_{k+1\mid k}\right)\left(x_{k+1\mid k}^{(i)}-\hat{x}_{k+1\mid k}\right)^{\top}+Q
@@ -4539,7 +5381,27 @@ x_{k+1\mid k}^{(i)}:=f_{k}\left(x_{k\mid k}^{(i)},0\right),\quad i=0,\ldots,2n
 \begin_inset Formula $w_{c}^{(i)}$
 \end_inset
 
-是加权系数[73, 79]。现在继续进行后预测姿态复位方程(
+是加权系数[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]。现在继续进行后预测姿态重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:64"
@@ -4554,8 +5416,27 @@ noprefix "false"
 status open
 
 \begin_layout Plain Layout
-这里提出的姿态复位是真正的一阶后复位偏差姿态。因此，对于预期姿态存在较大不确定性的情况，LG-UKF可能表现更好。然而，提议的UKF可以被看作是对文献[20,
- 53]中方法的升级。
+这里提出的姿态重置是真正的一阶后重置偏差姿态。因此，对于预期姿态存在较大不确定性的情况，LG-UKF可能表现更好。然而，提议的UKF可以被看作是对文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:53"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中方法的升级。
 \end_layout
 
 \end_inset
@@ -4574,7 +5455,7 @@ noprefix "false"
 
 \end_inset
 
-)相同。应用测量后姿态复位方程(
+)相同。应用测量后姿态重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67"
@@ -4598,7 +5479,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Subsection
-LG-UKF
+LG-UKF[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:5.6LG-UKF"
@@ -4609,7 +5500,17 @@ name "subsec:5.6LG-UKF"
 \end_layout
 
 \begin_layout Standard
-文献[4]中的LG-UKF算法适用于实例刚体系统。传播方程与上一小节类似，只是旋转的sigma点直接在
+文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中的LG-UKF算法适用于实例刚体系统。传播方程与上一小节类似，只是旋转的sigma点直接在
 \begin_inset Formula $\mathcal{SO}(3)$
 \end_inset
 
@@ -4629,7 +5530,17 @@ R_{k+1\mid k}^{(i)}=R_{k}^{\mathrm{ref}}\exp\left(\left[\delta_{k\mid k}^{(i)}\t
 \begin_inset Formula $R_{k}^{\mathrm{ref}}$
 \end_inset
 
-通过文献[4, 算法1]进行数值计算，写于附录 
+通过文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 算法1]进行数值计算，写于附录 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:E"
@@ -4652,12 +5563,12 @@ d^{(i)} & :=\left(p_{k+1\mid k}^{(i)}-\hat{p}_{k+1\mid k},v_{k+1\mid k}^{(i)}-\h
 \end_layout
 
 \begin_layout Standard
-不执行姿态复位，因为这是隐式执行的。此外，请注意，过程噪声协方差矩阵
+不执行姿态重置，因为这是隐式执行的。此外，请注意，过程噪声协方差矩阵
 \begin_inset Formula $Q$
 \end_inset
 
 未经变换，其中使用了近似值
-\begin_inset Formula $\Gamma\left(\bar{\omega}_{k}^{\text{meas }}\Delta t\right)\approx\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)$
+\begin_inset Formula $\Gamma\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\approx\Gamma_{\exp}\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)$
 \end_inset
 
 ，如第 
@@ -4678,8 +5589,18 @@ noprefix "false"
 \begin_inset Formula $Q$
 \end_inset
 
-是对角的(如文献[4]所示，在本例中也如此)，与这一事实相结合，得到了
-\begin_inset Formula $\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)\right)Q\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\text{meas }}}\Delta t\right)\right)^{\top}=Q$
+是对角的(如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]所示，在本例中也如此)，与这一事实相结合，得到了
+\begin_inset Formula $\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\right)Q\,\mathrm{diag}\left(I_{6\times6},\Gamma_{\exp}\left(\overline{\omega_{k}^{\mathrm{meas}}}\Delta t\right)\right)^{\top}=Q$
 \end_inset
 
 。但是，对于非各向同性过程噪声，这是不正确的。
@@ -4798,7 +5719,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Subsection
-USQUE
+USQUE[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:5.7USQUE"
@@ -4813,7 +5744,17 @@ name "subsec:5.7USQUE"
 \end_layout
 
 \begin_layout Standard
-文献[26]中给出的USQUE适用于示例刚体系统。如最初使用广义Rodrigues参数所示，本文将使用Gibbs-Rodrigues向量的
+文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中给出的USQUE适用于示例刚体系统。如最初使用广义Rodrigues参数所示，本文将使用Gibbs-Rodrigues向量的
 \begin_inset Formula $2$
 \end_inset
 
@@ -4847,11 +5788,25 @@ R_{k+1\mid k}^{(i)}:=R_{k}^{\mathrm{ref}}\exp^{\mathrm{G}}\left(\left[\delta_{k\
 \end_layout
 
 \begin_layout Standard
-然而，根据文献[26]的方程(36)和方程(37a)，可以假定
+然而，根据文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的方程(36)和方程(37a)，可以假定
 \begin_inset Formula $R_{k+1\mid k}^{(0)}$
 \end_inset
 
-代表平均先验姿态，因此
+代表平均
+\series bold
+先验
+\series default
+姿态，因此
 \begin_inset Formula $R_{k+1}^{\mathrm{ref}}:=R_{k+1\mid k}^{(0)}$
 \end_inset
 
@@ -4890,7 +5845,17 @@ d^{(i)} & :=\left(p_{k+1\mid k}^{(i)}-\hat{p}_{k+1\mid k},v_{k+1\mid k}^{(i)}-\h
 \begin_inset Formula $2$
 \end_inset
 
-倍(参见例如文献[26, 方程(20)])。因此，USQUE与LG-UKF非常相似，只是平均姿态传播使用EKF近似，并且偏差姿态
+倍(参见例如文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 方程(20)])。因此，USQUE与LG-UKF非常相似，只是平均姿态传播使用EKF近似，并且偏差姿态
 \begin_inset Formula $\delta$
 \end_inset
 
@@ -4902,7 +5867,17 @@ d^{(i)} & :=\left(p_{k+1\mid k}^{(i)}-\hat{p}_{k+1\mid k},v_{k+1\mid k}^{(i)}-\h
 \begin_inset Formula $Q$
 \end_inset
 
-应用变换(注意，文献[26]确实提出了一种使用梯形积分方案积分
+应用变换(注意，文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]确实提出了一种使用梯形积分方案积分
 \begin_inset Formula $Q_{c}$
 \end_inset
 
@@ -4942,7 +5917,7 @@ noprefix "false"
 
 \end_inset
 
-)中之前相同，并且姿态复位方程(
+)中之前相同，并且姿态重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67"
@@ -4960,7 +5935,7 @@ noprefix "false"
 \begin_inset Formula $\exp^{G}(\cdot)$
 \end_inset
 
-替换，只是协方差复位方程(
+替换，只是协方差重置方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:67b"
@@ -5016,8 +5991,8 @@ noprefix "false"
 \begin_inset Formula $\Gamma(\cdot)$
 \end_inset
 
-，将被称为“usque-G”。另一种方法是另外执行UKF平均传播，这可以通过使用LG-UKF之类的方法或使用所提议的UKF之类的姿态复位方法对传播的平均值进行数
-值求解来完成。然而，本文对此也没有进行探讨。
+，将被称为“usque-G”。另一种方法是另外执行UKF平均传播，这可以通过使用LG-UKF之类的方法或使用所提议的UKF之类的姿态重置方法对传播的均值进行数值
+求解来完成。然而，本文对此也没有进行探讨。
 \end_layout
 
 \begin_layout Standard
@@ -5031,7 +6006,27 @@ noprefix "false"
 
 \end_inset
 
- 所示。使用文献[73, 第 14.2 节]中概述的方案生成sigma点，并应用文献[79]中
+ 所示。使用文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 第 14.2 节]中概述的方案生成sigma点，并应用文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中
 \begin_inset Formula $\alpha=1$
 \end_inset
 
@@ -5058,8 +6053,8 @@ noprefix "false"
 
 \end_inset
 
- 建立了前复位和后复位姿态误差状态之间的关系，前者为全阶，后者为一阶。这可以在EKF和UKF中用于涉及姿态的一般问题设置。所提出的全阶复位步骤和所提出的EKF和
-UKF算法计算效率高，易于实现。全命令复位还提供了免费升级到任何零或一阶变种在实践中使用。比较了MEKF和USQUE采用不同的姿态复位方案，表明全阶复位是有益的
+ 建立了前重置和后重置姿态误差状态之间的关系，前者为全阶，后者为一阶。这可以在EKF和UKF中用于涉及姿态的一般问题设置。所提出的全阶重置步骤和所提出的EKF和
+UKF算法计算效率高，易于实现。全阶重置还提供了免费升级到任意零阶或一阶变种在实践中使用。比较了MEKF和USQUE采用不同的姿态重置方案，表明全阶重置是有益的
 。
 \end_layout
 
@@ -5095,7 +6090,17 @@ name "sec:A"
 \end_layout
 
 \begin_layout Standard
-根据文献[74, 事实3.5.25]，
+根据文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 事实3.5.25]，
 \begin_inset Formula $[a\times]^{2}=aa^{\top}-\|a\|^{2}I_{3\times3}$
 \end_inset
 
@@ -5133,7 +6138,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-再次根据文献[74, 事实3.5.25]，
+再次根据文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 事实3.5.25]，
 \begin_inset Formula $[a\times]^{3}=-\|a\|^{2}[a\times]$
 \end_inset
 
@@ -5244,7 +6259,17 @@ Z & =X+\frac{-\mathrm{ad}_{X}}{\exp\left(-\mathrm{ad}_{X}\right)-1}(Y)+O\left(Y^
 \begin_inset Formula $\exp(A)=\sum_{k\geq0}\frac{1}{k!}A^{k}$
 \end_inset
 
-。参见文献[61]进行更彻底的讨论。
+。参见文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]进行更彻底的讨论。
 \begin_inset ERT
 status open
 
@@ -5283,7 +6308,17 @@ noprefix "false"
 
 \end_inset
 
-)可通过对文献[61]的Baker-Campbell-Hausdorff (BCH)方程(5.8)的积分形式进行直接操作而获得。
+)可通过对文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]的Baker-Campbell-Hausdorff (BCH)方程(5.8)的积分形式进行直接操作而获得。
 \end_layout
 
 \begin_layout Standard
@@ -5325,7 +6360,17 @@ noprefix "false"
 \begin_inset Formula $Z(t)$
 \end_inset
 
-的符号的轻微滥用。取导数，从文献[61, 方程(5.11)]我们得到
+的符号的轻微滥用。取导数，从文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 方程(5.11)]我们得到
 \begin_inset Formula 
 \begin{align}
 \frac{\mathrm{d}\exp(Z(t))}{\mathrm{d}t}=\exp(Z(t))\frac{1-\exp\left(-\mathrm{ad}_{Z(t)}\right)}{\mathrm{ad}_{Z(t)}}(\dot{Z}(t)) & =X\exp(tX)\exp(Y)\\
@@ -5344,7 +6389,17 @@ noprefix "false"
 
 \end_inset
 
-其中使用了文献[61, 提案3.35]。因此，
+其中使用了文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 提案3.35]。因此，
 \begin_inset Formula 
 \begin{align}
 \dot{Z}(t) & =\frac{\mathrm{ad}_{Z(t)}}{1-\exp\left(-\mathrm{ad}_{Z(t)}\right)}\exp\left(-\mathrm{ad}_{Z(t)}\right)(X)\\
@@ -5355,7 +6410,17 @@ noprefix "false"
 
 \end_inset
 
-其中使用了文献[61, 定理3.28]，
+其中使用了文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 定理3.28]，
 \begin_inset Formula $\log(A):=\sum_{k\geq1}\frac{(-1)^{k+1}}{k}(A-I)^{k}$
 \end_inset
 
@@ -5421,7 +6486,7 @@ noprefix "false"
 )变为
 \begin_inset Formula 
 \begin{equation}
-f_{\mathrm{rv}}(\delta,\Delta)=\Delta+[\underbrace{\frac{\mathrm{ad}_{[\Delta\times]}}{\exp\left(\mathrm{ad}_{[\Delta\times]}\right)-1}([\delta\times])}_{=:[\xi\times]}+O\left([\delta\times]^{2}\right)]^{\vee}
+f_{\mathrm{rv}}(\delta,\Delta)=\Delta+\left[\underbrace{\frac{\mathrm{ad}_{[\Delta\times]}}{\exp\left(\mathrm{ad}_{[\Delta\times]}\right)-1}([\delta\times])}_{=:[\xi\times]}+O\left([\delta\times]^{2}\right)\right]^{\vee}
 \end{equation}
 
 \end_inset
@@ -5453,7 +6518,17 @@ f_{\mathrm{rv}}(\delta,\Delta)=\Delta+[\underbrace{\frac{\mathrm{ad}_{[\Delta\ti
 
 \end_inset
 
-其中第二个方程来自文献[74, 事实3.5.25]。因此，
+其中第二个方程来自文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 事实3.5.25]。因此，
 \begin_inset Formula 
 \begin{align}
 \left[\left(\exp\left(\mathrm{ad}_{[\Delta x]}\right)\frac{1-\exp\left(-\mathrm{ad}_{[\Delta x]}\right)}{\mathrm{ad}_{[\Delta x]}}\right)[\xi\times]\right]^{\vee} & =\delta\\
@@ -5489,7 +6564,27 @@ noprefix "false"
 status open
 
 \begin_layout Plain Layout
-类似的关系也可以在文献[80, 81]中找到，无需推导。
+类似的关系也可以在文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:80"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]中找到，无需推导。
 \end_layout
 
 \end_inset
@@ -5501,7 +6596,7 @@ status open
  & =\sum_{k\geq0}\frac{(-1)^{k}}{(k+1)!}[\Delta\times]^{k}\label{eq:112}\\
  & =\sum_{k\geq0}\left(\frac{(-1)^{2k}}{(2k+1)!}[\Delta\times]^{2k}+\frac{(-1)^{2k+1}}{(2k+2)!}[\Delta x]^{2k+1}\right)\label{eq:113}\\
  & =\left(I_{3\times3}+\sum_{k\geq1}\frac{(-1)^{3k-1}\|\Delta\|^{2k-2}}{(2k+1)!}[\Delta x]^{2}+\sum_{k\geq0}\frac{(-1)^{3k+1}\|\Delta\|^{2k}}{(2k+2)!}[\Delta\times]\right)\label{eq:114}\\
- & =\left(I_{3\times3}+\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k}}{(2k+3)!}[\Delta x]^{2}+\sum_{k\geq1}\frac{(-1)^{k}\|\Delta\|^{2k-2}}{(2k)!}[\Delta\times]\right)\\
+ & =\left(I_{3\times3}+\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k}}{(2k+3)!}[\Delta\times]^{2}+\sum_{k\geq1}\frac{(-1)^{k}\|\Delta\|^{2k-2}}{(2k)!}[\Delta\times]\right)\\
  & ={\scriptstyle \left(I_{3\times3}+\frac{1}{\|\Delta\|^{2}}\left(1-\frac{1}{\|\Delta\|}\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k+1}}{(2k+1)!}\right)[\Delta\times]^{2}+\frac{1}{\|\Delta\|^{2}}\left(\sum_{k\geq0}\frac{(-1)^{k}\|\Delta\|^{2k}}{(2k)!}-1\right)[\Delta\times]\right)}\\
  & =\left(I_{3\times3}+\frac{1}{\|\Delta\|^{2}}\left(1-\frac{1}{\|\Delta\|}\sin(\|\Delta\|)\right)[\Delta\times]^{2}+\frac{1}{\|\Delta\|^{2}}(\cos(\|\Delta\|)-1)[\Delta\times]\right)\\
  & =\Gamma(\Delta)\label{eq:118}
@@ -5606,7 +6701,7 @@ name "sec:C"
 
 \begin_layout Standard
 由于
-\begin_inset Formula $R^{\text{ref }},R^{\text{ref,post }}\in\mathcal{S}O(3)$
+\begin_inset Formula $R^{\mathrm{ref}},R^{\mathrm{ref},\mathrm{post}}\in\mathcal{S}O(3)$
 \end_inset
 
 ，存在一些确定性的
@@ -5646,19 +6741,8 @@ noprefix "false"
 
 )，
 \begin_inset Formula 
-\[
-\begin{array}{l}
-[\delta\times]=[\mu\times]+\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\text{post }}\times\right]\right)+O\left(\left[\delta^{\text{post }}\times\right]^{2}\right)\\
-\Rightarrow\delta=\mu+\left[\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\mathrm{post}}\times\right]\right)+O\left(\left[\delta^{\mathrm{post}}\times\right]^{2}\right)\right]^{\vee}
-\end{array}
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
 \begin{align}
-[\delta\times] & =[\mu\times]+\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\text{post }}\times\right]\right)+O\left(\left[\delta^{\text{post }}\times\right]^{2}\right)\\
+[\delta\times] & =[\mu\times]+\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\mathrm{post}}\times\right]\right)+O\left(\left[\delta^{\mathrm{post}}\times\right]^{2}\right)\\
 \Rightarrow\delta & =\mu+\left[\frac{-\mathrm{ad}_{[\mu\times]}}{\exp\left(-\mathrm{ad}_{[\mu\times]}\right)-1}\left(\left[\delta^{\mathrm{post}}\times\right]\right)+O\left(\left[\delta^{\mathrm{post}}\times\right]^{2}\right)\right]^{\vee}
 \end{align}
 
@@ -5669,13 +6753,13 @@ noprefix "false"
 
 \begin_layout Standard
 去掉
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中的高阶项，
 \begin_inset Formula 
 \begin{equation}
-\delta\approx\mu+\frac{[\mu\times]}{I-\exp([-\mu\times])}\delta^{\text{post }}
+\delta\approx\mu+\frac{[\mu\times]}{I-\exp([-\mu\times])}\delta^{\mathrm{post}}
 \end{equation}
 
 \end_inset
@@ -5683,7 +6767,7 @@ noprefix "false"
 因此，
 \begin_inset Formula 
 \begin{align}
-\delta^{\text{post }} & \approx\frac{I-\exp([-\mu\times])}{[\mu\times]}(\delta-\mu)\\
+\delta^{\mathrm{post}} & \approx\frac{I-\exp([-\mu\times])}{[\mu\times]}(\delta-\mu)\\
  & =\Gamma(\mu)(\delta-\mu)
 \end{align}
 
@@ -5704,7 +6788,7 @@ noprefix "false"
 \end_inset
 
 和
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中是线性的，因此约束方程(
@@ -5718,7 +6802,7 @@ noprefix "false"
 \end_inset
 
 )意味着
-\begin_inset Formula $\mu=\underset{(\delta)}{\mathrm{E}[\delta]}$
+\begin_inset Formula $\mu=\underset{(\delta)}{\mathrm{E}}[\delta]$
 \end_inset
 
 。
@@ -5764,10 +6848,20 @@ noprefix "false"
 
 \end_inset
 
-)并使用四元数代数[82]，
+)并使用四元数代数[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:82"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，
 \begin_inset Formula 
 \begin{equation}
-q\left(\delta^{\text{post }}\right)=q(-\mu)\odot q(\delta)
+q\left(\delta^{\mathrm{post}}\right)=q(-\mu)\odot q(\delta)
 \end{equation}
 
 \end_inset
@@ -5791,7 +6885,17 @@ x
 \begin_inset Formula $2$
 \end_inset
 
-倍映射到另一个单位四元数[23]，并且
+倍映射到另一个单位四元数[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+]，并且
 \begin_inset Formula 
 \begin{equation}
 q_{1}\odot q_{2}=\left(a_{1},v_{1}\right)\odot\left(a_{2},v_{2}\right)=\left[\begin{array}{c}
@@ -5809,8 +6913,8 @@ a_{1}v_{2}+a_{2}v_{1}+v_{1}\times v_{2}
 因此，
 \begin_inset Formula 
 \begin{align}
-a_{\delta}^{\text{post }} & =a_{\mu}a_{\delta}+\mu^{\top}\delta/4\\
-\delta^{\text{post }} & =a_{\mu}\delta-a_{\delta}\mu+\delta\times\mu/2
+a_{\delta}^{\mathrm{post}} & =a_{\mu}a_{\delta}+\mu^{\top}\delta/4\\
+\delta^{\mathrm{post}} & =a_{\mu}\delta-a_{\delta}\mu+\delta\times\mu/2
 \end{align}
 
 \end_inset
@@ -5826,10 +6930,10 @@ a_{\delta}^{\text{post }} & =a_{\mu}a_{\delta}+\mu^{\top}\delta/4\\
 。继续，
 \begin_inset Formula 
 \begin{align}
-\delta^{\text{post }} & =\frac{a_{\mu}^{2}\delta-a_{\mu}a_{\delta}\mu}{a_{\mu}}-\mu\times\delta/2\\
- & =\frac{a_{\mu}^{2}\delta-\left(a_{\delta}^{\text{post }}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
- & =\frac{a_{\mu}^{2}\delta-\left(\sqrt{1-\left\Vert \delta^{\text{post }}\right\Vert ^{2}/4}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
- & =\frac{a_{\mu}^{2}\delta-\left(1+O\left(\left\Vert \delta^{\text{post }}\right\Vert ^{2}\right)-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2
+\delta^{\mathrm{post}} & =\frac{a_{\mu}^{2}\delta-a_{\mu}a_{\delta}\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(a_{\delta}^{\mathrm{post}}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(\sqrt{1-\left\Vert \delta^{\mathrm{post}}\right\Vert ^{2}/4}-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2\\
+ & =\frac{a_{\mu}^{2}\delta-\left(1+O\left(\left\Vert \delta^{\mathrm{post}}\right\Vert ^{2}\right)-\mu^{\top}\delta/4\right)\mu}{a_{\mu}}-\mu\times\delta/2
 \end{align}
 
 \end_inset
@@ -5849,7 +6953,7 @@ noprefix "false"
 \end_inset
 
  中的一样，去掉了
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中的高阶项，
@@ -5865,7 +6969,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-使用文献[74, 事实3.5.25]，
+使用文献[
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ref:74"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 事实3.5.25]，
 \begin_inset Formula $[\mu\times]^{2}=\mu\mu^{\top}-\|\mu\|^{2}I_{3\times3}$
 \end_inset
 
@@ -5876,7 +6990,7 @@ noprefix "false"
 ，上述方程变换为
 \begin_inset Formula 
 \begin{equation}
-\delta^{\text{post }}\approx\Gamma^{\mathrm{qv}}(\mu)(\delta-\mu)
+\delta^{\mathrm{post}}\approx\Gamma^{\mathrm{qv}}(\mu)(\delta-\mu)
 \end{equation}
 
 \end_inset
@@ -5900,7 +7014,7 @@ noprefix "false"
 \end_inset
 
 和
-\begin_inset Formula $\delta^{\text{post }}$
+\begin_inset Formula $\delta^{\mathrm{post}}$
 \end_inset
 
 中是线性的，因此约束方程(
@@ -6029,7 +7143,7 @@ status open
 \backslash
 ENSURE 加权平均$R^{
 \backslash
-text {ref }}$。
+mathrm{ref}}$。
 \end_layout
 
 \end_inset
@@ -6211,10 +7325,19 @@ end{appendices}
 \end_layout
 
 \begin_layout Section*
+\begin_inset Newpage newpage
+\end_inset
+
 References
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:1"
+
+\end_inset
+
 Grewal, M.
  S., and Andrews, A.
  P., “Applications of Kalman filtering in aerospace 1960 to the present [historic
@@ -6227,6 +7350,12 @@ al perspectives],” IEEE Control Systems Magazine, Vol.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:2"
+
+\end_inset
+
 Stovner, B.
  N., Johansen, T.
  A., Fossen, T.
@@ -6238,6 +7367,12 @@ Stovner, B.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:3"
+
+\end_inset
+
 Eliahu, D.
  S., Elkaim, G.
  H., and Curry, R.
@@ -6250,6 +7385,12 @@ Eliahu, D.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:4"
+
+\end_inset
+
 Kang, D., Jang, C., and Park, F.
  C., “Unscented Kalman Filtering for Simultaneous Estimation of Attitude
  and Gyroscope Bias,” IEEE/ASME Transactions on Mechatronics, Vol.
@@ -6274,6 +7415,12 @@ Chiella, A.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:6"
+
+\end_inset
+
 Bernal-Polo, P., and Martínez-Barberá, H., “Kalman Filtering for Attitude
  Estimation with Quaternions and Concepts from Manifold Theory,” Sensors,
  Vol.
@@ -6284,6 +7431,12 @@ Bernal-Polo, P., and Martínez-Barberá, H., “Kalman Filtering for Attitude
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:7"
+
+\end_inset
+
 Yun, X., and Bachmann, E.
  R., “Design, implementation, and experimental results of a quaternion-based
  Kalman filter for human body motion tracking,” IEEE Transactions on Robotics,
@@ -6364,6 +7517,12 @@ Marins, J.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:14"
+
+\end_inset
+
 Feng, K., Li, J., Zhang, X., Shen, C., Bi, Y., Zheng, T., and Liu, J., “A New Quaternio
 n-Based Kalman Filter for Real-Time Attitude Estimation Using the Two-Step
  Geometrically-Intuitive Correction Algorithm,” Sensors, Vol.
@@ -6374,6 +7533,12 @@ n-Based Kalman Filter for Real-Time Attitude Estimation Using the Two-Step
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:15"
+
+\end_inset
+
 Markley, L., “Lessons learned,” The Journal of the Astronautical Sciences,
  Vol.
  57, 2009.
@@ -6391,6 +7556,12 @@ ion system by integration of magnetometers and GPS: A real-data test and
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:17"
+
+\end_inset
+
 Crassidis, J.
  L., Markley, F.
  L., and Cheng, Y., “Survey of nonlinear attitude estimation methods,” Journal
@@ -6403,6 +7574,12 @@ Crassidis, J.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:18"
+
+\end_inset
+
 Gross, J.
  N., Gu, Y., Rhudy, M.
  B., Gururajan, S., and Napolitano, M.
@@ -6416,6 +7593,12 @@ Gross, J.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:19"
+
+\end_inset
+
 Zanetti, R., Majji, M., Bishop, R.
  H., and Mortari, D., “Norm-constrained Kalman Filtering,” Journal of Guidance,
  Control, and Dynamics, Vol.
@@ -6426,6 +7609,12 @@ Zanetti, R., Majji, M., Bishop, R.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:20"
+
+\end_inset
+
 Mueller, M.
  W., Hehn, M., and D’Andrea, R., “Covariance correction Step for Kalman filtering
  with an attitude,” Journal of Guidance, Control, and Dynamics, Vol.
@@ -6437,6 +7626,12 @@ Mueller, M.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:21"
+
+\end_inset
+
 Toda, N., Heiss, J., and Schlee, F., “Spars: the system, algorithms, and test
  results,” Proceedings of the Symposium on Spacecraft Attitude Determination,
  Aerospace Corp.
@@ -6447,6 +7642,12 @@ Toda, N., Heiss, J., and Schlee, F., “Spars: the system, algorithms, and test
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:22"
+
+\end_inset
+
 Lefferts, E.
  J., Markley, F.
  L., and Shuster, M.
@@ -6459,6 +7660,12 @@ Lefferts, E.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:23"
+
+\end_inset
+
 Markley, F.
  L., “Attitude error representations for Kalman filtering,” Journal of Guidance,
  Control, and Dynamics, Vol.
@@ -6489,6 +7696,12 @@ Shuster, M., “A simple Kalman filter and smoother for spacecraft attitude,”
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:26"
+
+\end_inset
+
 Crassidis, J.
  L., and Markley, F.
  L., “Unscented filtering for spacecraft attitude estimation,” Journal of
@@ -6575,6 +7788,12 @@ ative extended Kalman filter,” IEEE/ION Position, Location and Navigation
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:34"
+
+\end_inset
+
 Reynolds, R.
  G., “Asymptotically optimal attitude filtering with guaranteed convergence,”
  Journal of Guidance, Control, and Dynamics, Vol.
@@ -6761,6 +7980,12 @@ Mourikis, A.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:52"
+
+\end_inset
+
 Koch, D.
  P., Wheeler, D.
  O., Beard, R., McLain, T., and Brink, K.
@@ -6770,6 +7995,12 @@ Koch, D.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:53"
+
+\end_inset
+
 Tagliabue, A., Kamel, M., Siegwart, R., and Nieto, J., “Robust collaborative
  object transportation using multiple MAVs,” The International Journal of
  Robotics Research, Vol.
@@ -6781,6 +8012,12 @@ Tagliabue, A., Kamel, M., Siegwart, R., and Nieto, J., “Robust collaborative
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:54"
+
+\end_inset
+
 Hamer, M., and D’Andrea, R., “Self-Calibrating Ultra-Wideband Network Supporting
  Multi-Robot Localization,” IEEE Access, Vol.
  6, 2018, pp.
@@ -6796,6 +8033,12 @@ Greiff, M., Robertsson, A., and Berntorp, K., “Performance Bounds in Positioni
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:56"
+
+\end_inset
+
 Beffa, L., Ledergerber, A., and D’Andrea, R., “State Estimate Recovery for
  Autonomous Quadcopters,” IEEE/RSJ International Conference on Intelligent
  Robots and Systems, 2018, pp.
@@ -6804,6 +8047,12 @@ Beffa, L., Ledergerber, A., and D’Andrea, R., “State Estimate Recovery for
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:57"
+
+\end_inset
+
 Sola, J., “Quaternion kinematics for the error-state KF,” Laboratoire dAnalyse
  et dArchitecture des Systemes-Centre national de la recherche scientifique
  (LAAS-CNRS), Toulouse, France, Tech.
@@ -6811,6 +8060,12 @@ Sola, J., “Quaternion kinematics for the error-state KF,” Laboratoire dAnaly
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:58"
+
+\end_inset
+
 Chirikjian, G.
  S., Stochastic models, information theory, and Lie groups, volume 2: analytic
  methods and modern applications, Vol.
@@ -6820,12 +8075,24 @@ Chirikjian, G.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:59"
+
+\end_inset
+
 Gallier, J., and Quaintance, J., “Notes on differential geometry and Lie groups,”
  University of Pennsylvannia, Vol.
  4, 2012.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:60"
+
+\end_inset
+
 Shuster, M.
  D., “A survey of attitude representations,” Navigation, Vol.
  8, No.
@@ -6835,6 +8102,12 @@ Shuster, M.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:61"
+
+\end_inset
+
 Hall, B.
  C., “Lie Groups, Lie Algebras, and Representations,” Quantum Theory for
  Mathematicians, Springer, 2013, pp.
@@ -6844,6 +8117,12 @@ Hall, B.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:62"
+
+\end_inset
+
 Gallego, G., and Yezzi, A., “A compact formula for the derivative of a 3-D
  rotation in exponential coordinates,” Journal of Mathematical Imaging and
  Vision, Vol.
@@ -6855,6 +8134,12 @@ Gallego, G., and Yezzi, A., “A compact formula for the derivative of a 3-D
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:63"
+
+\end_inset
+
 Chirikjian, G.
  S., Stochastic models, information Theory, and Lie groups, volume 1: classical
  results and geometric methods.
@@ -6864,6 +8149,12 @@ Chirikjian, G.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:64"
+
+\end_inset
+
 Ross, S.
  M., Applied probability models with optimization applications, Courier Corporati
 on, 2013.
@@ -6871,6 +8162,12 @@ on, 2013.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:65"
+
+\end_inset
+
 Andrle, M.
  S., and Crassidis, J.
  L., “Geometric Integration of Quaternions,” Journal of Guidance, Control,
@@ -6882,6 +8179,12 @@ Andrle, M.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:66"
+
+\end_inset
+
 Codling, E., and Hill, N., “Sampling rate effects on measurements of correlated
  and biased random walks,” Journal of Theoretical Biology, Vol.
  233, No.
@@ -6892,6 +8195,12 @@ Codling, E., and Hill, N., “Sampling rate effects on measurements of correlate
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:67"
+
+\end_inset
+
 Ledergerber, A., and D’Andrea, R., “Ultra-Wideband Angle of Arrival Estimation
  Based on Angle-Dependent Antenna Transfer Function,” Sensors, Vol.
  19, No.
@@ -6901,6 +8210,12 @@ Ledergerber, A., and D’Andrea, R., “Ultra-Wideband Angle of Arrival Estimati
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:68"
+
+\end_inset
+
 Aggarwal, P., Syed, Z., and El-Sheimy, N., “Hybrid Extended Particle Filter
  (HEPF) for integrated civilian navigation system,” IEEE/ION Position, Location
  and Navigation Symposium, 2008, pp.
@@ -6937,6 +8252,12 @@ Shariati, H., Moosavi, H., and Danesh, M., “Application of particle filter
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:72"
+
+\end_inset
+
 Van Der Merwe, R., Doucet, A., De Freitas, N., and Wan, E., “The Unscented Particle
  Filter,” International Conference on Neural Information Processing Systems,
  MIT Press, Cambridge, MA, USA, 2000, pp.
@@ -6945,12 +8266,24 @@ Van Der Merwe, R., Doucet, A., De Freitas, N., and Wan, E., “The Unscented Par
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:73"
+
+\end_inset
+
 Simon, D., Optimal State Estimation: Kalman, H infinity, and nonlinear approaches
 , John Wiley & Sons, 2006.
  
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:74"
+
+\end_inset
+
 Bernstein, D.
  S., Matrix mathematics: theory, facts, and formulas with application to
  linear systems theory, Vol.
@@ -6959,12 +8292,24 @@ Bernstein, D.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:75"
+
+\end_inset
+
 Galassi, M., Davies, J., Theiler, J., Gough, B., Jungman, G., Alken, P., Booth,
  M., Rossi, F., and Ulerich, R., GNU scientific library, Network Theory Limited,
  2002.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:76"
+
+\end_inset
+
 Bourmaud, G., Mégret, R., Giremus, A., and Berthoumieu, Y., “Discrete extended
  Kalman filter on Lie groups,” European Signal Processing Conference, 2013,
  pp.
@@ -6973,12 +8318,24 @@ Bourmaud, G., Mégret, R., Giremus, A., and Berthoumieu, Y., “Discrete extende
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:77"
+
+\end_inset
+
 Hamer, M., “Scalable Localization and Coordination of Robot Swarms,” Ph.D.
  thesis, ETH Zurich, 2019.
  
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:78"
+
+\end_inset
+
 Hall, J.
  K., Knoebel, N.
  B., and McLain, T.
@@ -6992,6 +8349,12 @@ ative extended Kalman filter,” IEEE/ION Position, Location and Navigation
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:79"
+
+\end_inset
+
 Julier, S.
  J., “The scaled unscented transformation,” American Control Conference,
  Vol.
@@ -7001,6 +8364,12 @@ Julier, S.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:80"
+
+\end_inset
+
 Mäkinen, J., “Rotation manifold SO(3) and its tangential vectors,” Computational
  Mechanics, Vol.
  42, No.
@@ -7011,6 +8380,12 @@ Mäkinen, J., “Rotation manifold SO(3) and its tangential vectors,” Computat
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:81"
+
+\end_inset
+
 Barfoot, T.
  D., and Furgale, P.
  T., “Associating Uncertainty With Three-Dimensional Poses for Use in Estimation
@@ -7023,6 +8398,12 @@ Barfoot, T.
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "ref:82"
+
+\end_inset
+
 Sommer, H., Gilitschenski, I., Bloesch, M., Weiss, S., Siegwart, R., and Nieto,
  J., “Why and How to Avoid the Flipped Quaternion Multiplication,” Aerospace,
  Vol.
