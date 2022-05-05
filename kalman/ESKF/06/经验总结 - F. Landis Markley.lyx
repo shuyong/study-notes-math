@@ -10,7 +10,7 @@
 % http://bbs.ctex.org/viewthread.php?tid=60547
 \DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
 \end_preamble
-\options UTF8
+\options UTF8,fontset=founder
 \use_default_options true
 \begin_modules
 subequations
@@ -25,7 +25,7 @@ subequations
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100 100
@@ -39,9 +39,20 @@ subequations
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
+\use_hyperref true
+\pdf_title "经验总结"
+\pdf_author "F. Landis Markley"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -66,6 +77,10 @@ subequations
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -115,12 +130,62 @@ January 2013
 \end_layout
 
 \begin_layout Abstract
-本文围绕着三个我对自己的职业生涯感兴趣的主题展开：协方差分析、约束估计和角动量。讨论了协方差分析的解析法和数值法。关于约束的一节首先从旋转组的性质引起的一般考虑
+本文围绕着三个我对自己的职业生涯感兴趣的主题展开：协方差分析、约束估计和角动量。讨论了协方差分析的解析法和数值法。关于约束的一节首先从旋转群的性质引起的一般考虑
 开始，然后转到Wahba问题和四元数卡尔曼滤波器。角动量的讨论包括角动量在姿态确定和控制以及航天器异常检测和诊断中的应用。包括相关的示例。
 \end_layout
 
 \begin_layout Section
 简介
+\end_layout
+
+\begin_layout Quotation
+\noindent
+\align left
+计算的目的是洞察力，而不是数字。
+\end_layout
+
+\begin_layout Quotation
+\noindent
+\align right
+R.
+ W.
+ Hamming, 《科学家和工程师的数值方法》(1962)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+NASA任务开发阶段的完成通常伴随着一份“经验教训”文件，以记录错误的步骤和正确的步骤。我在这篇论文中的意图是用一份类似的文件来标记我职业生涯的这个阶段，但通过
+关注正确的事情来行使我的权威。这篇论文与我的Brouwer讲座[1]有一些重叠，但不太个人化，而且是按主题而不是按时间顺序组织的。它围绕着我职业生涯的三大主题展
+开：协方差分析的实用性、约束的复杂性和角动量的重要性。我试图强调一般概念，而不是计算细节，并用相关示例来说明每个主题。然而，在某些地方，讨论不可避免地具有技术性
+。
+\end_layout
+
+\begin_layout Standard
+协方差分析的讨论包括分析和数值方法[2-10]。分析部分叙述了Farrenkopf关于单轴姿态估计器稳态姿态精度的表达式[3]及其结果[7]的扩展。数值讨论涉及
+姿态确定误差分析系统(ADEAS)[8]的开发，以及ADEAS在热带降雨测量任务 (TRMM) [11,12] 中通过迂回路径引入备用控制模式的作用。
+\end_layout
+
+\begin_layout Standard
+约束[4,5,13–40]一节从旋转矩阵性质引起的一般考虑开始，并继续讨论Wahba对姿态估计问题[18]和四元数卡尔曼滤波器[4,5,28,34–38]的表述
+。这是论文中最长、技术性最强的部分，包括唯一的新材料，该材料被归入附录。
+\end_layout
+
+\begin_layout Standard
+论文的最后一部分介绍了角动量在旋转航天器姿态确定[41–45]和姿态控制[46–53]中的应用。讨论的控制应用是非常相似的太阳、反常和磁层粒子探测器(SAMPE
+X)的任务模式[47–50]和哈勃太空望远镜(HST)的无陀螺安全指向模式[51]。本文最后讨论了如何利用角动量守恒来检测HST上的异常陀螺行为[52]，并诊断
+Wilkinson微波各向异性探测器(WMAP)上的异常[53]。
 \end_layout
 
 \begin_layout Section
@@ -152,9 +217,16 @@ January 2013
 status open
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:1"
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{align}
-P_{i}\left(-\right) & =\Phi\left(t_{i},t_{i-1}\right)P_{i-1}\left(+\right)\Phi^{\mathrm{T}}\left(t_{i},t_{i-1}\right)+\int_{t_{i-1}}^{t_{i}}\Phi\left(t_{i},t\right)Q\left(t\right)\Phi^{\mathrm{T}}\left(t_{i},t\right)\mathrm{d}t\label{eq:1a}\\
+P_{i}\left(-\right) & =\Phi\left(t_{i},t_{i-1}\right)P_{i-1}\left(+\right)\Phi^{\mathrm{T}}\left(t_{i},t_{i-1}\right)+\int_{t_{i-1}}^{t_{i}}\Phi\left(t_{i},t\right)Q(t)\Phi^{\mathrm{T}}\left(t_{i},t\right)\mathrm{d}t\label{eq:1a}\\
 K_{i} & =P_{i}\left(-\right)H_{i}^{\mathrm{T}}\left[H_{i}P_{i}\left(-\right)H_{i}^{\mathrm{T}}+R_{i}\right]^{-1}\label{eq:1b}\\
 P_{i}\left(+\right) & =\left(I-K_{i}H_{i}\right)P_{i}\left(-\right)\label{eq:1c}
 \end{align}
@@ -166,10 +238,6 @@ P_{i}\left(+\right) & =\left(I-K_{i}H_{i}\right)P_{i}\left(-\right)\label{eq:1c}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\Phi$
 \end_inset
@@ -222,7 +290,17 @@ P_{i}\left(+\right) & =\left(I-K_{i}H_{i}\right)P_{i}\left(-\right)\label{eq:1c}
 \begin_inset Formula $P\left(-\right)$
 \end_inset
 
-的耦合方程(1)，可以用数值方法或有时代数方法求出稳态解。用代数方法求解这些方程对于除最简单情况外的所有情况都是一个棘手的问题，但在测量之间的时间间隔
+的耦合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，可以用数值方法或有时候用代数方法求出稳态解。用代数方法求解这些方程对于除最简单情况外的所有情况都是一个棘手的问题，但在测量之间的时间间隔
 \begin_inset Formula $\Delta t$
 \end_inset
 
@@ -230,7 +308,7 @@ P_{i}\left(+\right) & =\left(I-K_{i}H_{i}\right)P_{i}\left(-\right)\label{eq:1c}
 \begin_inset Formula $R\Delta t$
 \end_inset
 
-接近常量时更新间隔变为
+接近常量时更新间隔趋向
 \begin_inset Formula $0$
 \end_inset
 
@@ -261,18 +339,98 @@ P_{i}\left(+\right) & =\left(I-K_{i}H_{i}\right)P_{i}\left(-\right)\label{eq:1c}
 \end_layout
 
 \begin_layout Standard
-这是连续时间卡尔曼滤波器的代数Riccati方程，它比耦合方程(1)更易于解析解。我通过找到一些简单情况的稳态协方差获得了非常有用的见解，比如偏航陀螺罗盘，但这
-些情况通常太不符合物理模型，无法实际应用。
+这是连续时间卡尔曼滤波器的代数Riccati方程，它比耦合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)更易于解析解。我通过找到一些简单情况的稳态协方差获得了非常有用的洞察力，比如偏航陀螺罗盘，但这些情况通常太不符合物理模型，无法实际应用。
 \end_layout
 
 \begin_layout Subsection
-Farrenkopf等式
+Farrenkopf方程
 \end_layout
 
 \begin_layout Standard
+1978年，Robert L.Farrenkopf在一个非常有趣的案例中发现了有限更新间隔下稳态协方差的代数解：使用陀螺和角度传感器(如星体跟踪器)确定单轴姿态[
+3]。状态向量包含角度
+\begin_inset Formula $\theta$
+\end_inset
+
+和陀螺仪漂移偏置
+\begin_inset Formula $b$
+\end_inset
+
+。陀螺仪在模型替换模式下使用，这意味着陀螺仪数据在动态传播步骤中替换欧拉方程，而不是作为测量值处理。该模型已广泛应用于航天器姿态估计[4,5]。Farrenko
+pf模型中的耦合稳态协方差方程导致了一个四次方程，但他发现将四次方程分解为两个二次方程，从而对姿态估计系统的精度进行了非常有用的估计。
+\end_layout
+
+\begin_layout Standard
+Farrenkopf的模型包括三个误差源：陀螺仪角度随机游动
+\begin_inset Formula $\sigma_{v}$
+\end_inset
+
+、陀螺仪速率随机游动
+\begin_inset Formula $\sigma_{u}$
+\end_inset
+
+和角度传感器测量噪声
+\begin_inset Formula $\sigma_{n}$
+\end_inset
+
+。航天器通常使用速率积分陀螺仪，陀螺仪输出上的噪声称为角度白噪声，而Farrenkopf的模型[6]中不包括这些噪声。这种噪声源对许多陀螺仪并不重要，包括通常应
+用Farrenkopf方程的陀螺仪，但对一些较新的陀螺仪(如环形激光陀螺仪)可能很重要。Goddard航天飞行中心的Kong Ha已经找到了一种将角度白噪声纳入
+陀螺处理的方法，但没有寻找稳态解决方案。2000年，我发现包含角度白噪声会产生一个四次方程，可以像Farrenkopf的方程一样求解。我向Reid
+ Reynolds展示了我对这些结果的原始推导，并且我们一起发现了一个更好的推导以供发表[7]。
+\end_layout
+
+\begin_layout Standard
+用
+\begin_inset Formula $\sigma_{e}$
+\end_inset
+
+表示角度白噪声的标准偏差，稳态协方差矩阵的分量为
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
 \begin_inset Formula 
-\begin{equation}
-\end{equation}
+\begin{align}
+P_{\theta\theta}(\mp) & =\kappa^{\pm1}\left(\kappa-\kappa^{-1}\right)\sigma_{n}^{2}\label{eq:3a}\\
+P_{\theta b}(\mp) & =-\kappa^{\pm1}\sigma_{n}\sigma_{u}(\Delta t)^{1/2}\label{eq:3b}\\
+P_{bb}(\mp) & =\sigma_{u}\left[\sigma_{v}^{2}+2\tilde{\sigma}\sigma_{u}(\Delta t)^{1/2}+\frac{1}{3}\sigma_{u}^{2}(\Delta t)^{2}\right]^{1/2}\pm\frac{1}{2}\sigma_{u}^{2}\Delta t\label{eq:3c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\kappa & \equiv\sigma_{n}^{-1}\left\{ \tilde{\sigma}+\frac{1}{4}\sigma_{u}(\Delta t)^{3/2}+\frac{1}{2}\left[\sigma_{v}^{2}\Delta t+2\tilde{\sigma}\sigma_{u}(\Delta t)^{3/2}+\frac{1}{3}\sigma_{u}^{2}(\Delta t)^{3}\right]^{1/2}\right\} \label{eq:4a}\\
+\tilde{\sigma} & \equiv\left[\sigma_{n}^{2}+\sigma_{e}^{2}+\frac{1}{4}\sigma_{v}^{2}\Delta t+\frac{1}{48}\sigma_{u}^{2}(\Delta t)^{3}\right]^{1/2}\label{eq:4b}
+\end{align}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -280,13 +438,75 @@ Farrenkopf等式
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\end{equation}
+除了表示法，这些结果与Farrenkopf的
+\begin_inset Formula $\text{if }\sigma_{e}=0$
+\end_inset
+
+相同。
+\end_layout
+
+\begin_layout Standard
+例如，考虑漂移非常小但角度白噪声显著的环形激光陀螺，其中
+\begin_inset Formula $\sigma_{v}=0.025\mathrm{deg}/\sqrt{\mathrm{hour}}$
+\end_inset
+
+并且
+\begin_inset Formula $\sigma_{u}=3.7\times10^{-3}\mathrm{deg}/\mathrm{\ensuremath{hour}}^{3/2}$
+\end_inset
+
+，并假设星体跟踪器测量噪声为
+\begin_inset Formula $\sigma_{n}=15\mu\mathrm{rad}$
+\end_inset
+
+。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
+ 显示了星体跟踪器更新时间
+\begin_inset Formula $\Delta t$
+\end_inset
 
+介于
+\begin_inset Formula $0.01\ \mathrm{sec}$
+\end_inset
+
+和
+\begin_inset Formula $100\ \mathrm{sec}$
+\end_inset
+
+之间的稳态更新前和更新后角度标准偏差，即
+\begin_inset Formula $P_{\theta\theta}(\mp)$
+\end_inset
+
+的平方根。实心曲线适用于
+\begin_inset Formula $\sigma_{e}=15\mu\mathrm{rad}$
+\end_inset
+
+，适用于该陀螺仪，虚线曲线适用于
+\begin_inset Formula $\sigma_{e}=0$
+\end_inset
+
+。对于每对曲线，上曲线为测量前更新值，下曲线为测量后更新值。
+\end_layout
+
+\begin_layout Standard
+图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 清楚地表明，当存在陀螺输出白噪声时，增加星体跟踪器更新频率对角度估计精度的影响较小。
 \end_layout
 
 \begin_layout Standard
@@ -296,6 +516,11 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure-fig1.png
+
+\end_inset
+
 
 \end_layout
 
@@ -303,7 +528,13 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Steady-state angle standard deviation.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+稳态角度标准差。
 \end_layout
 
 \end_inset
@@ -318,6 +549,30 @@ Steady-state angle standard deviation.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+随着更新间隔趋向零，虚线显示
+\begin_inset Formula $P_{\theta\theta}(+)$
+\end_inset
+
+和
+\begin_inset Formula $P_{\theta\theta}(-)$
+\end_inset
+
+接近公共渐近线，但实线曲线不显示此特性。其原因是，在测量间隔期间，陀螺过程噪声的贡献与
+\begin_inset Formula $(\Delta t)^{1/2}$
+\end_inset
+
+和
+\begin_inset Formula $(\Delta t)^{3/2}$
+\end_inset
+
+成正比，但当
+\begin_inset Formula $\Delta t$
+\end_inset
+
+趋向零时，角度白噪声的贡献有限。这是在模型替换模式下使用陀螺仪的一个缺点，因为实际航天器无法在零时间内通过有限角度旋转。
 \end_layout
 
 \begin_layout Subsection
@@ -325,12 +580,59 @@ Steady-state angle standard deviation.
 \end_layout
 
 \begin_layout Standard
+1987年，我领导了一个团队，开发了姿态确定误差分析系统(ADEAS)，这是一个数字姿态误差协方差分析程序。ADEAS在Goddard仍然被广泛用于预测不同传感
+器补充、不同观测计划和不同估计方法(包括失谐估计器)可达到的姿态估计精度。我在这方面的同事是Ed Seidewitz，他是麻省理工学院(MIT)的一名优秀毕业生
+。Ed和我研究了批量估计器和Kalman滤波器的协方差分析方程，并对参数进行了求解和考虑。Mark Nicholson 做了大部分编程工作，还发现了方程式中的错
+误，我给了他一些代码。我相信，随着计算机科学家和控制工程师职能的日益分离，已经失去了很多东西。Ed、Mark和我无缝协作的结果记录在一篇会议论文[8]中，但迄今
+为止从未在档案期刊上发表[9]。
+\end_layout
+
+\begin_layout Standard
+ADEAS的创新之一是能够在批处理估计器中评估过程噪声的影响。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 是Julie Thienel(当时的Julie Deutschmann)对Compton伽马射线天文台的姿态精度进行分析时得出的图[8]。该问题不受动力学或观
+测几何的控制，在批次中心附近误差最小，在批次末端误差较大。过程噪声导致了这种在批量估计器中常见的特征形状。曲线图的左右不对称是由于假设了在时间零点时
+\begin_inset Formula $27$
+\end_inset
+
+弧秒的
+\series bold
+先验
+\series default
+姿态知识。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 也很好地展示了1989年计算机图形学的最新发展。
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure-fig2.png
+	scale 65
+
+\end_inset
+
 
 \end_layout
 
@@ -338,7 +640,13 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Batch Estimation Accuracy Estimate for the Compton Gamma Ray Observatory.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+Compton 伽马射线天文台批量估算精度估算。
 \end_layout
 
 \end_inset
@@ -359,6 +667,49 @@ Batch Estimation Accuracy Estimate for the Compton Gamma Ray Observatory.
 热带降雨测量任务(TRMM)
 \end_layout
 
+\begin_layout Standard
+1991年，Goddard开始在内部同时开发两个航天器：热带降雨测量任务(TRMM)和X射线定时探测器(XTE)，后来为纪念布Bruno Rossi更名为RXT
+E。这两个航天器使用共同采购的反作用轮和陀螺仪，但它们的姿态控制系统截然不同。XTE选择恒星惯性姿态基准以满足其弧秒指向要求[10]，而TRMM选择地球基准系统
+以满足其不太严格的
+\begin_inset Formula $0.3^{\circ}~(3\sigma)$
+\end_inset
+
+姿态知识要求。TRMM使用了一个静态地球地平线传感器，类似于NOAA和国防气象卫星计划(DMSP)低地球轨道航天器上使用的传感器。1994年初，在TRMM
+ ACS的开发顺利进行之后，我们意识到通过DMSP地平线传感器的一些窗口的光传输逐渐丢失。我们担心，轨道高度低于
+\begin_inset Formula $350\mathrm{~km}$
+\end_inset
+
+的TRMM可能会遇到更严重的问题，甚至可能完全失去姿态基准。为了防止这种可能性，我们考虑在TRMM中添加一个星体跟踪器，这将招致严重的金钱和日程惩罚。
+\end_layout
+
+\begin_layout Standard
+我知道Joe Hashmall利用高空大气研究卫星(UARS)的飞行陀螺仪和磁强计数据发现了一些非常令人鼓舞的批量姿态确定结果。Joe在很久以后告诉我，他第一次
+在ADEAS协方差分析中看到这些有希望的结果，并认为它们太好而不可能是真的，于是转向批量估计，试图证明ADEAS包含错误，但没有成功。我问赞助Joe的工作的El
+eanor Ketchum，他的方法是否可以适用于在TRMM上进行姿态估计的卡尔曼滤波器。他们和Joe Sedlak对此反应热烈，在一个月内，他们开发了一个卡尔
+曼滤波器，利用UARS数据获得了
+\begin_inset Formula $0.3^{\circ}$
+\end_inset
+
+的姿态精度[11]。卡尔曼滤波器需要大约一个轨道周期的动态记忆体，以减少磁场建模误差的影响。这种记忆体是由精密陀螺仪在TRMM上提供的，这些陀螺仪是XTE共同购
+买的一部分，比基于地球传感器的TRMM ACS所需的性能要好得多。直到2001年，TRMM的轨道高度从
+\begin_inset Formula $350\mathrm{~km}$
+\end_inset
+
+提高到
+\begin_inset Formula $402\mathrm{~km}$
+\end_inset
+
+，以保存补偿大气阻力所需的推进剂，TRMM卡尔曼滤波器才投入使用。按照规范在较低高度运行的静态地球传感器停止提供
+\begin_inset Formula $380\mathrm{~km}$
+\end_inset
+
+以上的有效数据，这是意料之中的。卡尔曼滤波器已启用，现在提供的姿态精度约为
+\begin_inset Formula $0.2^{\circ}$
+\end_inset
+
+，与地平线传感器提供的精度大致相同[12]。
+\end_layout
+
 \begin_layout Section
 约束的复杂性
 \end_layout
@@ -372,11 +723,19 @@ Batch Estimation Accuracy Estimate for the Compton Gamma Ray Observatory.
 \begin_inset Formula $A$
 \end_inset
 
-是旋转群或特殊正交群SO(3)的成员。这只是说
+是旋转群或特殊正交群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的成员。这就是说
 \begin_inset Formula $A$
 \end_inset
 
-必须是行列式+1的正交矩阵的群理论方法。正交性约束
+必须是行列式为
+\begin_inset Formula $+1$
+\end_inset
+
+的正交矩阵的群理论方法。正交性约束
 \end_layout
 
 \begin_layout Standard
@@ -387,26 +746,18 @@ A^{\mathrm{T}}A=I_{3\times3}\label{eq:5}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-是非线性的，这导致了复杂的问题，使得姿态估计困难，但也使得它有趣。事实上，正交性约束非常有用，因为它减少了要估计的自由度[13]。姿态矩阵的运动学方程为[14，
-15]
+是非线性的，这导致了复杂的问题，使得姿态估计困难，但也使得它有趣。事实上，正交性约束非常有用，因为它减少了要估计的自由度[13]。姿态矩阵的运动学方程为[14,
+ 15]
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mathrm{d}A/\mathrm{d}t=-\left[\boldsymbol{\omega}\times\right]A
+\mathrm{d}A/\mathrm{d}t=-\left[\boldsymbol{\omega}\times\right]A\label{eq:6}
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -422,10 +773,6 @@ A^{\mathrm{T}}A=I_{3\times3}\label{eq:5}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 是交叉积矩阵。这个运动学方程用精确的算法保持了
 \begin_inset Formula $A$
 \end_inset
@@ -448,8 +795,11 @@ noprefix "false"
 \begin_inset Formula $A^{\mathrm{T}}A$
 \end_inset
 
-是对称的。这意味着姿态矩阵有三个自由度。存在许多旋转的三维表示[15，16]，但众所周知，对于某些姿态，所有的SO(3)的三个参数表示都是奇异的或不连续的[17
-]。这导致了四元数的广泛使用，即具有最低维数的非奇异参数化[15，16]。四元数用三向量部分
+是对称的。这意味着姿态矩阵有三个自由度。存在许多旋转的三维表示[15，16]，但众所周知，对于某些姿态，所有的
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的三个参数表示都是奇异的或不连续的[17]。这导致了四元数的广泛使用，即具有最低维数的非奇异参数化[15，16]。四元数用三元向量部分
 \begin_inset Formula $\mathbf{q}$
 \end_inset
 
@@ -471,25 +821,17 @@ q_{4}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-姿态矩阵参数化为
+并且姿态矩阵参数化为
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-A(q)=(q_{4}^{2}-\left\Vert \mathbf{q}\right\Vert ^{2})I_{3\times3}+2\mathbf{q}\mathbf{q}^{T}-2q_{4}\left[\mathbf{q}\times\right]\label{eq:9}
+A(q)=(q_{4}^{2}-\left\Vert \mathbf{q}\right\Vert ^{2})I_{3\times3}+2\mathbf{q}\mathbf{q}^{\mathrm{T}}-2q_{4}\left[\mathbf{q}\times\right]\label{eq:9}
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\left\Vert \cdot\right\Vert $
 \end_inset
@@ -515,10 +857,6 @@ A^{\mathrm{T}}(q)A(q)=\left\Vert q\right\Vert {}^{4}I_{3\times3}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -534,7 +872,7 @@ A^{\mathrm{T}}(q)A(q)=\left\Vert q\right\Vert {}^{4}I_{3\times3}
 \end_layout
 
 \begin_layout Standard
-因此，当且仅当四元数满足标准化条件时，方程(
+因此，当且仅当四元数满足规范化条件时，方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:9"
@@ -544,7 +882,7 @@ noprefix "false"
 
 \end_inset
 
-)表示正交矩阵。
+)表示正交矩阵
 \end_layout
 
 \begin_layout Standard
@@ -555,10 +893,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这也是一个非线性约束。从方程(
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -577,7 +911,7 @@ noprefix "false"
 \begin_inset Formula $-q$
 \end_inset
 
-表示相同的态度。四元数表示的这种不唯一性是一个小麻烦，如果不引入像那些困扰三维姿态表示的不连续性，就无法消除。四元数的运动方程是[14，15]
+表示相同的姿态。四元数表示的这种不唯一性是一个小麻烦，如果不引入像那些困扰三维姿态表示的不连续性，就无法消除。四元数的运动方程是[14，15]
 \end_layout
 
 \begin_layout Standard
@@ -599,7 +933,7 @@ noprefix "false"
 \begin_inset Formula $A(q\otimes q')=A(q)A(q')$
 \end_inset
 
-[5，15]。方程(
+ [5, 15]。方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:13"
@@ -632,19 +966,15 @@ L(A)\equiv\dfrac{1}{2}\Sigma_{i}a_{i}\left\Vert \mathbf{b}_{i}-A\mathbf{r}_{i}\r
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-当总和超过观测值时，
+其中总和超过观测值，
 \begin_inset Formula $\mathbf{r}_{i}$
 \end_inset
 
-是参考坐标系中观测对象的矢量，
+是参考坐标系中观测对象的向量，
 \begin_inset Formula $\mathbf{b}_{i}$
 \end_inset
 
-是航天器体坐标系中的对应矢量，
+是航天器体坐标系中的对应向量，
 \begin_inset Formula $a_{i}$
 \end_inset
 
@@ -673,10 +1003,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $B$
 \end_inset
@@ -700,7 +1026,7 @@ B\equiv\Sigma_{i}a_{i}\mathbf{b}_{i}\mathbf{r}_{i}^{\mathrm{T}}
 \begin_inset Formula $\mathrm{trace}\left(AB^{\mathrm{T}}\right)$
 \end_inset
 
-的问题。使用Frobenius范数(也称为Euclidean, Schur, 或 Hilbert-Schmidt范数)[19、20]
+的问题。使用Frobenius范数 (也称为Euclidean, Schur, 或 Hilbert-Schmidt范数) [19、20]
 \end_layout
 
 \begin_layout Standard
@@ -715,7 +1041,7 @@ B\equiv\Sigma_{i}a_{i}\mathbf{b}_{i}\mathbf{r}_{i}^{\mathrm{T}}
 \end_layout
 
 \begin_layout Standard
-我们看这个
+我们发现这个
 \end_layout
 
 \begin_layout Standard
@@ -738,7 +1064,7 @@ B\equiv\Sigma_{i}a_{i}\mathbf{b}_{i}\mathbf{r}_{i}^{\mathrm{T}}
 \begin_inset Formula $A$
 \end_inset
 
-。Wahba问题是正交Procrustes问题的一个特例[19，20]。我们发现，在方程(
+。Wahba问题是正交Procrustes问题[19, 20]的一个特例。我们发现，在方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:14"
@@ -783,10 +1109,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -851,10 +1173,10 @@ Davenport的
 \end_inset
 
 方法在当时可用的计算机上非常缓慢，这导致Malcolm Shuster开发了他的QUEST算法[22]，该算法已被用于自主决定其姿态的星体跟踪器中。自从QUES
-T被开发后，许多其他算法也被开发出来，包括SVD方法[23]，FOAM[24]，和Daniele Mortari的ESOQ[25]和ESOQ2
- [26]算法。随着1990年的临近，Malcolm Shuster建议我们写一篇题为“Wahba问题25年”的调查论文，但我们从未找到时间来做。1995年，我
-做了一个名为“Wahba问题30年”的演讲，毫不奇怪。Daniele Mortari邀请我在罗马重复这个演讲，这导致我们的论文调查了不同的方法，并比较了它们的速
-度和准确性[27]。
+T被开发后，许多其他算法也被开发出来，包括SVD方法[23]，FOAM[24]，和Daniele Mortari的ESOQ [25] 和ESOQ2
+ [26] 算法。随着1990年的临近，Malcolm Shuster建议我们写一篇题为“Wahba问题25年”的调查论文，但我们从未找到时间来做。1995年，
+我做了一个名为“Wahba问题30年”的演讲，毫不奇怪。Daniele Mortari邀请我在罗马重复这个演讲，这导致我们的论文调查了不同的方法，并比较了它们的
+速度和准确性[27]。
 \end_layout
 
 \begin_layout Subsection
@@ -940,7 +1262,7 @@ T被开发后，许多其他算法也被开发出来，包括SVD方法[23]，FOA
 \begin_inset Formula $\mathbf{x}'-\mathbf{x}=(\mathbf{x}'-\bar{\mathbf{x}})-(\mathbf{x}-\bar{\mathbf{x}})$
 \end_inset
 
-代入等式(
+代入方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:23"
@@ -974,7 +1296,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-第二个等式是因为
+第二个方程是因为
 \begin_inset Formula $\mathbf{x}'-\bar{\mathbf{x}}$
 \end_inset
 
@@ -1048,6 +1370,20 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
+作为这些概念的具体示例，考虑图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示平面中的向量分布。所有向量都必须位于单位圆上，并且沿圆弧的点的密度(用粗线的宽度表示)为
+\end_layout
+
+\begin_layout Standard
 \begin_inset Flex Subequations
 status open
 
@@ -1074,11 +1410,13 @@ p(x,y) & \begin{array}{ccc}
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
-	filename 经验总结 - F. Landis Markley-fig3.png
+	filename figure-fig3.png
 
 \end_inset
 
@@ -1089,7 +1427,13 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Constrained Estimation.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+约束估计。
 \end_layout
 
 \end_inset
@@ -1140,7 +1484,11 @@ Constrained Estimation.
 \end_layout
 
 \begin_layout Standard
-一般不会是正交矩阵，即它不属于旋转群SO(3)。姿态矩阵的MMSE估计由以下公式给出：
+一般不会是正交矩阵，即它不属于旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+。姿态矩阵的MMSE估计由以下公式给出：
 \end_layout
 
 \begin_layout Standard
@@ -1182,7 +1530,7 @@ A'\in\mathrm{SO}(3)
 \end_layout
 
 \begin_layout Standard
-最后的等式成立是因为
+最后的方程成立是因为
 \begin_inset Formula $A$
 \end_inset
 
@@ -1221,11 +1569,11 @@ noprefix "false"
 \end_inset
 
 。Oshman和Carmi在他们的粒子滤波器开发中使用了这些概念[29]，我设计了一个基于它们的正交姿态滤波器(Orthogonal Attitude
- Filter, OAF)[31]。然而，事实证明，后者是一个非常笨拙的OAF。
+ Filter, OAF) [31]。然而，事实证明，后者是一个非常笨拙的OAF。
 \end_layout
 
 \begin_layout Standard
-对于实际应用中遇到的概率分布，期望值、MMSE估计值和MLE值都非常接近，在分布的传播上只有二阶差异。一般来说，我们希望我们的估计满足约束条件，所以我们希望MM
+对于实际应用中遇到的概率分布，期望值、MMSE估计值和MLE值都非常接近，在分布的传播上只有二阶差分。一般来说，我们希望我们的估计满足约束条件，所以我们希望MM
 SE估计或MLE而不是期望。目前还不清楚，如果这些估计中的任何一个扩展卡尔曼滤波器(EKF)产生非线性问题，我们将相当不小心区分它们。
 \end_layout
 
@@ -1237,13 +1585,13 @@ SE估计或MLE而不是期望。目前还不清楚，如果这些估计中的任
 在Farrenkopf的笔记[3]发表后不久，我开始尝试将他的稳态协方差解扩展到三轴情况，但这是徒劳的。很快就很明显，没有封闭形式的稳态解，但我坚持发展一般方程
 。经过大量的努力，我得出了一个公式，与Jim Murrell为陆地卫星4号和5号使用的模块化姿态控制系统开发的卡尔曼滤波器完全相同[4]。我非常失望，我问Gen
 e Lefferts，他是否认为我的分析有任何价值。他说Malcolm Shuster开发了一个平行分析，我们的结合工作将值得出版。这篇论文是Malcolm或我
-写过的被引用最多的论文之一[5]。最后一个版本是在周末在Gene家写的。他提供了矢量测量模型，这是此文中唯一真正的创新，同时也起到了缓冲作用，以防止Malcol
+写过的被引用最多的论文之一[5]。最后一个版本是在周末在Gene家写的。他提供了向量测量模型，这是此文中唯一真正的创新，同时也起到了缓冲作用，以防止Malcol
 m和我在演讲中因意见分歧而受到抨击。
 \end_layout
 
 \begin_layout Standard
-自从参考文献[5]发表以来，关于如何正确估计四元数的问题已经耗费很多墨水了[28，32–38]。我们注意到卡尔曼滤波器处理状态估计及其协方差。假定适当规范化的M
-MSE或MLE四元数估计服从传播方程。
+自从参考文献[5]发表以来，关于如何正确估计四元数的问题已经耗费很多墨水了[28, 32–38]。我们注意到卡尔曼滤波器处理状态估计及其协方差。假定适当规范化的
+MMSE或MLE四元数估计服从传播方程。
 \end_layout
 
 \begin_layout Standard
@@ -1265,7 +1613,7 @@ MSE或MLE四元数估计服从传播方程。
 \begin_inset Formula $\hat{\boldsymbol{\omega}}$
 \end_inset
 
-。这保留了四元数的规范化，因此没有问题。但是，测量更新通常违反规范化条件，因此在更新时必须小心。传统的EKF，我们有时称之为加法EKF(AEKF)，它将四元数误
+。这保留了四元数的规范化，因此没有问题。但是，测量更新通常违反规范化条件，因此在更新时必须小心。传统的EKF，我们有时称之为加性EKF(AEKF)，它将四元数误
 差定义为
 \end_layout
 
@@ -1277,11 +1625,7 @@ MSE或MLE四元数估计服从传播方程。
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-有
+其有
 \begin_inset Formula $4\times4$
 \end_inset
 
@@ -1300,7 +1644,7 @@ P=E\left[\left(\Delta q\right)\left(\Delta q\right)^{\mathrm{T}}\right]
 \end_layout
 
 \begin_layout Standard
-方程式(
+方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:12"
@@ -1364,11 +1708,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-MMSE的四元数估计是
+并且MMSE的四元数估计是
 \end_layout
 
 \begin_layout Standard
@@ -1414,7 +1754,7 @@ P\bar{q}=E\left[\left(\Delta q\right)\left(\Delta q\right)^{\mathrm{T}}\bar{q}\r
 \begin_inset Formula $P$
 \end_inset
 
-是病态的，而不是奇异的。在玩具模型[28]和数值研究[38]中被观察到了这一点，分析表明方程式(
+是病态的，而不是奇异的。在玩具模型[28]和数值研究[38]中被观察到了这一点，分析表明方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:36"
@@ -1436,12 +1776,16 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在卡尔曼滤波中，一个条件不好的协方差矩阵会导致数值问题，如果可能的话，我们希望避免这种问题。旋转群SO(3)只有三个自由度，如上所述，因此可以在一个条件良好的
+在卡尔曼滤波中，一个条件不好的协方差矩阵会导致数值问题，如果可能的话，我们希望避免这种问题。旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+只有三个自由度，如上所述，因此可以在一个条件良好的
 \begin_inset Formula $3\times3$
 \end_inset
 
-矩阵中表示所有有用的四元数协方差信息。这种尺寸缩减的概念优势，作为更真实地代表系统实际自由度的概念优势，已被详细讨论过[28，32–38]，但计算优势是无可争辩
-的。
+矩阵中表示所有有用的四元数协方差信息。这种尺寸缩减的概念优势，作为更真实地代表系统实际自由度的概念优势，已被详细讨论过[28, 32–38]，但计算优势是无可争
+辩的。
 \end_layout
 
 \begin_layout Standard
@@ -1456,10 +1800,6 @@ A\left(q/\left\Vert q\right\Vert \right)=\left\Vert q\right\Vert ^{-2}\left\{ \l
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这是一个正交矩阵，不管四元数是否规范化[28]。我们称之为射线表示，因为沿射线穿过原点的任何四元数都对应于相同的姿态矩阵。这种方法避免了强制范数约束的复杂性，但
 引入了不可观测的自由度四元数范数。结果是，
 \begin_inset Formula $P$
@@ -1484,15 +1824,11 @@ q\\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\mathbf{b}$
 \end_inset
 
-是陀螺漂移偏差矢量。如果我们用欧拉方程来建模动力学，而不是在模型替换模式中使用陀螺仪，那么状态向量中的
+是陀螺漂移偏差向量。如果我们用欧拉方程来建模动力学，而不是在模型替换模式中使用陀螺仪，那么状态向量中的
 \begin_inset Formula $\mathbf{b}$
 \end_inset
 
@@ -1514,7 +1850,7 @@ noprefix "false"
 
 \end_inset
 
-)意味着有一个空向量
+)意味着有一个零向量
 \end_layout
 
 \begin_layout Standard
@@ -1528,10 +1864,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $P\mathbf{x}_{null}$
 \end_inset
@@ -1540,15 +1872,15 @@ noprefix "false"
 \begin_inset Formula $P^{2}$
 \end_inset
 
-。这不是协方差矩阵的一个空向量，而是沿着特征值方向的一个向量，它比其他向量小得多，从而导致病态条件反射，如上所述。
+。这不是协方差矩阵的一个零向量，而是沿着特征值方向的一个向量，它比其他向量小得多，从而导致病态条件反射，如上所述。
 \end_layout
 
 \begin_layout Subsection
-乘法EKF方法
+乘性EKF方法
 \end_layout
 
 \begin_layout Standard
-乘法EKF(multiplicative EKF, MEKF)表示作为四元数积的真实姿态。
+乘性EKF(multiplicative EKF, MEKF)表示作为四元数积的真实姿态。
 \end_layout
 
 \begin_layout Standard
@@ -1559,15 +1891,11 @@ q=\delta q(\mathbf{a})\otimes\hat{q}\label{eq:40}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\hat{q}$
 \end_inset
 
-是标准化四元数估计，
+是规范化四元数估计，
 \begin_inset Formula $\delta q(\mathbf{a})$
 \end_inset
 
@@ -1591,6 +1919,13 @@ q=\delta q(\mathbf{a})\otimes\hat{q}\label{eq:40}
 status open
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "eq:41"
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{align}
 \delta q(\mathbf{a}) & =\left[\begin{array}{c}
@@ -1607,10 +1942,6 @@ A\left(\delta q(a)\right) & =I_{3\times3}-\left[\mathbf{a}\times\right]+\mathrm{
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 对于接近单位矩阵
 \begin_inset Formula $I_{3\times3}$
 \end_inset
@@ -1631,7 +1962,7 @@ A\left(\delta q(a)\right) & =I_{3\times3}-\left[\mathbf{a}\times\right]+\mathrm{
 \end_layout
 
 \begin_layout Standard
-MEKF包含六组分状态的传统加法EKF。
+MEKF包含六分量状态的传统加性EKF。
 \end_layout
 
 \begin_layout Standard
@@ -1665,7 +1996,7 @@ MEKF包含六组分状态的传统加法EKF。
 \begin_inset Formula $\hat{q}(-)$
 \end_inset
 
-，但方程式(
+，但方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:40"
@@ -1705,7 +2036,17 @@ noprefix "false"
 
 \end_inset
 
-)和(41)要求
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)要求
 \end_layout
 
 \begin_layout Standard
@@ -1731,7 +2072,7 @@ noprefix "false"
 \begin_inset Formula $\hat{q}$
 \end_inset
 
-分别遵守方程式(
+分别遵守方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:13"
@@ -1768,7 +2109,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-方程式(
+方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:40"
@@ -1799,23 +2140,19 @@ A\left(q\right)=A\left(\delta q(\mathbf{a})\right)A\left(\hat{q}\right)\approx\l
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 这对于计算测量灵敏度矩阵非常方便。选择
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
-作为旋转角矢量，四元数矢量部分的
+作为旋转角向量，四元数向量部分的
 \begin_inset Formula $2$
 \end_inset
 
-倍，Rodrigues参数矢量的
+倍，Rodrigues参数向量的
 \begin_inset Formula $2$
 \end_inset
 
-倍，或改进型Rodrigues参数矢量的
+倍，或改进型Rodrigues参数向量的
 \begin_inset Formula $4$
 \end_inset
 
@@ -1844,7 +2181,11 @@ A\left(\delta q(\mathbf{a})\right)=I-\left[\mathbf{a}\times\right]+\dfrac{1}{2}\
 \end_layout
 
 \begin_layout Standard
-不对称(例如1–2–3)欧拉角的矢量满足方程(
+不对称(例如
+\begin_inset Formula $1–2–3$
+\end_inset
+
+)欧拉角的向量满足方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:41b"
@@ -1864,7 +2205,11 @@ noprefix "false"
 
 \end_inset
 
-)，对称(例如3–1–3)欧拉角的矢量也不满足方程(
+)，对称(例如
+\begin_inset Formula $3–1–3$
+\end_inset
+
+)欧拉角的向量也不满足方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:35"
@@ -1874,7 +2219,7 @@ noprefix "false"
 
 \end_inset
 
-)。我们更喜欢罗德里格斯(Rodrigues)参数(也称为吉布斯矢量(Gibbs vector))，因为
+)。我们更喜欢罗德里格斯(Rodrigues)参数(也称为吉布斯向量(Gibbs vector))，因为
 \end_layout
 
 \begin_layout Standard
@@ -1892,7 +2237,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-这同时具有计算和概念上的优势。其计算优势在于，通过首先定义非规范化四元数，重置可以避免舍入误差的累积。
+这同时具有计算和概念上的优势。其计算优势在于，通过首先定义非规范化四元数，重置可以避免舍入误差的累积
 \end_layout
 
 \begin_layout Standard
@@ -1906,11 +2251,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-然后更新单位四元数
+并且接着更新单位四元数
 \end_layout
 
 \begin_layout Standard
@@ -1925,7 +2266,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-罗德里格斯参数的概念优势在于，它们将旋转组映射为三维欧几里得空间，最大可能的
+罗德里格斯参数的概念优势在于，它们将旋转群映射为三维欧几里得空间，最大可能的
 \begin_inset Formula $180^{\circ}$
 \end_inset
 
@@ -1933,7 +2274,7 @@ noprefix "false"
 \begin_inset Formula $\mathbf{a}$
 \end_inset
 
-作为旋转角矢量的
+作为旋转角向量的
 \begin_inset Formula $2$
 \end_inset
 
@@ -1941,7 +2282,7 @@ noprefix "false"
 \begin_inset Formula $\delta q$
 \end_inset
 
-矢量部分的
+向量部分的
 \begin_inset Formula $2$
 \end_inset
 
@@ -1953,7 +2294,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-在二阶卡尔曼滤波器[35]和无迹姿态估计器[39]中，采用了MEKF的乘法误差模型。
+在二阶卡尔曼滤波器[35]和无迹姿态估计器[39]中，采用了MEKF的乘性误差模型。
 \end_layout
 
 \begin_layout Subsection
@@ -1981,7 +2322,7 @@ noprefix "false"
 
 \end_inset
 
-)定义的空向量正交，即
+)定义的零向量正交，即
 \end_layout
 
 \begin_layout Standard
@@ -1996,12 +2337,16 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-这意味着，我们不假设四元数概率分布在四维四元数空间中的单位球体S3上，而是假设它位于
+这意味着，我们不假设四元数概率分布在四维四元数空间中的单位球体
+\begin_inset Formula $\mathrm{S}3$
+\end_inset
+
+上，而是假设它位于
 \begin_inset Formula $\hat{q}$
 \end_inset
 
 上与
-\begin_inset Formula $S3$
+\begin_inset Formula $\mathrm{S}3$
 \end_inset
 
 相切的三维超平面上。方程(
@@ -2065,10 +2410,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $6\times7$
 \end_inset
@@ -2081,7 +2422,7 @@ noprefix "false"
 \begin_inset Formula $7\times6$
 \end_inset
 
- Moore-Penrose 伪逆
+ Moore-Penrose 伪逆矩阵
 \begin_inset Formula $S$
 \end_inset
 
@@ -2125,7 +2466,7 @@ noprefix "false"
 \begin_inset Formula $\mathbf{x}_{null}$
 \end_inset
 
-正交的七分量误差矢量，可通过以下方法恢复：
+正交的七分量误差向量，可通过以下方法恢复：
 \end_layout
 
 \begin_layout Standard
@@ -2214,7 +2555,7 @@ P=S\tilde{P}S^{\mathrm{T}}\label{eq:54}
 \begin_inset Formula $S$
 \end_inset
 
-。
+
 \end_layout
 
 \begin_layout Standard
@@ -2228,10 +2569,6 @@ q_{4}I_{3\times3}+\left[\mathbf{q}\times\right]\\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 作为
 \end_layout
 
@@ -2338,10 +2675,6 @@ K=S(-)\tilde{K}\label{eq:57}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中下标
 \begin_inset Formula $i$
 \end_inset
@@ -2361,10 +2694,6 @@ K=S(-)\tilde{K}\label{eq:57}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \end_layout
 
@@ -2391,10 +2720,6 @@ K=S(-)\tilde{K}\label{eq:57}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\Delta y$
 \end_inset
@@ -2481,7 +2806,7 @@ noprefix "false"
 \end_inset
 
 处与
-\begin_inset Formula $S3$
+\begin_inset Formula $\mathrm{S}3$
 \end_inset
 
 相切的三维超平面上，而后更新概率分布位于
@@ -2498,7 +2823,7 @@ noprefix "false"
 
 \end_inset
 
-)的两边有不同的空向量，因此该方程不可能精确。附录显示了如何通过重置协方差矩阵来治疗这种疾病。两个空向量之间的差异，因此
+)的两边有不同的零向量，因此该方程不可能精确。附录显示了如何通过重置协方差矩阵来治疗这种疾病。两个零向量之间的差分，并且因此
 \begin_inset Formula $S\left(+\right)$
 \end_inset
 
@@ -2506,7 +2831,7 @@ noprefix "false"
 \begin_inset Formula $S\left(-\right)$
 \end_inset
 
-之间的差异，是按照状态更新的顺序进行的，因此，按照线性化EKF的精神，通常忽略这个小的差异并写入[5]
+之间的差分，是按照状态更新的顺序进行的，因此，按照线性化EKF的精神，通常忽略这个小的差分并写入[5]
 \end_layout
 
 \begin_layout Standard
@@ -2537,7 +2862,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-四元数更新违反四元数规范化，因此使用公式(
+四元数更新违反四元数规范化，因此使用方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:48"
@@ -2586,7 +2911,7 @@ noprefix "false"
 我的第一次航空航天研究是在Goddard和Mel Velez一起进行的。他正在研究自旋稳定同步气象卫星(Synchronous Meteorological
  Satellite SMS)的同步轨道/姿态估计，以便使用地平仪数据中包含的轨道信息。轨道和姿态动力学的不同时间尺度阻碍了进展；轨道运动方程可以与几十分钟的时
 间步相结合，而刚体姿态动力学则需要旋转周期分数的时间步。这导致Velez所追求的参数变化方法的刚体动力学。Harold Morton、John
- Junkins和他们的学生在这方面做了有趣的工作[41，42]，但我尝试了另一种方法。
+ Junkins和他们的学生在这方面做了有趣的工作[41,42]，但我尝试了另一种方法。
 \end_layout
 
 \begin_layout Standard
@@ -2601,11 +2926,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-以及四元数的方程式(
+以及四元数的方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:13"
@@ -2630,10 +2951,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 是角速度，
 \begin_inset Formula $J$
 \end_inset
@@ -2663,15 +2980,11 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 并将机体坐标系组件计算为
 \begin_inset Formula $\mathbf{L}_{B}=A_{BI}\mathbf{L}_{I}$
 \end_inset
 
-。这两个过程中的一个问题是四元数的分量都是快速变量。我的想法是同时使用方程式(
+。这两个过程中的一个问题是四元数的分量都是快速变量。我的想法是同时使用方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:63"
@@ -2691,7 +3004,7 @@ noprefix "false"
 
 \end_inset
 
-)，而不是方程式(
+)，而不是方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:13"
@@ -2712,10 +3025,6 @@ A_{BI}=R_{BI}R\left(\mathbf{L}_{I}/L,\zeta\right)=R\left(\mathbf{L}_{B}/L,\zeta\
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中，
 \begin_inset Formula $R_{BI}$
 \end_inset
@@ -2827,10 +3136,6 @@ SpinKF
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 受非线性约束，即在惯性和物体参考系中角动量的大小相同，即
 \end_layout
 
@@ -2854,7 +3159,7 @@ SpinKF
 \begin_inset Formula $\hat{\;}$
 \end_inset
 
-符号表示估计，而不是单位向量。它由协方差投影技术处理，空向量
+符号表示估计，而不是单位向量。它由协方差投影技术处理，零向量
 \end_layout
 
 \begin_layout Standard
@@ -2873,20 +3178,599 @@ SpinKF
 \end_layout
 
 \begin_layout Standard
-Joe和我在这个类型中开发了几个滤波器，通常称为SpinKF，使用不同的六组分误差状态[45]。最佳SpinKF变种的误差状态包括微小姿态误差角矢量和惯性系中的
-角动量矢量。
+Joe和我在这个类型中开发了几个滤波器，通常称为SpinKF，使用不同的六分量误差状态[45]。最佳SpinKF变种的误差状态包括微小姿态误差角向量和惯性系中的
+角动量向量。
 \end_layout
 
 \begin_layout Subsection
 太阳、异常和磁层粒子探测器(SAMPEX)
 \end_layout
 
+\begin_layout Standard
+SAMPEX于1992年7月3日发射，是Small Explorer(SMEX)系列的第一个，也是我加入在Goddard的“Satellite
+ Saviors”的Henry Hoffman分支[46]后研制的第一个航天器。在我进入场景之前，它的姿态控制系统主要由Tom Flatley定义，它使用一个反
+作用轮来提供沿航天器指向太阳的
+\begin_inset Formula $y$
+\end_inset
+
+轴的角动量偏差，以及控制科学仪器瞄准镜指向
+\begin_inset Formula $z$
+\end_inset
+
+轴的扭矩(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中的向上方向) [47,48]。即使太阳被地球遮挡，动量偏差也会使SAMPEX指向太阳。TRIAD算法或代数方法[21,22]使用来自三轴磁强计、两轴数字太阳
+传感器、机载航天器和太阳星历及磁场模型的数据计算姿态矩阵。SAMPEX利用磁力矩来阻尼章动，并在航天器处于阳光下时保持
+\begin_inset Formula $y$
+\end_inset
+
+轴指向太阳。这是通过要求整个系统的角动量具有规定的大小
+\begin_inset Formula $L_{0}$
+\end_inset
+
+，并沿航天器
+\begin_inset Formula $y$
+\end_inset
+
+轴
+\begin_inset Formula $\mathbf{e}_{y}$
+\end_inset
+
+和机体坐标系
+\begin_inset Formula $\mathbf{s}_{B}$
+\end_inset
+
+中的太阳向量同时指向来实现的。机体坐标系中的总系统角动量由下式给出：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{L}_{B}=J\boldsymbol{\omega}+\mathbf{L}_{wheel}\label{eq:71}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{L}_{wheel}$
+\end_inset
+
+根据反作用轮转速表数据计算L轮，通过微分姿态矩阵并使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算航天器角速度。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig4.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+SAMPEX.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+多余的角动量
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta\mathbf{L}=\left(\mathbf{L}_{B}-L_{0}\mathbf{e}_{y}\right)+\left(\mathbf{L}_{B}-L_{0}\mathbf{S}_{B}\right)\label{eq:72}
+\end{equation}
+
+\end_inset
+
+被磁偶极子驱动向零
+\begin_inset Formula 
+\begin{equation}
+\mathbf{m}=k_{\mathrm{mag}}\Delta\mathbf{L}\times\mathbf{B}\label{eq:73}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{B}$
+\end_inset
+
+是机体坐标系中的磁场。
+\end_layout
+
+\begin_layout Standard
+SAMPEX的寿命远远超过了其最初的两年寿命要求和三年目标，其z轴指向定律在过去几年中多次被重新编程，以满足不断变化的观测目标[49]。2007年8月17日，经
+过15年的完美运行后，反作用轮出现异常，并被关闭。SAMPEX现在是自旋稳定的，使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:73"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的磁控定律，没有任何修改，并且仍在产生有用的科学数据[50]。
+\end_layout
+
 \begin_layout Subsection
 哈勃太空望远镜(HST)
 \end_layout
 
+\begin_layout Standard
+HST在1990年4月STS-31发布后几乎立即出现了两个问题。第一个是主镜的畸变，第二个是在进入和离开地球阴影时出现了最严重的姿态扰动，但这种扰动在轨道的整个
+白天都会持续。Henry Hoffman立即将这些扰动归因于柔性太阳能阵列的热致扭曲，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。Goddard的工程师、Marshall航天飞行中心，以及Lockheed(HST的总承包商)，开发了一种太阳能阵列增益增强算法，成功地减弱了这些干扰，
+直到2002年太阳能阵列被刚性阵列取代。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig5.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+哈勃太空望远镜。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+HST的下一个问题是其六个精密空气轴承陀螺仪中的两个出现故障。如果再多出两个陀螺仪出现故障，就会使用寿命有限的滚珠轴承陀螺仪启动一个不受欢迎的固件控制器，因此H
+ST项目在1991年决定开发一种软件安全指向模式，该模式需要不到三个陀螺仪。为了应对这一挑战，我们在四个月内开发了零陀螺太阳点(ZGSP)模式，从最初的概念到飞
+行准备就绪[51]。该模式在轨道的日光部分将首选轴指向太阳，并在反作用轮中沿太阳指向轴建立动量偏差，以在日食期间保持姿态，方式类似于SAMPEX的科学模式。然而
+，ZGSP模式并不假设星载星历或磁场模型的知识，而是试图通过将身体锁定在感测到的磁场中来限制围绕太阳线的旋转。通过磁场的轨道运动使物体以一种取决于轨道平面、太阳
+线和磁赤道方向的速度旋转。这可以产生一个物体的角动量，抵消一个相当大的偏差动量。在日食期间，ZGSP模式因这种效应而出现了一些较大的姿态偏移，但在1999年11
+月第四个陀螺仪故障和更换所有六个陀螺仪的维修任务之间，它连续38天将HST保持在功率和热安全状态。
+\end_layout
+
+\begin_layout Standard
+Henry Hoffman总是强调角动量守恒，并且很快就否定了任何忽略这一原理的分析，这让我在接受过物理训练的时候感到温暖，我曾亲身经历过这一点，但我感到非常尴
+尬。我很高兴发现角动量守恒在航天器故障探测中的应用[52]。HST的机载计算机通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算系统总角动量，陀螺仪感测角速度。反作用轮的高扭矩会导致车轮角动量和车身角动量迅速变化，但它们的向量和变化缓慢。减去易于计算的陀螺力矩和外部力矩后，一个明显
+的干扰力矩计算如下：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}_{disturbance}=\mathrm{d}\mathbf{L}_{B}/\mathrm{d}t+\boldsymbol{\omega}\times\mathbf{L}_{B}-\mathbf{m}\times\mathbf{B}-\mathbf{T}_{gravity-gradient}\label{eq:74}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该干扰扭矩的较大值表明反作用轮转速表或陀螺仪出现故障。转速表故障可以通过独立测试来识别，因此我们实施了该系统动量测试来识别陀螺仪故障。它在2002年底和2003
+年初三次启动进入ZGSP模式。
+\end_layout
+
 \begin_layout Subsection
-威尔金森微波各向异性探针(WMAP)
+Wilkinson微波各向异性探针(WMAP)
+\end_layout
+
+\begin_layout Standard
+1994年成立的一个GSFC-Princeton大学合作计划将MAP作为一个中型探测器(MIDEX)任务，以比Goddard宇宙背景探测器(COBE)航天器上的
+差分微波辐射计(DMR)仪器更高的分辨率和精度测量宇宙微波背景辐射的各向异性。MAP的首席调查员(PI)是GSFC的Chuck Bennett，他曾是DMR的副
+调查员。Princeton大学的团队包括宇宙微波背景研究主任David Wilkinson，他的荣誉MAP在2002年被重新命名为WMAP。
+\end_layout
+
+\begin_layout Standard
+由于需要在距离太阳线
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $90^{\circ}$
+\end_inset
+
+之间的环形空间上进行一组高度互连的测量，WMAP需要以大约
+\begin_inset Formula $0.5\mathrm{~rpm}$
+\end_inset
+
+的速度快速旋转，并以每小时一圈的速度缓慢进动其旋转轴，与太阳线成
+\begin_inset Formula $22.5^{\circ}$
+\end_inset
+
+的恒定角度。正如Ed Seidewitz和我在ADEAS开发过程中注意到的那样，这种扫描模式类似于COBE，可以很容易地用
+\begin_inset Formula $3-1-3$
+\end_inset
+
+个欧拉角来表示。John Crassidis是美国国家研究委员会(National Research Council)常驻研究助理，他与我一起工作，他使用MAT
+LAB在图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的“呼吸图”中显示了这种模式。Tom Flatley试图找到一种能够被动提供这种扫描模式的双自旋动力学配置，但没有成功。我相信，如果他做不到，没有人能做到
+。因此，我们将WMAP设计为一种主动控制的零动量航天器。Midex是单弦航天器，因此WMAP上的三个反作用轮具有平衡物体旋转角动量以保持零系统动量和应用控制力矩
+以提供所需姿态的双重功能。选择轮轴方向可使所有车轮速度偏离零，以避免出现不需要的零速交叉。如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，WMAP于2001年作为第二次MIDEX任务发射[53]。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig6.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+WMAP Scan Pattern.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig7.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+WMAP.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+WMAP的扫描运动使其机体坐标系中的太阳向量描述一个半径在
+\begin_inset Formula $22.44^{\circ}$
+\end_inset
+
+和
+\begin_inset Formula $22.54^{\circ}$
+\end_inset
+
+之间变化的圆。我将这张由飞行数字太阳传感器数据生成的圆圈照片描述为任何论文中最不有趣的数字[53]。这张照片在2005年2月17日变得更加有趣，当时每日遥测联系
+人显示WMAP处于安全模式，一个反作用轮关闭，并且有标志表明检测到了多个故障，包括系统动量测试故障。对粗略的太阳传感器数据的回放显示，太阳沿着图
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的路径运行，偏离自转轴
+\begin_inset Formula $45^{\circ}$
+\end_inset
+
+，
+\begin_inset Formula $15$
+\end_inset
+
+分钟后到达自转轴。请注意，锯齿状路径是数据稀疏的伪影，不能反映真实运动，粗略的太阳传感器输出不只是单位向量的横向分量。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了安全持有模式的设计行为，使用两个轮子将太阳驱动到自转轴，同时放弃对自转速率的控制。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig8.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:8"
+
+\end_inset
+
+Sun Unit Vector in WMAP Body Frame (Coarse Sun Sensor Units).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+有两个问题。首先，反作用轮发生了机械故障，这将阻止WMAP成功地继续其任务。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了WMAP总系统角动量的时间历程，这一点通过对陀螺仪感测的角速度使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在板上计算得到，从而消除了这一担忧。大约
+\begin_inset Formula $10$
+\end_inset
+
+分钟的突然跳跃不可能是系统角动量的真正变化，因此它必须反映车轮转速表数据或陀螺数据的丢失。观察到
+\begin_inset Formula $40$
+\end_inset
+
+分钟后的系统动量等于跳跃前的系统动量，也得出结论，这是真实的、几乎恒定的系统动量。怀疑集中在转速表上，因为
+\begin_inset Formula $15\mathrm{~Nms}$
+\end_inset
+
+是存储在一个飞轮中用来抵消旋转动量的量，如果断电，
+\begin_inset Formula $30$
+\end_inset
+
+分钟是飞轮减速的典型时间。对遥测技术的进一步检查也证明转速表是正确的。事实证明，宇宙射线的扰动导致电源电子设备意外关闭了反应轮。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figure-fig9.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:9"
+
+\end_inset
+
+WMAP System Angular Momentum.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+第二个担忧是，太阳从自转轴的大偏移可能会对反射器造成损坏，反射器被被动冷却到约
+\begin_inset Formula $90^{\circ}\mathrm{K}$
+\end_inset
+
+，并受到图 7 所示的遮光罩的保护，偏移不超过
+\begin_inset Formula $25^{\circ}$
+\end_inset
+
+。然而，从安全舱模式成功恢复表明，反射器没有受到损坏，WMAP继续提供数据，使科学家能够回答有关早期宇宙结构起源和宇宙命运的关键问题。
 \end_layout
 
 \begin_layout Section
@@ -2894,12 +3778,31 @@ Joe和我在这个类型中开发了几个滤波器，通常称为SpinKF，使�
 \end_layout
 
 \begin_layout Standard
-我的航天事业非常令人满意，但我最大的回报是有机会与天资非凡的同事共事。回顾我的职业生涯，我发现我在很大程度上是偶然的——一个在正确的时间在正确的地点的问题——同
-时也抓住了提供给我的机会。我仍然认为WMAP是它的最高点。它让我有机会用一张干净的纸开始一个姿态控制系统的设计，并且在决定宇宙的年龄方面扮演一个小角色。
+我的航天事业非常令人满意，但我最大的回报是有机会与天资非凡的同事共事。回顾我的职业生涯，我发现我在很大程度上是偶然的 
+\begin_inset Formula $\,$
+\end_inset
+
+——
+\begin_inset Formula $\,$
+\end_inset
+
+ 一个在正确的时间在正确的地点的问题 
+\begin_inset Formula $\,$
+\end_inset
+
+——
+\begin_inset Formula $\,$
+\end_inset
+
+ 同时也抓住了提供给我的机会。我仍然认为WMAP是它的最高点。它让我有机会用一张干净的纸开始一个姿态控制系统的设计，并且在决定宇宙的年龄方面扮演一个小角色。
 \end_layout
 
 \begin_layout Standard
-当然，我的职业生涯并没有以WMAP结束。我可以提到Swift，一个2004年发射的MIDEX航天器，它使用6个反作用轮在
+当然，我的职业生涯并没有以WMAP结束。我可以提到Swift，一个2004年发射的MIDEX航天器，它使用
+\begin_inset Formula $6$
+\end_inset
+
+个反作用轮在
 \begin_inset Formula $60$
 \end_inset
 
@@ -2916,8 +3819,8 @@ Joe和我在这个类型中开发了几个滤波器，通常称为SpinKF，使�
 References
 \end_layout
 
-\begin_layout Standard
-[1] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Humble Problems,” presented as paper AAS 06-238 at the 2006 AAS/AIAA Space
  Flight Mechanics Meeting, San Diego, CA, 2006; Advances in the Astronautical
@@ -2926,8 +3829,8 @@ References
  2205–2222.
 \end_layout
 
-\begin_layout Standard
-[2] CRASSIDIS, J.
+\begin_layout Enumerate
+CRASSIDIS, J.
  L.
  and JUNKINS, J.
  L.
@@ -2935,8 +3838,8 @@ References
  FL, 2004, Chapter 5.
 \end_layout
 
-\begin_layout Standard
-[3] FARRENKOPF, R.
+\begin_layout Enumerate
+FARRENKOPF, R.
  L.
  “Analytic Steady-State Accuracy Solutions for Two Common Spacecraft Attitude
  Estimators,” Journal of Guidance and Control, Vol.
@@ -2945,8 +3848,8 @@ References
  282 – 284.
 \end_layout
 
-\begin_layout Standard
-[4] MURRELL, J.
+\begin_layout Enumerate
+MURRELL, J.
  W.
  “Precision Attitude Determination for Multimission Spacecraft,” presented
  as paper AIAA 78-1248 at the 1978 AIAA Guidance and Control Conference,
@@ -2954,8 +3857,8 @@ References
  70–87.
 \end_layout
 
-\begin_layout Standard
-[5] LEFFERTS, E.
+\begin_layout Enumerate
+LEFFERTS, E.
  J., MARKLEY, F.
  L., and SHUSTER, M.
  D.
@@ -2966,8 +3869,8 @@ References
  417–429.
 \end_layout
 
-\begin_layout Standard
-[6] FALLON, III, L.
+\begin_layout Enumerate
+FALLON, III, L.
  “Gyroscope Models,” in Spacecraft Attitude Determination and Control, J.
  R.
  Wertz, ed., D.
@@ -2975,8 +3878,8 @@ References
  266–270.
 \end_layout
 
-\begin_layout Standard
-[7] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and REYNOLDS, R.
  R.
@@ -2987,8 +3890,8 @@ References
  1065–1067.
 \end_layout
 
-\begin_layout Standard
-[8] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L., SEIDEWITZ, E., and DEUTSCHMANN, J.
  “Attitude Determination Error Analysis: General Model and Specific Application,
 ” Mécanique Spatiale: Space Dynamics, Cepadues-Editions, Toulouse, France,
@@ -2996,8 +3899,8 @@ References
  251–266.
 \end_layout
 
-\begin_layout Standard
-[9] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and CARPENTER, J.
  R.
@@ -3009,8 +3912,8 @@ References
  236–250.
 \end_layout
 
-\begin_layout Standard
-[10] BAUER, F.
+\begin_layout Enumerate
+BAUER, F.
  H., FEMIANO, M.
  D., and MOSIER, G.
  E.
@@ -3019,8 +3922,8 @@ References
  and Control Conference, Hilton Head Island, SC, August 1992,
 \end_layout
 
-\begin_layout Standard
-[11] SEDLAK, J.
+\begin_layout Enumerate
+SEDLAK, J.
  and HASHMALL, J.
  “Accurate Magnetometer/Gyroscope Attitudes Using a Filter with Correlated
  Sensor Noise,” Proceedings of the 1997 Flight Mechanics Symposium, NASA
@@ -3028,8 +3931,8 @@ References
  83–87.
 \end_layout
 
-\begin_layout Standard
-[12] ANDREWS, S.
+\begin_layout Enumerate
+ANDREWS, S.
  F.
  and BILANOW, S.
  “Recent Flight Results of the TRMM Kalman Filter,” presented as paper AIAA
@@ -3037,8 +3940,8 @@ References
  Monterey, CA, August 2002.
 \end_layout
 
-\begin_layout Standard
-[13] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and BAR-ITZHACK, I.
  Y.
@@ -3049,8 +3952,8 @@ References
  338 – 340.
 \end_layout
 
-\begin_layout Standard
-[14] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Equations of Motion,” in Spacecraft Attitude Determination and Control,
  J.
@@ -3060,8 +3963,8 @@ References
  510–523.
 \end_layout
 
-\begin_layout Standard
-[15] SHUSTER, M.
+\begin_layout Enumerate
+SHUSTER, M.
  D.
  “A Survey of Attitude Representations,” The Journal of the Astronautical
  Sciences, Vol.
@@ -3070,8 +3973,8 @@ References
  439 – 517.
 \end_layout
 
-\begin_layout Standard
-[16] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Parameterization of the Attitude,” in Spacecraft Attitude Determination
  and Control, J.
@@ -3081,8 +3984,8 @@ References
  410–420.
 \end_layout
 
-\begin_layout Standard
-[17] STUELPNAGEL, J.
+\begin_layout Enumerate
+STUELPNAGEL, J.
  “On the Parameterization of the Three-Dimensional Rotation Group,” SIAM
  Review, Vol.
  6, No.
@@ -3090,24 +3993,24 @@ References
  422 – 430.
 \end_layout
 
-\begin_layout Standard
-[18] WAHBA, G.
+\begin_layout Enumerate
+WAHBA, G.
  “A Least Squares Estimate of Spacecraft Attitude,” SIAM Review, Vol.
  7, No.
  3, 1965, p.
  409.
 \end_layout
 
-\begin_layout Standard
-[19] HORN, R.
+\begin_layout Enumerate
+HORN, R.
  A.
  and JOHNSON, C.
  R.
  Matrix Analysis, Cambridge, UK, Cambridge University Press, 1985.
 \end_layout
 
-\begin_layout Standard
-[20] GOLUB, G.
+\begin_layout Enumerate
+GOLUB, G.
  H.
  and VAN LOAN, C.
  F.
@@ -3115,8 +4018,8 @@ References
  1983.
 \end_layout
 
-\begin_layout Standard
-[21] LERNER, G.
+\begin_layout Enumerate
+LERNER, G.
  M.
  “Three-Axis Attitude Determination,” in Spacecraft Attitude Determination
  and Control, J.
@@ -3126,8 +4029,8 @@ References
  420–428.
 \end_layout
 
-\begin_layout Standard
-[22] SHUSTER, M.
+\begin_layout Enumerate
+SHUSTER, M.
  D.
  and OH, S.
  D.
@@ -3138,8 +4041,8 @@ References
  70 – 77.
 \end_layout
 
-\begin_layout Standard
-[23] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Attitude Determination Using Vector Observations and the Singular Value
  Decomposition,” The Journal of the Astronautical Sciences, Vol.
@@ -3148,8 +4051,8 @@ References
  245 – 258.
 \end_layout
 
-\begin_layout Standard
-[24] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Attitude Determination Using Vector Observations: a Fast Optimal Matrix
  Algorithm,” The Journal of the Astronautical Sciences, Vol.
@@ -3158,8 +4061,8 @@ References
  261 – 280.
 \end_layout
 
-\begin_layout Standard
-[25] MORTARI, D.
+\begin_layout Enumerate
+MORTARI, D.
  “ESOQ: A Closed-Form Solution to the Wahba Problem,” The Journal of the
  Astronautical Sciences, Vol.
  45, No.
@@ -3167,8 +4070,8 @@ References
  195 – 204.
 \end_layout
 
-\begin_layout Standard
-[26] MORTARI, D.
+\begin_layout Enumerate
+MORTARI, D.
  “Second Estimator of the Optimal Quaternion,” Journal of Guidance, Control,
  and Dynamics, Vol.
  23, No.
@@ -3176,8 +4079,8 @@ References
  885 – 888.
 \end_layout
 
-\begin_layout Standard
-[27] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and MORTARI, D.
  “Quaternion Attitude Estimation Using Vector Observations,” The Journal
@@ -3187,8 +4090,8 @@ References
  359 – 380.
 \end_layout
 
-\begin_layout Standard
-[28] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Attitude Estimation or Quaternion Estimation?” The Journal of the Astronautica
 l Sciences, Vol.
@@ -3197,8 +4100,8 @@ l Sciences, Vol.
  221 – 238.
 \end_layout
 
-\begin_layout Standard
-[29] OSHMAN, Y.
+\begin_layout Enumerate
+OSHMAN, Y.
  and CARMI, A.
  “Attitude Estimation from Vector Observations Using a Genetic-Algorithm-Embedde
 d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
@@ -3208,8 +4111,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  879– 891.
 \end_layout
 
-\begin_layout Standard
-[30] SHUSTER, M.
+\begin_layout Enumerate
+SHUSTER, M.
  D.
  “Maximum Likelihood Estimate of Spacecraft Attitude,” The Journal of the
  Astronautical Sciences, Vol.
@@ -3218,8 +4121,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  79 – 88.
 \end_layout
 
-\begin_layout Standard
-[31] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Attitude Filtering on SO(3),” The Journal of the Astronautical Sciences,
  Vol.
@@ -3228,8 +4131,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  391 – 413.
 \end_layout
 
-\begin_layout Standard
-[32] SHUSTER, M.
+\begin_layout Enumerate
+SHUSTER, M.
  D.
  “Constraint in Attitude Estimation Part I: Constrained Estimation,” The
  Journal of the Astronautical Sciences, Vol.
@@ -3238,8 +4141,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  51 – 74.
 \end_layout
 
-\begin_layout Standard
-[33] SHUSTER, M.
+\begin_layout Enumerate
+SHUSTER, M.
  D.
  “Constraint in Attitude Estimation Part II: Unconstrained Estimation,”
  The Journal of the Astronautical Sciences, Vol.
@@ -3248,8 +4151,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  75 – 101.
 \end_layout
 
-\begin_layout Standard
-[34] PITTELKAU, M.
+\begin_layout Enumerate
+PITTELKAU, M.
  E.
  “An Analysis of the Quaternion Attitude Determination Filter,” The Journal
  of the Astronautical Sciences, Vol.
@@ -3258,8 +4161,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  103 – 120.
 \end_layout
 
-\begin_layout Standard
-[35] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “Attitude Error Representations for Kalman Filtering,” Journal of Guidance,
  Control, and Dynamics, Vol.
@@ -3268,8 +4171,8 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  311 – 317.
 \end_layout
 
-\begin_layout Standard
-[36] ZANETTI, R., MAJJI, M., BISHOP, R.
+\begin_layout Enumerate
+ZANETTI, R., MAJJI, M., BISHOP, R.
  H., and MORTARI, D.
  “Norm Constrained Kalman Filtering,” Journal of Guidance, Control, and
  Dynamics, Vol.
@@ -3278,16 +4181,16 @@ d Quaternion Particle Filter,” Journal of Guidance, Control, and Dynamics,
  1458 – 1465.
 \end_layout
 
-\begin_layout Standard
-[37] CALISE, A.
+\begin_layout Enumerate
+CALISE, A.
  J.
  “Enforcing an Algebraic Constraint in Extended Kalman Filter Design,” presented
  as paper AIAA 2007-6515 at the 2007 AIAA Guidance, Navigation, and Control
  Conference, Hilton Head, SC, August 2007.
 \end_layout
 
-\begin_layout Standard
-[38] CARMI, A.
+\begin_layout Enumerate
+CARMI, A.
  and OSHMAN, Y.
  “Asymptotic Behavior of the Estimation Error Covariance of Quaternion Estimator
 s,” Journal of Guidance, Control, and Dynamics, Vol.
@@ -3296,8 +4199,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  1665–1676.
 \end_layout
 
-\begin_layout Standard
-[39] CRASSIDIS, J.
+\begin_layout Enumerate
+CRASSIDIS, J.
  L.
  and MARKLEY, F.
  L.
@@ -3308,8 +4211,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  536 – 542.
 \end_layout
 
-\begin_layout Standard
-[40] REYNOLDS, R.
+\begin_layout Enumerate
+REYNOLDS, R.
  G.
  “Asymptotically Optimal Attitude Filtering with Guaranteed Convergence,”
  Journal of Guidance, Control, and Dynamics, Vol.
@@ -3318,8 +4221,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  114 – 122.
 \end_layout
 
-\begin_layout Standard
-[41] MORTON, H.
+\begin_layout Enumerate
+MORTON, H.
  S., Jr., JUNKINS, J.
  L., and BLANTON, J.
  N.
@@ -3328,8 +4231,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  287 – 301.
 \end_layout
 
-\begin_layout Standard
-[42] KRAIGE, L.
+\begin_layout Enumerate
+KRAIGE, L.
  G.
  and JUNKINS, J.
  L.
@@ -3339,8 +4242,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  39 – 64.
 \end_layout
 
-\begin_layout Standard
-[43] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  “New Dynamic Variables for Momentum-Bias Spacecraft,” The Journal of the
  Astronautical Sciences, Vol.
@@ -3349,8 +4252,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  557 – 567.
 \end_layout
 
-\begin_layout Standard
-[44] SEDLAK, J.
+\begin_layout Enumerate
+SEDLAK, J.
  E.
  “Spinning Spacecraft Attitude Estimation Using Markley Variables: Filter
  Implementation and Results,” Proceedings of the 2005 Flight Mechanics Symposium
@@ -3358,8 +4261,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  NASA/CP-2005-212789, October 2005.
 \end_layout
 
-\begin_layout Standard
-[45] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and SEDLAK, J.
  E.
@@ -3370,16 +4273,16 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  1750 – 1760.
 \end_layout
 
-\begin_layout Standard
-[46] KUZNIK, F.
+\begin_layout Enumerate
+KUZNIK, F.
  “Satellite Saviors,” AIR & SPACE/Smithsonian, Vol.
  6, No.
  3, 1991, pp.
  66 – 70.
 \end_layout
 
-\begin_layout Standard
-[47] FLATLEY, T.
+\begin_layout Enumerate
+FLATLEY, T.
  W., FORDEN, J.
  K., HENRETTY, D.
  A., LIGHTSEY, E.
@@ -3392,8 +4295,8 @@ s,” Journal of Guidance, Control, and Dynamics, Vol.
  379–398.
 \end_layout
 
-\begin_layout Standard
-[48] MCCULLOUGH, J.
+\begin_layout Enumerate
+MCCULLOUGH, J.
  D., FLATLEY, T.
  W., HENRETTY, D.
  A., MARKLEY, F.
@@ -3406,8 +4309,8 @@ on 3186, pp.
  55–68.
 \end_layout
 
-\begin_layout Standard
-[49] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L., FLATLEY, T.
  W.
  and LEOUTSAKOS, T.
@@ -3417,8 +4320,8 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
  201–215.
 \end_layout
 
-\begin_layout Standard
-[50] TSAI, D.
+\begin_layout Enumerate
+TSAI, D.
  C., MARKLEY, F.
  L., and WATSON, T.
  P.
@@ -3426,8 +4329,8 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
  May 12–16, 2008.
 \end_layout
 
-\begin_layout Standard
-[51] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L.
  and NELSON, J.
  D.
@@ -3438,8 +4341,8 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
  815 – 822.
 \end_layout
 
-\begin_layout Standard
-[52] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L., KENNEDY, K.
  R., NELSON, J.
  D., and MOY, E.
@@ -3451,8 +4354,8 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
  1385 – 1387.
 \end_layout
 
-\begin_layout Standard
-[53] MARKLEY, F.
+\begin_layout Enumerate
+MARKLEY, F.
  L., ANDREWS, S.
  F., O’DONNELL, J.
  R., Jr., and WARD, D.
@@ -3464,13 +4367,67 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
  385 – 397.
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+appendix
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{equation}{0}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+theequation}{
+\backslash
+thesection
+\backslash
+arabic{equation}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 \start_of_appendix
 四元数协方差矩阵的重置
 \end_layout
 
 \begin_layout Subsection
-乘法EKF
+乘性EKF
 \end_layout
 
 \begin_layout Standard
@@ -3478,7 +4435,7 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
 \begin_inset Formula $\hat{q}(+)$
 \end_inset
 
-的重置姿态误差矢量的协方差，我们将其表示为
+的重置姿态误差向量的协方差，我们将其表示为
 \begin_inset Formula $\mathbf{a}(++)$
 \end_inset
 
@@ -3490,7 +4447,7 @@ tion Theory Symposium, Goddard Space Flight Center, Greenbelt, MD, May 1995,
 \begin_inset Formula $\hat{q}(-)$
 \end_inset
 
-相关的预复位姿态误差矢量。真正的四元数不关心参考帧，因此方程(
+相关的预复位姿态误差向量。真正的四元数不关心参考帧，因此方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:40"
@@ -3561,7 +4518,7 @@ noprefix "false"
 \begin_inset Formula $\left\Vert \hat{\mathbf{a}}(+)\right\Vert $
 \end_inset
 
-中的一阶，但在更高阶上有所不同。不过，目前还不清楚更高的阶有多大意义。如果我们使用等式(
+中的一阶，但在更高阶上有所不同。不过，目前还不清楚更高的阶有多大意义。如果我们使用方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:46"
@@ -3571,7 +4528,7 @@ noprefix "false"
 
 \end_inset
 
-)给出的首选Rodrigues参数表示，等式(
+)给出的首选Rodrigues参数表示，方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A2"
@@ -3592,10 +4549,6 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 其中
 \begin_inset Formula $\rho''=\mathbf{a}(++)/2,\rho'=\mathbf{a}(+)/2$
 \end_inset
@@ -3618,11 +4571,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-这里
+其中
 \begin_inset Formula $\Delta\mathbf{a}(+)\equiv\mathbf{a}(+)-\hat{\mathbf{a}}(+)$
 \end_inset
 
@@ -3641,7 +4590,7 @@ M\equiv\left(1+\left\Vert \hat{\mathbf{a}}(+)\right\Vert ^{2}/4\right)^{-1}\left
 \end_layout
 
 \begin_layout Standard
-忽略方程式(
+忽略方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A4"
@@ -3713,7 +4662,7 @@ M & 0_{3\times3}\\
 \end_layout
 
 \begin_layout Standard
-如果方程式(
+如果方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:61"
@@ -3723,7 +4672,7 @@ noprefix "false"
 
 \end_inset
 
-)为真，则方程式(
+)为真，则方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:51a"
@@ -3748,7 +4697,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-与方程式(
+与方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:61"
@@ -3758,7 +4707,7 @@ noprefix "false"
 
 \end_inset
 
-)不同，该方程式没有疾病。我们使用它来定义重置协方差
+)不同，该方程没有病态。我们使用它来定义重置协方差
 \begin_inset Formula $\tilde{P}(++)$
 \end_inset
 
@@ -3766,7 +4715,7 @@ noprefix "false"
 \begin_inset Formula $\tilde{P}(+)$
 \end_inset
 
-的符号表示由出现在右侧的方程式(
+的符号表示由出现在右侧的方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:62"
@@ -3838,11 +4787,7 @@ noprefix "false"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-这里，方程(
+其中应用方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:46"
@@ -3902,7 +4847,7 @@ noprefix "false"
 \begin_inset Formula $\left(1+\left\Vert \hat{\mathbf{a}}(+)\right\Vert ^{2}/4\right)^{-1/2}$
 \end_inset
 
-的另一个校正系数，并将该系数和等式(
+的另一个校正系数，并将该系数和方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A12"
@@ -3912,7 +4857,7 @@ noprefix "false"
 
 \end_inset
 
-)插入等式(
+)插入方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A9"
@@ -3922,7 +4867,7 @@ noprefix "false"
 
 \end_inset
 
-)中可精确地恢复等式(
+)中可精确地恢复方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A7"
