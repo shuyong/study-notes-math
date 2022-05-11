@@ -1,0 +1,2317 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "雅可比矩阵与行列式"
+\pdf_author "wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "雅可比矩阵与行列式"
+target "https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "wikipedia"
+target "https://en.wikipedia.org/wiki/"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+6 April 2022
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset CommandInset href
+LatexCommand href
+name "向量微积分"
+target "https://en.wikipedia.org/wiki/Vector_calculus"
+literal "false"
+
+\end_inset
+
+中，多个变量的
+\begin_inset CommandInset href
+LatexCommand href
+name "向量值函数"
+target "https://en.wikipedia.org/wiki/Vector-valued_function"
+literal "false"
+
+\end_inset
+
+的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)是其所有一阶
+\begin_inset CommandInset href
+LatexCommand href
+name "偏导数"
+target "https://en.wikipedia.org/wiki/Partial_derivative"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)"
+literal "false"
+
+\end_inset
+
+。当这个矩阵是
+\begin_inset CommandInset href
+LatexCommand href
+name "方阵"
+target "https://en.wikipedia.org/wiki/Square_matrix"
+literal "false"
+
+\end_inset
+
+时，也就是说，当函数的输入变量数与其输出
+\begin_inset CommandInset href
+LatexCommand href
+name "向量分量"
+target "https://en.wikipedia.org/wiki/Euclidean_vector#Decomposition"
+literal "false"
+
+\end_inset
+
+数相同时，它的
+\begin_inset CommandInset href
+LatexCommand href
+name "行列式"
+target "https://en.wikipedia.org/wiki/Determinant"
+literal "false"
+
+\end_inset
+
+被称为
+\series bold
+雅可比行列式
+\series default
+(
+\series bold
+Jacobian determinant
+\series default
+)。矩阵和(如果适用的)行列式在文献中通常简称为``
+\series bold
+Jacobian
+\series default
+''。[4]
+\end_layout
+
+\begin_layout Standard
+假设
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{m}$
+\end_inset
+
+是一个函数，使得它的每个一阶偏导数都存在于
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+上。该函数将点
+\begin_inset Formula $\mathbf{x}\in\mathbf{R}^{n}$
+\end_inset
+
+作为输入，并生成向量
+\begin_inset Formula $\mathbf{f}(\mathbf{x})\in\mathbf{R}^{m}$
+\end_inset
+
+作为输出。那么
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的雅可比矩阵被定义为一个
+\begin_inset Formula $m\times n$
+\end_inset
+
+矩阵，记为
+\begin_inset Formula $\mathbf{J}$
+\end_inset
+
+，其第
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为
+\begin_inset Formula $\mathbf{J}_{ij}=\frac{\partial f_{i}}{\partial x_{j}}$
+\end_inset
+
+，或明确地
+\begin_inset Formula 
+\[
+\mathbf{J}=\left[\begin{array}{ccc}
+\frac{\partial\mathbf{f}}{\partial x_{1}} & \cdots & \frac{\partial\mathbf{f}}{\partial x_{n}}\end{array}\right]=\left[\begin{array}{c}
+\nabla^{\mathrm{T}}f_{1}\\
+\vdots\\
+\nabla^{\mathrm{T}}f_{m}
+\end{array}\right]=\left[\begin{array}{ccc}
+\frac{\partial f_{1}}{\partial x_{1}} & \cdots & \frac{\partial f_{1}}{\partial x_{n}}\\
+\vdots & \ddots & \vdots\\
+\frac{\partial f_{m}}{\partial x_{1}} & \cdots & \frac{\partial f_{m}}{\partial x_{n}}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\nabla^{\mathrm{T}}f_{i}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "梯度"
+target "https://en.wikipedia.org/wiki/Gradient"
+literal "false"
+
+\end_inset
+
+的转置(行向量)的第
+\begin_inset Formula $i$
+\end_inset
+
+个分量。
+\end_layout
+
+\begin_layout Standard
+雅可比矩阵，其条目是
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的函数，以各种方式表示；常用符号包括
+\begin_inset Formula $D\mathbf{f}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{J}_{\mathbf{f}}$
+\end_inset
+
+，
+\begin_inset Formula $\nabla\mathbf{f}$
+\end_inset
+
+，以及
+\begin_inset Formula $\frac{\partial\left(f_{1},\ldots,f_{m}\right)}{\partial\left(x_{1},\ldots,x_{n}\right)}$
+\end_inset
+
+。 一些作者将雅可比定义为上述形式的
+\begin_inset CommandInset href
+LatexCommand href
+name "转置"
+target "https://en.wikipedia.org/wiki/Transpose"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+雅可比矩阵
+\begin_inset CommandInset href
+LatexCommand href
+name "表示"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)#Linear_transformations"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+ 在
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的可微分的每个点上的
+\begin_inset CommandInset href
+LatexCommand href
+name "微分"
+target "https://en.wikipedia.org/wiki/Total_derivative"
+literal "false"
+
+\end_inset
+
+。具体来说，如果
+\begin_inset Formula $\mathbf{f}(\mathbf{x})$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处
+\begin_inset CommandInset href
+LatexCommand href
+name "可微"
+target "https://en.wikipedia.org/wiki/Differentiable_function"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的可微性意味着
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+上所有一阶偏导数的存在，但反过来，
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+上所有一阶偏导数的存在并不意味着
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的可微性，因此这是一个更强的条件。
+\end_layout
+
+\end_inset
+
+，如果
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+是一个
+\begin_inset CommandInset href
+LatexCommand href
+name "列矩阵"
+target "https://en.wikipedia.org/wiki/Column_matrix"
+literal "false"
+
+\end_inset
+
+表示的
+\begin_inset CommandInset href
+LatexCommand href
+name "位移向量"
+target "https://en.wikipedia.org/wiki/Displacement_vector"
+literal "false"
+
+\end_inset
+
+，那么
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵乘积"
+target "https://en.wikipedia.org/wiki/Matrix_product"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{J}(\mathbf{x})\cdot\mathbf{h}$
+\end_inset
+
+ 是另一个位移向量，即
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "邻域"
+target "https://en.wikipedia.org/wiki/Neighborhood_(mathematics)"
+literal "false"
+
+\end_inset
+
+内的变化的最佳线性近似。这意味着将
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+映射到
+\begin_inset Formula $\mathbf{f}(\mathbf{x})+\mathbf{J}(\mathbf{x})\cdot(\mathbf{y}-\mathbf{x})$
+\end_inset
+
+的函数是
+\begin_inset Formula $\mathbf{f}(\mathbf{y})$
+\end_inset
+
+对于所有靠近
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的点的最佳
+\begin_inset CommandInset href
+LatexCommand href
+name "线性逼近"
+target "https://en.wikipedia.org/wiki/Linear_approximation"
+literal "false"
+
+\end_inset
+
+。该
+\begin_inset CommandInset href
+LatexCommand href
+name "线性函数"
+target "https://en.wikipedia.org/wiki/Linear_function_(calculus)"
+literal "false"
+
+\end_inset
+
+称为
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处的
+\series bold
+导数
+\series default
+(
+\emph on
+derivative
+\emph default
+)或
+\series bold
+
+\begin_inset CommandInset href
+LatexCommand href
+name "微分"
+target "https://en.wikipedia.org/wiki/Total_derivative"
+literal "false"
+
+\end_inset
+
+
+\series default
+ (
+\emph on
+differential
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $m=n$
+\end_inset
+
+时，雅可比矩阵是方阵，因此其
+\begin_inset CommandInset href
+LatexCommand href
+name "行列式"
+target "https://en.wikipedia.org/wiki/Determinant"
+literal "false"
+
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的明确定义的函数，称为
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的
+\series bold
+雅可比行列式
+\series default
+。它携带有关
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的局部行为的重要信息。特别是，函数
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在点
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的附近具有局部的
+\begin_inset CommandInset href
+LatexCommand href
+name "反函数"
+target "https://en.wikipedia.org/wiki/Inverse_function"
+literal "false"
+
+\end_inset
+
+，当且仅当雅可比行列式在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处非零时，该逆函数是可微的(参见
+\begin_inset CommandInset href
+LatexCommand href
+name "雅可比猜想"
+target "https://en.wikipedia.org/wiki/Jacobian_conjecture"
+literal "false"
+
+\end_inset
+
+)。当改变
+\begin_inset CommandInset href
+LatexCommand href
+name "多重积分"
+target "https://en.wikipedia.org/wiki/Multiple_integral"
+literal "false"
+
+\end_inset
+
+中的变量时，雅可比行列式也会出现(参见
+\begin_inset CommandInset href
+LatexCommand href
+name "多个变量的替换规则"
+target "https://en.wikipedia.org/wiki/Integration_by_substitution#Substitution_for_multiple_variables"
+literal "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $m=1$
+\end_inset
+
+时，即当
+\begin_inset Formula $f:\mathbf{R}^{n}\rightarrow\mathbf{R}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "标量值函数"
+target "https://en.wikipedia.org/wiki/Scalar_field"
+literal "false"
+
+\end_inset
+
+时，雅可比矩阵归约为
+\begin_inset CommandInset href
+LatexCommand href
+name "行向量"
+target "https://en.wikipedia.org/wiki/Row_vector"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\nabla^{\mathrm{T}}f$
+\end_inset
+
+；
+\begin_inset Formula $f$
+\end_inset
+
+的所有一阶偏导数的这个行向量是
+\begin_inset Formula $f$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "梯度"
+target "https://en.wikipedia.org/wiki/Gradient"
+literal "false"
+
+\end_inset
+
+的转置，即
+\begin_inset Formula $\mathbf{J}_{f}=\nabla^{T}f$
+\end_inset
+
+。进一步特化，当
+\begin_inset Formula $m=n=1$
+\end_inset
+
+时，即当
+\begin_inset Formula $f:\mathbf{R}\rightarrow\mathbf{R}$
+\end_inset
+
+
+\begin_inset Formula $f$
+\end_inset
+
+是单个变量的
+\begin_inset CommandInset href
+LatexCommand href
+name "标量值函数"
+target "https://en.wikipedia.org/wiki/Scalar_field"
+literal "false"
+
+\end_inset
+
+时，雅可比矩阵只有一个条目；此条目是函数
+\begin_inset Formula $f$
+\end_inset
+
+的导数。
+\end_layout
+
+\begin_layout Standard
+这些概念以
+\begin_inset CommandInset href
+LatexCommand href
+name "数学家"
+target "https://en.wikipedia.org/wiki/Mathematician"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Carl Gustav Jacob Jacobi"
+target "https://en.wikipedia.org/wiki/Carl_Gustav_Jacob_Jacobi"
+literal "false"
+
+\end_inset
+
+ (1804–1851) 的名字命名。
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+雅可比矩阵
+\end_layout
+
+\begin_layout Standard
+多变量向量值函数的雅可比推广了多变量的
+\begin_inset CommandInset href
+LatexCommand href
+name "标量值函数"
+target "https://en.wikipedia.org/wiki/Scalar_field"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "梯度"
+target "https://en.wikipedia.org/wiki/Gradient"
+literal "false"
+
+\end_inset
+
+，进而推广了单个变量的标量函数的导数。换句话说，
+\begin_inset CommandInset href
+LatexCommand href
+name "多个变量"
+target "https://en.wikipedia.org/wiki/Multivariate_function"
+literal "false"
+
+\end_inset
+
+的标量值函数的雅可比矩阵是其梯度(的转置)，单个变量的标量值函数的梯度是其导数。
+\end_layout
+
+\begin_layout Standard
+在函数可微分的每个点，它的雅可比矩阵也可以被认为是描述函数在该点附近局部施加的“拉伸”、“旋转”或“变换”的量。例如，如果
+\begin_inset Formula $\left(x^{\prime},y^{\prime}\right)=\mathbf{f}(x,y)$
+\end_inset
+
+用于平滑变换图像，雅可比矩阵
+\begin_inset Formula $\mathbf{J}_{\mathbf{f}}(x,y)$
+\end_inset
+
+描述了图像在
+\begin_inset Formula $(x,y)$
+\end_inset
+
+的邻域中如何被变换。
+\end_layout
+
+\begin_layout Standard
+如果一个函数在一点上
+\begin_inset CommandInset href
+LatexCommand href
+name "可微"
+target "https://en.wikipedia.org/wiki/Differentiable_function"
+literal "false"
+
+\end_inset
+
+，它的
+\begin_inset CommandInset href
+LatexCommand href
+name "微分"
+target "https://en.wikipedia.org/wiki/Total_derivative"
+literal "false"
+
+\end_inset
+
+由雅可比矩阵在坐标中给出。然而，一个函数不需要是可微的来定义它的雅可比矩阵，因为只需要存在它的一阶
+\begin_inset CommandInset href
+LatexCommand href
+name "偏导数"
+target "https://en.wikipedia.org/wiki/Partial_derivative"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+中的点
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+处可微分，则其微分由
+\begin_inset Formula $\mathbf{J}_{\mathbf{f}}(\mathbf{p})$
+\end_inset
+
+表示。在这种情况下，由
+\begin_inset Formula $\mathbf{J}_{\mathbf{f}}(\mathbf{p})$
+\end_inset
+
+表示的
+\begin_inset CommandInset href
+LatexCommand href
+name "线性变换"
+target "https://en.wikipedia.org/wiki/Linear_transformation"
+literal "false"
+
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在点
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+附近的最佳
+\begin_inset CommandInset href
+LatexCommand href
+name "线性逼近"
+target "https://en.wikipedia.org/wiki/Linear_approximation"
+literal "false"
+
+\end_inset
+
+，在这个意义上
+\begin_inset Formula 
+\[
+\mathbf{f}(\mathbf{x})-\mathbf{f}(\mathbf{p})=\mathbf{J}_{\mathbf{f}}(\mathbf{p})(\mathbf{x}-\mathbf{p})+o(\|\mathbf{x}-\mathbf{p}\|)\quad(\text{ as }\mathbf{x}\rightarrow\mathbf{p}),
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $O(\|\mathbf{x}-\mathbf{p}\|)$
+\end_inset
+
+是一个接近零的
+\begin_inset CommandInset href
+LatexCommand href
+name "数量"
+target "https://en.wikipedia.org/wiki/Big_O_notation#Little-o_notation"
+literal "false"
+
+\end_inset
+
+，其比
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+接近
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+时
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+之间的
+\begin_inset CommandInset href
+LatexCommand href
+name "距离"
+target "https://en.wikipedia.org/wiki/Euclidean_distance"
+literal "false"
+
+\end_inset
+
+收敛快得多。该近似专门用于通过其一阶
+\begin_inset CommandInset href
+LatexCommand href
+name "泰勒多项式"
+target "https://en.wikipedia.org/wiki/Taylor_polynomial"
+literal "false"
+
+\end_inset
+
+来逼近单个变量的标量函数，即
+\begin_inset Formula 
+\[
+f(x)-f(p)=f^{\prime}(p)(x-p)+o(x-p)\quad(\text{ as }x\rightarrow p).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从这个意义上说，雅可比矩阵可以看作是多变量向量值函数的一种“
+\begin_inset CommandInset href
+LatexCommand href
+name "一阶导数"
+target "https://en.wikipedia.org/wiki/Derivative"
+literal "false"
+
+\end_inset
+
+”。特别是，这意味着几个变量的标量值函数的
+\begin_inset CommandInset href
+LatexCommand href
+name "梯度"
+target "https://en.wikipedia.org/wiki/Gradient"
+literal "false"
+
+\end_inset
+
+也可以被视为它的“一阶导数”。
+\end_layout
+
+\begin_layout Standard
+可组合可微函数
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{m}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{g}:\mathbf{R}^{m}\rightarrow\mathbf{R}^{k}$
+\end_inset
+
+满足
+\begin_inset CommandInset href
+LatexCommand href
+name "链式法则"
+target "https://en.wikipedia.org/wiki/Chain_rule#General_rule"
+literal "false"
+
+\end_inset
+
+，即对于
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+中的
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+， 
+\begin_inset Formula $\mathbf{J}_{\mathbf{g}\circ\mathbf{f}}(\mathbf{x})=\mathbf{J}_{\mathbf{g}}(\mathbf{f}(\mathbf{x}))\mathbf{J}_{\mathbf{f}}(\mathbf{x})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+多个变量的标量函数的梯度雅可比矩阵有一个特殊的名称：
+\begin_inset CommandInset href
+LatexCommand href
+name "Hessian matrix "
+target "https://en.wikipedia.org/wiki/Hessian_matrix"
+literal "false"
+
+\end_inset
+
+，在某种意义上它是所讨论函数的“
+\begin_inset CommandInset href
+LatexCommand href
+name "二阶导数"
+target "https://en.wikipedia.org/wiki/Second_derivative"
+literal "false"
+
+\end_inset
+
+”。
+\end_layout
+
+\begin_layout Section
+雅可比行列式
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $m=n$
+\end_inset
+
+，则
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+是从
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+到自身的函数，雅可比矩阵是
+\begin_inset CommandInset href
+LatexCommand href
+name "方阵"
+target "https://en.wikipedia.org/wiki/Square_matrix"
+literal "false"
+
+\end_inset
+
+。然后我们可以形成它的
+\begin_inset CommandInset href
+LatexCommand href
+name "行列式"
+target "https://en.wikipedia.org/wiki/Determinant"
+literal "false"
+
+\end_inset
+
+，称为
+\series bold
+雅可比行列式
+\series default
+。雅可比行列式有时简称``the Jacobian''。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Wrap figure
+lines 0
+placement o
+overhang 0in
+width "60col%"
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Jacobian_determinant_and_distortion.svg
+	scale 46
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+非线性映射
+\begin_inset Formula $f:\mathbb{R}^{2}\rightarrow\mathbb{R}^{2}$
+\end_inset
+
+将一个小正方形(左，红色)发送到一个扭曲的平行四边形(右，红色)。一个点的雅可比给出了该点附近的扭曲平行四边形的最佳线性近似(右，半透明白色)，雅可比行列式给出
+了近似平行四边形面积与原始正方形面积之比。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定点的雅可比行列式给出了关于
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在该点附近的行为的重要信息。例如，如果
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+处的雅可比行列式不为零，则
+\begin_inset CommandInset href
+LatexCommand href
+name "连续可微函数"
+target "https://en.wikipedia.org/wiki/Continuously_differentiable_function"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+ 在点
+\begin_inset Formula $\mathbf{p}\in\mathbf{R}^{n}$
+\end_inset
+
+附近
+\begin_inset CommandInset href
+LatexCommand href
+name "可逆"
+target "https://en.wikipedia.org/wiki/Invertible"
+literal "false"
+
+\end_inset
+
+。这就是
+\begin_inset CommandInset href
+LatexCommand href
+name "反函数定理"
+target "https://en.wikipedia.org/wiki/Inverse_function_theorem"
+literal "false"
+
+\end_inset
+
+。此外，如果
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+处的雅可比行列式为
+\begin_inset CommandInset href
+LatexCommand href
+name "正数"
+target "https://en.wikipedia.org/wiki/Positive_number"
+literal "false"
+
+\end_inset
+
+，则
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+保持
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+附近的方向；如果它是
+\begin_inset CommandInset href
+LatexCommand href
+name "负数"
+target "https://en.wikipedia.org/wiki/Negative_number"
+literal "false"
+
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+反转方向。在
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+处的雅可比行列式
+\begin_inset CommandInset href
+LatexCommand href
+name "绝对值"
+target "https://en.wikipedia.org/wiki/Absolute_value"
+literal "false"
+
+\end_inset
+
+给出了函数
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+附近扩大或缩小
+\begin_inset CommandInset href
+LatexCommand href
+name "体积"
+target "https://en.wikipedia.org/wiki/Volume"
+literal "false"
+
+\end_inset
+
+的因子；这就是它出现在一般
+\begin_inset CommandInset href
+LatexCommand href
+name "替换规则"
+target "https://en.wikipedia.org/wiki/Substitution_rule"
+literal "false"
+
+\end_inset
+
+中的原因。
+\end_layout
+
+\begin_layout Standard
+雅可比行列式用于在评估函数在其域内的区域上的
+\begin_inset CommandInset href
+LatexCommand href
+name "多重积分"
+target "https://en.wikipedia.org/wiki/Multiple_integral"
+literal "false"
+
+\end_inset
+
+时
+\begin_inset CommandInset href
+LatexCommand href
+name "更改变量"
+target "https://en.wikipedia.org/wiki/Integration_by_substitution#Substitution_for_multiple_variables"
+literal "false"
+
+\end_inset
+
+。为了适应坐标的变化，雅可比行列式的大小作为积分内的乘法因子出现。这是因为
+\begin_inset Formula $n$
+\end_inset
+
+维
+\begin_inset Formula $dV$
+\end_inset
+
+元素在新坐标系中通常是平行六面体，而
+\begin_inset CommandInset href
+LatexCommand href
+name "平行六面体"
+target "https://en.wikipedia.org/wiki/Parallelepiped"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset Formula $n$
+\end_inset
+
+维体积是其边向量的行列式。
+\end_layout
+
+\begin_layout Standard
+雅可比行列也可用于通过近似平衡点附近的行为来确定
+\begin_inset CommandInset href
+LatexCommand href
+name "微分方程组"
+target "https://en.wikipedia.org/wiki/Matrix_differential_equation"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "平衡"
+target "https://en.wikipedia.org/wiki/Equilibrium_point"
+literal "false"
+
+\end_inset
+
+稳定性。其应用包括确定疾病建模中无病平衡的稳定性。[5]
+\end_layout
+
+\begin_layout Section
+逆矩阵
+\end_layout
+
+\begin_layout Standard
+根据
+\begin_inset CommandInset href
+LatexCommand href
+name "反函数定理"
+target "https://en.wikipedia.org/wiki/Inverse_function_theorem"
+literal "false"
+
+\end_inset
+
+，可逆函数的雅可比矩阵的
+\begin_inset CommandInset href
+LatexCommand href
+name "逆矩阵"
+target "https://en.wikipedia.org/wiki/Invertible_matrix"
+literal "false"
+
+\end_inset
+
+就是
+\begin_inset CommandInset href
+LatexCommand href
+name "逆函数"
+target "https://en.wikipedia.org/wiki/Invertible_function"
+literal "false"
+
+\end_inset
+
+的雅可比矩阵。也就是说，如果函数
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{n}$
+\end_inset
+
+的雅可比在
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+中的点
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+处是连续且非奇异的，则当限制在
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+的某个邻域时
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+是可逆的，并且
+\begin_inset Formula 
+\[
+\mathbf{J}_{\mathbf{f}^{-1}}=\mathbf{J}_{\mathbf{f}}{}^{-1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+反之，如果雅可比行列式在某点不为零，则函数在该点附近
+\series bold
+局部可逆
+\series default
+(
+\emph on
+locally invertible
+\emph default
+)，即在该点附近存在函数可逆的
+\begin_inset CommandInset href
+LatexCommand href
+name "邻域"
+target "https://en.wikipedia.org/wiki/Neighbourhood_(mathematics)"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在多项式函数的情况下， (未经证明的)
+\begin_inset CommandInset href
+LatexCommand href
+name "雅可比猜想"
+target "https://en.wikipedia.org/wiki/Jacobian_conjecture"
+literal "false"
+
+\end_inset
+
+与全局可逆性有关，即由
+\begin_inset Formula $n$
+\end_inset
+
+个变量中的
+\begin_inset Formula $n$
+\end_inset
+
+个
+\begin_inset CommandInset href
+LatexCommand href
+name "多项式"
+target "https://en.wikipedia.org/wiki/Polynomial"
+literal "false"
+
+\end_inset
+
+定义的函数。它断言，如果雅可比行列式是一个非零常数(或者，等价地，它没有任何复数零)，那么该函数是可逆的，并且它的逆是一个多项式函数。
+\end_layout
+
+\begin_layout Section
+临界点
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{m}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "可微函数"
+target "https://en.wikipedia.org/wiki/Differentiable_function"
+literal "false"
+
+\end_inset
+
+，则
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的
+\series bold
+临界点
+\series default
+(
+\emph on
+critical point
+\emph default
+)是雅可比矩阵的
+\begin_inset CommandInset href
+LatexCommand href
+name "秩"
+target "https://en.wikipedia.org/wiki/Rank_(linear_algebra)"
+literal "false"
+
+\end_inset
+
+不是最大的点。这意味着临界点的秩低于某个相邻点的秩。换句话说，设
+\begin_inset Formula $k$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的图像中包含的
+\begin_inset CommandInset href
+LatexCommand href
+name "开球"
+target "https://en.wikipedia.org/wiki/Open_ball"
+literal "false"
+
+\end_inset
+
+的最大维数；如果
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的所有秩为
+\begin_inset Formula $k$
+\end_inset
+
+的所有
+\begin_inset CommandInset href
+LatexCommand href
+name "子项"
+target "https://en.wikipedia.org/wiki/Minor_(linear_algebra)"
+literal "false"
+
+\end_inset
+
+都为零 ，则这个点是临界点。
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $m=n=k$
+\end_inset
+
+的情况下，如果雅可比行列式为零，则这个点是临界点。
+\end_layout
+
+\begin_layout Section
+例子
+\end_layout
+
+\begin_layout Subsection
+示例 1
+\end_layout
+
+\begin_layout Standard
+考虑函数
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{2}\rightarrow\mathbf{R}^{2}$
+\end_inset
+
+，其中
+\begin_inset Formula $(x,y)\mapsto\left(f_{1}(x,y),f_{2}(x,y)\right)$
+\end_inset
+
+，由下式给出
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{f}\left(\left[\begin{array}{l}
+x\\
+y
+\end{array}\right]\right)=\left[\begin{array}{l}
+f_{1}(x,y)\\
+f_{2}(x,y)
+\end{array}\right]=\left[\begin{array}{c}
+x^{2}y\\
+5x+\sin y
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则我们有
+\begin_inset Formula 
+\[
+f_{1}(x,y)=x^{2}y
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+f_{2}(x,y)=5x+\sin y
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的雅可比矩阵是
+\begin_inset Formula 
+\[
+\mathbf{J}_{\mathbf{f}}(x,y)=\left[\begin{array}{ll}
+\frac{\partial f_{1}}{\partial x} & \frac{\partial f_{1}}{\partial y}\\
+\frac{\partial f_{2}}{\partial x} & \frac{\partial f_{2}}{\partial y}
+\end{array}\right]=\left[\begin{array}{cc}
+2xy & x^{2}\\
+5 & \cos y
+\end{array}\right]
+\]
+
+\end_inset
+
+并且其雅可比行列式是
+\begin_inset Formula 
+\[
+\det\left(\mathbf{J}_{\mathbf{f}}(x,y)\right)=2xy\cos y-5x^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+示例 2：极坐标-笛卡尔变换
+\end_layout
+
+\begin_layout Standard
+从
+\begin_inset CommandInset href
+LatexCommand href
+name "极坐标"
+target "https://en.wikipedia.org/wiki/Polar_coordinate_system"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $(r,\varphi)$
+\end_inset
+
+ 到
+\begin_inset CommandInset href
+LatexCommand href
+name "笛卡尔坐标"
+target "https://en.wikipedia.org/wiki/Cartesian_coordinate_system"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $(x,y)$
+\end_inset
+
+ 的变换由函数
+\begin_inset Formula $\mathbf{F}:\mathbf{R}^{+}\times[0,2\pi)\rightarrow\mathbf{R}^{2}$
+\end_inset
+
+给出，其分量为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}x & =r\cos\varphi;\\
+y & =r\sin\varphi\\
+\mathbf{J}_{\mathbf{F}}(r,\varphi) & =\left[\begin{array}{ll}
+\frac{\partial x}{\partial r} & \frac{\partial x}{\partial\varphi}\\
+\frac{\partial y}{\partial r} & \frac{\partial y}{\partial\varphi}
+\end{array}\right]=\left[\begin{array}{cc}
+\cos\varphi & -r\sin\varphi\\
+\sin\varphi & r\cos\varphi
+\end{array}\right]
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+雅可比行列式等于
+\begin_inset Formula $r$
+\end_inset
+
+。这可用于转换两个坐标系之间的积分：
+\begin_inset Formula 
+\[
+\iint_{\mathbf{F}(A)}f(x,y)dxdy=\iint_{A}f(r\cos\varphi,r\sin\varphi)rdrd\varphi.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+示例 3：球面-笛卡尔变换
+\end_layout
+
+\begin_layout Standard
+从
+\begin_inset CommandInset href
+LatexCommand href
+name "球坐标"
+target "https://en.wikipedia.org/wiki/Spherical_coordinate_system"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $(\rho,\varphi,\theta)$
+\end_inset
+
+ [6]到
+\begin_inset CommandInset href
+LatexCommand href
+name "笛卡尔坐标"
+target "https://en.wikipedia.org/wiki/Cartesian_coordinate_system"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $(x,y,z)$
+\end_inset
+
+ 的变换由函数
+\begin_inset Formula $\mathbf{F}:\mathbf{R}^{+}\times[0,\pi)\times[0,2\pi)\rightarrow\mathbf{R}^{3}$
+\end_inset
+
+给出，其分量为：
+\begin_inset Formula 
+\[
+\begin{aligned}x & =\rho\sin\varphi\cos\theta;\\
+y & =\rho\sin\varphi\sin\theta;\\
+z & =\rho\cos\varphi.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种坐标变化的雅可比矩阵是
+\begin_inset Formula 
+\[
+\mathbf{J}_{\mathbf{F}}(\rho,\varphi,\theta)=\left[\begin{array}{lll}
+\frac{\partial x}{\partial\rho} & \frac{\partial x}{\partial\varphi} & \frac{\partial x}{\partial\theta}\\
+\frac{\partial y}{\partial\rho} & \frac{\partial y}{\partial\varphi} & \frac{\partial y}{\partial\theta}\\
+\frac{\partial z}{\partial\rho} & \frac{\partial z}{\partial\varphi} & \frac{\partial z}{\partial\theta}
+\end{array}\right]=\left[\begin{array}{ccc}
+\sin\varphi\cos\theta & \rho\cos\varphi\cos\theta & -\rho\sin\varphi\sin\theta\\
+\sin\varphi\sin\theta & \rho\cos\varphi\sin\theta & \rho\sin\varphi\cos\theta\\
+\cos\varphi & -\rho\sin\varphi & 0
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "行列式"
+target "https://en.wikipedia.org/wiki/Determinant"
+literal "false"
+
+\end_inset
+
+是
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\rho^{2}\sin\varphi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+。由于
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $dV=dxdydz$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是矩形微分体积元的体积(因为矩形棱柱的体积是其边的乘积)，我们可以将
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $dV=\rho^{2}\sin\varphi d\rho d\varphi d\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+解释为球面
+\begin_inset CommandInset href
+LatexCommand href
+name "微分体积元素"
+target "https://en.wikipedia.org/wiki/Differential_volume_element"
+literal "false"
+
+\end_inset
+
+的体积。与矩形微分体积元的体积不同，这种微分体积元的体积不是常数，而是跟随坐标(
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+和
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\varphi$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+)的变量。它可用于转换两个坐标系之间的积分：
+\begin_inset Formula 
+\[
+\iiint_{\mathbf{F}(U)}f(x,y,z)dxdydz=\iiint_{U}f(\rho\sin\varphi\cos\theta,\rho\sin\varphi\sin\theta,\rho\cos\varphi)\rho^{2}\sin\varphi d\rho d\varphi d\theta.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+示例 4
+\end_layout
+
+\begin_layout Standard
+函数
+\begin_inset Formula $\mathbf{F}:\mathbf{R}^{3}\rightarrow\mathbf{R}^{4}$
+\end_inset
+
+的分量如下 ：
+\begin_inset Formula 
+\[
+\begin{aligned}y_{1} & =x_{1}\\
+y_{2} & =5x_{3}\\
+y_{3} & =4x_{2}^{2}-2x_{3}\\
+y_{4} & =x_{3}\sin x_{1}
+\end{aligned}
+\]
+
+\end_inset
+
+它的雅可比矩阵是
+\begin_inset Formula 
+\[
+\mathbf{J}_{\mathbf{F}}\left(x_{1},x_{2},x_{3}\right)=\left[\begin{array}{lll}
+\frac{\partial y_{1}}{\partial x_{1}} & \frac{\partial y_{1}}{\partial x_{2}} & \frac{\partial y_{1}}{\partial x_{3}}\\
+\frac{\partial y_{2}}{\partial x_{1}} & \frac{\partial y_{2}}{\partial x_{2}} & \frac{\partial y_{2}}{\partial x_{3}}\\
+\frac{\partial y_{3}}{\partial x_{1}} & \frac{\partial y_{3}}{\partial x_{2}} & \frac{\partial y_{3}}{\partial x_{3}}\\
+\frac{\partial y_{4}}{\partial x_{1}} & \frac{\partial y_{4}}{\partial x_{2}} & \frac{\partial y_{4}}{\partial x_{3}}
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 0 & 5\\
+0 & 8x_{2} & -2\\
+x_{3}\cos x_{1} & 0 & \sin x_{1}
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个例子表明雅可比矩阵不必是方阵。
+\end_layout
+
+\begin_layout Subsection
+示例 5
+\end_layout
+
+\begin_layout Standard
+函数
+\begin_inset Formula $\mathbf{F}:\mathbf{R}^{3}\rightarrow\mathbf{R}^{3}$
+\end_inset
+
+的分量如下 ：
+\begin_inset Formula 
+\[
+\begin{aligned}y_{1} & =5x_{2}\\
+y_{2} & =4x_{1}^{2}-2\sin\left(x_{2}x_{3}\right)\\
+y_{3} & =x_{2}x_{3}
+\end{aligned}
+\]
+
+\end_inset
+
+它的雅可比矩阵是
+\begin_inset Formula 
+\[
+\left|\begin{array}{ccc}
+0 & 5 & 0\\
+8x_{1} & -2x_{3}\cos\left(x_{2}x_{3}\right) & -2x_{2}\cos\left(x_{2}x_{3}\right)\\
+0 & x_{3} & x_{2}
+\end{array}\right|=-8x_{1}\left|\begin{array}{cc}
+5 & 0\\
+x_{3} & x_{2}
+\end{array}\right|=-40x_{1}x_{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由此我们看到，在
+\begin_inset Formula $x_{1}$
+\end_inset
+
+和
+\begin_inset Formula $x_{2}$
+\end_inset
+
+具有相同符号的那些点附近，
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+反转了方向；除了
+\begin_inset Formula $x_{1}=0$
+\end_inset
+
+或
+\begin_inset Formula $x_{2}=0$
+\end_inset
+
+附近的点外，该函数在任何地方都是
+\begin_inset CommandInset href
+LatexCommand href
+name "局部"
+target "https://en.wikipedia.org/wiki/Locally"
+literal "false"
+
+\end_inset
+
+可逆的。直观地说，如果从点
+\begin_inset Formula $(1,2,3)$
+\end_inset
+
+周围的一个小对象开始并将
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+应用于该对象，将得到一个体积约为原始对象体积的
+\begin_inset Formula $40\times1\times2=80$
+\end_inset
+
+倍的结果对象，其中方向反转。
+\end_layout
+
+\begin_layout Section
+其他用途
+\end_layout
+
+\begin_layout Subsection
+回归与最小二乘拟合
+\end_layout
+
+\begin_layout Standard
+雅可比矩阵在统计
+\begin_inset CommandInset href
+LatexCommand href
+name "回归"
+target "https://en.wikipedia.org/wiki/Regression_analysis"
+literal "false"
+
+\end_inset
+
+和
+\begin_inset CommandInset href
+LatexCommand href
+name "曲线拟合"
+target "https://en.wikipedia.org/wiki/Curve_fitting"
+literal "false"
+
+\end_inset
+
+中用作线性化
+\begin_inset CommandInset href
+LatexCommand href
+name "设计矩阵"
+target "https://en.wikipedia.org/wiki/Design_matrix"
+literal "false"
+
+\end_inset
+
+；参见
+\begin_inset CommandInset href
+LatexCommand href
+name "非线性最小二乘法"
+target "https://en.wikipedia.org/wiki/Non-linear_least_squares"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+动力系统
+\end_layout
+
+\begin_layout Standard
+考虑一个形式为
+\begin_inset Formula $\dot{\mathbf{x}}=F(\mathbf{x})$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "动力系统"
+target "https://en.wikipedia.org/wiki/Dynamical_system"
+literal "false"
+
+\end_inset
+
+，其中
+\begin_inset Formula $\dot{\mathbf{x}}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+相对于
+\begin_inset CommandInset href
+LatexCommand href
+name "演化参数"
+target "https://en.wikipedia.org/wiki/Evolution_parameter"
+literal "false"
+
+\end_inset
+
+的时间
+\begin_inset Formula $t$
+\end_inset
+
+的(按分量)导数，而
+\begin_inset Formula $F:\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+是可微的。如果
+\begin_inset Formula $F\left(\mathbf{x}_{0}\right)=0$
+\end_inset
+
+，则
+\begin_inset Formula $\mathbf{x}_{0}$
+\end_inset
+
+是一个
+\begin_inset CommandInset href
+LatexCommand href
+name "稳定点"
+target "https://en.wikipedia.org/wiki/Stationary_point"
+literal "false"
+
+\end_inset
+
+(也称为
+\begin_inset CommandInset href
+LatexCommand href
+name "稳态"
+target "https://en.wikipedia.org/wiki/Steady_state"
+literal "false"
+
+\end_inset
+
+)。根据
+\begin_inset CommandInset href
+LatexCommand href
+name " Hartman-Grobman 定理"
+target "https://en.wikipedia.org/wiki/Hartman%E2%80%93Grobman_theorem"
+literal "false"
+
+\end_inset
+
+，系统在驻点附近的行为与
+\begin_inset Formula $\mathbf{J}_{F}\left(\mathbf{x}_{0}\right)$
+\end_inset
+
+,的
+\begin_inset CommandInset href
+LatexCommand href
+name "特征值"
+target "https://en.wikipedia.org/wiki/Eigenvalue"
+literal "false"
+
+\end_inset
+
+有关，即稳定点
+\begin_inset Formula $F$
+\end_inset
+
+处的雅可比行列式。[7]具体来说，如果特征值的实部都为负，则系统在驻点附近稳定，如果任何特征值的实部为正，则该点不稳定。如果特征值的最大实部为零，则雅可比矩阵不
+允许评估稳定性。[8]
+\end_layout
+
+\begin_layout Subsection
+牛顿法
+\end_layout
+
+\begin_layout Standard
+一个耦合非线性方程的方系统可以通过
+\begin_inset CommandInset href
+LatexCommand href
+name "牛顿法"
+target "https://en.wikipedia.org/wiki/Newton%27s_method#Nonlinear_systems_of_equations"
+literal "false"
+
+\end_inset
+
+迭代求解。该方法使用方程组的雅可比矩阵。
+\end_layout
+
+\begin_layout Section
+参看
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Center manifold"
+target "https://en.wikipedia.org/wiki/Center_manifold"
+literal "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Hessian matrix "
+target "https://en.wikipedia.org/wiki/Hessian_matrix"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Pushforward (differential)"
+target "https://en.wikipedia.org/wiki/Pushforward_(differential)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+"Jacobian - Definition of Jacobian in English by Oxford Dictionaries".
+ Oxford Dictionaries - English.
+ Archived from the original on 1 December 2017.
+ Retrieved 2 May 2018.
+ 
+\end_layout
+
+\begin_layout Enumerate
+"the definition of jacobian".
+ Dictionary.com.
+ Archived from the original on 1 December 2017.
+ Retrieved 2 May 2018.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Team, Forvo.
+ "Jacobian pronunciation: How to pronounce Jacobian in English".
+ forvo.com.
+ Retrieved 2 May 2018.
+ 
+\end_layout
+
+\begin_layout Enumerate
+W., Weisstein, Eric.
+ "Jacobian".
+ mathworld.wolfram.com.
+ Archived from the original on 3 November 2017.
+ Retrieved 2 May 2018.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Smith? RJ (2015).
+ "The Joys of the Jacobian".
+ Chalkdust.
+ 2: 10–17.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Joel Hass, Christopher Heil, and Maurice Weir.
+ Thomas' Calculus Early Transcendentals, 14e.
+ Pearson, 2018, p.
+ 959.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Arrowsmith, D.
+ K.; Place, C.
+ M.
+ (1992).
+ "The Linearization Theorem".
+ Dynamical Systems: Differential Equations, Maps, and Chaotic Behaviour.
+ London: Chapman & Hall.
+ pp.
+ 77–81.
+ ISBN 0-412-39080-9.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Hirsch, Morris; Smale, Stephen (1974).
+ Differential Equations, Dynamical Systems and Linear Algebra.
+ ISBN 0-12-349550-4.
+\end_layout
+
+\begin_layout Section
+进一步阅读
+\end_layout
+
+\begin_layout Itemize
+Gandolfo, Giancarlo (1996).
+ "Comparative Statics and the Correspondence Principle".
+ Economic Dynamics (Third ed.).
+ Berlin: Springer.
+ pp.
+ 305–330.
+ ISBN 3-540-60988-1.
+ 
+\end_layout
+
+\begin_layout Itemize
+Protter, Murray H.; Morrey, Charles B., Jr.
+ (1985).
+ "Transformations and Jacobians".
+ Intermediate Calculus (Second ed.).
+ New York: Springer.
+ pp.
+ 412–420.
+ ISBN 0-387-96058-9.
+\end_layout
+
+\begin_layout Section
+外部链接
+\end_layout
+
+\begin_layout Itemize
+"Jacobian", Encyclopedia of Mathematics, EMS Press, 2001 [1994] 
+\end_layout
+
+\begin_layout Itemize
+Mathworld A more technical explanation of Jacobians
+\end_layout
+
+\end_body
+\end_document
