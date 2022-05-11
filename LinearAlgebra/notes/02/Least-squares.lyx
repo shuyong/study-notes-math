@@ -884,7 +884,7 @@ A^{\dagger}A=\left(A^{\mathrm{T}}A\right)^{-1}A^{\mathrm{T}}A=I
 \end_layout
 
 \begin_layout Standard
-我们可以基于QR分解去直观地理解最小二乘法：
+我们可以基于矩阵的QR分解去直观地理解最小二乘法：
 \end_layout
 
 \begin_layout Itemize
@@ -1863,15 +1863,19 @@ Q^{\top}Q\geq\left(P^{\top}Q\right)^{\top}\left(P^{\top}P\right)^{-1}\left(P^{\t
 \begin_inset Formula $Q$
 \end_inset
 
-为误差的标准差矩阵，矩阵
+为误差的标准差矩阵。矩阵
 \begin_inset Formula $P$
 \end_inset
 
-为经过权重矩阵
+为原始量测矩阵
+\begin_inset Formula $C$
+\end_inset
+
+经过权重矩阵
 \begin_inset Formula $W$
 \end_inset
 
-校正过后的量测矩阵，以抵消系统噪声的协方差矩阵
+校正过后新的量测矩阵，以抵消系统噪声的协方差矩阵
 \begin_inset Formula $R$
 \end_inset
 
@@ -1883,7 +1887,53 @@ Q^{\top}Q\geq\left(P^{\top}Q\right)^{\top}\left(P^{\top}P\right)^{-1}\left(P^{\t
 \begin_inset Formula $\hat{W}=R^{-1}$
 \end_inset
 
-，因此对冲了系统噪声的影响，这很符合直觉。这时上述不等式的等号成立，数据的误差最小。最终，我们是在校正后的数据集合上进行最小二乘估计，并且此时的估计为无偏估计。
+，因此对冲了系统噪声的影响，这很符合直觉。这时上述不等式的等号成立，数据的误差最小，
+\begin_inset Formula $Q^{\top}Q=\left(P^{\top}P\right)^{-1}$
+\end_inset
+
+。此时
+\begin_inset Formula $P=\left(R^{1/2}\right)^{-1}C$
+\end_inset
+
+，其中标准差的倒数
+\begin_inset Formula $\left(R^{1/2}\right)^{-1}$
+\end_inset
+
+又称精度矩阵，由此左乘校正了量测矩阵
+\begin_inset Formula $C$
+\end_inset
+
+，因此
+\begin_inset Formula 
+\[
+\Sigma=\left(P^{\top}P\right)^{-1}=\left(C^{\top}R^{-1}C\right)^{-1}
+\]
+
+\end_inset
+
+被称为最小二乘解的协方差，并且这种二次型矩阵被称为Fisher信息矩阵或Hessian矩阵。并且
+\begin_inset Formula $\left(C^{\top}R^{-1}C\right)^{-1}C^{\top}R^{-1}$
+\end_inset
+
+为矩阵
+\begin_inset Formula $C$
+\end_inset
+
+的最优权重伪逆矩阵，因为
+\begin_inset Formula 
+\begin{align*}
+\left(C^{\top}R^{-1}C\right)^{-1}C^{\top}R^{-1}C & =\left(\left(\left(R^{1/2}\right)^{-1}C\right)^{\top}\left(\left(R^{1/2}\right)^{-1}C\right)\right)^{-1}\left(\left(R^{1/2}\right)^{-1}C\right)^{\top}\left(R^{1/2}\right)^{-1}C\\
+ & =\left(P^{\top}P\right)^{-1}P^{\top}P\\
+ & =I
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最终，我们是在校正后的白化数据集合上进行最小二乘估计，并且此时的估计为无偏估计。
 \end_layout
 
 \begin_layout Standard
