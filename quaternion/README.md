@@ -7,6 +7,7 @@
 四元数有用的资料：
 
 * [四元数与三维旋转](https://krasjet.github.io/quaternion/quaternion.pdf)
-* [Quaternions](http://web.cs.iastate.edu/~cs577/handouts/quaternion.pdf)
+* [Quaternions](https://faculty.sites.iastate.edu/jia/files/inline-files/quaternion.pdf)
+* [Dual Quaternions](https://faculty.sites.iastate.edu/jia/files/inline-files/dual-quaternion.pdf)
 * [Quaternion Algebra and Calculus](https://www.geometrictools.com/Documentation/Quaternions.pdf)
 
