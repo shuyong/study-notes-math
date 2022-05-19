@@ -910,6 +910,24 @@ u_{x}G_{1}+u_{y}G_{2}+u_{z}G_{3} & \in\mathfrak{so}(3)
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula $\mathbf{R}^{\mathrm{T}}$
+\end_inset
+
+与其很相似
+\begin_inset Formula 
+\[
+\boxed{\mathbf{R}^{\mathrm{T}}=\begin{cases}
+\mathbf{I}-\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\\
+\cos\theta\mathbf{I}-\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}
+\end{cases}.}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 这是在软件中更常用的公式，因为从IMU中读取出来的角速度向量
 \begin_inset Formula $\boldsymbol{\omega}$
 \end_inset
@@ -1776,6 +1794,81 @@ G_{4}=\left(\begin{array}{cccc}
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula $\mathbf{V}^{\mathrm{T}}$
+\end_inset
+
+矩阵与
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵很相似
+\begin_inset Formula 
+\[
+\boxed{\mathbf{V}=\begin{cases}
+\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\\
+\dfrac{\sin\theta}{\theta}\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}
+\end{cases}.}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们同样可以对
+\begin_inset Formula $\mathbf{V}^{\mathrm{T}}$
+\end_inset
+
+矩阵的方程进行一些变换，以便查看其与
+\begin_inset Formula $\mathbf{R}^{\mathrm{T}}$
+\end_inset
+
+矩阵的关系
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}^{\mathrm{T}} & =\dfrac{\sin\theta}{\theta}\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}\\
+ & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{\sin\theta}{\theta^{3}}\left(-\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\theta^{2}\mathbf{I}\right)-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]\\
+ & \because\ \left[\boldsymbol{\phi}\times\right]^{2}=\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}-\theta^{2}\boldsymbol{I},\quad\left[\boldsymbol{\phi}\times\right]^{3}=-\theta^{2}\left[\boldsymbol{\phi}\times\right]\\
+ & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{\sin\theta}{\theta^{3}}\left(-\left[\boldsymbol{\phi}\times\right]^{2}\right)+\left(\dfrac{1-\cos\theta}{\theta^{4}}\right)\left[\boldsymbol{\phi}\times\right]^{3}\\
+ & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{1}{\theta^{2}}\left[\boldsymbol{\phi}\times\right]\left(-\dfrac{\sin\theta}{\theta}\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\right)\\
+ & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{1}{\theta^{2}}\left[\boldsymbol{\phi}\times\right]\left(\mathbf{R}^{\mathrm{T}}-\mathbf{I}\right)
+\end{align*}
+
+\end_inset
+
+在一些资料里，又把
+\begin_inset Formula $\mathbf{V}^{\mathrm{T}}$
+\end_inset
+
+矩阵称为
+\begin_inset Formula $\boldsymbol{\Gamma}$
+\end_inset
+
+矩阵，
+\begin_inset Formula $\boldsymbol{\Gamma}=\mathbf{V}^{\mathrm{T}}$
+\end_inset
+
+，将其做为伴随矩阵用于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的协方差矩阵
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+的坐标系的变换
+\begin_inset Formula 
+\[
+\boldsymbol{\Sigma}_{\mathcal{Y}}=\boldsymbol{\Gamma}\boldsymbol{\Sigma}_{\mathcal{X}}\boldsymbol{\Gamma}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 在工程中，
 \begin_inset Formula $\boldsymbol{\xi}$
 \end_inset
@@ -1863,55 +1956,6 @@ C & =\dfrac{1-A}{\theta^{2}}\\
 \begin{equation}
 \mathbf{V}^{-1}=\mathbf{I}-\dfrac{1}{2}\left[\boldsymbol{\phi}\times\right]+\dfrac{1}{\theta^{2}}\left(1-\dfrac{A}{2B}\right)\left[\boldsymbol{\phi}\times\right]^{2}
 \end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-我们可以对
-\begin_inset Formula $\mathbf{V}^{-1}$
-\end_inset
-
-矩阵的方程进行一些变换，以便查看其与
-\begin_inset Formula $\mathbf{R}^{-1}$
-\end_inset
-
-矩阵的关系
-\begin_inset Formula 
-\begin{align*}
-\mathbf{V}^{-1} & =\dfrac{\sin\theta}{\theta}\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}\\
- & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{\sin\theta}{\theta^{3}}\left(-\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\theta^{2}\mathbf{I}\right)-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]\\
- & \because\ \left[\boldsymbol{\phi}\times\right]^{2}=\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}-\theta^{2}\boldsymbol{I},\quad\left[\boldsymbol{\phi}\times\right]^{3}=-\theta^{2}\left[\boldsymbol{\phi}\times\right]\\
- & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{\sin\theta}{\theta^{3}}\left(-\left[\boldsymbol{\phi}\times\right]^{2}\right)+\left(\dfrac{1-\cos\theta}{\theta^{4}}\right)\left[\boldsymbol{\phi}\times\right]^{3}\\
- & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{1}{\theta^{2}}\left[\boldsymbol{\phi}\times\right]\left(-\dfrac{\sin\theta}{\theta}\left[\boldsymbol{\phi}\times\right]+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\phi}\times\right]^{2}\right)\\
- & =\dfrac{1}{\theta^{2}}\boldsymbol{\phi}\boldsymbol{\phi}^{\mathrm{T}}+\dfrac{1}{\theta^{2}}\left[\boldsymbol{\phi}\times\right]\left(\mathbf{R}^{-1}-\mathbf{I}\right)
-\end{align*}
-
-\end_inset
-
-在一些资料里，又把
-\begin_inset Formula $\mathbf{V}^{-1}$
-\end_inset
-
-矩阵称为
-\begin_inset Formula $\boldsymbol{\Gamma}$
-\end_inset
-
-矩阵，
-\begin_inset Formula $\boldsymbol{\Gamma}=\mathbf{V}^{-1}$
-\end_inset
-
-，将其做为伴随矩阵用于协方差矩阵
-\begin_inset Formula $\boldsymbol{\Sigma}$
-\end_inset
-
-的坐标系的变换
-\begin_inset Formula 
-\[
-\boldsymbol{\Sigma}_{\mathcal{Y}}=\boldsymbol{\Gamma}\boldsymbol{\Sigma}_{\mathcal{X}}\boldsymbol{\Gamma}^{\mathrm{T}}
-\]
 
 \end_inset
 
