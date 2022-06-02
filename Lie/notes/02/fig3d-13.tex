@@ -1,0 +1,57 @@
+% How to draw a torus in LaTeX
+% http://latexdraw.com
+% 03/10/2019, 21:46
+
+\documentclass[border=0.5cm]{standalone}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{tikz-3dplot}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\tdplotsetmaincoords{60}{115}
+\pgfplotsset{compat=newest}
+
+\begin{document}
+    \begin{tikzpicture}[tdplot_main_coords, scale = 3]
+        \coordinate (P) at ({1/sqrt(3)},{1/sqrt(3)},{1/sqrt(3)});
+        
+        \shade[ball color = lightgray, opacity = 0.5] (0,0,0) circle (1cm);
+        
+        \tdplotsetrotatedcoords{0}{0}{0};
+        \draw[dashed, tdplot_rotated_coords, gray] (0,0,0) circle (1);
+        
+        \tdplotsetrotatedcoords{90}{90}{90};
+        \draw[dashed, tdplot_rotated_coords, gray] (1,0,0) arc (0:180:1);
+        
+        \tdplotsetrotatedcoords{0}{90}{90};
+        \draw[dashed, tdplot_rotated_coords, gray] (1,0,0) arc (0:180:1);
+        
+        \draw[dashed, gray] (0,0,0) -- (-1,0,0);
+        \draw[dashed, gray] (0,0,0) -- (0,-1,0);
+        
+        %\draw[-stealth] (0,0,0) -- (1.80,0,0) node[below left] {$x$};
+        %\draw[-stealth] (0,0,0) -- (0,1.30,0) node[below right] {$y$};
+        %\draw[-stealth] (0,0,0) -- (0,0,1.30) node[above] {$z$};
+	\draw[-stealth] (0,0,0) -- (1.30,0,0);
+        \draw[-stealth] (0,0,0) -- (0,1.30,0);
+	\draw[-stealth] (0,0,0) -- (0,0,1.30);
+        \draw[thick, -stealth] (0,0,0) -- (P) node[right] {$\mathbf{R}$};
+        
+        %\draw[thin, dashed] (P) --++ (0,0,{-1/sqrt(3)});
+        %\draw[thin, dashed] ({1/sqrt(3)},{1/sqrt(3)},0) --++
+        %(0,{-1/sqrt(3)},0);
+        %\draw[thin, dashed] ({1/sqrt(3)},{1/sqrt(3)},0) --++
+        %({-1/sqrt(3)},0,0);
+        
+	\draw[] (0,-1.05,0) node[left] {$\det\left(\mathbf{R}\right)=1$};
+	\node[above left] at (-0.7,-0.7,0.5) {$\mathrm{SO(3)}$};
+	\node[above] at (-0.7,-0.7,1.0) 
+	    {$ \text{Rotation Group }\mathrm{SO(3)} $};
+
+        \draw[fill = lightgray!50] (0,1.0,0) circle (0.5pt) node[below right] {$\mathbf{I}$};
+        \draw[fill = lightgray!50] (P) circle (0.5pt);
+
+    \end{tikzpicture}
+\end{document}

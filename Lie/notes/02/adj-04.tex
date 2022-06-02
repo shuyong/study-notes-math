@@ -1,0 +1,94 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{quotes,angles}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=5]
+
+% Draw x and y axis lines
+\draw [->,>=latex] (-1.2,0) -- (1.2,0) node [below] {$\mathbf{q}$};
+\draw [->,>=latex] (0,-0.2) -- (0,1.2) node [left] {$w$};
+\node [above] at (0, 1.25) {North};
+\node [below] at (0,-0.25) {South};
+\node[above left] at (-0.7,0.7) {$\mathrm{S}^{3}$};
+%\node[above] at (0.0,1.40) {$\mathrm{S}^{3}$ : The unit quaternion numbers};
+
+% Draw a arc at the origin of radius 1
+\draw (1,0) arc (000:180:1);
+\filldraw[black] (0,1) circle (0.5pt) node[above left ] {$\mathcal{E}$} ;
+
+\filldraw[black] (0.5000,0.8660) circle (0.5pt) node[above] {$\mathcal{X}$} ;
+\filldraw[black] (0.8660,0.5000) circle (0.5pt) node[left ] {$\mathcal{Y} = \mathcal{X} \boxplus \, {}^\mathcal{X}\boldsymbol{\tau}$} ;
+
+\begin{scope} [rotate=-30]
+
+\draw (-0.5000,1) -- ( 0.6000,1)  node[right,rotate=-30] {tangent space} ;
+\draw [->,>=latex, very thick, blue] (0,1) -- ( 0.5236,1)  node[above,rotate=-30] {${}^\mathcal{X}\boldsymbol{\tau}^{\wedge}$} ;
+\draw [->,>=latex, very thick, red] (0,1) arc (90:60:1);
+\draw [->,>=latex] [very thin] (0.5236,0.99) arc (00:-11:0.5236) ;
+\node [right,rotate=-30] at (0.5236,0.91) {\tiny$\exp\left(\color{blue}{}^\mathcal{X}\boldsymbol{\tau}^{\wedge}\color{black}\right)$} ;
+
+\end{scope}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{scope} [xshift=80]
+
+% Draw x and y axis lines
+\draw [->,>=latex] (-1.2,0) -- (1.2,0) node [below] {$\mathbf{q}$};
+\draw [->,>=latex] (0,-0.2) -- (0,1.2) node [left] {$w$};
+\node [above] at (0, 1.25) {North};
+\node [below] at (0,-0.25) {South};
+\node[above left] at (-0.7,0.7) {$\mathrm{S}^{3}$};
+%\node[above] at (0.0,1.40) {$\mathrm{S}^{3}$ : The unit quaternion numbers};
+
+% Draw a arc at the origin of radius 1
+\draw (1,0) arc (000:180:1);
+\filldraw[black] (0,1) circle (0.5pt) node[above left ] {$\mathcal{E}$} ;
+
+\begin{scope} [rotate=30]
+
+\draw [->,>=latex] (-1.2,0) -- (1.2,0) node [below,rotate=30] {$\mathbf{q}^\prime$};
+\draw [->,>=latex] (0,-0.2) -- (0,1.2) node [left ,rotate=30] {$w^\prime$};
+
+% Draw a arc at the origin of radius 1
+\draw (1,0) arc (000:180:1);
+\filldraw[black] (0,1) circle (0.5pt) node[above left ,rotate=30] {$\mathcal{E}^\prime$} ;
+
+\end{scope}
+
+\filldraw[black] (0.5000,0.8660) circle (0.5pt) node[right] {$\mathcal{Y} = \mathcal{X}^\prime = {}^\mathcal{E}\boldsymbol{\tau} \boxplus \mathcal{X}$} ;
+%\filldraw[black] (0.8660,0.5000) circle (0.5pt) node[left ] {$\mathcal{Y}$} ;
+
+\draw (-0.55,1) -- ( 0.55,1)  node[right] {tangent space} ;
+\draw [->,>=latex, very thick, blue] (0,1) -- (-0.5236,1)  node[above] {${}^\mathcal{E}\boldsymbol{\tau}^{\wedge}$} ;
+\draw [->,>=latex, very thick, red] (0,1) arc (090:120:1);
+\draw [->,>=latex] [very thin] (-0.5236,0.99) arc (00:12:-0.5236) ;
+\node [right] at (-0.5236,0.94) {\tiny$\exp\left(\color{blue}{}^\mathcal{X}\boldsymbol{\tau}^{\wedge}\color{black}\right)$} ;
+
+\end{scope}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\node[below right,scale=1.2] at (1.0,1.6) {The adjoint};
+
+\node[below right] at (0.5,1.5) {$
+\boxed{
+\begin{array}{rl}
+\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\mathcal{X} & =\mathcal{X}\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\\
+\exp\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right) & =\mathcal{X}\exp\left(^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}=\exp\left(\mathcal{X}\:{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\:\mathcal{X}^{-1}\right)\\
+^{\mathcal{E}}\boldsymbol{\tau}^{\wedge} & =\mathcal{X}\:{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\:\mathcal{X}^{-1}
+\end{array} 
+}
+$} ;
+
+\draw [->] [very thin] (1.01,0.70) to [out= 60,in=-90] (1.22,1.20) ;
+\draw [->] [very thin] (2.22,1.05) to [out=150,in=-60] (0.86,1.20) ;
+
+
+\end{tikzpicture}
+
+\end{document}
+

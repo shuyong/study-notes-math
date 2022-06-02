@@ -1,0 +1,133 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+
+%Angle Definitions
+%-----------------
+
+%set the plot display orientation
+%synatax: \tdplotsetdisplay{\theta_d}{\phi_d}
+\tdplotsetmaincoords{60}{115}
+
+%define polar coordinates for some vector
+%TODO: look into using 3d spherical coordinate system
+\pgfmathsetmacro{\rvec}{1.0}
+\pgfmathsetmacro{\thetavec}{45+9.5}
+\pgfmathsetmacro{\phivec}{45}
+
+%start tikz picture, and use the tdplot_main_coords style to implement the display 
+%coordinate transformation provided by 3dplot
+\begin{tikzpicture}[scale=6,tdplot_main_coords]
+
+%set up some coordinates 
+%-----------------------
+\coordinate (O) at (0,0,0);
+\coordinate (I) at (0,0,1);
+
+%determine a coordinate (P) using (r,\theta,\phi) coordinates.  This command
+%also determines (Pxy), (Pxz), and (Pyz): the xy-, xz-, and yz-projections
+%of the point (P).
+%syntax: \tdplotsetcoord{Coordinate name without parentheses}{r}{\theta}{\phi}
+\tdplotsetcoord{P} {\rvec}{\thetavec}{\phivec}
+%\tdplotsetcoord{P1}{\rvec}{\thetavec+9.5}{\phivec-20}
+%\tdplotsetcoord{P2}{\rvec}{\thetavec+15} {\phivec-20}
+
+%draw figure contents
+%--------------------
+
+%draw the main coordinate system axes
+\draw[->,>=latex] (0,0,0) -- ( 1.2, 0  , 0  ) ;
+\draw[->,>=latex] (0,0,0) -- ( 0  , 1.2, 0  ) ;
+\draw[->,>=latex] (0,0,0) -- ( 0  , 0  , 1.2) ;
+\node[left] at (I) {$\boldsymbol{I}$}; 
+
+%draw a vector from origin to point (P) 
+%\draw[->,>=latex] (O) -- (P);
+%\draw[->,>=latex] (O) -- (P1);
+
+%draw projection on xy plane, and a connecting line
+%\draw[dashed] (O) -- (Pxy);
+%\draw[dashed] (P) -- (Pxy);
+
+%draw the angle \phi, and label it
+%syntax: \tdplotdrawarc[coordinate frame, draw options]{center point}{r}{angle}{label options}{label}
+%\tdplotdrawarc{(O)}{0.2}{0}{\phivec}{anchor=north}{$\phi$}
+
+%set the rotated coordinate system so the x'-y' plane lies within the
+%"theta plane" of the main coordinate system
+%syntax: \tdplotsetthetaplanecoords{\phi}
+\tdplotsetthetaplanecoords{\phivec}
+
+%draw theta arc and label, using rotated coordinate system
+%\tdplotdrawarc[tdplot_rotated_coords]{(0,0,0)}{0.3}{30}{\thetavec}{anchor=south west}{$\frac{\theta}{2}$}
+
+%draw some dashed arcs, demonstrating direct arc drawing
+\draw[dashed,tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\draw[dashed] (\rvec,0,0) arc (0:90:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (\thetavec:25:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (\thetavec:70:\rvec);
+
+%\draw [very thin, tdplot_rotated_coords, lightgray!10,inner color=lightgray!100,outer color=lightgray!10] (P1) +(-0.01,-0.01,-0.01)  circle (0.15);
+%\draw [very thin, tdplot_rotated_coords, lightgray!10,inner color=lightgray!100,outer color=lightgray!10] (P1) ++(-0.01,-0.01,-0.01)  ellipse (0.18 and 0.16);
+
+\tdplotsetrotatedcoords{0}{-90}{0};
+\draw[dashed, tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\tdplotsetrotatedcoords{0}{-45}{0};
+\draw[dashed, tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (40:55:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (30:15:\rvec);
+\tdplotsetrotatedcoords{-90}{-90}{0};
+\draw[dashed, tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\tdplotsetrotatedcoords{-90}{225}{0};
+\draw[dashed, tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (25:46:\rvec);
+\draw[very thick,tdplot_rotated_coords,->,>=latex] (P) arc (55:46:\rvec);
+
+\tdplotsetthetaplanecoords{\phivec}
+%\draw[dashed,tdplot_rotated_coords] (\rvec,0,0) arc (0:90:\rvec);
+
+%set the rotated coordinate definition within display using a translation
+%coordinate and Euler angles in the "z(\alpha)y(\beta)z(\gamma)" euler rotation convention
+%syntax: \tdplotsetrotatedcoords{\alpha}{\beta}{\gamma}
+\tdplotsetrotatedcoords{\phivec}{\thetavec}{0}
+
+%translate the rotated coordinate system
+%syntax: \tdplotsetrotatedcoordsorigin{point}
+\tdplotsetrotatedcoordsorigin{(P)}
+
+%use the tdplot_rotated_coords style to work in the rotated, translated coordinate frame
+\draw [very thin, tdplot_rotated_coords, gray] ( 0.5-1.2, 0.0,1.2) -- (-0.5-1.2, 0.0,1.2);
+\draw [very thin, tdplot_rotated_coords, gray] ( 0.0-1.2, 0.5,1.2) -- ( 0  -1.2,-0.5,1.2);
+\draw [very thin, tdplot_rotated_coords, gray] ( 0.6-1.2, 0.6,1.2) -- ( 0.6-1.2,-0.6,1.2);
+\draw [very thin, tdplot_rotated_coords, gray] ( 0.6-1.2, 0.6,1.2) -- (-0.6-1.2, 0.6,1.2);
+\draw [very thin, tdplot_rotated_coords, gray] (-0.6-1.2,-0.6,1.2) -- ( 0.6-1.2,-0.6,1.2);
+\draw [very thin, tdplot_rotated_coords, gray] (-0.6-1.2,-0.6,1.2) -- (-0.6-1.2, 0.6,1.2);
+
+%\draw [very thin, tdplot_rotated_coords, lightgray!10,inner color=lightgray!100,outer color=lightgray!10] (0-1.2,0,1.2)  ellipse (0.18 and 0.16);
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (-0.4-1.2,0,1.2) node[anchor=south west]{$\boldsymbol{\tau}_4$};
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (-0.12-1.2,-0.21,1.2) node[anchor=south west]{$\boldsymbol{\tau}_6$};
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (-0.10-1.2,+0.17,1.2) node[anchor=south west]{$\boldsymbol{\tau}_1$};
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (+0.3-1.2,0,1.2) node[anchor=south west]{$\boldsymbol{\tau}_3$};
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (+0.15-1.2, 0.26,1.2) node[anchor=south west]{$\boldsymbol{\tau}_5$};
+\draw[very thick, tdplot_rotated_coords, ->,>=latex] (0-1.2,0,1.2) -- (+0.17-1.2,-0.30,1.2) node[anchor=south east]{$\boldsymbol{\tau}_2$};
+\draw[fill = white, tdplot_rotated_coords] (0.0-1.2,0,1.2) circle (0.5pt);
+\draw[tdplot_rotated_coords] (-0.02-1.2,0,1.2) node[above left ] {$\bar{\boldsymbol{\mathcal{X}}}$} ;
+\draw[tdplot_rotated_coords] (0.4-1.2,0,1.2) node[right, rotate=12] {tangent space};
+
+\draw[fill = white] (P) circle (0.5pt) node[anchor=south east] {$\bar{\boldsymbol{\mathcal{X}}}$};
+\draw[fill = white] (P) +(-0.23,+0.02,0) circle (0.5pt) node[anchor=north west] {$\boldsymbol{\mathcal{X}}_{1}$};
+\draw[fill = white] (P) +(+0.52,-0.04,0) circle (0.5pt) node[anchor=north west] {$\boldsymbol{\mathcal{X}}_{2}$};
+\draw[fill = white] (P) +(+0.46,+0.26,0) circle (0.5pt) node[anchor=north west] {$\boldsymbol{\mathcal{X}}_{3}$};
+\draw[fill = white] (P) +(-0.78,-0.51,0) circle (0.5pt) node[anchor=south west] {$\boldsymbol{\mathcal{X}}_{4}$};
+\draw[fill = white] (P) +(+0.07,+0.27,0) circle (0.5pt) node[anchor=north west] {$\boldsymbol{\mathcal{X}}_{5}$};
+\draw[fill = white] (P) +(-0.04,-0.29,0) circle (0.5pt) node[anchor=south] {$\boldsymbol{\mathcal{X}}_{6}$};
+
+
+\end{tikzpicture}
+
+\end{document}
+

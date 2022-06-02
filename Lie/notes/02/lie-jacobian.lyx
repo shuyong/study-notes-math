@@ -1,0 +1,4488 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "李群的导数与 Jacobian 矩阵"
+\pdf_author "Shuyong Chen"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+李群的导数与Jacobian矩阵
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align right
+— 姜太公直钩钓鱼有云：宁可直中取，不向曲中求。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset CommandInset href
+LatexCommand href
+name "向量微积分"
+target "https://en.wikipedia.org/wiki/Vector_calculus"
+literal "false"
+
+\end_inset
+
+中，多个变量的
+\begin_inset CommandInset href
+LatexCommand href
+name "向量值函数"
+target "https://en.wikipedia.org/wiki/Vector-valued_function"
+literal "false"
+
+\end_inset
+
+的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)是其所有一阶
+\begin_inset CommandInset href
+LatexCommand href
+name "偏导数"
+target "https://en.wikipedia.org/wiki/Partial_derivative"
+literal "false"
+
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)"
+literal "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+假设
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{m}$
+\end_inset
+
+是一个函数，使得它的每个一阶偏导数都存在于
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+上。该函数将点
+\begin_inset Formula $\mathbf{x}\in\mathbf{R}^{n}$
+\end_inset
+
+作为输入，并生成向量
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)\in\mathbf{R}^{m}$
+\end_inset
+
+作为输出。那么
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的Jacobian矩阵被定义为一个
+\begin_inset Formula $m\times n$
+\end_inset
+
+矩阵，记为
+\begin_inset Formula $\mathbf{J}$
+\end_inset
+
+，其第
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为
+\begin_inset Formula $\mathbf{J}_{ij}=\frac{\partial f_{i}}{\partial x_{j}}$
+\end_inset
+
+，或明确地
+\begin_inset Formula 
+\[
+\mathbf{J}=\left[\begin{array}{ccc}
+\frac{\partial\mathbf{f}}{\partial x_{1}} & \cdots & \frac{\partial\mathbf{f}}{\partial x_{n}}\end{array}\right]=\left[\begin{array}{c}
+\nabla^{\mathrm{T}}f_{1}\\
+\vdots\\
+\nabla^{\mathrm{T}}f_{m}
+\end{array}\right]=\left[\begin{array}{ccc}
+\frac{\partial f_{1}}{\partial x_{1}} & \cdots & \frac{\partial f_{1}}{\partial x_{n}}\\
+\vdots & \ddots & \vdots\\
+\frac{\partial f_{m}}{\partial x_{1}} & \cdots & \frac{\partial f_{m}}{\partial x_{n}}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\nabla^{\mathrm{T}}f_{i}$
+\end_inset
+
+是
+\begin_inset CommandInset href
+LatexCommand href
+name "梯度"
+target "https://en.wikipedia.org/wiki/Gradient"
+literal "false"
+
+\end_inset
+
+的转置(行向量)的第
+\begin_inset Formula $i$
+\end_inset
+
+个分量。
+\end_layout
+
+\begin_layout Standard
+Jacobian矩阵
+\begin_inset CommandInset href
+LatexCommand href
+name "表示"
+target "https://en.wikipedia.org/wiki/Matrix_(mathematics)#Linear_transformations"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+ 在
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的可微分的每个点上的
+\begin_inset CommandInset href
+LatexCommand href
+name "微分"
+target "https://en.wikipedia.org/wiki/Total_derivative"
+literal "false"
+
+\end_inset
+
+。具体来说，如果
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处
+\begin_inset CommandInset href
+LatexCommand href
+name "可微"
+target "https://en.wikipedia.org/wiki/Differentiable_function"
+literal "false"
+
+\end_inset
+
+，如果
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+是一个
+\begin_inset CommandInset href
+LatexCommand href
+name "列矩阵"
+target "https://en.wikipedia.org/wiki/Column_matrix"
+literal "false"
+
+\end_inset
+
+表示的
+\begin_inset CommandInset href
+LatexCommand href
+name "位移向量"
+target "https://en.wikipedia.org/wiki/Displacement_vector"
+literal "false"
+
+\end_inset
+
+，那么
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵乘积"
+target "https://en.wikipedia.org/wiki/Matrix_product"
+literal "false"
+
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{J}\left(\mathbf{x}\right)\cdot\mathbf{h}$
+\end_inset
+
+ 是另一个位移向量，即
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的
+\begin_inset CommandInset href
+LatexCommand href
+name "邻域"
+target "https://en.wikipedia.org/wiki/Neighborhood_(mathematics)"
+literal "false"
+
+\end_inset
+
+内的变化的最佳线性近似。这意味着将
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+映射到
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)+\mathbf{J}\left(\mathbf{x}\right)\cdot\left(\mathbf{y}-\mathbf{x}\right)$
+\end_inset
+
+的函数是
+\begin_inset Formula $\mathbf{f}\left(\mathbf{y}\right)$
+\end_inset
+
+对于所有靠近
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的点的最佳
+\begin_inset CommandInset href
+LatexCommand href
+name "线性逼近"
+target "https://en.wikipedia.org/wiki/Linear_approximation"
+literal "false"
+
+\end_inset
+
+。该
+\begin_inset CommandInset href
+LatexCommand href
+name "线性函数"
+target "https://en.wikipedia.org/wiki/Linear_function_(calculus)"
+literal "false"
+
+\end_inset
+
+称为
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处的
+\series bold
+导数
+\series default
+(
+\emph on
+derivative
+\emph default
+)或
+\series bold
+
+\begin_inset CommandInset href
+LatexCommand href
+name "微分"
+target "https://en.wikipedia.org/wiki/Total_derivative"
+literal "false"
+
+\end_inset
+
+
+\series default
+ (
+\emph on
+differential
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+形象地说， Jacobian 矩阵在流形的当前线性化点的各个自然基方向上求导，因此在线性化点处形成一个超平面，所以我们主要采用 Jacobian
+ 矩阵映射向量切空间的形式在李群中定义导数。因为在这些空间中，不确定性和增量可以被恰当而容易地定义。利用这些 Jacobian 矩阵，李群中的不确定性管理公式与
+向量空间中的不确定性管理公式基本相似。
+\end_layout
+
+\begin_layout Section
+伴随与伴随矩阵
+\end_layout
+
+\begin_layout Standard
+在应用 Jacobian 矩阵的公式中，经常遇到伴随矩阵，因此这里对此做简单摘要。
+\end_layout
+
+\begin_layout Standard
+首先是指数映射的重要性质
+\begin_inset Formula 
+\begin{align}
+\exp\left(\left(t+s\right)\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(t\boldsymbol{\tau}^{\wedge}\right)\exp\left(s\boldsymbol{\tau}^{\wedge}\right)\label{eq:17}\\
+\exp\left(t\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{t}\label{eq:18}\\
+\exp\left(-\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{-1}\label{eq:19}\\
+\exp\left(\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right) & =\mathcal{X}\exp\left(\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}\label{eq:20}
+\end{align}
+
+\end_inset
+
+其中方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 很有用，在推导伴随矩阵和 Jacobian 矩阵时经常用到。
+\end_layout
+
+\begin_layout Standard
+流形
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+有幺元
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+，在
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的切空间中有向量
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+。我们用伴随矩阵进行局部切元素和全局切元素的变换
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\mathcal{X} & =\mathcal{X}\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\\
+\exp\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right) & =\mathcal{X}\exp\left(^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}=\exp\left(\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)\\
+^{\mathcal{E}}\boldsymbol{\tau}^{\wedge} & =\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，我们将
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的伴随记为
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathcal{X}}:\mathfrak{m}\rightarrow\mathfrak{m};\ \boldsymbol{\tau}^{\wedge}\mapsto\mathbf{Ad}_{\mathcal{X}}\left(\boldsymbol{\tau}^{\wedge}\right)\triangleq\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1},\label{eq:29}
+\end{equation}
+
+\end_inset
+
+因此
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}=\mathbf{Ad}_{\mathcal{X}}\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right).\label{eq:31}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这定义了群在它自己的李代数上的伴随作用。伴随矩阵有一些常用的性质
+\begin_inset Formula 
+\begin{align}
+\mathcal{X}\oplus\boldsymbol{\tau} & =\left(\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}\right)\oplus\mathcal{X}\label{eq:32}\\
+\mathbf{Ad}_{\mathcal{X}^{-1}} & =\mathbf{Ad}_{\mathcal{X}}{}^{-1}\label{eq:33}\\
+\mathbf{Ad}_{\mathcal{XY}} & =\mathbf{Ad}_{\mathcal{X}}\mathbf{Ad}_{\mathcal{Y}}.\label{eq:34}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的左半部分通常比右半部分计算起来更方便快捷。我们将经常使用伴随矩阵将
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的切空间的向量线性变换为原点的切空间的向量，应用方程为
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+向量空间上的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+对于多元 函数
+\begin_inset Formula $f:\mathbb{R}^{m}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+，Jacobian 矩阵定义为所有偏导数的
+\begin_inset Formula $n\times m$
+\end_inset
+
+矩阵，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}=\frac{\partial f\left(\mathbf{x}\right)}{\partial\mathbf{x}}\triangleq\left[\begin{array}{ccc}
+\frac{\partial f_{1}}{\partial x_{1}} & \cdots & \frac{\partial f_{1}}{\partial x_{m}}\\
+\vdots &  & \vdots\\
+\frac{\partial f_{n}}{\partial x_{1}} & \cdots & \frac{\partial f_{n}}{\partial x_{m}}
+\end{array}\right]\in\mathbb{R}^{n\times m}.\label{eq:35}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们用列向量形式分割
+\begin_inset Formula $\mathbf{J}=\left[\mathbf{j}_{1}\cdots\mathbf{j}_{m}\right]$
+\end_inset
+
+，并让
+\begin_inset Formula $\mathbf{j}_{i}=\left[\frac{\partial f_{1}}{\partial x_{i}}\cdots\frac{\partial f_{n}}{\partial x_{i}}\right]^{\top}$
+\end_inset
+
+作为它的第
+\begin_inset Formula $i$
+\end_inset
+
+个列向量。此列向量响应于
+\begin_inset Formula 
+\begin{equation}
+\mathbf{j}_{i}=\frac{\partial f\left(\mathbf{x}\right)}{\partial x_{i}}\triangleq\lim_{h\rightarrow0}\frac{f\left(\mathbf{x}+h\mathbf{e}_{i}\right)-f\left(\mathbf{x}\right)}{h}\in\mathbb{R}^{n},\label{eq:36}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{m}$
+\end_inset
+
+的自然基的第
+\begin_inset Formula $i$
+\end_inset
+
+个向量。对于分子，注意这个向量
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{i}\left(h\right)\triangleq f\left(\mathbf{x}+h\mathbf{e}_{i}\right)-f\left(\mathbf{x}\right)\in\mathbb{R}^{n}\label{eq:37}
+\end{equation}
+
+\end_inset
+
+是当
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+方向上受到扰动时，
+\begin_inset Formula $f\left(\mathbf{x}\right)$
+\end_inset
+
+的变化量，并且相应的 Jacobian 矩阵的列仅为
+\begin_inset Formula 
+\[
+\mathbf{j}_{i}=\left.\dfrac{\partial\mathbf{v}_{i}\left(h\right)}{\partial h}\right|_{h=0}=\lim_{h\rightarrow0}\dfrac{\mathbf{v}_{i}\left(h\right)}{h}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们引入紧凑形式，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}=\frac{\partial f\left(\mathbf{x}\right)}{\partial\mathbf{x}}\triangleq\lim_{\mathbf{h}\rightarrow0}\frac{f\left(\mathbf{x}+\mathbf{h}\right)-f\left(\mathbf{x}\right)}{\mathbf{h}}\in\mathbb{R}^{n\times m},\label{eq:38}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{h}\in\mathbb{R}^{m}$
+\end_inset
+
+, 其用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 计算所有列以形成方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的定义。我们注意到方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 只是一个方便的符号 (就像方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 一样)，因为向量
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+的除法未定义，正确的计算需要方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 。然而，通过将分子扩展
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+中的线性形式，并将左手侧标识为 Jacobian 矩阵，该形式可用于计算 Jacobian 矩阵，即，
+\begin_inset Formula 
+\begin{equation}
+\lim_{\mathbf{h}\rightarrow0}\frac{f\left(\mathbf{x}+\mathbf{h}\right)-f\left(\mathbf{x}\right)}{\mathbf{h}}=\cdots=\lim_{\mathbf{h}\rightarrow0}\frac{\mathbf{Jh}}{\mathbf{h}}\triangleq\frac{\partial\mathbf{Jh}}{\partial\mathbf{h}}=\mathbf{J}.\label{eq:39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+的小值，我们有线性近似值，
+\begin_inset Formula 
+\begin{equation}
+f\left(\mathbf{x}+\mathbf{h}\right)\underset{\mathbf{h}\rightarrow0}{\longrightarrow}f\left(\mathbf{x}\right)+\frac{\partial f\left(\mathbf{x}\right)}{\partial\mathbf{x}}\mathbf{h}.\label{eq:40}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+李群上的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Subsection
+李群上的右 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+受上面标准导数定义方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的启发，我们现在可以使用我们的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子来定义作用于流形的函数
+\begin_inset Formula $f:\mathcal{M}\rightarrow\mathcal{N}$
+\end_inset
+
+的Jacobian 矩阵。使用右结合 (right-) 的
+\begin_inset Formula $\{\oplus,\ominus\}$
+\end_inset
+
+代替
+\begin_inset Formula $\{+,-\}$
+\end_inset
+
+，我们获得一个类似于标准导数的形式，
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}} & \triangleq\lim_{\boldsymbol{\tau}\rightarrow0}\frac{f\left(\mathcal{X}\oplus\boldsymbol{\tau}\right)\ominus f\left(\mathcal{X}\right)}{\boldsymbol{\tau}}\in\mathbb{R}^{n\times m}\label{eq:41a}\\
+ & =\lim_{\boldsymbol{\tau}\rightarrow0}\frac{\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)}{\boldsymbol{\tau}}\label{eq:41b}\\
+ & =\left.\frac{\partial\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)}{\partial\boldsymbol{\tau}}\right|_{\boldsymbol{\tau}=0}.\label{eq:41c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们把这种 Jacobian 矩阵称为
+\begin_inset Formula $f$
+\end_inset
+
+函数的右 Jacobian 矩阵。请注意方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 只是在标准导数方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中使用相当复杂的函数
+\begin_inset Formula $g\left(\boldsymbol{\tau}\right)=\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)$
+\end_inset
+
+。将其写入方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中传达了更多的直觉：它是
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+相对于
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+的导数，只是我们表达为在切空间中的无穷小变化！实际上，由于使用右结合 (right-) 的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+的操作，
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+和
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+中的变量现在被表示为局部切空间中的向量，即分别在
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $f\left(\mathcal{X}\right)\in\mathcal{N}$
+\end_inset
+
+处的正切。这个导数是一个适当的 Jacobian 矩阵
+\begin_inset Formula $\mathbb{R}^{n\times m}$
+\end_inset
+
+线性地映射到局部 (local) 切空间
+\begin_inset Formula $T_{\mathcal{X}}\mathcal{M}\rightarrow T_{f\left(\mathcal{X}\right)}\mathcal{N}$
+\end_inset
+
+ (并且我们用一个局部‘
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+’上标来标记导数)。就像在向量空间中一样，这个矩阵的列对应于方向导数。也就是对于向量
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\sigma}_{i}\left(h\right)=f\left(\mathcal{X}\oplus h\mathbf{e}_{i}\right)\ominus f\left(\mathcal{X}\right)\in\mathbb{R}^{n}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的
+\begin_inset Formula $\mathbf{v}_{i}$
+\end_inset
+
+来比较方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\sigma}_{i}$
+\end_inset
+
+，其是当
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+沿着
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+方向变化时，
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+的变化。其相应的 Jacobian 矩阵的列是
+\begin_inset Formula 
+\[
+\mathbf{j}_{i}=\left.\dfrac{\partial\boldsymbol{\sigma}_{i}\left(h\right)}{\partial h}\right|_{h=0}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，每当函数
+\begin_inset Formula $f$
+\end_inset
+
+从一个流形传递到另一个流形时，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的加号和减号算子必须被正确选择：
+\begin_inset Formula $\oplus$
+\end_inset
+
+对应定义域 (domain) 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+，并且
+\begin_inset Formula $\ominus$
+\end_inset
+
+对应目标域 (codomain) 或图 (image) 
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的小值，以下近似值适用，
+\begin_inset Formula 
+\begin{equation}
+f\left(\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\right)\underset{^{\mathcal{X}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}f\left(\mathcal{X}\right)\oplus\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}\in\mathcal{N}.\label{eq:43}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李群上的左 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+导数也可以由左结合 (left-) 加号和减号算子定义，因此，
+\begin_inset Formula 
+\begin{align}
+\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}} & \triangleq\lim_{\boldsymbol{\tau}\rightarrow0}\frac{f(\boldsymbol{\tau}\oplus\mathcal{X})\ominus f\left(\mathcal{X}\right)}{\boldsymbol{\tau}}\in\mathbb{R}^{n\times m}\label{eq:44}\\
+ & =\lim_{\boldsymbol{\tau}\rightarrow0}\frac{\log\left(f\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\circ\mathcal{X}\right)\circ f\left(\mathcal{X}\right)^{-1}\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\left.\frac{\partial\log\left(f\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\circ\mathcal{X}\right)\circ f\left(\mathcal{X}\right)^{-1}\right)}{\partial\boldsymbol{\tau}}\right|_{\boldsymbol{\tau}=0},\nonumber 
+\end{align}
+
+\end_inset
+
+我们称之为
+\begin_inset Formula $f$
+\end_inset
+
+函数的左 Jacobian 矩阵。请注意，现在
+\begin_inset Formula $\boldsymbol{\tau}\in T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+，并且分子属于
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{N}$
+\end_inset
+
+，因此左 Jacobian 矩阵是一个
+\begin_inset Formula $n\times m$
+\end_inset
+
+的矩阵，映射了全局 (global) 切空间，
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{M}\rightarrow T_{\mathcal{E}}\mathcal{N}$
+\end_inset
+
+，这是
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+的李代数(并且我们用全局或原点‘
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+’上标来标记导数)。对于
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的小值，以下方程成立，
+\begin_inset Formula 
+\begin{equation}
+f\left(^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}\right)\underset{^{\mathcal{E}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}{}^{\mathcal{E}}\boldsymbol{\tau}\oplus f\left(\mathcal{X}\right)\quad\in\mathcal{N}.\label{eq:45}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中展示左和右 Jacobian 矩阵由
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+的伴随相关联的关系，
+\begin_inset Formula 
+\begin{equation}
+\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\mathbf{Ad}_{\mathcal{X}}=\mathbf{Ad}_{f\left(\mathcal{X}\right)}\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}.\label{eq:46}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+交叉使用右–左 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+也可以同时使用右侧加号和左侧减号来定义 Jacobian 矩阵，反之亦然。虽然不太可能，但它们有时很有用，因为它们将局部的正切映射到全局的正切，反之亦然。简而言
+之，我们将通过伴随把它们与其它 Jacobian 矩阵联系起来，
+\begin_inset Formula 
+\begin{align}
+\frac{^{\mathcal{E}}D\mathcal{Y}}{^{\mathcal{X}}D\mathcal{X}}=\frac{^{\mathcal{E}}D\mathcal{Y}}{^{\mathcal{E}}D\mathcal{X}}\mathbf{A}\mathbf{d}_{\mathcal{X}} & =\mathbf{A}\mathbf{d}_{\mathcal{Y}}\frac{^{\mathcal{Y}}D\mathcal{Y}}{^{\mathcal{X}}D\mathcal{X}}\label{eq:47}\\
+\frac{^{\mathcal{Y}}D\mathcal{Y}}{^{\mathcal{E}}D\mathcal{X}}=\frac{^{\mathcal{Y}}D\mathcal{Y}}{^{\mathcal{X}}D\mathcal{X}}\mathbf{A}\mathbf{d}_{\mathcal{X}}{}^{-1} & =\mathbf{Ad}_{\mathcal{Y}}{}^{-1}\frac{^{\mathcal{E}}D\mathcal{Y}}{^{\mathcal{E}}D\mathcal{X}},\label{eq:48}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathcal{Y}=f\left(\mathcal{X}\right)$
+\end_inset
+
+ 。现在，上一行和下一行的上标表明表 示差异的参考坐标系。相应的小
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的近似值取为，
+\begin_inset Formula 
+\begin{align}
+f\left(\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\right) & \underset{^{\mathcal{X}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{^{\mathcal{X}}D\mathcal{X}}{}^{\mathcal{X}}\boldsymbol{\tau}\oplus f\left(\mathcal{X}\right)\label{eq:49}\\
+f\left(^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}\right) & \underset{^{\mathcal{E}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}f\left(\mathcal{X}\right)\oplus\frac{^{f\left(\mathcal{X}\right)}Df\left(\mathcal{X}\right)}{^{\mathcal{E}}D\mathcal{X}}{}^{\mathcal{E}}\boldsymbol{\mathcal{\tau}}.\label{eq:50}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+流形上的微分法则
+\end_layout
+
+\begin_layout Standard
+对于我们所使用的所有经典流形
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+，对于求逆 (inversion)、组合 (composition)、求幂 (exponentiation) 和作用 (action) 的初等
+ Jacobian 矩阵，我们可以确定封闭形式。此外，其中一些形式可能与伴随
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}$
+\end_inset
+
+有关，后者成为微分过程的矩阵中心块。
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+、
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 和
+\begin_inset Formula $\ominus$
+\end_inset
+
+等其它形式可以很容易地从它们当中推导出来。一旦找到这些形式或“矩阵块”，所有其它 Jacobian 矩阵都遵循链式法则。这里扩展的所有 Jacobian
+ 矩阵都是右 Jacobian 矩阵，即由方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 所定义。对于扩展左 Jacobian 矩阵，可采用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:46"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 进行变换，因为
+\begin_inset Formula 
+\begin{equation}
+\dfrac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}=\mathbf{Ad}_{f\left(\mathcal{X}\right)}\dfrac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\mathbf{Ad}_{\mathcal{X}}{}^{-1}.\label{eq:57}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们使用便捷符号
+\begin_inset Formula $\mathbf{J}_{\mathcal{X}}^{f\left(\mathcal{X}\right)}\triangleq\dfrac{Df\left(\mathcal{X}\right)}{D\mathcal{X}}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{J}_{\mathcal{X}}^{\mathcal{Y}}\triangleq\dfrac{D\mathcal{Y}}{D\mathcal{X}}$
+\end_inset
+
+。此外，
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}{}^{-1}$
+\end_inset
+
+应该由
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}^{-1}}$
+\end_inset
+
+实现，参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，因为后者运算快一些。
+\end_layout
+
+\begin_layout Subsection
+求逆 (Inverse)
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:III-B"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}^{-1}}\triangleq\dfrac{^{\mathcal{X}}D\mathcal{X}^{-1}}{D\mathcal{X}}\qquad\in\mathbb{R}^{m\times m}\label{eq:61}
+\end{equation}
+
+\end_inset
+
+这可以通过方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的伴随来确定，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}^{-1}} & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\mathrm{Log}\left(\left(\mathcal{X}^{-1}\right)^{-1}\left(\mathcal{X}\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)^{-1}\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\mathrm{Log}\left(\mathcal{X}\mathrm{Exp}\left(-\boldsymbol{\tau}\right)\mathcal{X}^{-1}\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\left(\mathcal{X}\left(-\boldsymbol{\tau}\right)^{\wedge}\mathcal{X}^{-1}\right)^{\vee}}{\boldsymbol{\tau}}=-\mathbf{Ad}_{\mathcal{X}}\label{eq:62}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+组合 (Composition)
+\end_layout
+
+\begin_layout Standard
+我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\circ\mathcal{Y}} & \triangleq\dfrac{^{\mathcal{X}}D\mathcal{X}\circ\mathcal{Y}}{D\mathcal{X}}\qquad\in\mathbb{R}^{m\times m}\label{eq:63}\\
+\mathbf{J}_{\mathcal{Y}}^{\mathcal{X}\circ\mathcal{Y}} & \triangleq\dfrac{^{\mathcal{Y}}D\mathcal{X}\circ\mathcal{Y}}{D\mathcal{Y}}\qquad\in\mathbb{R}^{m\times m}\label{eq:64}
+\end{align}
+
+\end_inset
+
+并如上面一样使用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并使用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来确定，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\circ\mathcal{Y}} & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\mathrm{Log}\left(\left(\mathcal{X}\mathcal{Y}\right)^{-1}\left(\mathcal{X}\mathrm{Exp}\left(\boldsymbol{\tau}\right)\mathcal{Y}\right)\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\mathrm{Log}\left(\mathcal{Y}^{-1}\mathrm{Exp}\left(\boldsymbol{\tau}\right)\mathcal{Y}\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\left(\mathcal{Y}^{-1}\boldsymbol{\tau}^{\wedge}\mathcal{Y}\right)^{\vee}}{\boldsymbol{\tau}}=\mathbf{Ad}_{\mathcal{Y}}{}^{-1}\label{eq:65}\\
+\mathbf{J}_{\mathcal{Y}}^{\mathcal{X}\circ\mathcal{Y}} & =\lim_{\boldsymbol{\tau}\to0}\dfrac{\mathrm{Log}\left(\left(\mathcal{X}\mathcal{Y}\right)^{-1}\left(\mathcal{X}\mathcal{Y}\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)}{\boldsymbol{\tau}}=\mathbf{I}\label{eq:66}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+流形
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+我们定义流形
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的右 Jacobian 矩阵为
+\begin_inset Formula $\mathcal{X}=\mathrm{Exp}\left(\boldsymbol{\tau}\right)$
+\end_inset
+
+的右 Jacobian 矩阵，即对于
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{r}\left(\boldsymbol{\tau}\right)\triangleq\dfrac{^{\mathcal{\boldsymbol{\tau}}}D\mathrm{Exp}\left(\boldsymbol{\tau}\right)}{D\boldsymbol{\tau}}\ \in\mathbb{R}^{m\times m},\label{eq:67}
+\end{equation}
+
+\end_inset
+
+这由方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义。右 Jacobian 矩阵将参数
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的变化映射到
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\tau}\right)$
+\end_inset
+
+处的局部 (local) 切空间中的变化。从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 这很容易证明，对于小的
+\begin_inset Formula $\delta\boldsymbol{\tau}$
+\end_inset
+
+值，以下近似值成立，
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}\left(\boldsymbol{\tau}+\delta\boldsymbol{\tau}\right) & \approx\mathrm{Exp}\left(\boldsymbol{\tau}\right)\mathrm{Exp}\left(\mathbf{J}_{r}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}\right)\label{eq:68}\\
+\mathrm{Exp}\left(\boldsymbol{\tau}\right)\mathrm{Exp}\left(\delta\boldsymbol{\tau}\right) & \approx\mathrm{Exp}\left(\boldsymbol{\tau}+\mathbf{J}_{r}^{-1}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}\right)\label{eq:69}\\
+\mathrm{Log}\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\mathrm{Exp}\left(\delta\boldsymbol{\tau}\right)\right) & \approx\boldsymbol{\tau}+\mathbf{J}_{r}^{-1}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}.\label{eq:70}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一方面，流形
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的左 Jacobian 矩阵被定义为，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{l}\left(\boldsymbol{\tau}\right)\triangleq\dfrac{^{\mathcal{E}}D\mathrm{Exp}\left(\boldsymbol{\tau}\right)}{D\boldsymbol{\tau}}\ \in\mathbb{R}^{m\times m},\label{eq:71}
+\end{equation}
+
+\end_inset
+
+使用左 Jacobian 矩阵方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得出近似值
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}\left(\boldsymbol{\tau}+\delta\boldsymbol{\tau}\right) & \approx\mathrm{Exp}\left(\mathbf{J}_{l}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}\right)\mathrm{Exp}\left(\boldsymbol{\tau}\right)\label{eq:72}\\
+\mathrm{Exp}\left(\delta\boldsymbol{\tau}\right)\mathrm{Exp}\left(\boldsymbol{\tau}\right) & \approx\mathrm{Exp}\left(\boldsymbol{\tau}+\mathbf{J}_{l}^{-1}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}\right)\label{eq:73}\\
+\mathrm{Log}\left(\mathrm{Exp}\left(\delta\boldsymbol{\tau}\right)\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right) & \approx\boldsymbol{\tau}+\mathbf{J}_{l}^{-1}\left(\boldsymbol{\tau}\right)\delta\boldsymbol{\tau}.\label{eq:74}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+左 Jacobian 矩阵将参数
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的变化映射到全局 (global) 切空间或李代数中的变化。从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们可以把左 Jacobian 矩阵和右 Jacobian 矩阵用伴随联系起来，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}=\mathbf{J}_{l}\left(\boldsymbol{\tau}\right)\mathbf{J}_{r}^{-1}\left(\boldsymbol{\tau}\right).\label{eq:75}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此外，链式法则允许我们关联
+\begin_inset Formula $\mathbf{J}_{r}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{J}_{l}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{r}\left(-\boldsymbol{\tau}\right) & \triangleq\mathbf{J}_{-\boldsymbol{\tau}}^{\mathrm{Exp}\left(-\boldsymbol{\tau}\right)}=\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}\left(-\boldsymbol{\tau}\right)}\mathbf{J}_{-\boldsymbol{\tau}}^{\boldsymbol{\tau}}=\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}\left(\boldsymbol{\tau}\right)^{-1}}\left(-\mathbf{I}\right)\nonumber \\
+ & =-\mathbf{J}_{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}^{\mathrm{Exp}\left(\boldsymbol{\tau}\right)^{-1}}\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}=\mathbf{Ad}_{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}\mathbf{J}_{r}\left(\boldsymbol{\tau}\right)\nonumber \\
+ & =\mathbf{J}_{l}\left(\boldsymbol{\tau}\right).\label{eq:76}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于使用中的经典流形，
+\begin_inset Formula $\mathbf{J}_{r}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{J}_{r}{}^{−1}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{J}_{l}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{J}_{l}{}^{−1}$
+\end_inset
+
+，存在封闭形式。见后面章节的推导。
+\end_layout
+
+\begin_layout Subsection
+群作用
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $v\in\mathcal{V}$
+\end_inset
+
+，我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\cdot v} & \triangleq\dfrac{^{\mathcal{X}}D\mathcal{X}\cdot v}{D\mathcal{X}}\label{eq:77}\\
+\mathbf{J}_{v}^{\mathcal{X}\cdot v} & \triangleq\dfrac{^{v}D\mathcal{X}\cdot v}{Dv}.\label{eq:78}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于群作用依赖于集合
+\begin_inset Formula $\mathcal{V}$
+\end_inset
+
+，因此这些表达式不能通用化。
+\end_layout
+
+\begin_layout Subsection
+常见 Jacobian 矩阵块
+\end_layout
+
+\begin_layout Paragraph
+Log 映射:
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\tau}=\mathrm{Log}\left(\mathcal{X}\right)$
+\end_inset
+
+，并从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) ，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{\mathcal{X}}^{\mathrm{Log}\left(\mathcal{X}\right)}=\mathbf{J}_{r}^{-1}\left(\boldsymbol{\tau}\right).\label{eq:79}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+加号和减号:
+\end_layout
+
+\begin_layout Standard
+我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\oplus\boldsymbol{\tau}} & =\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\circ\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)}\qquad\quad=\mathbf{Ad}_{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}{}^{-1}\label{eq:80}\\
+\mathbf{J}_{\boldsymbol{\tau}}^{\mathcal{X}\oplus\boldsymbol{\tau}} & =\mathbf{J}_{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}^{\mathcal{X}\circ\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)}\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}\left(\boldsymbol{\tau}\right)}=\mathbf{J}_{r}\left(\boldsymbol{\tau}\right)\label{eq:81}
+\end{align}
+
+\end_inset
+
+并得到
+\begin_inset Formula $\mathcal{Z}=\mathcal{X}^{-1}\circ\mathcal{Y}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\tau}=\mathcal{Y}\ominus\mathcal{X}=\mathrm{Log}\left(\mathcal{Z}\right)$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{Y}\ominus\mathcal{X}} & =\mathbf{J}_{\mathcal{Z}}^{\mathrm{Log}\left(\mathcal{Z}\right)}\mathbf{J}_{\mathcal{X}^{-1}}^{\mathcal{Z}}\mathbf{J}_{\mathcal{X}}^{\mathcal{X}^{-1}}=-\mathbf{J}_{l}^{-1}\left(\boldsymbol{\tau}\right)\label{eq:82}\\
+\mathbf{J}_{\mathcal{Y}}^{\mathcal{Y}\ominus\mathcal{X}} & =\mathbf{J}_{\mathcal{Z}}^{\mathrm{Log}\left(\mathcal{Z}\right)}\mathbf{J}_{\mathcal{Y}}^{\mathcal{Z}}\qquad\quad=\mathbf{J}_{r}^{-1}\left(\boldsymbol{\tau}\right)\label{eq:83}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+三维变换群与 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+对于我们常用的经典流形，我们使用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 以便使用相同的机制方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:39"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来真正地寻找 Jacobian 矩阵。
+\end_layout
+
+\begin_layout Subsection
+旋转群
+\begin_inset Formula $S^{3}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+单位四元数群
+\begin_inset Formula $S^{3}$
+\end_inset
+
+和特殊正交矩阵群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+，两者都可旋转
+\begin_inset Formula $3$
+\end_inset
+
+元向量。它们有同构的切空间， 其元素可用
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的旋转向量标识，所以我们把它们放在一起研究。正是在这个空间
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中，我们定义旋转率
+\begin_inset Formula $\boldsymbol{\omega}\triangleq\mathbf{u}\omega$
+\end_inset
+
+、轴-角
+\begin_inset Formula $\boldsymbol{\theta}\triangleq\mathbf{u}\theta$
+\end_inset
+
+，以及所有扰动和不确定性的向量。
+\end_layout
+
+\begin_layout Standard
+四元数流形
+\begin_inset Formula $S^{3}$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的双倍覆盖，即
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\mathbf{q}$
+\end_inset
+
+表示相同的旋转
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+。第一个覆盖对应于正实部
+\begin_inset Formula $w>0$
+\end_inset
+
+的四元数。这两个群可以被认为是同构的第一覆盖。
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射可以定义为
+\begin_inset Formula $S^{3}$
+\end_inset
+
+的四元数和
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的旋转矩阵。对于四元数
+\begin_inset Formula $\mathbf{q}=\left(w,\mathbf{v}\right)\in\mathbb{H}$
+\end_inset
+
+我们有
+\begin_inset Formula 
+\begin{align}
+\mathbf{q}=\mathrm{Exp}\left(\theta\mathbf{u}\right) & \triangleq\cos\left(\theta/2\right)+\mathbf{u}\sin\left(\theta/2\right)\;\in\mathbb{H}\label{eq:132}\\
+\theta\mathbf{u}=\log\left(\mathbf{q}\right) & \triangleq2\mathbf{v}\frac{\arctan\left(\left\Vert \mathbf{v}\right\Vert ,w\right)}{\left\Vert \mathbf{v}\right\Vert }\qquad\in\mathbb{R}^{3}\label{eq:133}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于旋转矩阵我们有，
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & =\mathrm{Exp}\left(\theta\mathbf{u}\right)\triangleq\mathbf{I}+\sin\theta\left[\mathbf{u}\right]_{\times}+\left(1-\cos\theta\right)\left[\mathbf{u}\right]_{\times}^{2}\,\in\mathbb{R}^{3\times3}\label{eq:134}\\
+\theta\mathbf{u} & =\log\left(\mathbf{R}\right)\triangleq\frac{\theta\left(\mathbf{R}-\mathbf{R}^{\top}\right)^{\vee}}{2\sin\theta}\qquad\qquad\qquad\qquad\in\mathbb{R}^{3},\label{eq:135}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta=\cos^{-1}\left(\frac{\mathrm{trace}\left(\mathbf{R}\right)-1}{2}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+旋转作用
+\end_layout
+
+\begin_layout Standard
+给定上述四元数和旋转矩阵的表达式，四元数在
+\begin_inset Formula $3$
+\end_inset
+
+元向量上的旋转作用是由双四元数积来完成的，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}^{\prime}=\mathbf{q}\mathbf{x}\mathbf{q}^{*}\label{eq:136}
+\end{equation}
+
+\end_inset
+
+当旋转矩阵使用单个矩阵积时，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}^{\prime}=\mathbf{R}\mathbf{x}.\label{eq:137}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两者相当于一个围绕轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+弧度 (
+\begin_inset Formula $\mathrm{rad}$
+\end_inset
+
+) 的右手旋转。从四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+变换到旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的公式为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}\left(\mathbf{q}\right)=\left[\begin{array}{ccc}
+w^{2}+x^{2}-y^{2}-z^{2} & 2(xy-wz) & 2(xz+wy)\\
+2(xy+wz) & w^{2}-x^{2}+y^{2}-z^{2} & 2(yz-wx)\\
+2(xz-wy) & 2(yz+wx) & w^{2}-x^{2}-y^{2}+z^{2}
+\end{array}\right].\label{eq:138}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+初等 Jacobian 矩阵块
+\end_layout
+
+\begin_layout Standard
+由于我们定义的导数映射切向量空间，并且这些空间重叠于
+\begin_inset Formula $S^{3}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的三维旋转流形，即，
+\begin_inset Formula $\boldsymbol{\theta}=\mathrm{Log}\left(\mathbf{q}\right)=\mathrm{Log}\left(\mathbf{R}\right)$
+\end_inset
+
+，因此 Jacobian 矩阵独立于所使用的表示 (
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+)。因此，我们考虑通用的 3D 旋转元素， 并用无衬线字体
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+来标记它们。
+\end_layout
+
+\begin_layout Paragraph
+伴随:
+\end_layout
+
+\begin_layout Standard
+从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Ad}_{\mathsf{R}}\boldsymbol{\theta}=\left(\mathbf{R}\left[\boldsymbol{\theta}\right]_{\times}\mathbf{R}^{\top}\right)^{\vee}=\left(\left[\left(\mathbf{R}\boldsymbol{\theta}\right)\right]_{\times}\right)^{\vee}=\mathbf{R}\boldsymbol{\theta}
+\]
+
+\end_inset
+
+因此
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathsf{R}}=\mathbf{R},\label{eq:139}
+\end{equation}
+
+\end_inset
+
+具体的，对于
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+有
+\begin_inset Formula $\mathbf{Ad}_{\mathbf{q}}=\mathbf{R}\left(\mathbf{q}\right)$
+\end_inset
+
+，参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:138"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对于
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+有
+\begin_inset Formula $\mathbf{Ad}_{\mathbf{R}}=\mathbf{R}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+求逆与组合:
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:III-B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节，我们有，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}^{-1}} & =-\mathbf{A}\mathbf{d}_{\mathsf{R}}\:=-\mathbf{R}\label{eq:140}\\
+\mathbf{J}_{\mathsf{Q}}^{\mathsf{QR}} & =\mathbf{A}\mathbf{d}_{\mathsf{R}}{}^{-1}=\mathbf{R}^{\top}\label{eq:141}\\
+\mathbf{J}_{\mathsf{R}}^{\mathsf{QR}} & =\mathbf{I}\label{eq:142}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+右 Jacobian 矩阵与左 Jacobian 矩阵:
+\end_layout
+
+\begin_layout Standard
+它们有封闭形式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{r}\left(\boldsymbol{\theta}\right) & =\mathbf{I}-\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:143}\\
+\mathbf{J}_{r}{}^{-1}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:144}\\
+\mathbf{J}_{l}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:145}\\
+\mathbf{J}_{l}{}^{-1}\left(\boldsymbol{\theta}\right) & =\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:146}
+\end{align}
+
+\end_inset
+
+其中我们可以观察到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{l}=\mathbf{J}_{r}^{\top},\quad\mathbf{J}_{l}^{-1}=\mathbf{J}_{r}^{-\top}\label{eq:147}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+右结合的加号和减号:
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\theta}=\mathsf{Q}\ominus\mathsf{R}$
+\end_inset
+
+，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{R}\left(\boldsymbol{\theta}\right)^{\top} & \quad\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)\label{eq:148}\\
+\mathbf{J}_{\mathsf{Q}}^{\mathsf{Q}\ominus\mathsf{R}}=\mathbf{J}_{r}^{-1}\left(\boldsymbol{\theta}\right) & \quad\mathbf{J}_{\mathsf{R}}^{\mathsf{Q}\ominus\mathsf{R}}=-\mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right)\label{eq:149}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+旋转作用:
+\end_layout
+
+\begin_layout Standard
+我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathsf{v}} & \triangleq\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\left(\mathbf{R}\oplus\boldsymbol{\theta}\right)\mathbf{v}-\mathbf{R}\mathbf{v}}{\boldsymbol{\theta}}=\nonumber \\
+\frac{\mathbf{R}\mathrm{Exp}\left(\boldsymbol{\theta}\right)\mathbf{v}-\mathbf{Rv}}{\boldsymbol{\theta}} & =\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\mathbf{R}\left(\mathbf{I}+\left[\boldsymbol{\theta}\right]_{\times}\right)\mathbf{v}-\mathbf{R}\mathbf{v}}{\boldsymbol{\theta}}\nonumber \\
+=\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\mathbf{R}\left[\boldsymbol{\theta}\right]_{\times}\mathbf{v}}{\boldsymbol{\theta}} & =\lim_{\boldsymbol{\theta}\rightarrow0}\frac{-\mathbf{R}\left[\mathbf{v}\right]_{\times}\boldsymbol{\theta}}{\boldsymbol{\theta}}=-\mathbf{R}\left[\mathbf{v}\right]_{\times}\label{eq:150}
+\end{align}
+
+\end_inset
+
+其中我们使用属性
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\theta}\right)\approx\mathbf{I}+\left[\boldsymbol{\theta}\right]_{\times}$
+\end_inset
+
+和
+\begin_inset Formula $\left[\mathbf{a}\right]_{\times}\mathbf{b}=-\left[\mathbf{b}\right]_{\times}\mathbf{a}$
+\end_inset
+
+。另一个 Jacobian 矩阵为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{\mathbf{v}}^{\mathsf{R}\cdot\mathbf{v}}\triangleq\lim_{\partial\mathbf{v}\rightarrow0}\frac{\mathbf{R}\left(\mathbf{v}+\partial\mathbf{v}\right)-\mathbf{R}\mathbf{v}}{\partial\mathbf{v}}=\mathbf{R}.\label{eq:151}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+运动群
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+我们将三维刚体运动群
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+的元素写为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{M}=\left[\begin{array}{cc}
+\mathbf{R} & \mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]\in\mathrm{SE}(3)\subset\mathbb{R}^{4\times4}\label{eq:168}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{R}\in\mathrm{SO}(3)$
+\end_inset
+
+是一个旋转，并且
+\begin_inset Formula $\mathbf{t}\in\mathbb{R}^{3}$
+\end_inset
+
+是一个平移向量。李代数和向量的正切是由这些类型的元素形成
+\begin_inset Formula 
+\[
+\boldsymbol{\tau}^{\wedge}=\left[\begin{array}{cc}
+\left[\boldsymbol{\theta}\right]_{\times} & \boldsymbol{\rho}\\
+\mathbf{0} & 0
+\end{array}\right]\in\mathfrak{se}(3),\quad\boldsymbol{\tau}=\left[\begin{array}{l}
+\boldsymbol{\rho}\\
+\boldsymbol{\theta}
+\end{array}\right]\in\mathbb{R}^{6}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+又被称为速度旋量。
+\end_layout
+
+\begin_layout Subsubsection
+求逆与组合
+\end_layout
+
+\begin_layout Standard
+求逆和组合分别用矩阵的求逆和乘积执行，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{M}^{-1} & =\left[\begin{array}{cc}
+\mathbf{R}^{\top} & -\mathbf{R}^{\top}\mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]\label{eq:170}\\
+\mathbf{M}_{a}\mathbf{M}_{b} & =\left[\begin{array}{cc}
+\mathbf{R}_{a}\mathbf{R}_{b} & \mathbf{t}_{a}+\mathbf{R}_{a}\mathbf{t}_{b}\\
+\mathbf{0} & 1
+\end{array}\right].\label{eq:171}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+通过指数映射直接从向量的切空间
+\begin_inset Formula $\mathbb{R}^{6}\cong\mathfrak{se}(3)=T\,\mathrm{SE}(3)$
+\end_inset
+
+实现，
+\begin_inset Formula 
+\begin{align}
+\mathbf{M}=\mathrm{Exp}\left(\boldsymbol{\tau}\right) & \triangleq\left[\begin{array}{cc}
+\mathrm{Exp}\left(\boldsymbol{\theta}\right) & \mathbf{V}\left(\boldsymbol{\theta}\right)\boldsymbol{\rho}\\
+\mathbf{0} & 1
+\end{array}\right]\label{eq:172}\\
+\boldsymbol{\tau}=\mathrm{Log}\left(\mathbf{M}\right) & \triangleq\left[\begin{array}{l}
+\mathbf{V}^{-1}\left(\boldsymbol{\theta}\right)\mathbf{t}\\
+\mathrm{Log}\left(\mathbf{R}\right)
+\end{array}\right].\label{eq:173}
+\end{align}
+
+\end_inset
+
+其中 (回想对于
+\begin_inset Formula $\mathrm{Log}\left(\mathbf{M}\right)$
+\end_inset
+
+有
+\begin_inset Formula $\boldsymbol{\theta}=\theta\mathbf{u}=\mathrm{Log}\left(\mathbf{R}\right)$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+\mathbf{V}\left(\boldsymbol{\theta}\right)=\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:174}
+\end{equation}
+
+\end_inset
+
+其中，注意，这与方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:145"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 完全匹配。
+\end_layout
+
+\begin_layout Subsubsection
+初等 Jacobian 矩阵块
+\end_layout
+
+\begin_layout Paragraph
+伴随:
+\end_layout
+
+\begin_layout Standard
+我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Ad}_{\mathbf{M}}\boldsymbol{\tau}=\left(\mathbf{M}\boldsymbol{\tau}^{\wedge}\mathbf{M}^{-1}\right)^{\vee}=\left[\begin{array}{c}
+\mathbf{R}\boldsymbol{\rho}+\left[\mathbf{t}\right]_{\times}\mathbf{R}\boldsymbol{\theta}\\
+\mathbf{R}\boldsymbol{\theta}
+\end{array}\right]=\mathbf{Ad}_{\mathbf{M}}\left[\begin{array}{l}
+\boldsymbol{\rho}\\
+\boldsymbol{\theta}
+\end{array}\right]
+\]
+
+\end_inset
+
+因此，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathbf{M}}=\left[\begin{array}{cc}
+\mathbf{R} & \left[\mathbf{t}\right]_{\times}\mathbf{R}\\
+\mathbf{0} & \mathbf{R}
+\end{array}\right]\in\mathbb{R}^{6\times6}.\label{eq:175}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+求逆与组合:
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:III-B"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节，我们有，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathbf{M}}^{\mathbf{M}^{-1}} & =-\left[\begin{array}{cc}
+\mathbf{R} & \left[\mathbf{t}\right]_{\times}\mathbf{R}\\
+\mathbf{0} & \mathbf{R}
+\end{array}\right]\label{eq:176}\\
+\mathbf{J}_{\mathbf{M}_{a}}^{\mathbf{M}_{a}\mathbf{M}_{b}} & =\left[\begin{array}{cc}
+\mathbf{R}_{b}^{\top} & -\mathbf{R}_{b}^{\top}\left[\mathbf{t}_{b}\right]_{\times}\\
+\mathbf{0} & \mathbf{R}_{b}^{\top}
+\end{array}\right]\label{eq:177}\\
+\mathbf{J}_{\mathbf{M}_{b}}^{\mathbf{M}_{a}\mathbf{M}_{b}} & =\mathbf{I}_{6}.\label{eq:178}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+右 Jacobian 矩阵和左 Jacobian 矩阵:
+\end_layout
+
+\begin_layout Standard
+左 Jacobian 矩阵的封闭形式及其逆式给出为，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{l}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right) & =\left[\begin{array}{cc}
+\mathbf{J}_{l}\left(\boldsymbol{\theta}\right) & \mathbf{Q}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right)\\
+\mathbf{0} & \mathbf{J}_{l}\left(\boldsymbol{\theta}\right)
+\end{array}\right]\label{eq:179a}\\
+\mathbf{J}_{l}^{-1}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right) & =\left[\begin{array}{cc}
+\mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right) & -\mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right)\mathbf{Q}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right)\mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0} & \mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right)
+\end{array}\right]\label{eq:179b}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{J}_{l}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的左 Jacobian 矩阵, 参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:145"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) ，并且
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\mathbf{Q}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right)= & \frac{1}{2}\boldsymbol{\rho}_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left(\boldsymbol{\theta}_{\times}\boldsymbol{\rho}_{\times}+\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}+\boldsymbol{\theta}_{\times}\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}\right)\\
+ & -\frac{1-\frac{\theta^{2}}{2}-\cos\theta}{\theta^{4}}\left(\boldsymbol{\theta}_{\times}^{2}\boldsymbol{\rho}_{\times}+\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}^{2}-3\boldsymbol{\theta}_{\times}\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}\right)\\
+ & -\frac{1}{2}\left(\frac{1-\frac{\theta^{2}}{2}-\cos\theta}{\theta^{4}}-3\frac{\theta-\sin\theta-\frac{\theta^{3}}{6}}{\theta^{5}}\right)\\
+ & \times\left(\boldsymbol{\theta}_{\times}\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}^{2}+\boldsymbol{\theta}_{\times}^{2}\boldsymbol{\rho}_{\times}\boldsymbol{\theta}_{\times}\right).
+\end{aligned}
+\label{eq:180}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+右 Jacobian 矩阵及其逆矩阵使用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 获得，即，
+\begin_inset Formula $\mathbf{J}_{r}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right)=\mathbf{J}_{l}\left(-\boldsymbol{\rho},-\boldsymbol{\theta}\right)$
+\end_inset
+
+并且
+\begin_inset Formula $\mathbf{J}_{r}^{-1}\left(\boldsymbol{\rho},\boldsymbol{\theta}\right)=\mathbf{J}_{l}^{-1}\left(-\boldsymbol{\rho},-\boldsymbol{\theta}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+刚体运动作用: 
+\end_layout
+
+\begin_layout Standard
+在点
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+上我们有作用，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{M}\cdot\mathbf{p}\triangleq\mathbf{t}+\mathbf{R}\mathbf{p},\label{eq:181}
+\end{equation}
+
+\end_inset
+
+因此，并且因为对于
+\begin_inset Formula $\boldsymbol{\tau}\rightarrow0$
+\end_inset
+
+我们有
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\tau}\right)\rightarrow\mathbf{I}+\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathbf{M}}^{\mathbf{M}\cdot\mathbf{p}} & =\lim_{\boldsymbol{\tau}\rightarrow0}\frac{\mathbf{M}\mathrm{Exp}\left(\boldsymbol{\tau}\right)\cdot\mathbf{p}-\mathbf{M}\cdot\mathbf{p}}{\boldsymbol{\tau}}=\left[\begin{array}{ll}
+\mathbf{R} & -\mathbf{R}\left[\mathbf{p}\right]_{\times}\end{array}\right]\label{eq:182}\\
+\mathbf{J}_{\mathbf{p}}^{\mathbf{M}\cdot\mathbf{p}} & =\mathbf{R}.\label{eq:183}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+组合流形的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+在我们常用的状态估计中，我们可以将大的和非均匀的状态视为流形组合。在位姿估计中常见两种组合流形：
+\end_layout
+
+\begin_layout Enumerate
+姿态误差及其偏差的组合流形
+\end_layout
+
+\begin_layout Enumerate
+位姿误差及其偏差的组合流形
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+假设机体是匀速运动，采样时间间隔为
+\begin_inset Formula $\Delta t$
+\end_inset
+
+，在
+\begin_inset Formula $k$
+\end_inset
+
+时刻，从IMU读出角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，线性加速度
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+，这是机体坐标系中的数值，已知上一时刻的机体坐标系中的线性速度为
+\begin_inset Formula $\mathbf{v}_{B}$
+\end_inset
+
+，则增量角度
+\begin_inset Formula $\Delta\boldsymbol{\theta}$
+\end_inset
+
+和增量位移
+\begin_inset Formula $\Delta\boldsymbol{\rho}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\Delta\boldsymbol{\theta} & =\boldsymbol{\omega}\cdot\Delta t\\
+\Delta\boldsymbol{\rho} & =\mathbf{v}_{B}\cdot\Delta t+\dfrac{1}{2}\mathbf{a}\cdot\Delta t^{2}
+\end{align*}
+
+\end_inset
+
+其构成的增量速度旋量向量
+\begin_inset Formula $\Delta\boldsymbol{\tau}$
+\end_inset
+
+和增量位姿
+\begin_inset Formula $\Delta\mathbf{M}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\Delta\boldsymbol{\tau} & =\left[\begin{array}{c}
+\Delta\boldsymbol{\rho}\\
+\Delta\boldsymbol{\theta}
+\end{array}\right]\\
+\Delta\boldsymbol{\tau}^{\wedge} & =\left[\begin{array}{cc}
+\left[\Delta\boldsymbol{\theta}\right]_{\times} & \Delta\boldsymbol{\rho}\\
+\mathbf{0} & 0
+\end{array}\right]\\
+\Delta\mathbf{M}\left(\Delta\boldsymbol{\tau}\right) & =\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)\\
+ & =\left[\begin{array}{cc}
+\Delta\mathbf{R} & \Delta\mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+已知上一时刻的位姿
+\begin_inset Formula $\mathbf{M}_{k-1}$
+\end_inset
+
+，则当前时刻的位姿
+\begin_inset Formula $\mathbf{M}_{k}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{M}_{k} & =\mathbf{M}_{k-1}\cdot\Delta\mathbf{M}\left(\Delta\boldsymbol{\tau}\right)\\
+ & =\left[\begin{array}{cc}
+\mathbf{R} & \mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]\left[\begin{array}{cc}
+\Delta\mathbf{R} & \Delta\mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\mathbf{R}\cdot\Delta\mathbf{R} & \mathbf{t}+\mathbf{R}\Delta\mathbf{t}\\
+\mathbf{0} & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这是一个典型的
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+元素的计算过程。我们是在局部笛卡尔坐标系中获取向量，是在局部切空间中计算增量，然后用指数函数
+\begin_inset Formula $\exp$
+\end_inset
+
+收回并作用在当前位姿上，则位姿沿测地线移动到新的当前位姿上。不过在工程中为计算速度常常做各种简化，例如当
+\begin_inset Formula $\left\Vert \Delta\boldsymbol{\theta}\right\Vert \rightarrow0$
+\end_inset
+
+，则
+\begin_inset Formula $\Delta\mathbf{t}\approx\Delta\boldsymbol{\rho}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+但是因为种种原因，当前位姿
+\begin_inset Formula $\mathbf{M}_{k}$
+\end_inset
+
+存在误差，标记为
+\begin_inset Formula $\bar{\mathbf{M}}_{k}$
+\end_inset
+
+，需要对其进行最优估计。但是现有成熟的最优估计算法都有一个被估计元素是向量的假设，因此无法直接对当前位姿进行估计。但是因为其误差
+\begin_inset Formula $\delta\mathbf{M}$
+\end_inset
+
+较小，可以用向量形式
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+表示，所以我们可以对其误差进行估计，最后将误差作用到当前位姿上，则当前位姿为最优估计位姿
+\begin_inset Formula $\hat{\mathbf{M}}_{k}$
+\end_inset
+
+，于是有
+\begin_inset Formula 
+\begin{align*}
+\hat{\mathbf{M}}_{k} & =\hat{\mathbf{M}}_{k-1}\cdot\Delta\mathbf{M}\left(\Delta\boldsymbol{\tau}\right)\cdot\delta\mathbf{M}\left(\delta\mathbf{x}\right)\\
+ & =\hat{\mathbf{M}}_{k-1}\oplus\Delta\boldsymbol{\tau}\oplus\delta\mathbf{x}\\
+ & =\bar{\mathbf{M}}_{k}\oplus\delta\mathbf{x}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们认为误差
+\begin_inset Formula $\delta\mathbf{M}$
+\end_inset
+
+受两个因素的影响，一是IMU的噪声，二是其偏差，两者都可以通过实验测量出来，其中角速度和加速度的噪声和偏差表示为
+\begin_inset Formula $\mathbf{w}_{\boldsymbol{\omega}}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{w}_{\mathbf{a}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{\omega}_{b}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{a}_{b}$
+\end_inset
+
+。误差向量
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+的准线性系统的演变方程为，
+\begin_inset Formula 
+\[
+\delta\mathbf{x}_{k}=f\left(\bar{\mathbf{M}}_{k},\Delta\boldsymbol{\tau}\right)\delta\mathbf{x}_{k-1}
+\]
+
+\end_inset
+
+其中由控制向量
+\begin_inset Formula $\Delta\boldsymbol{\tau}$
+\end_inset
+
+的噪声引入了误差。还有，在最优估计中一同估计其偏差是一种传感器偏差的自校正算法。因此我们估计的误差向量
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+除了角速度和加速度的误差之外，还包含其偏差的误差，因此误差向量
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+是一种类似于速度旋量的组合流形。我们是在当前位姿点，也就是在当前线性化点处计算误差的状态转换矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+，控制模型矩阵
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+，以及观测模型矩阵
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+等这些 Jacobian 矩阵。
+\end_layout
+
+\begin_layout Standard
+根据右结合的
+\begin_inset Formula $\oplus$
+\end_inset
+
+方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:80"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，误差状态转换矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align}
+\mathbf{F} & =\dfrac{\partial\bar{\mathbf{M}}_{k}}{\partial\hat{\mathbf{M}}_{k-1}}\nonumber \\
+ & =\dfrac{\partial\left(\hat{\mathbf{M}}_{k-1}\oplus\Delta\boldsymbol{\tau}\right)}{\partial\hat{\mathbf{M}}_{k-1}}\nonumber \\
+ & =\mathbf{Ad}_{\mathrm{Exp}\left(\Delta\boldsymbol{\tau}\right)}{}^{-1}\label{eq:F-1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据右结合的
+\begin_inset Formula $\oplus$
+\end_inset
+
+方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，误差控制模型矩阵
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align}
+\mathbf{G} & =\dfrac{\partial\bar{\mathbf{M}}_{k}}{\partial\Delta\boldsymbol{\tau}}\nonumber \\
+ & =\dfrac{\partial\left(\hat{\mathbf{M}}_{k-1}\oplus\Delta\boldsymbol{\tau}\right)}{\partial\Delta\boldsymbol{\tau}}\nonumber \\
+ & =\mathbf{J}_{r}\left(\Delta\boldsymbol{\tau}\right)\label{eq:G-2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在测量更新时，预设的观测向量
+\begin_inset Formula $\mathbf{p}_{I}$
+\end_inset
+
+为全局坐标系中的向量，需要将其变换到局部坐标系中，
+\begin_inset Formula $\mathbf{p}_{B}=\bar{\mathbf{M}}_{k}^{-1}\cdot\mathbf{p}_{I}$
+\end_inset
+
+，并与在局部坐标系中的测量值相减得到残差。根据链式法则，根据群作用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:77"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:150"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:182"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及求逆方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:62"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:140"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:176"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，观测模型矩阵
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align}
+\mathbf{H} & =\dfrac{\partial\left(\bar{\mathbf{M}}_{k}^{-1}\cdot\mathbf{p}_{I}\right)}{\partial\bar{\mathbf{M}}_{k}}\nonumber \\
+ & =\dfrac{\partial\left(\bar{\mathbf{M}}_{k}^{-1}\cdot\mathbf{p}_{I}\right)}{\partial\bar{\mathbf{M}}_{k}^{-1}}\cdot\dfrac{\partial\bar{\mathbf{M}}_{k}^{-1}}{\partial\bar{\mathbf{M}}_{k}}\label{eq:H-3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下面我们用两种组合流形的 Jacobian 矩阵进行验证。具体的误差的动力学方程的推导可见参考文献[2,4]，后面只推导与 Jacobian 矩阵和伴随矩阵相关
+的方程。
+\end_layout
+
+\begin_layout Subsection
+姿态误差及其偏差的组合流形
+\end_layout
+
+\begin_layout Standard
+当我们只需要估计姿态时，误差向量
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+由增量角度误差
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+和角速度偏差的误差
+\begin_inset Formula $\delta\boldsymbol{\omega}_{b}$
+\end_inset
+
+构成
+\begin_inset Formula 
+\[
+\delta\mathbf{x}=\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\delta\boldsymbol{\omega}_{b}
+\end{array}\right]
+\]
+
+\end_inset
+
+其一阶微分方程为
+\begin_inset Formula 
+\[
+\dot{\delta\mathbf{x}}=\mathbf{A}\cdot\delta\mathbf{x}+\mathbf{B}\cdot\mathbf{w}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+为误差的动力学矩阵，
+\begin_inset Formula 
+\[
+\mathbf{A}=\left[\begin{array}{cc}
+-\left[\boldsymbol{\omega}\right]_{\times} & -\mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为校正偏差后的角速度，
+\begin_inset Formula $\mathbf{B}$
+\end_inset
+
+为干扰矩阵，
+\begin_inset Formula 
+\[
+\mathbf{B}=\left[\begin{array}{cc}
+-\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\]
+
+\end_inset
+
+它将白噪声序列转化为干扰 (disturbance) 向量。
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+为系统过程噪声。
+\end_layout
+
+\begin_layout Standard
+误差状态转换矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{F} & =\exp\left(\mathbf{A}\cdot\Delta t\right)\\
+ & =\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{R}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:134"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathbf{V}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:145"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:174"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}$
+\end_inset
+
+参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:143"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:147"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+我们对验证方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:F-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 感兴趣。因为偏差的误差是各向同性，与旋转无关，所以可设置为全
+\begin_inset Formula $1$
+\end_inset
+
+向量，于是我们有向量
+\begin_inset Formula $\Delta\boldsymbol{\tau}$
+\end_inset
+
+，它构成的切空间和流形如下：
+\begin_inset Formula 
+\begin{align*}
+\Delta\boldsymbol{\tau} & =\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+1_{3\times1}
+\end{array}\right]\cdot\Delta t\\
+\Delta\boldsymbol{\tau}^{\wedge} & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\cdot\Delta t\\
+\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right) & =\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+并且与旋转
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+相似，它的伴随是它自身
+\begin_inset Formula 
+\[
+\mathbf{Ad}_{\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)}=\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)
+\]
+
+\end_inset
+
+此外，
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵还有这样的性质
+\begin_inset Formula 
+\begin{align*}
+\mathbf{R}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\mathbf{V}\left(\boldsymbol{\theta}\right) & =\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+所以
+\begin_inset Formula 
+\begin{align*}
+\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)\cdot\mathbf{F} & =\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & -\mathbf{R}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}+\mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+由此验证了方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:F-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。这也说明姿态误差是一个很复杂的组合流形，它的方向和增量角度
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，也即和角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的方向相反。
+\end_layout
+
+\begin_layout Standard
+误差控制模型矩阵
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+的封闭式太过复杂，并且因为实际的传感器噪声都很小，所以在工程中
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+矩阵都会做大大的简化，所以这里就不再验证方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:G-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+基于观测向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的观测模型矩阵
+\begin_inset Formula $\mathbf{H}$
+\end_inset
+
+很简单，根据方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:150"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:140"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们有
+\begin_inset Formula 
+\begin{align*}
+\mathbf{H} & =\mathbf{J}_{\mathsf{R}}^{\mathsf{R}^{-1}\cdot\mathsf{v}}\\
+ & =\mathbf{J}_{\mathsf{R}^{-1}}^{\mathsf{R}^{-1}\cdot\mathsf{v}}\mathbf{J}_{\mathsf{R}}^{\mathsf{R}^{-1}}\\
+ & =\left(-\mathbf{R}^{-1}\left[\mathbf{v}\right]_{\times}\right)\left(-\mathbf{R}\right)\\
+ & =\left[\mathbf{R}^{-1}\mathbf{v}\right]_{\times}
+\end{align*}
+
+\end_inset
+
+再加上与旋转无关的偏差误差的项，实际矩阵为
+\begin_inset Formula $\mathbf{H}=\left[\begin{array}{cc}
+\left[\mathbf{R}^{-1}\mathbf{v}\right]_{\times} & \mathbf{I}_{3\times3}\end{array}\right]$
+\end_inset
+
+，由此验证了方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H-3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Subsection
+位姿误差及其偏差的组合流形
+\end_layout
+
+\begin_layout Standard
+当我们需要估计位姿时，为便于分析，我们把误差向量
+\begin_inset Formula $\delta\mathbf{x}$
+\end_inset
+
+简化为由增量角度误差
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+、增量速度误差
+\begin_inset Formula $\delta\mathbf{v}$
+\end_inset
+
+，以及角速度偏差的误差
+\begin_inset Formula $\delta\boldsymbol{\omega}_{b}$
+\end_inset
+
+和加速度偏差的误差
+\begin_inset Formula $\delta\mathbf{a}_{b}$
+\end_inset
+
+构成
+\begin_inset Formula 
+\[
+\delta\mathbf{x}=\left[\begin{array}{c}
+\delta\boldsymbol{\theta}\\
+\delta\mathbf{v}\\
+\delta\boldsymbol{\omega}_{b}\\
+\delta\mathbf{a}_{b}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过推导，其误差的动力学矩阵
+\begin_inset Formula $\mathbf{A}$
+\end_inset
+
+为，
+\begin_inset Formula 
+\[
+\mathbf{A}=\left[\begin{array}{cccc}
+-\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{0}_{3\times3} & -\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+-\mathsf{R}\left[\mathbf{a}\right]_{\times} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & -\mathsf{R}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中，符号
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+为机体当前姿态，
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+为校正偏差后的机体加速度。
+\end_layout
+
+\begin_layout Standard
+误差状态转换矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{F} & =\exp\left(\mathbf{A}\cdot\Delta t\right)\\
+ & =\left[\begin{array}{cccc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+-\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{I}_{3\times3} & -\mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+矩阵为
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right) & =\dfrac{1}{2}\mathbf{I}+\dfrac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\cos\theta-1+\dfrac{\theta^{2}}{2}}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\dfrac{1}{2}\mathbf{I}-\dfrac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\cos\theta-1+\dfrac{\theta^{2}}{2}}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+这个
+\begin_inset Formula $\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+矩阵很复杂，将在后面讨论其几何意义。
+\end_layout
+
+\begin_layout Standard
+我们再次构造向量
+\begin_inset Formula $\Delta\boldsymbol{\tau}$
+\end_inset
+
+。因为偏差的误差是各向同性，与旋转无关，所以可设置为全
+\begin_inset Formula $1$
+\end_inset
+
+向量，再加上一个内部状态值为当前姿态
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+，于是向量
+\begin_inset Formula $\Delta\boldsymbol{\tau}$
+\end_inset
+
+构成的切空间和流形如下：
+\begin_inset Formula 
+\begin{align*}
+\Delta\boldsymbol{\tau} & =\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{a}\\
+1_{3\times1}\\
+1_{3\times1}
+\end{array}\right]\cdot\Delta t\\
+\Delta\boldsymbol{\tau}^{\wedge} & =\left[\begin{array}{cccc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathsf{R}\left[\mathbf{a}\right]_{\times} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathsf{R}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\cdot\Delta t\\
+\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right) & =\left[\begin{array}{cccc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{0}_{3\times3} & \mathbf{V}\left(\boldsymbol{\theta}\right) & \mathbf{0}_{3\times3}\\
+\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right) & \mathbf{I}_{3\times3} & \mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right) & \mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+并且与旋转
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+相似，它的伴随是它自身
+\begin_inset Formula 
+\[
+\mathbf{Ad}_{\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)}=\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)
+\]
+
+\end_inset
+
+此外，
+\begin_inset Formula $\boldsymbol{\Sigma}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵还有这样的性质
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)-\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\mathbf{V}\left(\boldsymbol{\theta}\right) & =\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}-\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)
+\end{align*}
+
+\end_inset
+
+所以
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\exp\left(\Delta\boldsymbol{\tau}^{\wedge}\right)\cdot\mathbf{F} & =\tiny\left[\begin{array}{cccc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{0}_{3\times3} & \mathbf{V}\left(\boldsymbol{\theta}\right) & \mathbf{0}_{3\times3}\\
+\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right) & \mathbf{I}_{3\times3} & \mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right) & \mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cccc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+-\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{I}_{3\times3} & -\mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+ & =\tiny\left[\begin{array}{cccc}
+\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3} & -\mathbf{R}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}+\mathbf{V}\left(\boldsymbol{\theta}\right) & \mathbf{0}_{3\times3}\\
+\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}-\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{I}_{3\times3} & -\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}-\mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}+\mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right) & \mathsf{R}\cdot\Delta t-\mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+由此验证了方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:F-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+矩阵，大概是刚体运动群
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+对角度向量
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+的右结合的加号的 Jacobian 矩阵(FIXME: 瞎猜的，还未进行验证)，
+\begin_inset Formula $\mathbf{J}_{\boldsymbol{\theta}}^{\mathbf{M}\oplus\boldsymbol{\theta}}=\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+。于是我们完全用 Jacobian 矩阵解释误差状态转换矩阵
+\begin_inset Formula $\mathbf{F}$
+\end_inset
+
+为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{F} & =\left[\begin{array}{cccc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{0}_{3\times3}\\
+-\mathsf{R}\left[\mathbf{a}\right]_{\times}\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & \mathbf{I}_{3\times3} & -\mathsf{R}\left[\mathbf{a}\right]_{\times}\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cccc}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{0}_{3\times3} & -\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{0}_{3\times3}\\
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{I}_{3\times3} & \mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{\boldsymbol{\theta}}^{\mathbf{M}\oplus\boldsymbol{\theta}} & -\mathsf{R}\cdot\Delta t\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中组合流形的几何意义明显可见。
+\end_layout
+
+\begin_layout Section
+旋转向量的动力学矩阵
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的导数方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+，有着十分重要的几何意义。假如机体以角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+匀速旋转，这是机体坐标系中的角速度，由 IMU 测量得到，经过时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+之后，则增量角度为
+\begin_inset Formula $\boldsymbol{\theta}=\boldsymbol{\omega}\cdot\Delta t$
+\end_inset
+
+，并且增量旋转为
+\begin_inset Formula $\mathsf{R}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+。但实际上我们的测量存在误差，误差角度向量用
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+表示，则我们的测量值为
+\begin_inset Formula $\mathsf{Q}=\mathsf{R}\left(\boldsymbol{\theta}\right)\oplus\delta\boldsymbol{\theta}$
+\end_inset
+
+。根据文献 [1, p55] 的推导，旋转向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的动力学方程为
+\begin_inset Formula 
+\[
+\dot{\delta\boldsymbol{\theta}}=\left(\mathbf{I}-\frac{1-\cos\theta}{\theta^{2}}\left[\delta\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\delta\boldsymbol{\theta}\right]_{\times}^{2}\right)\boldsymbol{\omega}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta=\left\Vert \delta\boldsymbol{\theta}\right\Vert $
+\end_inset
+
+。因此旋转向量的动力学矩阵，习惯上用符号
+\begin_inset Formula $\boldsymbol{\Gamma}$
+\end_inset
+
+表示，为
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\Gamma}\left(\delta\boldsymbol{\theta}\right) & =\mathbf{J}_{\delta\boldsymbol{\theta}}^{\mathsf{R}\oplus\delta\boldsymbol{\theta}}\\
+ & =\mathbf{J}_{r}\left(\delta\boldsymbol{\theta}\right)
+\end{align*}
+
+\end_inset
+
+因此整理表示误差的旋转向量的动力学方程为
+\begin_inset Formula 
+\[
+\dot{\delta\boldsymbol{\theta}}=\boldsymbol{\Gamma}\left(\delta\boldsymbol{\theta}\right)\boldsymbol{\omega}
+\]
+
+\end_inset
+
+这表明误差向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+和角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+相关。更进一步的，对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的导数方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathbf{J}_{\delta\boldsymbol{\theta}}^{\mathsf{R}\oplus\delta\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\delta\boldsymbol{\theta}\right)$
+\end_inset
+
+，我们是用局部笛卡尔空间中的误差向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的微小扰动，表达了旋转流形
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上的元素
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+的变化率；对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的导数方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:80"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\delta\boldsymbol{\theta}}=\mathbf{R}\left(\delta\boldsymbol{\theta}\right)^{\top}$
+\end_inset
+
+，对于误差向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+，它的方向与增量旋转
+\begin_inset Formula $\mathsf{R}\left(\boldsymbol{\omega}\cdot\Delta t\right)$
+\end_inset
+
+中的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的方向相反，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+其直觉就是增量角度误差好像是某种“惯性”，滞后于旋转方向。
+\end_layout
+
+\begin_layout Standard
+类似于方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们进一步扩展
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的左结合的加号的 Jacobian 矩阵
+\begin_inset Formula 
+\[
+\mathbf{J}_{\mathsf{R}}^{\boldsymbol{\theta}\oplus\mathsf{R}}=\mathbf{R}\left(\boldsymbol{\theta}\right)\quad\mathbf{J}_{\boldsymbol{\theta}}^{\boldsymbol{\theta}\oplus\mathsf{R}}=\mathbf{J}_{l}\left(\boldsymbol{\theta}\right)
+\]
+
+\end_inset
+
+因此全局坐标系与局部坐标系的切空间的性质正好相反。
+\end_layout
+
+\begin_layout Standard
+类似地，我们可以用切空间的李代数直接表达旋转流形
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上的动力学方程，即
+\begin_inset Formula 
+\[
+\dot{\mathbf{R}}=\mathbf{R}\left[\boldsymbol{\omega}\right]_{\times}
+\]
+
+\end_inset
+
+并且对于
+\begin_inset Formula $\boldsymbol{\Gamma}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+这两个动力学矩阵，它们有这样的关系
+\begin_inset Formula 
+\[
+\boldsymbol{\Gamma}\left(\boldsymbol{\theta}\right)=\dfrac{1}{\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}\boldsymbol{\theta}\boldsymbol{\theta}^{\top}+\dfrac{1}{\left\Vert \boldsymbol{\theta}\right\Vert ^{2}}\left[\boldsymbol{\theta}\right]_{\times}\left(\mathbf{R}\left(\boldsymbol{\theta}\right)^{\top}-\mathbf{I}_{3\times3}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另外，我们已知
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵有这样的性质
+\begin_inset Formula 
+\[
+\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}=\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\mathbf{V}\left(\boldsymbol{\theta}\right)
+\]
+
+\end_inset
+
+根据方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:143"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:145"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 、方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:139"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们有
+\begin_inset Formula 
+\begin{align*}
+\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & =\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{Ad}_{\mathsf{R}^{\top}} & =\mathsf{R}^{\top}\\
+\mathbf{J}_{l}\left(\boldsymbol{\theta}\right) & =\mathbf{J}_{r}\left(-\boldsymbol{\theta}\right)
+\end{align*}
+
+\end_inset
+
+于是上式可以解释为
+\begin_inset Formula 
+\[
+\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{Ad}_{\mathsf{R}^{\top}}\,\mathbf{J}_{\left(-\boldsymbol{\theta}\right)}^{\mathsf{R}\oplus\left(-\boldsymbol{\theta}\right)}
+\]
+
+\end_inset
+
+还是在描述
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+的方向，以及局部坐标系变换的关系。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+用切空间中的无穷小变化表达流形中的导数，这是应用李群理论最本质的思想。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A survey of attitude representations - 1993"
+target "http://www.malcolmdshuster.com/Pub_1993h_J_Repsurv_scan.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Indirect Kalman filter for 3D attitude estimation - 2007"
+target "http://mars.cs.umn.edu/tr/reports/Trawny05b.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie Groups for 2D and 3D Transformations - 2017"
+target "http://ethaneade.com/lie.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Quaternion kinematics for the error-state KF - 2017"
+target "http://www.iri.upc.edu/people/jsola/JoanSola/objectes/notes/kinematics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics - 2020"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+草稿纸
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{V}=\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\omega}_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\omega}_{\times}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+A & =\dfrac{\sin\theta}{\theta}\\
+B & =\dfrac{1-\cos\theta}{\theta^{2}}\\
+C & =\dfrac{1-A}{\theta^{2}}\\
+\mathbf{V} & =\mathbf{I}+B\boldsymbol{\omega}_{\times}+C\boldsymbol{\omega}_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}^{-1} & =\mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\dfrac{1}{\theta^{2}}\left(1-\dfrac{A}{2B}\right)\boldsymbol{\omega}_{\times}^{2}\\
+ & =\mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\dfrac{1}{\theta^{2}}\left(1-\dfrac{\dfrac{\sin\theta}{\theta}}{2\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)}\right)\boldsymbol{\omega}_{\times}^{2}\\
+ & =\mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\dfrac{1}{\theta^{2}}\left(1-\dfrac{\dfrac{\sin\theta}{\theta}\left(1+\cos\theta\right)}{2\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left(1+\cos\theta\right)}\right)\boldsymbol{\omega}_{\times}^{2}\\
+ & =\mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\dfrac{1}{\theta^{2}}\left(1-\dfrac{\dfrac{\sin\theta}{\theta}\left(1+\cos\theta\right)}{2\left(\dfrac{\sin^{2}\theta}{\theta^{2}}\right)}\right)\boldsymbol{\omega}_{\times}^{2}\\
+ & =\mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\dfrac{1}{\theta^{2}}\left(1-\dfrac{\left(1+\cos\theta\right)}{2\left(\dfrac{\sin\theta}{\theta}\right)}\right)\boldsymbol{\omega}_{\times}^{2}\\
+ & \mathbf{I}-\dfrac{1}{2}\boldsymbol{\omega}_{\times}+\left(\dfrac{1}{\theta^{2}}-\dfrac{\left(1+\cos\theta\right)}{2\theta\sin\theta}\right)\boldsymbol{\omega}_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V} & =\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}^{-1} & =\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\cdot\mathbf{V}^{-1} & =\left(\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & \cdot\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & +\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & +\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & +\left(-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(1-\cos\theta\right)\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}\right)\\
+ & +\left(\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta}\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\mathbf{I}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right) & =\\
+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\cdot\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{1-\cos\theta}{\theta^{2}}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}\\
+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(1-\cos\theta\right)\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times} & =\\
+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\left(1-\cos\theta\right)\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(1-\cos\theta\right)\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right) & =\\
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\cdot\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{3}+\frac{\theta-\sin\theta}{\theta^{3}}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{4} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times},\ \left[\boldsymbol{\theta}\right]_{\times}^{4}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta^{3}}\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}-\frac{\theta-\sin\theta}{\theta^{3}}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times}-\frac{\theta-\sin\theta}{\theta}\cdot\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times}-\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{\theta-\sin\theta}{\theta}\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta}\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(1-\cos\theta\right)\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}+\frac{1}{2}\cdot\frac{\theta-\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{1}{2}\cdot\dfrac{\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times}+\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}-\frac{1}{2}\cdot\dfrac{\sin\theta}{\theta}\left[\boldsymbol{\theta}\right]_{\times} & =\mathbf{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{\theta-\sin\theta}{\theta}\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(1-\dfrac{\sin\theta}{\theta}\right)\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{\sin\theta}{\theta}\cdot\frac{1+\cos\theta}{2\theta\sin\theta}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\cdot\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{1}{2}\cdot\dfrac{1+\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\frac{1}{2}\left(\dfrac{1-\cos\theta+1+\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\frac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{1}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\mathbf{0}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}^{-1} & =\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\frac{1}{\theta^{2}}\left(1-\frac{\theta\cos\left(\theta/2\right)}{2\sin\left(\theta/2\right)}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+1-\frac{\theta\cos\left(\theta/2\right)}{2\sin\left(\theta/2\right)} & =1-\frac{\theta}{2}\cot\left(\theta/2\right)\\
+ & \because\ \cot\left(\theta/2\right)=\dfrac{\sin\theta}{1-\cos\theta}=\dfrac{1+\cos\theta}{\sin\theta}\\
+ & =1-\frac{\theta}{2}\cdot\dfrac{\sin\theta}{1-\cos\theta}\\
+ & =1-\dfrac{\frac{\sin\theta}{\theta}}{2\frac{1-\cos\theta}{\theta^{2}}}\\
+ & =1-\dfrac{A}{2B}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{A} & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+\mathbf{A}^{2} & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times}^{2} & \left[\boldsymbol{\omega}\right]_{\times}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+\mathbf{A}^{3} & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times}^{2} & \left[\boldsymbol{\omega}\right]_{\times}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times}^{3} & \left[\boldsymbol{\omega}\right]_{\times}^{2}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+\mathbf{A}^{4} & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times}^{3} & \left[\boldsymbol{\omega}\right]_{\times}^{2}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times} & \mathbf{I}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+\left[\boldsymbol{\omega}\right]_{\times}^{4} & \left[\boldsymbol{\omega}\right]_{\times}^{3}\\
+\mathbf{0}_{3\times3} & \mathbf{0}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{array}{llll}
+\left[\boldsymbol{\omega}\times\right]^{2}=\boldsymbol{\omega}\boldsymbol{\omega}^{\mathrm{T}}-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\boldsymbol{I}\\
+\left[\boldsymbol{\omega}\times\right]^{3}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{4}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{5}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{6}=\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\times\right]^{2}\\
+\left[\boldsymbol{\omega}\times\right]^{7}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{8}=-\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\left[\boldsymbol{\omega}\times\right]^{2} & \left[\boldsymbol{\omega}\times\right]^{9}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right] & \left[\boldsymbol{\omega}\times\right]^{10}=\left\Vert \boldsymbol{\omega}\right\Vert ^{8}\left[\boldsymbol{\omega}\times\right]^{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\Theta} & =\mathbf{I}_{3\times3}+\left[\boldsymbol{\omega}\right]_{\times}\Delta t+\dfrac{1}{2!}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{2}+\dfrac{1}{3!}\left[\boldsymbol{\omega}\right]_{\times}^{3}\Delta t^{3}+\dfrac{1}{4!}\left[\boldsymbol{\omega}\right]_{\times}^{4}\Delta t^{4}+\dfrac{1}{5!}\left[\boldsymbol{\omega}\right]_{\times}^{5}\Delta t^{5}+\dfrac{1}{6!}\left[\boldsymbol{\omega}\right]_{\times}^{6}\Delta t^{6}+\ldots\\
+ & =\mathbf{I}_{3\times3}+\left[\boldsymbol{\omega}\right]_{\times}\Delta t+\dfrac{1}{2!}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{2}-\dfrac{1}{3!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{3}-\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{4}+\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{5}+\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{6}+\ldots\\
+ & =\mathbf{I}_{3\times3}+\left(\Delta t-\dfrac{1}{3!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{3}+\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{5}-\ldots\right)\left[\boldsymbol{\omega}\right]_{\times}+\left(\dfrac{1}{2!}\Delta t^{2}-\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{4}+\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{6}-\ldots\right)\left[\boldsymbol{\omega}\right]_{\times}^{2}\\
+ & =\mathbf{I}_{3\times3}+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}}{\left\Vert \boldsymbol{\omega}\right\Vert }\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t-\dfrac{1}{3!}\left\Vert \boldsymbol{\omega}\right\Vert ^{3}\Delta t^{3}+\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{3}\Delta t^{5}-\ldots\right)+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\left(1-\dfrac{1}{2!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{2}+\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{4}-\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\Delta t^{6}+\ldots\right)\right)\\
+ & =\mathbf{I}_{3\times3}+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}}{\left\Vert \boldsymbol{\omega}\right\Vert }\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)\\
+ & =\mathbf{R}\left(\boldsymbol{\theta}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\Psi} & =\mathbf{I}_{3\times3}\Delta t+\dfrac{1}{2!}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{2}+\dfrac{1}{3!}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{3}+\dfrac{1}{4!}\left[\boldsymbol{\omega}\right]_{\times}^{3}\Delta t^{4}+\dfrac{1}{5!}\left[\boldsymbol{\omega}\right]_{\times}^{4}\Delta t^{5}+\dfrac{1}{6!}\left[\boldsymbol{\omega}\right]_{\times}^{5}\Delta t^{6}+\ldots\\
+ & =\mathbf{I}_{3\times3}\Delta t+\dfrac{1}{2!}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{2}+\dfrac{1}{3!}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{3}-\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{4}-\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\left[\boldsymbol{\omega}\right]_{\times}^{2}\Delta t^{5}+\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\left[\boldsymbol{\omega}\right]_{\times}\Delta t^{6}+\ldots\\
+ & =\mathbf{I}_{3\times3}\Delta t+\left(\dfrac{1}{2!}\Delta t^{2}-\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{4}+\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{6}-\ldots\right)\left[\boldsymbol{\omega}\right]_{\times}+\left(\dfrac{1}{3!}\Delta t^{3}-\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{5}+\dfrac{1}{7!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{7}-\ldots\right)\left[\boldsymbol{\omega}\right]_{\times}^{2}\\
+ & =\mathbf{I}_{3\times3}\Delta t+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\left(1-\dfrac{1}{2!}\left\Vert \boldsymbol{\omega}\right\Vert ^{2}\Delta t^{2}+\dfrac{1}{4!}\left\Vert \boldsymbol{\omega}\right\Vert ^{4}\Delta t^{4}-\dfrac{1}{6!}\left\Vert \boldsymbol{\omega}\right\Vert ^{6}\Delta t^{6}-\ldots\right)\right)-\dfrac{\left[\boldsymbol{\omega}\right]_{\times}^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{3}}\left(-\left\Vert \boldsymbol{\omega}\right\Vert \Delta t+\left\Vert \boldsymbol{\omega}\right\Vert \Delta t-\dfrac{1}{3!}\Delta t^{3}+\dfrac{1}{5!}\left\Vert \boldsymbol{\omega}\right\Vert ^{5}\Delta t^{5}-\dfrac{1}{7!}\left\Vert \boldsymbol{\omega}\right\Vert ^{7}\Delta t^{7}+\ldots\right)\\
+ & =\mathbf{I}_{3\times3}\Delta t+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)-\dfrac{\left[\boldsymbol{\omega}\right]_{\times}^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{3}}\left(-\left\Vert \boldsymbol{\omega}\right\Vert \Delta t+\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)\\
+ & =\mathbf{I}_{3\times3}\Delta t+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{2}}\left(1-\cos\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)+\dfrac{\left[\boldsymbol{\omega}\right]_{\times}^{2}}{\left\Vert \boldsymbol{\omega}\right\Vert ^{3}}\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t-\sin\left(\left\Vert \boldsymbol{\omega}\right\Vert \Delta t\right)\right)\\
+ & =\mathbf{V}\left(\boldsymbol{\theta}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right] & =\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & -\mathbf{R}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}+\mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]=\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\\
+\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & -\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]\left[\begin{array}{cc}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & \mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right] & =\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & \mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\mathbf{V}\left(\boldsymbol{\theta}\right)-\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]=\left[\begin{array}{cc}
+\mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{R}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\mathbf{I}-\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{R}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\left(\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\left(\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}\left(\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & +\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\dfrac{\sin^{2}\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\dfrac{\left(1-\cos\theta\right)^{2}}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\dfrac{\sin^{2}\theta+\left(1-\cos\theta\right)^{2}}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\\
+ & +\dfrac{\left(1-\cos\theta\right)\sin\theta-\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\dfrac{\sin^{2}\theta+\left(1-2\cos\theta+\cos^{2}\theta\right)}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +2\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}\\
+ & =\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & =\mathbf{V}\left(\boldsymbol{\theta}\right)\\
+\mathbf{R}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}\mathbf{V}\left(\boldsymbol{\theta}\right) & =\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(\dfrac{\sin\theta\left(\theta-\sin\theta\right)}{\theta^{4}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}\\
+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{\sin\theta\left(\theta-\sin\theta\right)}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times} & =\\
+\left(\dfrac{\sin\theta}{\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{\sin\theta}{\theta}-\dfrac{\sin^{2}\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times} & =\\
+\dfrac{\sin^{2}\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{3}+\left(\dfrac{\left(1-\cos\theta\right)\left(\theta-\sin\theta\right)}{\theta^{5}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{4} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times},\ \left[\boldsymbol{\theta}\right]_{\times}^{4}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(1-\cos\theta\right)^{2}}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\left(1-\cos\theta\right)\left(\theta-\sin\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(1-\cos\theta\right)^{2}}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\left(1-\cos\theta\right)\theta-\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\left(1-\cos\theta\right)^{2}}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\dfrac{1}{2}\boldsymbol{I}_{3\times3}\Delta t^{2}-\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\boldsymbol{R}_{I}^{B}\left(\hat{\boldsymbol{\omega}}\Delta t\right)-\boldsymbol{I}_{3\times3}+\left[\hat{\boldsymbol{\omega}}\times\right]\Delta t-\dfrac{1}{2}\left[\hat{\boldsymbol{\omega}}\times\right]^{2}\Delta t^{2}\right) & =\\
+\dfrac{1}{2}\boldsymbol{I}_{3\times3}\Delta t^{2}-\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\boldsymbol{R}_{I}^{B}\left(\hat{\boldsymbol{\omega}}\Delta t\right)-\boldsymbol{I}_{3\times3}+\left[\hat{\boldsymbol{\omega}}\times\right]\Delta t\right)-\dfrac{1}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\dfrac{1}{2}\left[\hat{\boldsymbol{\omega}}\times\right]^{2}\Delta t^{2}\right) & =\\
+\dfrac{\Delta t^{2}}{2}\left(\boldsymbol{I}_{3\times3}-\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]^{2}}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\right)-\dfrac{1}{\left[\hat{\boldsymbol{\omega}}\times\right]}\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\boldsymbol{R}_{I}^{B}\left(\hat{\boldsymbol{\omega}}\Delta t\right)-\boldsymbol{I}_{3\times3}+\left[\hat{\boldsymbol{\omega}}\times\right]\Delta t\right) & =\\
+\dfrac{\Delta t^{2}}{2}\left(\boldsymbol{I}_{3\times3}-\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]^{2}}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\right)-\dfrac{1}{\left[\hat{\boldsymbol{\omega}}\times\right]}\left(-\boldsymbol{I}_{3\times3}\Delta t+\boldsymbol{I}_{3\times3}\Delta t+\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\boldsymbol{R}_{I}^{B}\left(\hat{\boldsymbol{\omega}}\Delta t\right)-\boldsymbol{I}_{3\times3}+\left[\hat{\boldsymbol{\omega}}\times\right]\Delta t\right)\right) & =\\
+\dfrac{\Delta t^{2}}{2}\left(\boldsymbol{I}_{3\times3}-\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]^{2}}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\right)+\dfrac{\boldsymbol{I}_{3\times3}\Delta t}{\left[\hat{\boldsymbol{\omega}}\times\right]}-\dfrac{1}{\left[\hat{\boldsymbol{\omega}}\times\right]}\left(\boldsymbol{I}_{3\times3}\Delta t+\dfrac{\left[\hat{\boldsymbol{\omega}}\times\right]}{\left|\hat{\boldsymbol{\omega}}\right|^{2}}\left(\boldsymbol{R}_{I}^{B}\left(\hat{\boldsymbol{\omega}}\Delta t\right)-\boldsymbol{I}_{3\times3}+\left[\hat{\boldsymbol{\omega}}\times\right]\Delta t\right)\right) & =
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right)\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\left(\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\left(\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\right)\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & +\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3}\\
+ & +\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{4}\\
+ & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & -\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}\\
+ & +\dfrac{\left(\theta-\sin\theta\right)\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(\theta-\sin\theta\right)\sin\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+ & =\mathbf{I}+\dfrac{\theta^{2}+2\cos\theta-2}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left(-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}\right) & =\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{\left(1-\cos\theta\right)\left(\theta-\sin\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{\left(1-\cos\theta\right)\theta-\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{3}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{4} & =\\
+\because\ \left[\boldsymbol{\theta}\right]_{\times}^{3}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times},\ \left[\boldsymbol{\theta}\right]_{\times}^{4}=-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left(-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}\right)+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)^{2}\left(-\theta^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}\right) & =\\
+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(\theta-\sin\theta\right)\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\left(\theta-\sin\theta\right)^{2}}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(\theta-\sin\theta\right)\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\left(\theta-\sin\theta\right)\theta-\left(\theta-\sin\theta\right)\sin\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\left(\theta-\sin\theta\right)\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(\theta-\sin\theta\right)\sin\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(\theta-\sin\theta\right)\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+-\dfrac{\left(1-\cos\theta\right)}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}+\dfrac{\theta\left(1-\cos\theta\right)-\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times} & =\\
+\dfrac{\left(1-\cos\theta\right)\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}-\dfrac{\sin\theta\left(1-\cos\theta\right)}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times} & =0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)^{2}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(\theta-\sin\theta\right)\sin\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\theta\left(\theta-\sin\theta\right)}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}-\dfrac{\left(1-\cos\theta\right)^{2}}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}+\dfrac{\left(\theta-\sin\theta\right)\sin\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\theta^{2}-\theta\sin\theta-\left(1-2\cos\theta+\cos^{2}\theta\right)+\theta\sin\theta-\sin^{2}\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\theta^{2}-\theta\sin\theta-1+2\cos\theta-\cos^{2}\theta+\theta\sin\theta-\sin^{2}\theta}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\theta^{2}-1+2\cos\theta-\left(\cos^{2}\theta+\sin^{2}\theta\right)}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2} & =\\
+\dfrac{\theta^{2}+2\cos\theta-2}{\theta^{4}}\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbf{V}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{V}\left(\boldsymbol{\theta}\right)^{\mathrm{T}} & =\mathbf{I}-\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\left[\boldsymbol{\theta}\right]_{\times}+\left(\dfrac{\theta-\sin\theta}{\theta^{3}}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

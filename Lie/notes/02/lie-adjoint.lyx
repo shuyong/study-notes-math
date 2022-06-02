@@ -1,0 +1,1382 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "李群中的不确定表示与伴随矩阵"
+\pdf_author "Shuyong Chen"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+李群中的不确定表示与伴随矩阵
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align right
+— 题记：不确定是每个人考试时的魔咒。同桌的你，已经猜不出老师的问题。 
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+利用 Jacobian 矩阵，李群中的不确定性管理公式与向量空间中的不确定性管理公式基本相似，其中伴随矩阵扮演着重要的角色。
+\end_layout
+
+\begin_layout Section
+前置知识
+\end_layout
+
+\begin_layout Standard
+指数映射有如下重要性质
+\begin_inset Formula 
+\begin{align}
+\exp\left(\left(t+s\right)\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(t\boldsymbol{\tau}^{\wedge}\right)\exp\left(s\boldsymbol{\tau}^{\wedge}\right)\label{eq:17}\\
+\exp\left(t\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{t}\label{eq:18}\\
+\exp\left(-\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{-1}\label{eq:19}\\
+\exp\left(\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right) & =\mathcal{X}\exp\left(\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}\label{eq:20}
+\end{align}
+
+\end_inset
+
+其中方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 很有用，在推导伴随矩阵和 Jacobian 矩阵时经常用到。
+\end_layout
+
+\begin_layout Standard
+为方便指数映射的操作，我们需要定义大写指数映射。大写的
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射是将向量元素
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}(\cong T_{\mathcal{E}}\mathcal{M})$
+\end_inset
+
+直接映射到元素
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+的快捷方式。我们有，
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}:\quad\mathbb{R}^{m}\rightarrow\mathcal{M}\quad; & \quad\boldsymbol{\tau}\mapsto\mathcal{X}=\mathrm{Exp}\left(\boldsymbol{\tau}\right)\label{eq:21}\\
+\mathrm{Log}:\quad\mathcal{M}\rightarrow\mathbb{R}^{m}\quad; & \quad\mathcal{X}\mapsto\boldsymbol{\tau}=\mathrm{Log}\left(\mathcal{X}\right).\label{eq:22}
+\end{align}
+
+\end_inset
+
+显然有，
+\begin_inset Formula 
+\begin{align}
+\mathcal{X} & =\mathrm{Exp}\left(\boldsymbol{\tau}\right)\triangleq\exp\left(\boldsymbol{\tau}^{\wedge}\right)\label{eq:23}\\
+\boldsymbol{\tau} & =\mathrm{Log}\left(\mathcal{X}\right)\triangleq\log\left(\mathcal{X}\right)^{\vee}.\label{eq:24}
+\end{align}
+
+\end_inset
+
+对于不同流形的这些映射的实现的详细信息，参见参考文献。
+\end_layout
+
+\begin_layout Standard
+为表达直觉，我们需要定义新的加号和减号算子。加号和减号算子允许我们在 (弯曲的) 流形的元素之间引入增量，并在 (平坦的) 切向量空间中表示它们。它们用
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+表示，将一个
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+/
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+操作与一个结合操作组合在一起。由于组合的非交换性，它们根据操作数的顺序在右结合 (right-) 版本和左结合 (left-) 版本中定义。右结合
+ (right-) 算子是
+\begin_inset Formula 
+\begin{align}
+\mathrm{right-}\oplus: & \quad\enskip\mathcal{Y}=\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\triangleq\mathcal{X}\circ\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\:\in\mathcal{M}\label{eq:25}\\
+\mathrm{right-}\ominus: & \quad{}^{\mathcal{X}}\boldsymbol{\tau}=\mathcal{Y}\ominus\mathcal{X}\enskip\triangleq\mathrm{Log}\left(\mathcal{X}^{-1}\circ\mathcal{Y}\right)\in T_{\mathcal{X}}\mathcal{M}.\label{eq:26}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中
+\begin_inset Formula $\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)$
+\end_inset
+
+出现在组合的右手侧，
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+属于
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的切空间，因此我们按照约定说这个
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+是在
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的局部 (local) 坐标系中表示 — 我们标记到参考坐标系的左上标。
+\end_layout
+
+\begin_layout Standard
+左结合 (left-) 算子是
+\begin_inset Formula 
+\begin{align}
+\mathrm{left-}\oplus: & \quad\enskip\mathcal{Y}={}^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}\triangleq\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\circ\mathcal{X}\;\,\in\mathcal{M}\label{eq:27}\\
+\mathrm{left-}\ominus: & \quad{}^{\mathcal{E}}\boldsymbol{\tau}=\enskip\mathcal{Y}\ominus\mathcal{X}\triangleq\mathrm{Log}\left(\mathcal{Y}\circ\mathcal{X}^{-1}\right)\in T_{\mathcal{E}}\mathcal{M}.\label{eq:28}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中
+\begin_inset Formula $\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)$
+\end_inset
+
+在左侧，并且我们有
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\in T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+，因此我们说这个
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}$
+\end_inset
+
+是在全局 (global) 坐标系中表示。
+\end_layout
+
+\begin_layout Standard
+注意，虽然右结合 (right-) 和左结合 (left-) 算子
+\begin_inset Formula $\oplus$
+\end_inset
+
+是按操作数顺序区分的，但符号
+\begin_inset Formula $\ominus$
+\end_inset
+
+在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中是不明确的。我们默认表示局部扰动，因此我们默认使用
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+的右结合 (right-) 形式。
+\end_layout
+
+\begin_layout Section
+伴随和伴随矩阵
+\end_layout
+
+\begin_layout Standard
+如果我们在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中标识
+\begin_inset Formula $\mathcal{Y}$
+\end_inset
+
+，我们就得到
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}=\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+，它确定局部切元素和全局切元素之间的关系。我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来扩展它为
+\begin_inset Formula 
+\[
+\begin{aligned}\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\mathcal{X} & =\mathcal{X}\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\\
+\exp\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right) & =\mathcal{X}\exp\left(^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}=\exp\left(\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)\\
+^{\mathcal{E}}\boldsymbol{\tau}^{\wedge} & =\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+伴随:
+\end_layout
+
+\begin_layout Standard
+因此，我们将
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的伴随 (adjoint)，记为
+\begin_inset Formula $\mathrm{Ad}_{\mathcal{X}}$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Ad}_{\mathcal{X}}:\mathfrak{m}\rightarrow\mathfrak{m};\quad\boldsymbol{\tau}^{\wedge}\mapsto\mathrm{Ad}_{\mathcal{X}}\left(\boldsymbol{\tau}^{\wedge}\right)\triangleq\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1},\label{eq:29}
+\end{equation}
+
+\end_inset
+
+因此
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}=\mathrm{Ad}_{\mathcal{X}}\left(^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\right)$
+\end_inset
+
+。这定义了群在它自己的李代数上的伴随作用 (adjoint action)。
+\end_layout
+
+\begin_layout Paragraph
+伴随矩阵:
+\end_layout
+
+\begin_layout Standard
+因为
+\begin_inset Formula $\mathrm{Ad}_{\mathcal{X}}\left(\,\right)$
+\end_inset
+
+是线性的，我们可以找到一个等价的矩阵算子
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}$
+\end_inset
+
+，它映射笛卡尔切向量
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\cong{}^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+和
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}\cong{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathcal{X}}:\mathbb{R}^{m}\rightarrow\mathbb{R}^{m};\quad{}^{\mathcal{X}}\boldsymbol{\tau}\mapsto{}^{\mathcal{E}}\boldsymbol{\tau}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau},\label{eq:30}
+\end{equation}
+
+\end_inset
+
+我们称之为伴随矩阵 (adjoint matrix)。这可以通过将
+\begin_inset Formula $^{\vee}$
+\end_inset
+
+应用于方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来计算，因此写为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}=\left(\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)^{\vee},\label{eq:31}
+\end{equation}
+
+\end_inset
+
+然后扩展右手侧结合以标识伴随矩阵。伴随矩阵有一些常用的性质
+\begin_inset Formula 
+\begin{align}
+\mathcal{X}\oplus\boldsymbol{\tau} & =\left(\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}\right)\oplus\mathcal{X}\label{eq:32}\\
+\mathbf{Ad}_{\mathcal{X}^{-1}} & =\mathbf{Ad}_{\mathcal{X}}{}^{-1}\label{eq:33}\\
+\mathbf{Ad}_{\mathcal{XY}} & =\mathbf{Ad}_{\mathcal{X}}\mathbf{Ad}_{\mathcal{Y}}.\label{eq:34}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的左半部分通常比右半部分计算起来更方便快捷。我们将经常使用伴随矩阵将
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的切空间的向量线性变换为原点的切空间的向量，使用
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Section
+流形中的不确定性与协方差传播
+\end_layout
+
+\begin_layout Standard
+我们定义局部扰动
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+为在切向量空间
+\begin_inset Formula $T_{\bar{\mathcal{X}}}\mathcal{M}$
+\end_inset
+
+中围绕着点
+\begin_inset Formula $\bar{\mathcal{X}}\in\mathcal{M}$
+\end_inset
+
+的扰动，使用右结合 (right-) 的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}=\bar{\mathcal{X}}\oplus\boldsymbol{\tau},\quad\boldsymbol{\tau}=\mathcal{X}\ominus\bar{\mathcal{X}}\in T_{\bar{\mathcal{X}}}\mathcal{M}.\label{eq:51}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差矩阵可以通过标准期望算子
+\begin_inset Formula $\mathbb{E}\left[\cdot\right]$
+\end_inset
+
+在
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+处的切空间上正确定义，
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Sigma}_{\mathcal{X}}\triangleq\mathbb{E}\left[\boldsymbol{\tau}\boldsymbol{\tau}^{\top}\right]=\mathbb{E}\left[\left(\mathcal{X}\ominus\bar{\mathcal{X}}\right)\left(\mathcal{X}\ominus\bar{\mathcal{X}}\right)^{\top}\right]\in\mathbb{R}^{m\times m},\label{eq:52}
+\end{equation}
+
+\end_inset
+
+这允许我们定义流形上的高斯变量，
+\begin_inset Formula $\mathcal{X}\sim\mathcal{N}\left(\bar{\mathcal{X}},\boldsymbol{\Sigma}_{\mathcal{X}}\right)$
+\end_inset
+
+。注意，虽然我们写
+\begin_inset Formula $\boldsymbol{\Sigma}_{\mathcal{X}}$
+\end_inset
+
+，但协方差还是正切扰动
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的协方差。由于 
+\begin_inset Formula $T\mathcal{M}$
+\end_inset
+
+的维度
+\begin_inset Formula $m$
+\end_inset
+
+与
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的自由度相匹配，因此这些协方差被很好地定义。
+\end_layout
+
+\begin_layout Standard
+扰动也可以在全局参考中表示，即在原点
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+处的切空间中，使用左结合 (left-) 的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}=\boldsymbol{\tau}\oplus\bar{\mathcal{X}},\quad\boldsymbol{\tau}=\mathcal{X}\ominus\bar{\mathcal{X}}\in T_{\mathcal{E}}\mathcal{M}.\label{eq:53}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这允许使用在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:52"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的左结合 (left-) 减号的协方差矩阵的全局规范。因为“水平 (horizontal)”是一个全局规范。例如，一个三维方向已知是在水平面中的旋转，可以
+与协方差矩阵
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\Sigma}=\mathrm{diag}\left(\sigma_{\phi}^{2},\sigma_{\theta}^{2},\infty\right)$
+\end_inset
+
+相关联。因此必须在全局参考中指定
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\Sigma}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因为全局扰动和局部扰动由伴随方程联系起来，它们的协方差的变换可以用方程
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{E}}\boldsymbol{\Sigma}_{\mathcal{X}}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\mathbf{Ad}_{\mathcal{X}}{}^{\top}.\label{eq:54}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差的传播通过函数
+\begin_inset Formula $f:\mathcal{M}\rightarrow\mathcal{N};\mathcal{X}\mapsto\mathcal{Y}=f\left(\mathcal{X}\right)$
+\end_inset
+
+只需要用 Jacobian 矩阵方程来线性化点
+\begin_inset Formula $\mathcal{Y}=f\left(\mathcal{X}\right)$
+\end_inset
+
+附近
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+小值的近似方程
+\begin_inset Formula $f\left(\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\right)\underset{^{\mathcal{X}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}f\left(\mathcal{X}\right)\oplus\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+以获得熟悉的公式，
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\Sigma}_{\mathcal{Y}}\approx\frac{Df}{D\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\frac{Df\,{}^{\top}}{D\mathcal{X}}\quad\in\mathbb{R}^{n\times n}.\label{eq:55}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+全局上的流形均值
+\end_layout
+
+\begin_layout Standard
+在上一节中出现的
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+，是流形上的均值元素。那么我们该如何理解与获得这个流形上的均值元素
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+ ？和向量空间类似，只是这里我们使用
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子。假设在某个时刻我们测量得到
+\begin_inset Formula $n$
+\end_inset
+
+个流形元素
+\begin_inset Formula $\mathcal{X}_{i}$
+\end_inset
+
+，则均值元素
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+有特性
+\begin_inset Formula 
+\[
+\arg\min\sum_{i=1}^{n}\left\Vert \left(\mathcal{X}_{i}\ominus\bar{\mathcal{X}}\right)\right\Vert ^{2}=\arg\min\sum_{i=1}^{n}\left(\boldsymbol{\tau}_{i}^{\top}\boldsymbol{\tau}_{i}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以用
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的均值从几何上直观理解这个问题。找来一个篮球，用笔随便找一个地方均匀点几个点，这就是我们抽样得到的随机旋转。然后我们估摸着在这几个点的中心区域点一个点，这就是我
+们猜测的平均旋转。我们手上只有直尺，量不了球面上两点的距离。但我们手上还有一些柔软的琴弦(string)，于是我们用琴弦从猜测点出发，到其中一个随机点的时候用手
+按住标记，然后拉直了琴弦在直尺上看数据，这就是从猜测点到随机点的距离。把所有的距离相加就是总距离。 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename fig3d-06.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+刚才那个猜测点是随便猜的。我们按照某种梯度下降方法继续猜下一个点，直到找到总距离最小的那个点。在这期间，我们用琴弦量弧段，就是量测地线。琴弦拉直了用直尺量，就是
+\begin_inset Formula $\mathrm{Log}\left(\:\right)$
+\end_inset
+
+操作，或者说展开(unwrap)操作，将球面(流形)上的元素映射到了向量空间。在向量空间中，距离相加就得到了总距离。因为局部切空间不同，各个点映射到切空间中的向
+量也不同，所以总距离就有变化。而平均旋转，就是总距离最小的那个点，但我们没有解析解，因为各处局部切空间无法直接相互比较。所以要求全局最小总距离，就只能靠某种方法
+试探和逼近。 
+\end_layout
+
+\begin_layout Standard
+随着切点的不同，在以切点为原点建立的切空间中，各个映射点围成的多面体的体积/面积也不相同。我们需要在流形上试探找到一个点，在该点上建立的切空间中，切点/原点正好
+是多面体的几何中心，也就是平均向量最小，
+\begin_inset Formula 
+\[
+\left\Vert \sum_{i=1}^{n}\left(\mathcal{X}_{i}\ominus\bar{\mathcal{X}}\right)\right\Vert ^{2}=0
+\]
+
+\end_inset
+
+这样从原点出发到各个映射点的总距离最小，这时各个映射点围成的多面体的体积/面积也最小。这实际上也是施瓦兹不等式的一个应用。但是该点没有解析解，只能靠搜索找到。
+\end_layout
+
+\begin_layout Standard
+因此在现有估计算法中，很少使用这种算法，一是速度慢，二是我们不可能有完全的数据集合，时变的传感器数据是在每个采样时刻陆续到达。因此我们实际上是采用在局部切空间中
+的递归算法求解均值元素。
+\end_layout
+
+\begin_layout Section
+递归求解均值元素
+\end_layout
+
+\begin_layout Standard
+我们再次用
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的均值从几何上直观理解递归求解均值的算法。
+\end_layout
+
+\begin_layout Standard
+在某个时刻我们通过传感器测量得到两个姿态，用单位四元数表示为
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+，两者关系为
+\begin_inset Formula $q_{2}=q_{1}\otimes r$
+\end_inset
+
+，其中
+\begin_inset Formula $r$
+\end_inset
+
+为两者之间的差值四元数，所以有
+\begin_inset Formula $r=q_{1}^{-1}\otimes q_{2}$
+\end_inset
+
+。我们需要把差值四元数
+\begin_inset Formula $r$
+\end_inset
+
+向量化，于是我们选择在
+\begin_inset Formula $q_{1}$
+\end_inset
+
+的切空间中计算两者的差值向量
+\begin_inset Formula $\boldsymbol{\theta}=q_{2}\boxminus q_{1}$
+\end_inset
+
+。其计算方程为
+\begin_inset Formula 
+\begin{align*}
+r & =\left[\begin{array}{c}
+w_{r}\\
+\mathbf{q}_{r}
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\cos\left(\left\Vert \boldsymbol{\theta}\right\Vert /2\right)\\
+\dfrac{\boldsymbol{\theta}}{\left\Vert \boldsymbol{\theta}\right\Vert }\sin\left(\left\Vert \boldsymbol{\theta}\right\Vert /2\right)
+\end{array}\right].\\
+\left\Vert \boldsymbol{\theta}\right\Vert  & =\left|2\arccos\left(w_{r}\right)\right|.\\
+\boldsymbol{\theta} & =\mathbf{q}_{r}\dfrac{\left\Vert \boldsymbol{\theta}\right\Vert }{\sin\left(\left\Vert \boldsymbol{\theta}\right\Vert /2\right)}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+差值向量
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+实际上是旋转向量。姿态从
+\begin_inset Formula $q_{1}$
+\end_inset
+
+变换到
+\begin_inset Formula $q_{2}$
+\end_inset
+
+，所走路径是向量
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+收回到流形上所形成的测地线。如果我们取一半的路径，就是两者的平均值。因此新的差值四元数
+\begin_inset Formula $\bar{r}$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+\bar{r}=\left[\begin{array}{c}
+\cos\left(\left\Vert \boldsymbol{\theta}\right\Vert /4\right)\\
+\dfrac{\boldsymbol{\theta}}{\left\Vert \boldsymbol{\theta}\right\Vert }\sin\left(\left\Vert \boldsymbol{\theta}\right\Vert /4\right)
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+并且四元数的平均值为
+\begin_inset Formula $\bar{q}=q_{1}\otimes\bar{r}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename lie-adjoint-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据常识，均值
+\begin_inset Formula $\bar{q}$
+\end_inset
+
+是很接近真值
+\begin_inset Formula $q$
+\end_inset
+
+的地方。为了提高精度，我们再考虑
+\begin_inset Formula $q_{1}$
+\end_inset
+
+和
+\begin_inset Formula $q_{2}$
+\end_inset
+
+各自的不确定度，用协方差表示，计算各自信任系数，就形成了互补滤波。再考虑各种传感器数据陆续到达的情况，最终的递归算法的思路是：我们已知机体的
+\begin_inset Formula $k-1$
+\end_inset
+
+时刻的姿态及其协方差，在
+\begin_inset Formula $k$
+\end_inset
+
+时刻机体受到外力扰动，姿态发生变化，我们计算新的姿态及其协方差，这是时间更新阶段；在测量更新阶段，我们有校正传感器数据及其协方差，我们由此计算新的均值姿态以及新
+的协方差。后一步又称校正步骤，随着校正传感器增多，则均值姿态逐步逼近真值。
+\end_layout
+
+\begin_layout Standard
+在卡尔曼滤波器这样的递归算法中，协方差
+\begin_inset Formula $\boldsymbol{\Sigma}_{\mathcal{X}}$
+\end_inset
+
+的传播通过时间更新和测量更新步骤中在不同的局部坐标系中计算，而最优估计值
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+可以认为是由多种传感器的测量值以其噪声为权重进行校正后再进行计算的均值元素。
+\end_layout
+
+\begin_layout Standard
+对于在局部切空间中的协方差
+\begin_inset Formula $\boldsymbol{\Sigma}_{\mathcal{X}}$
+\end_inset
+
+，在卡尔曼滤波器中称为
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+矩阵，表示最小二乘法的解的不确定性。我们知道协方差矩阵
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+所代表的概率分布在空间中张成一个椭球，其中矩阵的特征向量指示数据扩散方向，而特征值，即方差，指示扩散程度，矩阵中的协方差项指示椭球在原点坐标系中的旋转角度。在当
+前时刻，均值元素
+\begin_inset Formula $\bar{\mathcal{X}}$
+\end_inset
+
+既是局部切空间中的原点，也是
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+矩阵所表示的概率中心，就是真实值最有可能存在的地方。在每一个穿过概率中心的直线上取概率密度，得到的就是真实值在各个方向上的高斯分布。随着时间的推移，随着
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+矩阵的传播，其概率中心偏离原点，而误差向量就是从切点/原点指向概率中心，新时刻下真实值最有可能存在的地方，因此误差向量就是在当前局部切空间中的最优估计。将误差向
+量从切空间收回到流形并作用到当前估计值上，则当前估计值就沿测地线移动到最优估计点上。
+\end_layout
+
+\begin_layout Section
+局部切空间的协方差变换
+\end_layout
+
+\begin_layout Standard
+我们对
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上的局部切空间的协方差变换感兴趣，因为在每个局部切空间中的协方差应以当前线性化点为概率中心，如果当前姿态点向前变化，则新的协方差也要以新的姿态点为概率中心。如果
+我们原有姿态为
+\begin_inset Formula $\mathcal{X}=\mathsf{R}$
+\end_inset
+
+，受到干扰向量
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+的扰动，新的姿态点为
+\begin_inset Formula $\mathcal{Y}=\mathsf{R}\oplus\boldsymbol{\theta}$
+\end_inset
+
+。我们在
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+点处有协方差
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}$
+\end_inset
+
+，我们需要将其变换到
+\begin_inset Formula $\mathcal{Y}$
+\end_inset
+
+点处的协方差
+\begin_inset Formula $^{\mathcal{Y}}\boldsymbol{\Sigma}_{\mathcal{X}}$
+\end_inset
+
+，根据方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们有
+\begin_inset Formula 
+\begin{align*}
+^{\mathcal{Y}}\boldsymbol{\Sigma}_{\mathcal{X}} & =\mathbf{Ad}_{\left(\mathcal{Y}\ominus\mathcal{X}\right)}\,{}^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\mathbf{Ad}_{\left(\mathcal{Y}\ominus\mathcal{X}\right)}{}^{\top}\\
+ & =\mathbf{Ad}_{\mathcal{X}^{-1}}\mathbf{Ad}_{\mathcal{Y}}\,{}^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\left(\mathbf{Ad}_{\mathcal{X}^{-1}}\mathbf{Ad}_{\mathcal{Y}}\right)^{\top}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于流形上的导数，我们有
+\begin_inset Formula 
+\[
+\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\triangleq\lim_{\boldsymbol{\theta}\rightarrow0}\frac{f\left(\mathcal{X}\oplus\boldsymbol{\theta}\right)\ominus f\left(\mathcal{X}\right)}{\boldsymbol{\theta}},
+\]
+
+\end_inset
+
+并且对于
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+的小值，以下近似值适用，
+\begin_inset Formula 
+\[
+f\left(\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\theta}\right)\underset{^{\mathcal{X}}\boldsymbol{\theta}\rightarrow0}{\longrightarrow}f\left(\mathcal{X}\right)\oplus\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\theta},
+\]
+
+\end_inset
+
+因此对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+元素经过各种化简，我们得到方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的具体形式
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{Y}}\boldsymbol{\Sigma}_{\mathcal{X}}\approx\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}\,{}^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\left(\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}\right)^{\top},\label{eq:BCH-1}
+\end{equation}
+
+\end_inset
+
+并且对于旋转
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+有
+\begin_inset Formula 
+\begin{align*}
+\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & =\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)\\
+ & =\mathbf{I}-\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\\
+\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)^{\top} & =\mathbf{J}_{l}\left(\boldsymbol{\theta}\right)\\
+ & =\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+习惯上协方差的变换矩阵用符号
+\begin_inset Formula $\boldsymbol{\Gamma}$
+\end_inset
+
+表示
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\Gamma}\left(\boldsymbol{\theta}\right) & =\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)\\
+^{\mathcal{Y}}\boldsymbol{\Sigma}_{\mathcal{X}} & =\boldsymbol{\Gamma}\left(\boldsymbol{\theta}\right){}^{\mathcal{X}}\boldsymbol{\Sigma}_{\mathcal{X}}\boldsymbol{\Gamma}\left(\boldsymbol{\theta}\right)^{\top}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在卡尔曼滤波器中的协方差矩阵的变换示意如下：
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename ESKF-04.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是，一般情况下IMU传感器采样率很高，
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+都很小，
+\begin_inset Formula $\boldsymbol{\theta}\rightarrow\mathbf{0}$
+\end_inset
+
+，所以
+\begin_inset Formula $\boldsymbol{\Gamma}\left(\boldsymbol{\theta}\right)\rightarrow\mathbf{I}$
+\end_inset
+
+，在大多数实现中都省略局部切空间的协方差变换这一步，以提高运算速度。但是理解这一步的几何意义对于理解李群的局部切空间变换十分有帮助。
+\end_layout
+
+\begin_layout Standard
+注释：方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BCH-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 在文献[4]中通过 BCH 方程的一阶形式得到严格证明。但是在文献[4]中关于
+\begin_inset Formula $\mathbf{J}_{l}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{J}_{r}$
+\end_inset
+
+的关系有一处理解错误。两者正确的关系是转置关系，
+\begin_inset Formula $\mathbf{J}_{l}=\mathbf{J}_{r}^{\top}$
+\end_inset
+
+，而他们错误理解为求逆关系，
+\begin_inset Formula $\mathbf{J}_{l}=\mathbf{J}_{r}^{-1}$
+\end_inset
+
+，并且旋转向量的动力学方程 (7, 8) 也理解错误。不过修正了这些错误后还是得到相同的方程，不影响最终结论。
+\end_layout
+
+\begin_layout Section
+流形中的不确定性
+\end_layout
+
+\begin_layout Standard
+方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:52"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 直接定义的是当前线性化点处局部切空间中的不确定性。有时候我们需要使用在流形中的不确定性。
+\end_layout
+
+\begin_layout Standard
+收回(retraction)是定义流形不确定性的基本概念。因为直接在流形上定义不确定性比较麻烦，并且难以计算。一般的想法是，我们可以定义切空间上的分布，并使用收
+回将它们映射回流形上。例如，我们可以在以
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+为中心的切空间中定义一个零均值的高斯变量
+\begin_inset Formula $\eta\sim Gaussian(\mathbf{0}_{n\times1},\Sigma)$
+\end_inset
+
+，并使用收回：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+Gaussian(\mathcal{X},\boldsymbol{\eta}) & :=\text{retract}_{\mathcal{X}}(\boldsymbol{\eta})\\
+ & \;=\mathcal{X}\,\mathrm{Exp}\left(\boldsymbol{\eta}\right)
+\end{align*}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\eta}$
+\end_inset
+
+为协方差矩阵
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+对角线上的方差向量，因为非对角线上的协方差项只影响旋转，而不影响扩散程度。通过收回，我们可以在以
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+为中心的切空间上定义高斯分布，并将它们映射回流形上，从而在具有均值
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+和协方差
+\begin_inset Formula $\text{Cov}(\boldsymbol{\eta})=\boldsymbol{\Sigma}$
+\end_inset
+
+的流形上构造高斯分布。通过这样的定义，我们可以重新获取当前线性化点的高斯分布。
+\end_layout
+
+\begin_layout Standard
+与上面一致，我们选择在右侧的收回作用。也是为了统一使用右乘的形式，根据各个公式的特点，我们将使用李群伴随的概念，将应用在右侧的增量或校正，与左侧的增量或校正联系
+起来。这样的性质将允许我们用代数方法处理李群定义的不确定性，并获得不同协方差变换的表达式。我们将集中讨论3D位姿，即
+\begin_inset Formula $\text{SE(3)}$
+\end_inset
+
+，因为它具有广泛的适用性，但是类似的定义也应该适用于其它李群，因为它们主要依赖于伴随的定义。
+\end_layout
+
+\begin_layout Standard
+传播不确定性有位姿组合(Pose Composition)、位姿求逆(Pose Inverse)和相对位姿(Relative Pose)这三种操作。假设位姿是独
+立的或是相关的，有两种类似的推导。对于位姿相关的公式的推导，需要用到BCH公式的四阶交叉项的展开式，复杂很多，精度会有提高，参见参考文献[2,5]。最后可以根据
+精度和计算量的要求进行选择。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename adj-table.pdf
+	scale 82
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用位姿点上的概率分布，根据位姿组合(Pose Composition)、位姿求逆(Pose Inverse)和相对位姿(Relative Pose)这三种操作，
+我们就可以求出相关位姿点周围的概率分布。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+在李群中，我们是在当前线性化点处的局部切空间中直接定义的不确定性，这需要利用 Jacobian 矩阵。再将其收回(retraction)到流形上就在当前线性化点
+周围的流形上形成了流形上的不确定性。时变的估计系统要不断地向前推进当前线性化点及其局部切空间，新的协方差矩阵也要以新的当前线性化点为概率中心，这需要利用伴随矩阵
+。同时，为了在位姿组合(Pose Composition)、位姿求逆(Pose Inverse)和相对位姿(Relative Pose)这三种操作中保持右乘形式
+，即组合式的位姿在左侧，组合式的概率分布在右侧，以便进行分析，则需要大量利用伴随矩阵。
+\end_layout
+
+\begin_layout Section
+参考文献
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie Groups for 2D and 3D Transformations - 2017"
+target "http://ethaneade.com/lie.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Characterizing the Uncertainty of Jointly Distributed Poses in the Lie Algebra - 2019"
+target "https://arxiv.org/abs/1906.07795"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics - 2020"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Full-Order Solution to the Attitude Reset Problem for Kalman Filtering of Attitudes - 2020"
+target "https://arc.aiaa.org/doi/pdfplus/10.2514/1.G004134"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Reducing the uncertainty about the uncertainties - 2021"
+target "https://gtsam.org/2021/02/23/uncertainties-part1.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
