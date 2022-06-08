@@ -47,6 +47,9 @@ $ xelatex micro_Lie_theory.tex
 
 编译完成后，用 xelatex 生成的 PDF 文件的页数总是比 pdflatex 的要大几页。不知何故，也许和两者的字间距和行间距有关。
 
+ctex 的行间距为 1.3 ，pdftex 的行间距为 1.2 。在导言区中增加一行命令调整行间距：
+\linespread{1.2}
+
 # 翻译
 
 接着分别针对每个 tex 文件进行翻译。
