@@ -1,0 +1,205 @@
+\section{控制器}
+\label{secControllers}
+
+我们考虑了四种不同的控制布局，其中三种在有趣和具有挑战性的环境中都有过应用历史，而第四种是一种新的算法。
+所有的控制器都有一个与角速度成比例的动作，以及一个与飞行器姿态(以某种表示)成比例的动作分量。
+ 这些控制器的主要区别在于该姿态的表示，并且尽管这些控制器在一阶上是相同的，但在下一节中会显示，对于大的姿态误差会出现重要的差异。
+
+\subsection{斜对称控制}
+
+这种控制如文献 \cite{lee2010geometric} 所述，并且首先提出它是因为它在文献中的使用特别广泛(有一些示例包括文献 \cite{sreenath2013geometric,goodarzi2013geometric,lee2013nonlinear,simha2017almost,rashad2017design})，特别是它在有影响力的文献 \cite{mahony2012aerial} 中的使用。
+注意，我们使用了一个大大不同的符号和表示方法，希望提供一个统一的比较和额外的洞察力。
+
+姿态误差由旋转矩阵的斜对称分量计算出来，因此期望的角加速度给出为 
+\begin{align}
+	\angAccInpSS := -\gainRates \angVelErr - \half \gainAtt \skewSymInv{\rotMatErr-\rotMatErr^T} \label{eqDefInputSS}
+\end{align}
+其中 $\gainRates$ 和 $\gainAtt$ 为正定控制器增益，每种增益都是 $\realNums^{3\times3}$。
+注意，可以通过方程 \eqref{eqRotMatFromAxisAngle} 重写姿态分量，为 
+\begin{align}
+	\half \skewSymInv{\rotMatErr-\rotMatErr^T} = \sin \rotAngleErr\, \rotAxisErr
+\end{align}
+因此
+\begin{align}
+	\angAccInpSS = -\gainRates \angVelErr - \gainAtt \sin\rotAngleErr\, \rotAxisErr.\label{eqSkewSymmControllerAxAngle}
+\end{align}
+
+该控制器的稳定性可以用下面的 Lyapunov 函数来研究 
+\begin{align}
+	\lyapFnSS := \frac{1}{2} \angVelErr^T \gainAtt^{-1} \angVelErr + \frac{3 - \trace{\rotMatErr}}{2}
+\end{align}
+其中，矩阵的迹 $\trace{\rotMatErr}$ 与旋转角度相关，如下所示 
+\begin{align}
+	\trace{\rotMatErr} =& \msum{i=1}{3}{\baseVec{i}^T\rotMatErr\baseVec{i}} \label{eqRotTraceBaseVectors}
+\\ =& 2\cos{\rotAngleErr} + 1
+\end{align}
+其中后面的等式来自于方程 \eqref{eqRotMatFromAxisAngle}。 
+因此，Lyapunov 函数可以更直观地写为 
+\begin{align}
+	\lyapFnSS := \half \angVelErr^T \gainAtt^{-1} \angVelErr + \mrb{1-\cos\rotAngleErr}
+\end{align}
+我们可以很容易地验证它是一个有效的候选 Lyapunov 函数。 
+
+矩阵的迹 $\trace{\rotMatErr}$ 的时间导数从方程 \eqref{eqRotTraceBaseVectors} 得出为 
+\begin{align}
+	\ddt \trace{\rotMatErr} =& 
+	%\msum{i=1}{3}{\baseVec{i}^T  \rotMatErr \skewSym{\angVelErr} \baseVec{i}} =
+	 -\msum{i=1}{3}{\baseVec{i}^T  \rotMatErr \skewSym{\baseVec{i}} \angVelErr}.
+\end{align}
+此外，通过直接计算，它可以被证明为  
+%see ``test.py'' script
+\begin{align}
+  \msum{i=1}{3}{\baseVec{i}^T  \rotMatErr \skewSym{\baseVec{i}} } = \skewSymInv{\rotMatErr-\rotMatErr^T}^T
+\end{align}
+
+因此，取 Lyapunov 函数的时间导数以获得 
+\begin{align}
+	\ddt \lyapFnSS =& \angVelErr^T\mrb{\gainAtt^{-1} \angAcc + \half \skewSymInv{\rotMatErr-\rotMatErr^T}}
+%\\=& \angVelErr^T\mrb{-\gainAtt^{-1}\gainRates \angVelErr - \mrb{\gainAtt^{-1} \gainAtt-\identityMat} \skewSymInv{\rotMatErr-\rotMatErr^T} }
+\\=& -\angVelErr^T \gainAtt^{-1}\gainRates \angVelErr \leq 0
+\end{align}
+通过注意二阶时间导数，渐进稳定性给出为 
+\begin{align}
+\begin{split}
+	\ddtSq \lyapFnSS=& \angVelErr^T \mrb{\gainAtt^{-1}\gainRates + \gainRates^T\gainAtt^{-T}}\cdot
+	\\ & \mrb{-\gainAtt \sin\rotAngleErr\rotAxisErr - \gainRates \angVelErr }
+\end{split}
+\end{align}
+负半定导数意味着 $\lyapFnSS(t)\leq\lyapFnSS(0)$；反过来形成角速度 $\angVelErr$ 的界限。
+从这个界限来看，二阶导数是有界限的，所以 $\ddt\lyapFnSS$ 是一致连续和可积的。 
+因此，当 $t\rightarrow\infty$ 时，根据 Barbalat 引理，$\ddt\lyapFnSS \rightarrow 0$，并且明确地， $\angVelErr\rightarrow0$。 
+代入控制法可以得出结论，如果 $\rotAngleErr\neq\pi$，则方向误差也会收敛到特征值，从而建立渐近稳定性。
+
+%\todo{Not allowed to LaSalle: So that asymptotic stability follows by invoking LaSalle's principle \cite{sastry2013nonlinear}.}
+%\todo{KS: Control in [9] provides exponential stability for a set of rotation errors. Do you want to specialize your development to illustrate this?}
+
+一个非常密切相关的控制策略是用不同的标量值 \cite{chaturvedi2011rigid} 对方程 \eqref{eqRotTraceBaseVectors} 右侧的各项进行加权总和。
+由此产生的闭环系统具有一些理想的特性(并且其稳定性在文献 \cite{chaturvedi2011rigid} 中得到了证明，而不依赖于 Lyapunov 函数)，并且在姿态动力学中引入了在方程 \eqref{eqDefInputSS} 中不存在的三个鞍点。 
+然而，该控制器足够相似，我们只考虑所有项都具有相等权重的更简单形式。
+
+
+\subsection{旋转向量控制}
+对于这种控制策略，使用旋转向量计算姿态误差(以便反馈的姿态部分与角度误差成比例)。
+所期望的角加速度为 
+\begin{align}
+	\angAccInpRV := -\gainRates \angVelErr - \gainAtt \rotAngleErr \, \rotAxisErr \label{eqDefInputRotVec}
+\end{align}
+其中 $\gainRates$ 和 $\gainAtt$ 同样是正定的增益矩阵。
+注意，根据定义，角度是有界限的，因此 $0\leq\rotAngleErr\leq\pi$。
+此外，注意与方程 \eqref{eqDefInputSS} 的相似性，关键的区别在于这里使用了角度值，而不是它的正弦值。
+
+利用 Lyapunov 函数分析其所产生的闭环系统的稳定性 
+\begin{align}
+	\lyapFnRV :=& \half \angVelErr^T \gainAtt^{-1} \angVelErr + \half \mrb{\arccos\frac{\trace{\rotMatErr}-1}{2}}^2 \label{eqLyapRotVec}
+\end{align}
+其可简化为 
+\begin{align}
+	\lyapFnRV =  \half \angVelErr^T \gainAtt^{-1} \angVelErr + \half \rotAngleErr^2
+\end{align}
+
+注意到旋转角度的时间导数由文献 \cite[方程 (270)]{shuster1993survey} 给出为 
+\begin{align}
+	\ddt \rotAngleErr = \rotAxisErr^T \angVelErr \label{eqTimeDerivativeRotAngle}
+\end{align}
+则方程 \eqref{eqLyapRotVec} 的时间导数跟着为 
+\begin{align}
+	\ddt \lyapFnRV =& \angVelErr^T \gainAtt^{-1} \angAcc + \rotAngleErr \angVelErr^T\rotAxisErr
+	\\ =& - \angVelErr^T \gainAtt^{-1} \gainRates \angVelErr  \leq 0
+\end{align}
+从这一点来看，通过注意到有界限的二阶导数并援引 Barbalat 引理，渐近稳定性与斜对称控制器类似。 
+同样，这需要 $\rotAngleErr\neq\pi$。
+%\todo{Not allowed to use LaSalle's principle allowing to conclude asymptotic stability.}
+%\todo{Also, talk about the advantages\ldots}
+%\todo{KS: Do you have exponential stability for $\rotAngle<\pi/2$?}
+
+旋转向量的使用在概念上很优雅，因为控制动作与角度成比例，即使是大的姿态误差也是如此。
+这意味着系统的闭环行为(如果限制在一个单一的旋转自由度上)将表现得像一个二阶阻尼系统，即使是大角度，只要 $\rotAngleErr<180^\circ$。
+然而，当角度`穿过' $180^\circ$ 时，控制输入会有不连续性，因为对于 $\rotAxisErr$ 的符号会翻转。
+
+\subsection{基于四元数的倾斜优先控制}
+这种控制器基于这样的直觉，即四旋翼飞机姿态的最重要部分是其推力轴的方向，因此应优先控制该方向，而不是其它单一的姿态自由度。
+该控制器在文献 \cite{brescianini2013nonlinear} 中提出，并且其推导基于旋转四元数。
+在这里它被转变为旋转矩阵表示法，以便更好地与其它两种已提出的方法放在相同上下文进行比较，并作为拟议的控制器的预览。
+
+姿态误差被分为两部分：一个优先的`减小的'姿态 $\rotMatReduced$，表示将推力方向与所期望的推力方向对齐的最短旋转，以及一个围绕推力轴的旋转 $\rotMatYaw$，表示围绕推力轴的剩余旋转。
+具体地，减小的姿态是最小的旋转，对它来说 
+\begin{align}
+	\rotMatErr\rotMatReduced^T  \thrustDir =& \thrustDir \label{eqDefRedAtt1}
+\end{align}
+并且 
+\begin{align}
+  \rotMatErr  =& \rotMatYaw \rotMatReduced \label{eqDefRedAtt2}
+\end{align}
+由此可知，$\rotMatYaw$ 是一个纯粹地围绕 $\thrustDir$ 的旋转。
+注意，这个角度在一阶上等同于(3-2-1 偏航-俯仰-横滚序列的)欧拉`偏航'角。
+
+与 $\rotMatReduced$ 相对应的轴 $\rotAxisReduced$ 和角度 $\rotAngleReduced$ 可计算为 
+\begin{align}
+  \rotAngleReduced =& \arccos {\thrustDir^T\rotMatErr\thrustDir} \label{eqComputeReducedRotAngle}
+\\\rotAxisReduced =& \frac{\skewSym{\rotMatErr^T\thrustDir}\thrustDir}{\norm{\skewSym{\rotMatErr^T\thrustDir}\thrustDir}} = \frac{\skewSym{\rotMatErr^T\thrustDir}\thrustDir}{\sin\rotAngleReduced} \label{eqComputeReducedRotAxis}
+\end{align}
+
+注意这个，根据结构，$\rotAxisReduced$ 垂直于推力方向。 
+还要注意的是，在方 \eqref{eqComputeReducedRotAxis} 中潜在的除以零的情况并不重要，因为此时在方程 \eqref{eqComputeReducedRotAngle} 中相应的角度则为零(并且因此可以指定一个任意的轴)。
+
+偏航旋转的轴 $\rotAxisYaw$ 和角度 $\rotAngleYaw$ 被计算为与旋转矩阵 $\rotMatYaw$ 相对应的值，如下所示 
+\begin{align}
+  \rotMatYaw =& \rotMatErr\rotMatReduced^{-1}   
+\end{align}
+其中 $\rotAxisYaw$ 将总是与 $\thrustDir$ 平行或反平行。
+因为 $\rotMatReduced$ 和 $\rotMatYaw$ 的旋转轴是垂直的，因此角度的关系如下所示 \cite[方程 (114)]{shuster1993survey} 
+\begin{align}
+	\cos\mrb{\half\rotAngleErr} = \cos\mrb{\half\rotAngleReduced}\cos\mrb{\half\rotAngleYaw} \label{eqRelationErrorAngleReducedYaw}
+\end{align}
+因此 $\rotAngleReduced \leq \rotAngleErr$ (由于角度在区间 $\msb{0,\half\pi}$ 中的 $\cos$ 的单调性)。
+%\todo{KS: also mention relation between $\rotAngleError$ and $\rotAngle_r$, if any.}
+
+控制动作给出如下，其中半角的使用来自于原始的基于旋转四元数的形式 \cite{brescianini2013nonlinear}：
+\begin{align}
+	\angAccInpTP = -\gainRates \angVelErr - 2 \gainAttRed \rotAxisReduced \sin\frac{\rotAngleReduced}{2} - 2 \gainAttYaw \rotAxisYaw \sin\frac{\rotAngleYaw}{2}
+\label{eqDefInputQTP}
+\end{align}
+并且特别的是 $\gainAttRed>\gainAttYaw$ 以优先减少倾斜误差 $\rotAngleReduced$。
+这个控制器的稳定性证明有点复杂，这里就不重复了 -- 读者可以参考文献 \cite{brescianini2013nonlinear}。 
+
+作为无穷小旋转代偿(因此它们的旋转向量表示可以被添加到相关的旋转组合中)，可以看到这个控制法以与先前的控制器相同的方式线性化。
+
+像旋转向量控制一样，控制动作在 $\rotAngleErr=180^\circ$ 处是不连续的。
+然而，与基于旋转向量的控制器不同，正弦函数的非线性意味着大的纯旋转不会表现得像二阶阻尼旋转。 
+
+\subsection{倾斜优先的比例控制}
+受旋转向量和基于四元数的倾斜优先控制器的启发，我们提出了一种替代形式，其中控制动作与角度成比例，而不是四元数公式所采用的半角的 $\sin$。
+这有四个优点： (1) 与旋转向量控制器一样，闭环系统的反应与围绕其中一个主轴的任意初始旋转的二阶阻尼系统完全相同， 
+(2) 其 Lyapunov 函数非常简单，
+(3) 当减小的姿态误差的相对优先级接近整体姿态的优先级时，控制器收敛到旋转向量控制器，并且
+(4) 拟议的控制器在收敛速度和控制动作效率方面都优于基于四元数的控制器。
+
+再次使用 $\gainAttRed$ 作为应用于倾斜角度误差的增益，并且使用 $\gainAttYaw$ 作为剩余角度的增益，我们使用控制法 
+\begin{align}
+\angAccInpNEW = - \gainRates \angVelErr - \gainAttYaw \rotAngleErr \, \rotAxisErr - \mrb{\gainAttRed - \gainAttYaw} \rotAngleReduced \rotAxisReduced \label{eqDefInputNew}
+\end{align}
+其中，与前面一样，$\rotAngleErr$ 表示总的姿态误差，并且 $\rotAngleReduced$ 表示减小的姿态误差。
+与基于四元数的控制器不同，这不需要计算 $\rotAngleYaw$ 和 $\rotAxisYaw$。
+注意，控制器有两个与姿态误差相关的项，并且对于对称控制($\gainAttYaw=\gainAttRed$)，它简化为旋转向量控制方程 \eqref{eqDefInputRotVec}。
+
+稳定性通过以下 Lyapunov 函数实现
+\begin{align}
+  \lyapFnNEW := \half \angVelErr^T \angVelErr + \half {\gainAttYaw} \rotAngleErr^2 + \half \mrb{\gainAttRed - \gainAttYaw} \rotAngleReduced^2
+\end{align}
+这对于 $0<\gainAttYaw\leq \gainAttRed$ 是正定的(换句话说，对倾斜角的控制必须至少与整体姿态的控制一样重要)。
+
+减小的倾斜角度误差 $\rotAngleReduced$ 的导数可以从方程 \eqref{eqComputeReducedRotAngle}-\eqref{eqComputeReducedRotAxis} 中计算为 
+\begin{align}
+ \ddt \rotAngleReduced &= \rotAxisReduced^T \angVelErr
+\end{align}
+(其与方程 \eqref{eqTimeDerivativeRotAngle} 相似)，因此 
+\begin{align}
+  \ddt \lyapFnNEW =& \angVelErr^T \mrb{\angAcc + \gainAttYaw \rotAngleErr \, \rotAxisErr + \mrb{\gainAttRed - \gainAttYaw} \rotAngleReduced \rotAxisReduced}
+\\ =& - \angVelErr^T \gainRates \angVelErr \leq 0
+\end{align}
+应用Barbalat 引理(与斜对称控制器一样)可以得到 $\rotAngleErr\neq\pi$ 的渐进稳定性，这里需要注意的是，不需要 $\rotAngleReduced$ 进行附加约束，因为根据方程 \eqref{eqRelationErrorAngleReducedYaw}，$\rotAngleReduced\leq\rotAngleErr$。
+再次注意，这个控制器的性能与其它所有控制器的一阶性能相同。
+
+在极限情况下，当 $\gainAttYaw$ 接近零时，控制器倾向于只控制飞行器的倾斜角度，这是与基于四元数的倾斜优先控制共享的行为。
+然而，该控制器的一个有用的附加特性是，当倾斜角度的相对重要性降低时(即当$\gainAttYaw\rightarrow \gainAttRed$ 时)，它平滑地收敛到基于旋转向量的控制。
+这意味着设计者可以实施此种控制法，即使不需要有倾角刚度的大量增加。

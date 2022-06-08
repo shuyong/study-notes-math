@@ -1,0 +1,50 @@
+\section{简介}
+\label{secIntro}
+
+成功控制多旋翼无人机的一个关键要求是控制其姿态，或方向。
+典型的多旋翼飞机的设计意味着它们能够在任意方向上产生扭矩，从而使姿态动力学被完全激励。
+对多旋翼飞机良好的姿态控制的实际需要，进一步补充了方向的非线性动力学的耐人寻味和优雅的性质，这导致了关于该主题的大量出版物。
+
+在文献 \cite{chaturvedi2011rigid} 中，对姿态控制做了很好的介绍，详细讨论了方向的特性及其动力学，并提出了一些控制法，同时提供了深入的稳定性分析。
+具体来说，其中的一个主要论点是直接使用旋转矩阵进行控制，而不是(例如)使用旋转的欧拉对称参数/四元数。
+在文献 \cite{fresk2013full} 中给出了一个使用四元数进行姿态控制的例子。
+%Indeed, there are a \todo{multitude} of works describing attitude control using quaternions, for example \cite{fresk2013full} \todo{More quaternions!}.
+替代策略可以使用，例如，欧拉角 \cite{lupashin2014platform}，这是很直观的描述，但在大方向上有着不想要的特性。
+
+多旋翼飞机的敏捷性是毋庸置疑的，并且它们能够完成非凡的壮举 (例如 \cite{mueller2011quadrocopter,mellinger2012trajectory,ritz2012cooperative,mueller2015relaxed,falanga2017aggressive}) 。
+因此，它们在日常生活中执行越来越多的任务，包括检查、监视、运输货物，以及作为剧团的一部分进行表演。
+作为这种日益普遍的现象的一部分，预计他们将遇到(并从中恢复)越来越多的潜在干扰。
+
+%This work is motivated by the search for a control strategy that allows a multicopter to recover well from large attitude disturbances, such as may be experienced after impact with a foreign object. 
+本文的目标如下。
+首先，我们简要介绍三种流行的多旋翼飞机姿态控制策略，并讨论其相对优势和劣势。
+这些控制器仅在姿态误差如何影响指令角加速度方面有所不同，具体包括使用旋转矩阵的倾斜对称分量(如文献 \cite{lee2010geometric})、旋转向量(旋转的轴-角表示，如文献 \cite{bullo1995proportional,yu2015high})，或基于四元数的倾斜优先级(如文献 \cite{brescianini2013nonlinear})。
+具体来说，我们认为斜对称控制策略虽然被证明具有几乎全局的稳定性，但在实际系统中使用时，由于系统有可能在接近 $180^\circ$ 的姿态下依期望滞留任意长的时间，实际上代表了一种安全问题。
+然后，受文献 \cite{brescianini2013nonlinear} 的启发，我们提出了一种新型的倾斜优先的多旋翼飞机姿态控制器，它优先考虑多旋翼飞机实现目标加速度的能力。
+这种新型控制器使用旋转矩阵和旋转向量进行分析，允许使用一个特别简单的 Lyapunov 函数进行稳定性分析。 
+本文给出了数值结果，比较了各种控制器的性能，并强调了拟议控制法的优点。
+因此，本文的贡献是推导出一个新的倾斜优先的姿态控制法，将其与文献中流行的姿态方法进行比较，演示和讨论一个流行的和广泛使用的姿态控制器的安全问题，并对控制法进行数值和实验验证。
+
+应该注意的是，除了文献 \cite{brescianini2013nonlinear} 之外，还有其它形式的倾斜优先级被使用。 
+例如，在文献 \cite{yu2015high} 中，使用了与所拟议方法类似的姿态分解；然而，优先级是通过将恢复轨迹分为两阶段来完成：第一阶段控制倾斜角，第二阶段随后控制类似偏航的角度。
+
+%In this work, the attitude error is constructed from the rotation matrix; specifically from the skew-symmetric component of the matrix that results from the product of the reference attitude's inverse and the current attitude is taken.
+%\todo{Define a better name for this!} This skew symmetric matrix, is then transformed to an error vector using the \emph{vee} map, $\vee:\sothree\rightarrow\realNums^3$. 
+%This results in a vector that is parallel to the axis of rotation relating the reference to the current attitudes, and the magnitude of the vector is proportional to the sine of the error angle. 
+
+%A geometric control approach is taken in \cite{sreenath2013geometric} to control a cable-suspended load under a quadcopter. 
+%A similar attitude error approach is presented, specifically wherein the error is proportional to the sine of the error angle. 
+
+%An excellent in-depth discussion of nonlinear attitude control for general rigid bodies is given in \cite{chaturvedi2011rigid}. 
+%Therein, the authors argue for the use of the rotation matrix as the preferred representation, and explain the impossibility of global attitude stabilization using continuous time-invariant feedback. 
+%The authors provide a full-attitude stabilization controller, where the input is proportional to the sum of the cross-products of three body-fixed orthonormal axes with their desired directions. 
+%Since the magnitude of the cross product of two unit vectors is the sine of the angle between them, this yields also an error proportional to the 
+%
+
+%\todo{State caveat about the impossibility of global asymptotic stabilization with a continuous time-invariant feedback controller, \cite{chaturvedi2011rigid}.
+%We will therefore be satisfied with nearly global stabilization, accepting that the resulting closed-loop system will have multiple equilibria -- the (stable) target equilibrium, and three unstable equilbria at rotations of $180^{\circ}$ from the target attitude.
+%}
+
+我们接着简要介绍多旋翼飞机动力学和姿态数学的显著特征，以及飞行器姿态如何影响其运动。
+在 \secref{secControllers} 中，我们描述了文献中的控制器，并推导出新的控制器。
+在 \secref{secPerformance} 中用数值例子说明了控制器的特性，在 \secref{secExpValidation} 中给出了实验结果，并且我们在 \secref{secConclusion} 中给出结论。

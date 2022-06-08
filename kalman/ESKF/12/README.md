@@ -36,4 +36,12 @@
 
 18. [A Methodology for Design and Analysis of Sensor Fusion with Real Data in UAV Platforms](https://www.preprints.org/manuscript/201801.0077/v1)
 
+19. [Nonlinear Quadrocopter Attitude Control - 2013](https://www.research-collection.ethz.ch/handle/20.500.11850/154099)
+
+20. [Full Quaternion Based Attitude Control for a Quadrotor - 2013](https://folk.ntnu.no/skoge/prost/proceedings/ecc-2013/data/papers/0927.pdf)
+
+21. [Multicopter attitude control for recovery from large disturbances](https://arxiv.org/abs/1802.09143)
+
+22. [Rotational Error Metrics for Quadrotor Control](https://arxiv.org/abs/2011.11909)
+
 

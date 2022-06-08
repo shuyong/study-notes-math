@@ -1,0 +1,1951 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "基于完全四元数的四旋翼姿态控制"
+\pdf_author "Emil Fresk and George Nikolakopoulos"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+基于完全四元数的四旋翼姿态控制
+\end_layout
+
+\begin_layout Author
+Emil Fresk and George Nikolakopoulos
+\end_layout
+
+\begin_layout Date
+July 17-19, 2013
+\end_layout
+
+\begin_layout Abstract
+本文针对四旋翼姿态控制问题，提出了一种新的基于四元数的控制方案。四元数是秩为4的超复数，可以用来避免用欧拉角表示刚体动力学时固有的几何奇异性或用方向余弦矩阵(D
+CM)耦合微分方程的复杂性。该方法在四元数空间中实现了四旋翼姿态模型和所提出的非线性比例平方(
+\begin_inset Formula $P^{2}$
+\end_inset
+
+)控制算法，无需在欧拉角空间或DCM中进行任何变换和计算。在整个文章中，我们分析和讨论了所提出的新方法的优点，同时通过扩展的仿真结果评估了所提出的基于四元数的控
+制器的有效性。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+无人机(UAV)领域，尤其是具有垂直起飞和着陆(VTOL)能力的四旋翼无人机，一直是研究和开发工作的重点，主要是由于其在完成复杂任务方面的效率[1]。
+\end_layout
+
+\begin_layout Standard
+为了达到期望的性能，轨迹生成问题通常被分为两个子问题：a)姿态问题和 b)平移问题，而事实证明[2,3]，这些系统可以级联互联。对于四旋翼无人机的研究案例，位置
+控制器(平移)为姿态控制器生成参考姿态设定点，因此四旋翼的控制问题已经面临来自世界领先研究团队的几种不同方法，著名著作包括线性[4–6]，非线性控制器[7–11
+]。虽然已经证明上述控制策略能够稳定地导航四旋翼，但设计优化控制器的问题将能够：a) 为姿态稳定和轨迹跟踪提供精确平滑的控制动作，b) 利用模型知识进行更精确的
+导航，c) 保持对突发和不可预测的外部干扰的鲁棒性，仍然是一个开放的挑战。控制工程师在处理姿态问题时所面临的一个制约因素仍然是动力学中的一个基本问题，因为刚体的
+有限旋转不遵循向量加法定律，例如交换性，而刚体的姿态特征不能通过积分刚体的角速度来提取。
+\end_layout
+
+\begin_layout Standard
+然而，在处理旋转时，无论是估计器还是控制器，在创建模型时，有一种方法比任何其他方法都更常用：牛顿-欧拉方程[12]，它能够描述刚体的平移和旋转动力学组合。尽管这
+种建模方法被认为是一种基本的建模方法，但它仍然有三个缺点。首先，它完全基于欧拉角，欧拉角具有直观的优点，但根据定义，有些角无法确定某些方向，因为它存在导致称为“
+万向节锁”问题的奇异性[13]。这个问题是当两个旋转轴对齐并锁定在一起时，在三维空间中失去一个自由度。其次，它在计算上非常昂贵。计算正弦和余弦需要大量的性能，而
+且很快就会变得难以管理，尤其是在低成本硬件上实现时。第三，当创建必要的估计器或控制器以利用系统状态的雅可比矩阵时，计算成本甚至更大，因为在这些计算过程中，有时所
+有矩阵元素都将有一个或多个正弦或余弦需要计算，这很快会淹没系统。
+\end_layout
+
+\begin_layout Standard
+为了克服这些问题，可以采用三种方法：a)保证系统保持在欧拉角的范围内；b)利用方向余弦矩阵(DCM)方法；c)四元数方法。如果四旋翼的设计只是为了简单的稳定飞行
+，那么第一种可能会起作用，但是如果未知的外部干扰(例如阵风)施加在车辆上，并导致飞机飞出(翻转)，欧拉角方法将无法补偿这一点。对于第二种方法，DCM是通过在
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵中平移
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+机体固连坐标系来构建的，而不管坐标系如何旋转，矩阵仍然表示这种变换，因为这种方法最显著的优点是不受欧拉角奇异性的影响。然而，DCM受到每个轴必须与其他轴正交且应
+具有单位长度的约束。当旋转一个DCM时，它必须与另一个DCM相乘，DCM的导数产生一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵，并形成一个由
+\begin_inset Formula $9$
+\end_inset
+
+个耦合微分方程(状态)组成的系统来求解(如果第
+\begin_inset Formula $3$
+\end_inset
+
+个轴是由其他两个轴的叉积计算出来的，则为
+\begin_inset Formula $6$
+\end_inset
+
+个)。
+\end_layout
+
+\begin_layout Standard
+在四元数方法中，前面提到的限制不存在，因为可以直接将四元数转换为DCM，反之亦然，但是四元数及其相应的导数有
+\begin_inset Formula $4$
+\end_inset
+
+个值，唯一的限制是它必须是单位长度。这转化为一个只有
+\begin_inset Formula $4$
+\end_inset
+
+个耦合微分方程/状态的系统，大大降低了计算成本，并保持了较低的总体复杂度[14]。由于四元数是一个复数，有时很难对它所代表的内容有直观的感觉，但是直接耦合到DC
+M使翻译变得容易。
+\end_layout
+
+\begin_layout Standard
+本文的创新之处在于提出了一种基于四元数的非线性
+\begin_inset Formula $P^{2}$
+\end_inset
+
+控制器，用于解决四旋翼的姿态问题。在该方法中，四旋翼模型和控制器的设计都是在四元数空间中进行的，不需要使用欧拉角或DCM。到目前为止，在相关的科学文献中，只有少
+数文献可以利用四元数控制器来解决姿态稳定问题，如文献[15]、[16]和其中的参考文献所述。然而，这些方法确实将四元数误差转换回欧拉角，并在这些角上调节，而不是
+直接调节四元数。这些方法的缺点是欧拉角的非线性和奇异性，以及将欧拉角转换为四元数所需的额外处理能力，反之亦然。本文将对该控制方案进行分析，提出的新控制方案不存在
+这些缺点，可以应用于全三维转动域，而与刚体无关，可以推广应用。
+\end_layout
+
+\begin_layout Standard
+本文其余部分的结构如下。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节介绍了四元数数学的基本性质和相应的代数，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节分析了基于四元数的四旋翼建模。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节建立了新的基于全四元数的控制方案，第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出了证明该方案有效性的扩展仿真结果。最后，在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节得出结论。
+\end_layout
+
+\begin_layout Section
+四元数数学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+出于一致性的原因，为了建立遵循所提出的建模和控制方案的数学背景，本节将介绍四元数思想背后的基本代数概念。为了更全面地分析和深入地描述这个数学工具，读者可以参考以
+下出版物[17][18]。
+\end_layout
+
+\begin_layout Standard
+四元数是秩为
+\begin_inset Formula $4$
+\end_inset
+
+的超复数，可以用多种方式表示，而方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表示两种最流行的方法。从
+\begin_inset Formula $q_{1}$
+\end_inset
+
+到
+\begin_inset Formula $q_{3}$
+\end_inset
+
+的四元数单位称为四元数的向量部分，而
+\begin_inset Formula $q_{0}$
+\end_inset
+
+是标量部分。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{q} & =q_{0}+q_{1}\boldsymbol{i}+q_{2}\boldsymbol{j}+q_{3}\boldsymbol{k}\label{eq:1}\\
+\boldsymbol{q} & =\left[\begin{array}{cccc}
+q_{0} & q_{1} & q_{2} & q_{3}\end{array}\right]^{\mathrm{T}}\label{eq:2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两个四元数
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+的乘法由Kronecker积(表示为
+\begin_inset Formula $\otimes$
+\end_inset
+
+)执行，结果在下面的方程中给出。如果
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+表示一个旋转，
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+表示另一个旋转，则
+\begin_inset Formula $\boldsymbol{p}\otimes\boldsymbol{q}$
+\end_inset
+
+表示组合旋转。需要注意的是，四元数乘法是非交换的，就像旋转是非交换的一样。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{p}\otimes\boldsymbol{q} & =\left[\begin{array}{l}
+p_{0}q_{0}-p_{1}q_{1}-p_{2}q_{2}-p_{3}q_{3}\\
+p_{0}q_{1}+p_{1}q_{0}+p_{2}q_{3}-p_{3}q_{2}\\
+p_{0}q_{2}-p_{1}q_{3}+p_{2}q_{0}+p_{3}q_{1}\\
+p_{0}q_{3}+p_{1}q_{2}-p_{2}q_{1}+p_{3}q_{0}
+\end{array}\right]\\
+\boldsymbol{p}\otimes\boldsymbol{q} & =Q\left(\boldsymbol{q}\right)\boldsymbol{q}=\left[\begin{array}{cccc}
+p_{0} & -p_{1} & -p_{2} & -p_{3}\\
+p_{1} & p_{0} & -p_{3} & p_{2}\\
+p_{2} & p_{3} & p_{0} & -p_{1}\\
+p_{3} & -p_{2} & p_{1} & p_{0}
+\end{array}\right]\left[\begin{array}{c}
+q_{0}\\
+q_{1}\\
+q_{2}\\
+q_{3}
+\end{array}\right]\\
+ & =\bar{Q}\left(\boldsymbol{q}\right)\boldsymbol{p}=\left[\begin{array}{cccc}
+q_{0} & -q_{1} & -q_{2} & -q_{3}\\
+q_{1} & q_{0} & q_{3} & -q_{2}\\
+q_{2} & -q_{3} & q_{0} & q_{1}\\
+q_{3} & q_{2} & -q_{1} & q_{0}
+\end{array}\right]\left[\begin{array}{l}
+p_{0}\\
+p_{1}\\
+p_{2}\\
+p_{3}
+\end{array}\right]
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数的范数/长度被定义，就像任何复数一样，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示。该方法中的所有四元数均假定为酉长度，因此称为单位四元数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Norm}\left(\boldsymbol{q}\right)=\left\Vert \boldsymbol{q}\right\Vert =\sqrt{q_{0}^{2}+q_{1}^{2}+q_{2}^{2}+q_{3}^{2}}\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数的复共轭与普通复数具有相同的定义。复杂部分的符号如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示进行切换。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Conj}\left(\boldsymbol{q}\right)=\boldsymbol{q}^{*}=\left[\begin{array}{cccc}
+q_{0} & -q_{1} & -q_{2} & -q_{3}\end{array}\right]^{\mathrm{T}}\label{eq:4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数的逆的定义如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示，是复数的正规逆。此外，如果四元数的长度是幺正的，那么逆与共轭相同。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Inv}\left(\boldsymbol{q}\right)=\boldsymbol{q}^{-1}=\dfrac{\boldsymbol{q}^{*}}{\left\Vert \boldsymbol{q}\right\Vert ^{2}}\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+四元数的导数需要一些代数操作，并且可以表示为[18]：a) 如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示，如果角速度向量在固定参考系中；b) 如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示，如果角速度向量在机体参考系中。需要注意的是，这些符号是关于左手符号提供的，而对于右手符号，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+四元数必须共轭。
+\begin_inset Formula 
+\begin{align}
+\dot{\boldsymbol{q}}_{\boldsymbol{\omega}}\left(\boldsymbol{q},\boldsymbol{\omega}\right) & =\frac{1}{2}\boldsymbol{q}\otimes\left[\begin{array}{l}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]=\frac{1}{2}Q\left(\boldsymbol{q}\right)\left[\begin{array}{l}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]\label{eq:6}\\
+\dot{\boldsymbol{q}}_{\boldsymbol{\omega}^{\prime}}\left(\boldsymbol{q},\boldsymbol{\omega}^{\prime}\right) & =\frac{1}{2}\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}^{\prime}
+\end{array}\right]\otimes\boldsymbol{q}=\frac{1}{2}\bar{Q}\left(\boldsymbol{q}\right)\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}^{\prime}
+\end{array}\right]\label{eq:7}
+\end{align}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{\omega}=\left[\omega_{x},\omega_{y},\omega_{z}\right]^{\mathrm{T}}$
+\end_inset
+
+。如果一个四元数是一个单位四元数，它可以用作一个旋转算子。然而，这种变换并不是由一个四元数乘法建立起来的，而是由两个四元数乘法建立起来的，即法线和它的共轭，如方
+程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示。这将向量
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+从固定帧旋转到由
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+表示的机体帧。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{w}=\boldsymbol{q}\otimes\left[\begin{array}{l}
+0\\
+\mathbf{v}
+\end{array}\right]\otimes\boldsymbol{q}^{*}\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的这种旋转可以通过用
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+轴替换
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+来重写，正如它在下面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+-
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所显示的那样。
+\begin_inset Formula 
+\begin{align}
+R_{x}\left(\boldsymbol{q}\right) & =\boldsymbol{q}\otimes\left[\begin{array}{l}
+0\\
+1\\
+0\\
+0
+\end{array}\right]\otimes\boldsymbol{q}^{*}=\left[\begin{array}{c}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\\
+2\left(q_{1}q_{2}+q_{0}q_{3}\right)\\
+2\left(q_{1}q_{3}-q_{0}q_{2}\right)
+\end{array}\right]\label{eq:9}\\
+R_{y}\left(\boldsymbol{q}\right) & =\boldsymbol{q}\otimes\left[\begin{array}{l}
+0\\
+0\\
+1\\
+0
+\end{array}\right]\otimes\boldsymbol{q}^{*}=\left[\begin{array}{c}
+2\left(q_{1}q_{2}-q_{0}q_{3}\right)\\
+q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2}\\
+2\left(q_{2}q_{3}+q_{0}q_{1}\right)
+\end{array}\right]\label{eq:10}\\
+R_{z}\left(\boldsymbol{q}\right) & =\boldsymbol{q}\otimes\left[\begin{array}{l}
+0\\
+0\\
+0\\
+1
+\end{array}\right]\otimes\boldsymbol{q}^{*}=\left[\begin{array}{c}
+2\left(q_{1}q_{3}+q_{0}q_{2}\right)\\
+2\left(q_{2}q_{3}-q_{0}q_{1}\right)\\
+q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\label{eq:11}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应注意的是，在所检验的情况下，仅提取了四元数的向量部分，从而形成旋转矩阵，旋转固定坐标系中的点，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示。旋转坐标系时，角度符号会发生变化并提供方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，而将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的四元数共轭时会产生相同的结果。
+\begin_inset Formula 
+\begin{align}
+R\left(\boldsymbol{q}\right) & =\left[\begin{array}{ccc}
+R_{x}\left(\boldsymbol{q}\right) & R_{y}\left(\boldsymbol{q}\right) & R_{z}\left(\boldsymbol{q}\right)\end{array}\right]\label{eq:12}\\
+R\left(\boldsymbol{q}\right) & =\left[\begin{array}{c}
+R_{x}\left(\boldsymbol{q}\right)^{\mathrm{T}}\\
+R_{y}\left(\boldsymbol{q}\right)^{\mathrm{T}}\\
+R_{z}\left(\boldsymbol{q}\right)^{\mathrm{T}}
+\end{array}\right]\label{eq:13}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+也可以使用如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所示的旋转向量来表示旋转，其中
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+是旋转轴(单位向量)，
+\begin_inset Formula $\alpha$
+\end_inset
+
+是旋转角。在创建误差或指定具有直接物理连接的引用时，使用此符号可能有许多好处。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}=\cos\left(\frac{\alpha}{2}\right)+\boldsymbol{u}\sin\left(\frac{\alpha}{2}\right)\label{eq:14}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，为了更直观地表示四元数旋转，可以分别利用以下两个方程来实现从欧拉角到四元数和从四元数到欧拉角的转换。如果目标是以角度表示方向，同时以四元数形式保留系统的整
+体动力学，则此属性非常有用。
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{q} & =\left[\begin{array}{l}
+\cos(\phi/2)\cos(\theta/2)\cos(\psi/2)+\sin(\phi/2)\sin(\theta/2)\sin(\psi/2)\\
+\sin(\phi/2)\cos(\theta/2)\cos(\psi/2)-\cos(\phi/2)\sin(\theta/2)\sin(\psi/2)\\
+\cos(\phi/2)\sin(\theta/2)\cos(\psi/2)+\sin(\phi/2)\cos(\theta/2)\sin(\psi/2)\\
+\cos(\phi/2)\cos(\theta/2)\sin(\psi/2)-\sin(\phi/2)\sin(\theta/2)\cos(\psi/2)
+\end{array}\right]\label{eq:15}\\
+\left[\begin{array}{l}
+\phi\\
+\theta\\
+\psi
+\end{array}\right] & =\left[\begin{array}{c}
+\mathrm{atan}2\left(2\left(q_{0}q_{1}+q_{2}q_{3}\right),q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right.\\
+\mathrm{asin}\left(2\left(q_{0}q_{2}-q_{3}q_{1}\right)\right)\\
+\mathrm{atan}2\left(2\left(q_{0}q_{3}+q_{1}q_{2}\right),q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2}\right)
+\end{array}\right]\label{eq:16}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+基于四元数的四旋翼建模
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于四旋翼的姿态动力学建模，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，假设结构是刚性和对称的，重心和机体固连坐标系原点重合，螺旋桨是刚性的，抵消重力影响的偏置油门可以忽略，只有螺旋桨产生的差分力对旋转有影响。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure1.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+Luleå理工大学四旋翼无螺旋桨的草图。
+\begin_inset Formula $\Omega_{1-4}$
+\end_inset
+
+表示每个电机的转速，
+\begin_inset Formula $F_{1-4}$
+\end_inset
+
+表示每个电机产生的力，
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+表示机体固连坐标系。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于四旋翼物理建模，可以采用两种替代方法： a) 利用牛顿运动定律和生成一个与坐标系相关的模型，或 b) 利用Euler-Newton方程对刚体的平移和旋转动力
+学，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示，导出完整的物理模型。第二种方法的使用大大简化了模型的推导，因为导出模型中唯一未知的是控制信号和相应转矩之间的连接。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+F\\
+\tau
+\end{array}\right]=\left[\begin{array}{cc}
+m & 0\\
+0 & I_{cm}
+\end{array}\right]\left[\begin{array}{c}
+a_{cm}\\
+\dot{\boldsymbol{\omega}}
+\end{array}\right]+\left[\begin{array}{c}
+0\\
+\boldsymbol{\omega}\times\left(I_{cm}\cdot\boldsymbol{\omega}\right)
+\end{array}\right],\label{eq:17}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+定义为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\left[\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了推导四旋翼刚体旋转的全部动力学，应将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的右侧四元数导数与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的旋转动力学相结合，从而形成以四元数形式描述四旋翼整个旋转动力学的方程系统，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left\{ \begin{array}{l}
+\dot{\boldsymbol{q}}=-\frac{1}{2}\left[\begin{array}{l}
+0\\
+\boldsymbol{\omega}
+\end{array}\right]\otimes\boldsymbol{q}\\
+\dot{\boldsymbol{\omega}}=I_{cm}^{-1}\cdot\tau-I_{cm}^{-1}\left[\boldsymbol{\omega}\times\left(I_{cm}\cdot\boldsymbol{\omega}\right)\right]
+\end{array}\right.\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在对控制信号与转矩关系建模时，提出了各种线性和非线性系统的近似[12]。在这种方法中，将此关系简化为同一矩阵。考虑到转子动力学背后的物理问题，可以考虑更详细的方
+法，而不必消除所提出方法的影响。该部分的研究结果可直接推广到其它类型无人机坐标系的姿态动力学建模中，只要能找到控制信号与转矩的关系。
+\end_layout
+
+\begin_layout Section
+控制器综合
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本部分提出了一种四旋翼飞机姿态稳定的反馈控制方案。为了能够提出一个适当的控制方案，系统的输入和输出必须事先知道。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出的系统表明，为了测量系统状态并计算转动系统所需的驱动力矩，需要测量四元数和角速率。
+\end_layout
+
+\begin_layout Standard
+如前所述，本文的新颖之处在于提出了一种完全在四元数空间中的四旋翼姿态控制方案。在所提出的方法中，所有的测量和计算都是利用四元数进行的，而没有对欧拉角和旋转进行变
+换。得到的控制器没有奇异性问题，可以直接实现，同时保持简单性。
+\end_layout
+
+\begin_layout Standard
+为了利用四元数来计算所需的
+\begin_inset Formula $\boldsymbol{q}_{ref}$
+\end_inset
+
+和四旋翼基于四元数的测量响应
+\begin_inset Formula $\boldsymbol{q}_{m}$
+\end_inset
+
+之间的误差，应计算误差四元数，表示为
+\begin_inset Formula $\boldsymbol{q}_{err}$
+\end_inset
+
+。这是通过将参考
+\begin_inset Formula $\boldsymbol{q}_{ref}$
+\end_inset
+
+与估计的四元数
+\begin_inset Formula $\boldsymbol{q}_{m}$
+\end_inset
+
+的共轭相乘来实现的，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示。此Kronecker乘积将计算差分四元数，可用于产生绕每个旋转轴的误差，或：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{q}_{err}=\boldsymbol{q}_{ref}\otimes\boldsymbol{q}_{m}^{*}\label{eq:19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量部分将四元数直接连接到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中误差的正弦，这导致如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示的轴误差。如果参考要求旋转超过
+\begin_inset Formula $\pi$
+\end_inset
+
+弧度，则最接近的旋转方向是反转方向，这可以通过检查
+\begin_inset Formula $q_{0}$
+\end_inset
+
+找到。如果
+\begin_inset Formula $q_{0}<0$
+\end_inset
+
+，则所需的方向距离大于
+\begin_inset Formula $\pi$
+\end_inset
+
+弧度，最近的旋转是
+\begin_inset Formula $\boldsymbol{q}_{err}$
+\end_inset
+
+的共轭，从而抵消方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的轴误差。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Axis}_{err}=\left[\begin{array}{l}
+q_{1}^{err}\\
+q_{2}^{err}\\
+q_{3}^{err}
+\end{array}\right]\label{eq:20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在设计控制器时，选择了可用的最简单形式，即非线性
+\begin_inset Formula $P^{2}$
+\end_inset
+
+控制器公式，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。在所提出的方法中，角速度的内环比例控制器
+\begin_inset Formula $P_{\omega}$
+\end_inset
+
+和角速度参考跟踪的外环比例控制器
+\begin_inset Formula $P_{q}$
+\end_inset
+
+被有效地结合起来，形成了姿态调节问题的非线性
+\begin_inset Formula $P^{2}$
+\end_inset
+
+控制器。拟议的
+\begin_inset Formula $P^{2}$
+\end_inset
+
+控制方案的整体数学公式如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tau=-P_{q}\cdot\left[\begin{array}{l}
+q_{1}^{err}\\
+q_{2}^{err}\\
+q_{3}^{err}
+\end{array}\right]-P_{\omega}\cdot\left[\begin{array}{l}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]\label{eq:21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure2.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+全非线性
+\begin_inset Formula $P^{2}$
+\end_inset
+
+四元数控制方案框图
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+应该注意的是，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是无导数的，并且可以直接实现(低计算成本)。此外，这种设计的抗噪性仅与测量/估计的四元数和角速度相当，因为所拟议的方案将直接放大噪声和相应的误差一样大。值得注
+意的是，由于非线性动力学中的双积分器，
+\begin_inset Formula $P^{2}$
+\end_inset
+
+设计总是将误差驱动到零。这降低了控制器的复杂性，并且没有积分器，控制器不会产生负相移。
+\end_layout
+
+\begin_layout Section
+模拟结果
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:5"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所有模拟均在文献 [10]中提出的非线性四旋翼模型上进行，该模型考虑了作用在系统上的一系列气动力和力矩，包括轮毂和摩擦力、滚动力矩，以及在一定程度上由于四旋翼在
+大气中的运动而引起的气动系数变化。
+\end_layout
+
+\begin_layout Standard
+四旋翼模型的参数已设置为
+\begin_inset Formula $I_{xx}=I_{yy}=6.5\cdot10^{-4}\mathrm{~kg}\cdot\mathrm{m}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $I_{zz}=1.2\cdot10^{-3}\mathrm{~kg}\cdot\mathrm{m}^{2}$
+\end_inset
+
+。上述值对应于图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中给出的CAD模型分析，与文献[19]中提供的分析相对应。文献[19]中提出的基于四元数的控制器。所提出的基于四元数的控制器已在三种基本跟踪测试用例下进行了评
+估，这三种基本跟踪测试用例是：a)恒定旋转-阶跃输入，b)周期参考-正弦输入，以及c)复杂机动飞行。在所有模拟情况下，考虑了量值为
+\begin_inset Formula $0.1$
+\end_inset
+
+的加性破坏零均值噪声对测量的影响。已应用控制动作的边界，以执行更真实的评估。这些界限对所有电机的增益均已设置为
+\begin_inset Formula $+/-4Nm$
+\end_inset
+
+，而非线性
+\begin_inset Formula $P^{2}$
+\end_inset
+
+控制器的增益在模拟中进行小微调后设定为：
+\begin_inset Formula $P_{q}=20$
+\end_inset
+
+和
+\begin_inset Formula $P_{\omega}=4$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在第一种情况下，考虑了阶跃响应，其中在不同的时间点请求绕每个轴的
+\begin_inset Formula $1\ \mathrm{rad}$
+\end_inset
+
+参考阶跃。从每个轴获得的结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，而相应的控制动作如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure3.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+四旋翼阶跃响应。参考信号和系统响应分别用虚线和实线表示。所有图形均以弧度表示，以便更直观地显示。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure4.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+阶跃响应期间的控制器效果
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从得到的响应可以看出，所提出的控制方案具有很小的超调量和很好的参考跟踪性能。所有误差迅速归零，噪声或非线性效应不会产生奇怪的影响。为了提供真实的模拟评估，考虑了
+控制动作的界限。当引入阶跃时，控制信号饱和，但很快回到其线性区域。虽然存在腐蚀噪声，但四旋翼的性能并未受到显著影响，主要是由于系统的双积分动力学的影响。
+\end_layout
+
+\begin_layout Standard
+第二个评估测试用例考虑了跟踪频率为
+\begin_inset Formula $1\ \mathrm{rad}/\mathrm{s}$
+\end_inset
+
+的
+\begin_inset Formula $0.5\ \mathrm{radian}$
+\end_inset
+
+量值正弦波的问题。应用的参考波在
+\begin_inset Formula $y$
+\end_inset
+
+轴和
+\begin_inset Formula $z$
+\end_inset
+
+轴上发生相移，以驱动扭矩不在同一相位。获得的跟踪结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，而相应的控制动作如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure5.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5"
+
+\end_inset
+
+跟踪
+\begin_inset Formula $1\ \mathrm{rad}/\mathrm{s}$
+\end_inset
+
+正弦波的控制器。输入/输出以弧度显示，以便更直观地显示。虚线为参考线，连续线为输出线。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure6.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6"
+
+\end_inset
+
+跟踪期间的控制器控制作用。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从所获得的结果可以明显看出，与之前的测试情况一样，所提出的控制方案能够提供非常好的快速跟踪，并且具有约
+\begin_inset Formula $0.5~\mathrm{s}$
+\end_inset
+
+的小相移。还应该指出，所提出的控制器具有在四旋翼姿态上执行相当大的动态变化的优点，而不存在使控制信号饱和以跟踪这些快速变化的问题。由于四元数控制器的增益已经固定
+，当控制力的量值较小时，破坏噪声的影响更容易识别，而这种噪声对整个受控四旋翼没有直接和严重的影响。
+\end_layout
+
+\begin_layout Standard
+对于最终评估测试用例，还考虑了一种最常用的操作，即
+\begin_inset Formula $360^{\circ}$
+\end_inset
+
+ FLIP。控制信号是通过从
+\begin_inset Formula $0$
+\end_inset
+
+到
+\begin_inset Formula $2\pi$
+\end_inset
+
+弧度的斜坡产生的，因此控制器不会走最短的路线，而仿真结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。从FLIP过程中观察四旋翼的响应可以明显看出，执行机动没有任何问题。在欧拉角的情况下，该FLIP将受到大量非线性的影响，但如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，四元数既没有非线性，也没有奇点，因此可以执行FLIP而没有任何问题。控制信号只会饱和一点，这是因为控制器已调整为平滑过渡(小增益值)。对于更快的FLIP
+，可以使用更积极的调谐，或者可以对角速度基准进行直接控制，直到姿态达到FLIP的一半，然后重新连接姿态控制器。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure7.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7"
+
+\end_inset
+
+控制器正在执行FLIP。输入/输出以弧度显示，以便更直观地显示。虚线为参考线，连续线为输出线。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 0927-Figure8.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:8"
+
+\end_inset
+
+控制器执行FLIP(以四元数数据
+\begin_inset Formula $q_{0}$
+\end_inset
+
+和
+\begin_inset Formula $\ensuremath{q_{1}}$
+\end_inset
+
+显示)。虚线为参考线，连续线为输出线。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:6"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本文提出了一种基于完全四元数的四旋翼姿态控制器。本文的主要目的和创新点在于提出一种完全在四元数空间实现的建模和控制方案开发方法，以避免通常与欧拉角和旋转角有关的
+非线性和计算量。该方法直接应用于四元数误差，无需任何转换即可解决姿态问题。扩展的仿真结果证明了该方案的有效性。
+\end_layout
+
+\begin_layout Section
+REFERENCES
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Alexis, G.
+ Nikolakopoulos, A.
+ Tzes, and L.
+ Dritsas, “Coordination of helicopter UAVs for aerial Forest-Fire surveillance,”
+ in Applications of Intelligent Control to Engineering Systems.
+ Springer Netherlands, June 2009, pp.
+ 169–193.
+ 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Raffo, M.
+ Ortega, and F.
+ Rubio, “An integral predictive/nonlinear control structure for a quadrotor
+ helicopter,” Automatica, vol.
+ 46, no.
+ 1, pp.
+ 29–39, 2010.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Alexis, G.
+ Nikolakopoulos, and A.
+ Tzes, “Switching model predictive attitude control for a quadrotor helicopter
+ subject to atmospheric disturbances,” Control Engineering Practice, vol.
+ 19, no.
+ 10, pp.
+ 1995– 1207, October 2011.
+ 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ M.
+ Hoffmann, H.
+ Huang, S.
+ L.
+ Waslander, and C.
+ J.
+ Tomlin, “Quadrotor helicopter ﬂight dynamics and control: Theory and experiment
+,” in Proc.
+ of the American Institute of Aeronautics and Astronautics (AIAA) Guidance,
+ Navigation, and Control Conference, SC, USA, 2007.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ Bouabdallah, A.
+ Noth, and R.
+ Siegwart, “PID vs LQ control techniques applied to an indoor micro quadrotor,”
+ in Proceedings of the IEEE/RSJ International Conference on Intelligent
+ Robots and Systems, Sendai, Japan, 2004, pp.
+ 2451–2456.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Gadewadikar, F.
+ Lewis, K.
+ Subbarao, K.
+ Peng, and B.
+ Chen, “H-Inﬁnity static output-feedback control for rotorcraft,” Journal
+ of Intelligent and Robotic Systems, vol.
+ 54, no.
+ 4, pp.
+ 629–646, Apr.
+ 2009.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Mahony, V.
+ Kumar, and P.
+ Corke, “Multirotor aerial vehicles: Modeling, estimation and control of
+ quadrotor,” IEEE Robotics and Automation Magazine, vol.
+ 19, no.
+ 3, pp.
+ 20–32, September 2012.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Benallegue, A.
+ Mokhtari, and L.
+ Fridman, “Feedback linearization and high order sliding mode observer for
+ a quadrotor UAV,” in International Workshop on Variable Structure Systems
+ (VSS’06), Alghero, Sardinia, 2006, pp.
+ 365–372.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ L.
+ Waslander, G.
+ M.
+ Hoffmann, J.
+ S.
+ Jang, and C.
+ J.
+ Tomlin, “Multiagent quadrotor testbed control design: Integral sliding
+ mode vs.
+ reinforcement learning,” in Proceedings of the IEEE/RSJ International Conferenc
+e on Intelligent Robotics and Systems, Alberta, Canada, 2005, pp.
+ 468–473.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ Bouabdallah and R.
+ Siegwart, “Full control of a quadrotor,” in 2007 IEEE/RSJ International
+ Conference on Intelligent Robots and Systems, 2007, pp.
+ 153–158.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Das, F.
+ Lewis, and K.
+ Subbarao, “Backstepping approach for controlling a quadrotor using lagrange
+ form dynamics,” Journal of Intelligent and Robotic Systems, vol.
+ 56, no.
+ 1, pp.
+ 127–151, 2009.
+ 
+\end_layout
+
+\begin_layout Enumerate
+T.
+ Bresciani, “Modelling, identiﬁcation and control of a quadrotor helicopter,”
+ Ph.D.
+ dissertation, Lund University, 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Harrison, J.
+ Gallagher, and E.
+ Grace, “An algorithm providing all attitude capability for three-gimballed
+ inertial systems,” IEEE Transactions on Aerospace and Electronic Systems,
+ vol.
+ AES-7, no.
+ 3, pp.
+ 532–543, 1971.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ T.
+ T.
+ H.
+ .
+ T.
+ C.
+ Grant Baldwin, Robert Mahony, “Complementary ﬁlter design on the special
+ euclidean group so(3),” IEEE Conference on Decision and Control, vol.
+ 44, 2005.
+ 
+\end_layout
+
+\begin_layout Enumerate
+E.
+ Stingu and F.
+ Lewis, “Design and implementation of a structured ﬂight controller for
+ a 6dof quadrotor using quaternions,” in 17th Mediterranean Conference on
+ Control and Automation, Thessaloniki, Greece, 2009.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ A.
+ W.
+ J.-Y.
+ Joshi, S.M., “Robust attitude stabilization of spacecraft using nonlinear
+ quaternion feedback,” IEEE Transactions on Automatic Control, vol.
+ 40, 1995.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ B.
+ Kuipers, Quaternions and Rotation Sequences, P.
+ U.
+ Press, Ed., 1998.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Diebel, “Representing attitude: Euler angles, unit quaternions, and rotation
+ vectors,” 2006.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Tayebi and S.
+ McGilvray, “Attitude stabilization of a VTOL quadrotor aircraft,” IEEE
+ Transactions on Control Systems Technology, vol.
+ 14, no.
+ 3, pp.
+ 562–571, 2006.
+\end_layout
+
+\end_body
+\end_document
