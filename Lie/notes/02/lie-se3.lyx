@@ -11176,7 +11176,7 @@ ESKF 误差重置操作
 \end_layout
 
 \begin_layout Standard
-并且我们有一个重要的假设：误差向量
+在这里我们有一个重要的假设：误差向量
 \begin_inset Formula $\delta\boldsymbol{x}$
 \end_inset
 
@@ -11208,6 +11208,104 @@ ESKF 误差重置操作
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+这个问题需要从
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的导数方程，以及不确定性的协方差表示这两方面共同理解。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename ESKF-10.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们在局部迪卡尔空间中获取了增量角度
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，从而驱动了
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的姿态从
+\begin_inset Formula $\hat{q}_{k-1}$
+\end_inset
+
+变化到了
+\begin_inset Formula $\bar{q}_{k}$
+\end_inset
+
+。我们还知道增量角度
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+的不确定度是一个零均值的高斯分布，当其受到一个误差向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的扰动时，姿态
+\begin_inset Formula $\bar{q}_{k}$
+\end_inset
+
+会有什么样的变化规律？也就是增量角度的误差向量的动力学矩阵是什么？从李群的角度看，这实际上就是在求右结合的加号
+\begin_inset Formula $\oplus$
+\end_inset
+
+的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{J}_{\delta\boldsymbol{\theta}}^{\mathsf{R}\oplus\delta\boldsymbol{\theta}}=\begin{cases}
+\mathbf{J}_{r}\left(\delta\boldsymbol{\theta}\right) & \text{for }\boldsymbol{R}\\
+\dfrac{1}{2}\boldsymbol{\Xi}\left(\delta\boldsymbol{\theta}\right) & \text{for }q
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的导数方程，
+\begin_inset Formula $\mathbf{J}_{\delta\boldsymbol{\theta}}^{\mathsf{R}\oplus\delta\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\delta\boldsymbol{\theta}\right)$
+\end_inset
+
+，有着十分重要的几何意义。我们是用局部笛卡尔空间中的误差向量
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的微小扰动，表达了旋转流形
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上的元素
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+的变化率。这也是我们在时间更新步骤最重要的目的：在ESKF算法中，误差状态转换矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+是一个 Jacobian 矩阵，我们用流形的导数进行求解。
 \end_layout
 
 \begin_layout Standard
@@ -11501,7 +11599,7 @@ Gaussian\left(\boldsymbol{R}\left(\hat{q}_{k}\right),\boldsymbol{\eta}\right)=\b
 \begin_layout Standard
 PX4 ECL/EKF2 的算法总体和这里类似，都是对位姿进行最优估计，同样采用 IMU 数据进行位姿预测，用磁力计和GPS等传感器数据进行位姿校正。只不过
  PX4 ECL/EKF2 的算法直接对位姿进行最优估计，简单直接得多，没有估计误差向量的误差以及偏差向量的误差这种弯弯绕，只要你能接受表示旋转的单位四元数是个
-四元向量这个假设即可，并且事实证明，当传感器采样率足够快的时候，这个假设也无不可，估计精度也足够。
+四元向量并且可以进行向量减法操作这个假设即可，并且事实证明，天下武功唯快不破，当传感器采样率足够快增量足够小的时候，这个假设也无不可，估计精度也足够。
 \end_layout
 
 \begin_layout Standard
