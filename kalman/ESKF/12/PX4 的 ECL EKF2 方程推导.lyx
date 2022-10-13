@@ -1762,7 +1762,7 @@ ECL EKF2 最小传感器集合为：IMU，偏航数据源和高度数据源。
 \end_layout
 
 \begin_layout Itemize
-GPS是多面手，可以提供很多测量数据。所以如果不是成本受限，GPS应该是无人机的标配设备。
+GPS是多面手，可以提供很多测量数据。所以如果不是成本受限，GPS应该是无人机的标配设备。注意，GPS的采样速率比较慢，在ECL系统中假设其最小频率为2Hz。
 \end_layout
 
 \begin_layout Itemize
@@ -4275,10 +4275,17 @@ GPS 的观测相对于状态向量
 
 \begin_layout Subsection
 空速融合方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:空速融合方程"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-空速观测方程假设传感器测量相对于风场的速度
+对于固定翼平台，空速观测方程假设传感器测量相对于风场的速度
 \begin_inset Formula $\boldsymbol{V}_{EAS}$
 \end_inset
 
@@ -4397,15 +4404,72 @@ V_{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right)}
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
-中的速度和风速进行校正。
+中的速度和风速进行校正。本节的方程可对比第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:真实空速融合"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“真实空速融合”的内容。
+\end_layout
+
+\begin_layout Standard
+注意，因为风速的误差相当大，为减小其对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的速度的影响，正常情况下都将
+\begin_inset Formula $\boldsymbol{H}_{V_{NED}}^{V_{TAS}}=\boldsymbol{0}$
+\end_inset
+
+，直到ECL估计系统进入风场航位推算模式模式后，才用
+\begin_inset Formula $\boldsymbol{H}_{V_{NED}}^{V_{TAS}}$
+\end_inset
+
+对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的速度进行校正。具体见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:惯性航位推算"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章“惯性航位推算”的讨论。
 \end_layout
 
 \begin_layout Subsection
 合成侧滑融合方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:合成侧滑融合方程"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-固定翼平台可以利用假定的侧滑观测值为零来改进风速估计，也可以在没有空速传感器的情况下进行风速估计。
+非固定翼平台可以利用假定的侧滑观测值为零来改进风速估计，也可以在没有空速传感器的情况下进行风速估计。本节的方程可对比第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:合成侧滑融合"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“合成侧滑融合”的内容。
 \end_layout
 
 \begin_layout Standard
@@ -4516,6 +4580,40 @@ V_{D}
 \end_inset
 
 。这3个偏导展开太复杂，就不在这里推导。具体可见代码中用符号推导系统生成的计算式。
+\end_layout
+
+\begin_layout Standard
+注意，因为合成侧滑的误差相当大，为减小其对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的姿态和速度的影响，正常情况下都将
+\begin_inset Formula $\boldsymbol{H}_{q}^{beta}=\boldsymbol{0},\boldsymbol{H}_{V}^{beta}=\boldsymbol{0}$
+\end_inset
+
+，直到ECL估计系统进入风场航位推算模式模式后，才用
+\begin_inset Formula $\boldsymbol{H}_{q}^{beta}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{H}_{V}^{beta}$
+\end_inset
+
+对状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+中的姿态和速度进行校正。具体见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:惯性航位推算"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章“惯性航位推算”的讨论。
 \end_layout
 
 \begin_layout Subsection
@@ -6044,6 +6142,735 @@ y & =\sum_{i=1}^{5}W_{i}\cdot\sin\left(\psi_{i}\right)\\
 \end_layout
 
 \begin_layout Section
+风速估计
+\end_layout
+
+\begin_layout Standard
+因为风速对评估飞行环境十分重要，并且为了容错，所以除了在主要的24-EKF估计器中估计风速之外，ECL还采用另外不同模型的3-EKF算法来估计风速。
+\end_layout
+
+\begin_layout Subsection
+假设
+\end_layout
+
+\begin_layout Standard
+假设飞行器为近水平面姿态。飞行器有
+\begin_inset Formula $z$
+\end_inset
+
+轴方向上的运动，但是飞行器以近水平面姿态运动。
+\end_layout
+
+\begin_layout Standard
+假设风速为近水平面风场，因此
+\begin_inset Formula $z$
+\end_inset
+
+轴方向风速为
+\begin_inset Formula $0$
+\end_inset
+
+。用
+\begin_inset Formula $V_{wind_{N}}/V_{wind_{E}}$
+\end_inset
+
+表示在 NED 坐标系中在北/东 (N/E) 方向上的风速，则风速向量
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+表示为
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{wind}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+真实空速(True Air Speed, TAS)，又称真空速，是表示飞行器飞行时相对于周围空气运动的速度。真实空速的方程与温度和空气密度相关。在这里做一个简化
+，假设其为飞行器相对于地球固定坐标系的速度向量
+\begin_inset Formula $\boldsymbol{V}_{I}$
+\end_inset
+
+和风速向量
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+的差值，并乘上真实空速缩放因子
+\begin_inset Formula $k_{tas}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+所以，最终的要估计的状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]
+\]
+
+\end_inset
+
+并且假设风场在短时间内不会有大的变化，所以采用固定过程模型。
+\end_layout
+
+\begin_layout Standard
+系统的输入。由GPS、光流、外部视觉等传感器提供飞行器的速度向量
+\begin_inset Formula $\boldsymbol{V}_{I}=\left[\begin{array}{ccc}
+V_{N} & V_{E} & V_{D}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+，我们关注N/E方向的地面速度方差
+\begin_inset Formula $\boldsymbol{\sigma}^{2}=\left[\begin{array}{cc}
+\sigma_{V_{N}}^{2} & \sigma_{V_{E}}^{2}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+。对于风速的过程噪声分量为
+\begin_inset Formula $Q_{w}$
+\end_inset
+
+，对于真实空速过程噪声分量为
+\begin_inset Formula $Q_{k_{tas}}$
+\end_inset
+
+。对于固定翼飞机，由空速传感器提供真实空速测量值
+\begin_inset Formula $TAS_{meas}$
+\end_inset
+
+，其测量噪声为
+\begin_inset Formula $R_{tas}$
+\end_inset
+
+；对于旋翼飞机，由合成侧滑
+\begin_inset Formula $\mathrm{beta}$
+\end_inset
+
+计算真实空速测量值，其测量噪声为
+\begin_inset Formula $R_{beta}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+初始化
+\end_layout
+
+\begin_layout Standard
+初始化阶段的主要目标是通过地面速度初始化风速协方差。这是一种快速算法，与时间更新阶段的方程不一样。
+\end_layout
+
+\begin_layout Standard
+根据地面速度估计航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+\psi=\mathrm{atan2}\left(V_{N},V_{E}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据近水平面的假设，根据飞行器地面速度、航向和空速测量值计算风速估计值(状态向量)
+\begin_inset Formula 
+\[
+\mathrm{wind}_{est}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]=\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+k_{tas}
+\end{array}\right]-\left[\begin{array}{c}
+\cos\left(\psi\right)\\
+\sin\left(\psi\right)\\
+0
+\end{array}\right]\cdot TAS_{meas}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设置状态协方差矩阵的估计初值为
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{0}=\mathrm{diag}\left(\left[\begin{array}{c}
+\sigma_{V_{N}}^{2}\\
+\sigma_{V_{E}}^{2}\\
+k_{tas}
+\end{array}\right]\right)
+\]
+
+\end_inset
+
+其中，设置
+\begin_inset Formula $k_{tas}$
+\end_inset
+
+初值为
+\begin_inset Formula $0.0001$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+计算风速的状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+，其为相对于北/东方向的速度的状态和真实空速测量值的状态的Jacobian矩阵，
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F} & =\dfrac{\partial\left(\mathrm{wind}_{est}\right)}{\partial\left(\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+k_{tas}
+\end{array}\right]\right)}\\
+ & =\left[\begin{array}{ccc}
+L_{4} & L_{0}\cdot L_{3}+L_{6} & 0\\
+L_{1}\cdot L_{3}+L_{6} & L_{4} & 0\\
+0 & 0 & 1
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+L_{0} & =V_{N}^{2}\\
+L_{1} & =V_{E}^{2}\\
+L_{2} & =V_{N}^{2}+V_{E}^{2}\\
+L_{3} & =\dfrac{TAS_{meas}}{\left(V_{N}^{2}+V_{E}^{2}\right)\sqrt{\left(V_{N}^{2}+V_{E}^{2}\right)}}\\
+L_{4} & =\dfrac{TAS_{meas}\cdot V_{N}^{2}\cdot V_{E}^{2}}{\left(V_{N}^{2}+V_{E}^{2}\right)\sqrt{\left(V_{N}^{2}+V_{E}^{2}\right)}}+1\\
+L_{5} & =\dfrac{1}{\sqrt{V_{N}^{2}+V_{E}^{2}}}\\
+L_{6} & =-\dfrac{TAS_{meas}}{\sqrt{V_{N}^{2}+V_{E}^{2}}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据地面速度和实测空速值的估计方差，获得初始化时的状态协方差矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+的估计值
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{P} & =\boldsymbol{F}\boldsymbol{P}_{0}\boldsymbol{F}^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+时间更新
+\end_layout
+
+\begin_layout Standard
+因为算法采用的是固定过程模型，所以状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}=\boldsymbol{I}$
+\end_inset
+
+。我们只需要提供协方差预测公式。
+\end_layout
+
+\begin_layout Standard
+创建协方差预测的过程噪声矩阵
+\begin_inset Formula 
+\[
+\boldsymbol{x}_{k+1}=\boldsymbol{x}_{k}+\left[\begin{array}{c}
+Q_{w}\\
+Q_{w}\\
+Q_{k_{tas}}
+\end{array}\right]\cdot\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算系统过程噪声矩阵
+\begin_inset Formula $\boldsymbol{Q}_{3\times3}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{Q}_{2\times2} & =\mathrm{diag}\left(\left[\begin{array}{c}
+Q_{w}\\
+Q_{k_{tas}}
+\end{array}\right]\right)\\
+\boldsymbol{G} & =\dfrac{\partial\boldsymbol{x}_{k+1}}{\partial\left(\left[\begin{array}{c}
+Q_{w}\\
+Q_{k_{tas}}
+\end{array}\right]\right)}\\
+ & =\left[\begin{array}{cc}
+1 & 0\\
+1 & 0\\
+0 & 1
+\end{array}\right]\cdot\mathrm{d}t\\
+\boldsymbol{Q}_{3\times3} & =\boldsymbol{G}\boldsymbol{Q}_{2\times2}\boldsymbol{G}^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+协方差矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+的预测方程
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{k|k-1}=\boldsymbol{P}_{k-1|k-1}+\boldsymbol{Q}_{3\times3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+测量更新
+\end_layout
+
+\begin_layout Subsubsection
+真实空速融合
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:真实空速融合"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于带有空速传感器的非旋翼无人机，采用这个分支。本节的方程可对比第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:空速融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“空速融合方程”的内容。
+\end_layout
+
+\begin_layout Standard
+计算真实空速预测值
+\begin_inset Formula $TAS_{pred}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+TAS_{pred} & =\left\Vert \boldsymbol{V}_{I}-\boldsymbol{V}_{wind}\right\Vert _{2}\cdot k_{tas}\\
+ & =\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}\cdot k_{tas}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+真实空速的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{tas}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{tas} & =\dfrac{\partial\left(TAS_{pred}\right)}{\partial\boldsymbol{x}_{k}}\\
+ & =\dfrac{\partial\left(\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}\cdot k_{tas}\right)}{\partial\left(\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算新息(或残差)协方差
+\begin_inset Formula $S$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+S=\boldsymbol{H}\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{{\rm T}}+R_{tas}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最佳卡尔曼增益
+\begin_inset Formula $\boldsymbol{K}_{3\times1}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{K}=\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{{\rm T}}S^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+更新(后验)的协方差
+\begin_inset Formula $\boldsymbol{P}_{3\times3}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{k|k}=\boldsymbol{P}_{k|k-1}-\boldsymbol{K}\boldsymbol{H}\boldsymbol{P}_{k|k-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后注意，风速融合频率不超过
+\begin_inset Formula $10\ \mathrm{Hz}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+合成侧滑融合
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:合成侧滑融合"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于提供虚拟合成侧滑数值的旋翼无人机，采用这个分支。本节的方程可对比第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:合成侧滑融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“合成侧滑融合方程”的内容。
+\end_layout
+
+\begin_layout Standard
+计算在飞行器机体坐标系中的相对于地球坐标系的风速向量
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind}^{N} & =\boldsymbol{V}_{I}-\boldsymbol{V}_{wind}\\
+ & =\left[\begin{array}{c}
+V_{N}-V_{wind_{N}}\\
+V_{E}-V_{wind_{E}}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据外部输入的姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+得到从机体坐标系到导航坐标系的旋转矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\left[T\right]_{B}^{N}=\boldsymbol{R}\left(q\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算相对于机体坐标系的风速
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind}^{B} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\cdot\boldsymbol{V}_{wind}^{N}\\
+ & =\left[\begin{array}{c}
+V_{wind_{X}}\\
+V_{wind_{Y}}\\
+V_{wind_{Z}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+合成侧滑模型的小角度近似方程为
+\begin_inset Formula 
+\[
+\mathrm{beta}=\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}
+\]
+
+\end_inset
+
+并且根据近水平面假设，
+\begin_inset Formula $\mathrm{beta}$
+\end_inset
+
+即为残差。
+\end_layout
+
+\begin_layout Standard
+计算合成侧滑的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{beta}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{beta} & =\dfrac{\partial\left(\mathrm{beta}\right)}{\partial\boldsymbol{x}_{k}}\\
+ & =\dfrac{\partial\left(\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}\right)}{\partial\left(\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+后面的计算如上一小节一样。
+\end_layout
+
+\begin_layout Section
+GPS的应用
+\end_layout
+
+\begin_layout Standard
+在ECL估计系统中，GPS有着非常重要且特殊的地位。在这里，GPS有三种应用：一是在主要的24-EKF中校正状态向量；二是计算纬度/经度点之间的距离、方位角(b
+earing)；三是配合全球地磁观测网站提供纬度/经度点的磁偏角。第一种用途已经在前面详细讨论，后面简略讨论后两种的算法。
+\end_layout
+
+\begin_layout Subsection
+计算纬度/经度点之间的距离与方位角
+\end_layout
+
+\begin_layout Standard
+因为人体的高度和视野相对于巨大的地球而言十分渺小，于是我们就误以为我们所处的大地是一个平面，但其实地球是一个近似圆球的橢球体。在一般的短距离的应用中，我们把地球
+近似为平均半径
+\begin_inset Formula $r=6371\ km$
+\end_inset
+
+的理想圆球。在这个假设中，ECL选择方位等距投影(Azimuthal Equidistant Projection)方式计算纬度/经度点之间的距离与方位角。
+\end_layout
+
+\begin_layout Standard
+方位投影(Azimuthal Projection)是一种地图投影，其上所有点的方位都相对于中心正确显示。与地球两极之一相切的平面是极方位投影的基础。对于方位投
+影，“天顶(zenithal)”一词是一个更古老的术语。方位投影最显著的特征是在图上测量的从中心到任意一点的距离是真实的。因而，地图上以投影中心为圆心的圆在真实
+地球上与投影中心是等距离的。同时，从中心出发的任意方向也是真实的。该投影常用于展示多个地理位置与指定点的距离图。
+\end_layout
+
+\begin_layout Standard
+方位等距投影(
+\begin_inset CommandInset href
+LatexCommand href
+name "Azimuthal Equidistant Projection"
+target "http://mathworld.wolfram.com/AzimuthalEquidistantProjection.html"
+literal "false"
+
+\end_inset
+
+)是一种面积既不相等(equal-area)也不共形(conformal)的方位投影。等距方位投影可以保留距中心点的距离和方向。等距方位投影是假想球面与平面相切
+，有极方位投影、赤道投影和斜轴投影三种，分别是：切于极点为正轴，切于赤道为横轴，切于极点和赤道之间的任意点为斜轴。经纬线形式同一般方位投影，只是在中央经线上纬线
+间隔相等。其特点是：由切点至任一方向的距离同实地相符；最大角度和面积变形均为以切点为圆心的同心圆。这种投影常用于半球图，交通图等。
+\end_layout
+
+\begin_layout Standard
+ECL采用的是局部方位等距投影(Local Azimuthal Equidistant Projection)，也就是斜轴投影。其直觉与我们应用李群和李代数的关
+系类似，在这里进行的是地理坐标系统(geographic coordinate system)和方位等距平面(azimuthal equidistant
+ plane)之间的变换。我们以飞行器当前点为切点/原点建立局部水平面，亦称局部方位等距平面(local azimuthal equidistant
+ plane)。在局部水平面中，从原点出发的射线都是等距，射线的方位角保真，我们在此向量空间中进行向量计算，计算出到达下一个航路点(waypoint)的距离与方
+位角，然后收回到球面上，就得到下一个航路点的纬度/经度，或者是反过来计算，将下一航路点的纬度/经度展开到当前水平面中，由此计算飞行距离与方位角。到达下一个航路点
+后，我们再在这个航路点上建立新的局部水平面，并做下一步的计算。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "计算纬度/经度点之间的距离与方位角"
+target "http://www.movable-type.co.uk/scripts/latlong.html"
+literal "false"
+
+\end_inset
+
+的算法很古老也很成熟，其中还涉及到
+\begin_inset CommandInset href
+LatexCommand href
+name "基于向量的大地测量学"
+target "http://www.movable-type.co.uk/scripts/latlong-vectors.html"
+literal "false"
+
+\end_inset
+
+知识。感兴趣的读者可以查看相关的书籍和网站。
+\end_layout
+
+\begin_layout Subsection
+提供纬度/经度点的磁偏角
+\end_layout
+
+\begin_layout Standard
+这里的算法十分简单，就是从开发和分发地球磁场模型的
+\begin_inset CommandInset href
+LatexCommand href
+name "网站"
+target "https://www.ngdc.noaa.gov/geomag/"
+literal "false"
+
+\end_inset
+
+获取地磁数据档案，建立查询表格。然后根据当前的纬度/经度，查询表格，获取当前点的磁偏角数据，提供给ECL估计系统进行方位校正。
+\end_layout
+
+\begin_layout Section
+惯性航位推算
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:惯性航位推算"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航位推算(dead reckoning)指的是无天文观测辅助导航，或者是基于很少或没有信息的位置估计。在ECL的估计系统中，当GPS类的全局定位数据不可用的情况
+下，24-EKF仅使用惯性数据进行航位推算，并且执行的是水平惯性航位推算(horizontal inertial dead reckoning)。这是因为存在磁
+力计就可以校正姿态，存在气压计或测距仪就可以校正
+\begin_inset Formula $z$
+\end_inset
+
+轴高度，但是只有GPS类的全局定位数据，才能校正飞行器水平面的位置。当全局定位数据丢失或误差过大，则ECL估计系统就进入航位推算模式。注意，如果存在光流则可以校
+正北/东方向速度，从而间接校正了水平面的增量位移，因此ECL估计系统不会进入航位推算模式。
+\end_layout
+
+\begin_layout Standard
+当没有GPS类的全局定位数据，并且没有光流数据的情况下，航位推算模式还分为两种级别。第一种是存在水平风场数据，则进入风场航位推算(wind dead
+ reckoning)模式，此时可以用水平风场向量校正北/东方向速度，从而间接校正了水平面的增量位移，这是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:空速融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“空速融合方程”和第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:合成侧滑融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“合成侧滑融合方程”的内容。第二种是连水平风场向量都没有的情况下，则是完全的水平惯性航位推算。
+\end_layout
+
+\begin_layout Standard
+基于惯性的航位推算，根据经验，水平面位置的估计值，大约最长有
+\begin_inset Formula $5\sim10\ s$
+\end_inset
+
+的有效期。所以在ECL估计系统中，设置
+\begin_inset Formula $5\ s$
+\end_inset
+
+的有效期阈值，并且超过
+\begin_inset Formula $7\ s$
+\end_inset
+
+就将状态向量中的水平位置和速度重置。
+\end_layout
+
+\begin_layout Section
 输出互补滤波器
 \end_layout
 
@@ -6099,6 +6926,13 @@ ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这
 \begin_layout Standard
 但是，ECL EKF 模块已经在广大的产品和项目里得到验证，不论是在模拟器里还是在实际环境中，它的计算速度和精度都经受了检验。对此只能说卡尔曼滤波器真是一个很神
 奇的东西，在工程中实用为上。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
