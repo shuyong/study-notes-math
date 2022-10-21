@@ -3415,6 +3415,13 @@ ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这
 
 \begin_layout Subsection
 磁力计融合
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:磁力计融合"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4444,7 +4451,7 @@ noprefix "false"
 
 \end_inset
 
- 章“惯性航位推算”的讨论。
+ 章“惯性航位推算”中的讨论。
 \end_layout
 
 \begin_layout Subsection
@@ -4825,20 +4832,20 @@ V_{wind_{Z}}^{2}
 高度数据源比较多，有4个：
 \end_layout
 
-\begin_layout Itemize
-气压计
+\begin_layout Enumerate
+气压计(baro)提供海拔高度。
 \end_layout
 
-\begin_layout Itemize
-测距仪
+\begin_layout Enumerate
+GPS提供海拔高度。
 \end_layout
 
-\begin_layout Itemize
-GPS
+\begin_layout Enumerate
+外部视觉(EV)提供距地高度。
 \end_layout
 
-\begin_layout Itemize
-外部视觉
+\begin_layout Enumerate
+测距仪(range)提供距地高度。
 \end_layout
 
 \begin_layout Standard
@@ -4875,11 +4882,32 @@ GPS
 \end_layout
 
 \begin_layout Standard
-根据各自传感器Z轴的噪声
+根据各自传感器
+\begin_inset Formula $z$
+\end_inset
+
+轴的噪声
 \begin_inset Formula $R_{hgt}$
 \end_inset
 
 ，就可以对高度进行校正。
+\end_layout
+
+\begin_layout Standard
+值得注意的是，对于多旋翼无人机，当其降落并使用气压作为高度数据源时，因旋翼与地面相互作用引起的正静态压力瞬变，会引起高度估计出现较大波动，其表现为产生负的垂直位
+置新息。为补偿这种效应，需要在降落小于一定高度时，激活地面效应补偿，该高度一般设置为
+\begin_inset Formula $0.5\ m$
+\end_inset
+
+，应用于负的气压新息的地面效应死区为
+\begin_inset Formula $5\ m$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+切换高度数据源的算法属于经验算法，在不同的版本间差异很大，应以所使用的版本为准。一般来说，会同时存在气压计和GPS这两种高度数据源。
 \end_layout
 
 \begin_layout Subsection
@@ -4887,7 +4915,59 @@ GPS
 \end_layout
 
 \begin_layout Standard
-外部视觉系统可以提供速度、位置和航向角的测量值。相对应的融合方程见前面章节的描述。
+外部视觉系统可以提供速度
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+、位置
+\begin_inset Formula $\boldsymbol{P}_{NED}$
+\end_inset
+
+和航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+的测量值。相对应的融合方程见前面章节的描述。
+\end_layout
+
+\begin_layout Subsection
+辅助速度融合方程
+\end_layout
+
+\begin_layout Standard
+某些无人机可以提供着陆目标姿态估计，由此可以提供着陆目标相对于机体的
+\begin_inset Formula $x/y$
+\end_inset
+
+轴方向速度。当着陆目标固定时，根据机体着陆姿态近水平面的假设，该速度向量取负值就是机体相对于大地的北/东方向速度(
+\begin_inset Formula $V_{N}/V_{E}$
+\end_inset
+
+)。相对应的融合方程见前面章节的描述。
+\end_layout
+
+\begin_layout Subsection
+虚拟位置融合方程
+\end_layout
+
+\begin_layout Standard
+当没有一种水平面的位置和速度的测量值以校正用IMU数据进行的水平面位置推算时，则需要使用合成位置观测来防止惯性导航系统(Inertial Navigation
+ System, INS)状态的无约束漂移。其方法是在最后一个已知位置进行虚拟位置测量，并且设置特别的位置方差，以限制漂移。为提高效率，虚拟位置测量最小融合频率
+为5Hz。
+\end_layout
+
+\begin_layout Standard
+相关的信息见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:惯性航位推算"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章“惯性航位推算”中的讨论。
 \end_layout
 
 \begin_layout Section
@@ -5354,6 +5434,7 @@ EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面�
 \align center
 \begin_inset Graphics
 	filename EKF-GSF-02.png
+	scale 72
 
 \end_inset
 
@@ -6804,7 +6885,46 @@ literal "false"
 
 \end_inset
 
-获取地磁数据档案，建立查询表格。然后根据当前的纬度/经度，查询表格，获取当前点的磁偏角数据，提供给ECL估计系统进行方位校正。
+获取地磁数据档案，建立查询表格。然后根据当前的纬度/经度，查询表格，获取当前点的磁偏角
+\begin_inset Formula $\psi$
+\end_inset
+
+数据，提供给ECL估计系统进行方位校正。
+\end_layout
+
+\begin_layout Standard
+完整的地磁数据档案可以取得当前点的磁偏角(magnetic declination)、磁顷角(magnetic inclination)、磁强度(magneti
+c strength)，我们由此使用理论磁场向量的知识来计算合成磁场
+\begin_inset Formula $z$
+\end_inset
+
+轴的分量值。如果传感器测量中存在大量干扰，我们可以用此
+\begin_inset Formula $z$
+\end_inset
+
+轴理论值替换现场测量的
+\begin_inset Formula $z$
+\end_inset
+
+轴的数值以合成磁场测量值，这对于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:磁力计融合"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“磁力计融合”中的算法抗干扰会非常有用。不过此时需要将
+\begin_inset Formula $z$
+\end_inset
+
+轴的新息和协方差设置为
+\begin_inset Formula $0$
+\end_inset
+
+。
 \end_layout
 
 \begin_layout Section
@@ -6825,13 +6945,69 @@ name "sec:惯性航位推算"
 \begin_inset Formula $z$
 \end_inset
 
-轴高度，但是只有GPS类的全局定位数据，才能校正飞行器水平面的位置。当全局定位数据丢失或误差过大，则ECL估计系统就进入航位推算模式。注意，如果存在光流则可以校
-正北/东方向速度，从而间接校正了水平面的增量位移，因此ECL估计系统不会进入航位推算模式。
+轴高度，但是只有GPS类的全局定位数据，才能校正飞行器水平面的位置。当全局定位数据丢失或误差过大，则ECL估计系统就进入航位推算模式。
 \end_layout
 
 \begin_layout Standard
-当没有GPS类的全局定位数据，并且没有光流数据的情况下，航位推算模式还分为两种级别。第一种是存在水平风场数据，则进入风场航位推算(wind dead
- reckoning)模式，此时可以用水平风场向量校正北/东方向速度，从而间接校正了水平面的增量位移，这是第 
+能够提供水平面的位置与速度校正的数据源如下：
+\end_layout
+
+\begin_layout Enumerate
+GPS提供
+\begin_inset Formula $\boldsymbol{P}_{NED}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+光流提供水平面的速度
+\begin_inset Formula $V_{N}$
+\end_inset
+
+和
+\begin_inset Formula $V_{E}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+外部视觉提供
+\begin_inset Formula $\boldsymbol{P}_{NED}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+风场提供
+\begin_inset Formula $V_{wind_{N}}$
+\end_inset
+
+和
+\begin_inset Formula $V_{wind_{E}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+例如，如果存在光流则可以校正北/东方向速度，从而间接校正了水平面的增量位移，因此ECL估计系统不会进入航位推算模式。注意，只有前三项的数据源完全可信，可以校正水
+平面位置，而风场速度因为误差太大，只能是部分可信。
+\end_layout
+
+\begin_layout Standard
+在没有上述前三项中任一项数据源的情况下，航位推算模式还分为两种级别。第一种是存在水平风场数据，则进入风场航位推算(wind dead reckoning)模式，
+此时可以用水平风场向量校正北/东方向速度，从而间接校正了水平面的增量位移，这是第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:空速融合方程"
@@ -6926,13 +7102,6 @@ ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这
 \begin_layout Standard
 但是，ECL EKF 模块已经在广大的产品和项目里得到验证，不论是在模拟器里还是在实际环境中，它的计算速度和精度都经受了检验。对此只能说卡尔曼滤波器真是一个很神
 奇的东西，在工程中实用为上。
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage newpage
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
