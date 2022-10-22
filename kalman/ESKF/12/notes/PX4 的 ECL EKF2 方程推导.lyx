@@ -902,7 +902,7 @@ XYZ 磁力计读数用作单独的观察值。 该方法更精确并且允许学
 \end_layout
 
 \begin_layout Standard
-如果不存在这些测量值，EKF 将无法启动。 当检测到这些测量值时，EKF 将初始化状态并完成倾角和偏航对准。 当倾角和偏航对齐完成后，EKF 可以转换到其它操作
+如果不存在这些测量值，EKF 将无法启动。 当检测到这些测量值时，EKF 将初始化状态并完成倾角和偏航对准。 当倾角和偏航对准完成后，EKF 可以转换到其它操作
 模式，从而可以使用其它传感器数据。 
 \end_layout
 
@@ -970,7 +970,7 @@ EKF在内部运行一个附加的多假设滤波器，它使用多个
 \begin_inset Formula $24$
 \end_inset
 
-参数的主EKF将使其偏航角与GSF的估计值对齐，并开始使用 GPS。 
+参数的主EKF将使其偏航角与GSF的估计值对准，并开始使用 GPS。 
 \end_layout
 
 \begin_layout Subsubsection
@@ -3405,7 +3405,12 @@ ECL EKF 算法最大的特点就是使用传感器组合进行状态估计。这
 \begin_inset Formula $z$
 \end_inset
 
-轴方向的高度分开估计。这个估计是因为GPS的高度数据误差太大，而高度数据源又很多，这么处理可以提升高度数据的精度。
+轴方向的高度分开估计。这是因为GPS的高度数据误差太大，而高度数据源又很多，这样处理可以提升高度数据的精度，而且当GPS类的全局定位数据缺失时，高度数据是可信的
+，只是
+\begin_inset Formula $xy$
+\end_inset
+
+水平面定位进入惯性航位推算模式。
 \end_layout
 
 \begin_layout Standard
@@ -3429,11 +3434,11 @@ name "subsec:磁力计融合"
 \end_layout
 
 \begin_layout Enumerate
-用三轴磁力计的数据作为三维观测。
+用三轴磁力计的数据作为三维观测(3D Fusion)。
 \end_layout
 
 \begin_layout Enumerate
-直接将磁力计的数据转换为磁偏角作为一维观测。
+直接将磁力计的数据转换为磁偏角作为一维观测(Heading Fusion)。
 \end_layout
 
 \begin_layout Standard
@@ -3663,7 +3668,11 @@ status open
 \begin_inset Formula $\boldsymbol{H}_{MAG}$
 \end_inset
 
-实际上是分为3个一维观测矩阵进行观测：
+实际上是分为
+\begin_inset Formula $3$
+\end_inset
+
+个一维观测矩阵进行观测：
 \begin_inset Formula 
 \begin{align*}
 \boldsymbol{H}_{MAG_{X}} & =\dfrac{\partial M_{pred_{X}}}{\partial\boldsymbol{x}}\\
@@ -3697,7 +3706,17 @@ status open
 \end_layout
 
 \begin_layout Standard
-磁偏角的测量值，有两个来源：一是由GPS提供，二是由用户设定本地的磁偏角数据。磁偏角的噪声为
+磁偏角的测量值，有两个来源：一是由GPS提供(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:提供纬度/经度点的磁偏角"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节的内容)，二是由用户设定本地的磁偏角数据。磁偏角的噪声为
 \begin_inset Formula $R=\sigma_{decl}^{2}$
 \end_inset
 
@@ -3776,7 +3795,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-在飞行期间磁力数据对齐之后，进行最优估计之后的磁偏角
+在飞行期间磁力数据对准之后，进行最优估计之后的磁偏角
 \begin_inset Formula $\psi_{DECLINATION}$
 \end_inset
 
@@ -4015,7 +4034,7 @@ M_{Z}
 \begin_inset Formula $Z$
 \end_inset
 
-轴对齐(假设为平地模型)。
+轴对准(假设为平地模型)。
 \end_layout
 
 \begin_layout Standard
@@ -4948,6 +4967,13 @@ GPS提供海拔高度。
 
 \begin_layout Subsection
 虚拟位置融合方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:虚拟位置融合方程"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5446,7 +5472,7 @@ EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面�
 \end_layout
 
 \begin_layout Subsection
-偏航估计器的初始化与对齐
+偏航估计器的初始化与对准
 \end_layout
 
 \begin_layout Subsubsection
@@ -5477,7 +5503,7 @@ EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面�
 \end_layout
 
 \begin_layout Subsubsection
-AHRS倾斜对齐
+AHRS倾斜对准
 \end_layout
 
 \begin_layout Standard
@@ -5493,7 +5519,7 @@ AHRS倾斜对齐
 \begin_inset Formula $\,$
 \end_inset
 
-当速度融合开始时，每个模型的偏航角稍后对齐。
+当速度融合开始时，每个模型的偏航角稍后对准。
 \end_layout
 
 \begin_layout Enumerate
@@ -5595,11 +5621,11 @@ AHRS倾斜对齐
 \end_layout
 
 \begin_layout Standard
-倾斜对齐完成后可对每一个模型进行时间更新。
+倾斜对准完成后可对每一个模型进行时间更新。
 \end_layout
 
 \begin_layout Subsubsection
-AHRS偏航角对齐
+AHRS偏航角对准
 \end_layout
 
 \begin_layout Standard
@@ -5623,7 +5649,7 @@ AHRS偏航角对齐
 \end_layout
 
 \begin_layout Standard
-偏航角对齐完成后可对每一个模型进行测量更新。
+偏航角对准完成后可对每一个模型进行测量更新。
 \end_layout
 
 \begin_layout Subsubsection
@@ -6873,6 +6899,13 @@ literal "false"
 
 \begin_layout Subsection
 提供纬度/经度点的磁偏角
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:提供纬度/经度点的磁偏角"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7043,7 +7076,17 @@ noprefix "false"
 \begin_inset Formula $7\ s$
 \end_inset
 
-就将状态向量中的水平位置和速度重置。
+就将状态向量中的水平位置和速度重置。并且估计系统还使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:虚拟位置融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“虚拟位置融合方程”的算法以约束惯性导航系统的状态漂移。
 \end_layout
 
 \begin_layout Section
