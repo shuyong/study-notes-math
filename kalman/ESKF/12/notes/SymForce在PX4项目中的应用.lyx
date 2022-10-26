@@ -1,0 +1,2064 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+SymForce在PX4项目中的应用
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在PX4项目中的算法，以前采用 matlab 描述，后来采用 python/SymPy 描述，C++ 代码则是由符号推导系统优化后的展开式。这种C++计算式很难
+看，基本无法理解。如今情况有些改观，PX4项目中的算法开始转向用python/SymForce描述。SymForce可译为“符号动力”。虽然SymForce也是
+基于SymPy构建，但是其输出更为易读一些，因为SymForce号称其代码生成器针对任何语言都使用一个模板系统将符号表达式转换为快速的、无分支的代码，并且有着干
+净的API和最小的依赖项。
+\end_layout
+
+\begin_layout Standard
+PX4项目中有一个简单的风速估计器，该风速估计器采用的是EKF算法，原理虽然简单，但其中的Jacobian矩阵有些复杂，基本上无法手写推导。我们就用这个简单的估
+计器查看SymForce的使用情况。该项目的代码位于：
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/PX4/PX4-Autopilot/blob/main/src/lib/wind_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+其中SymForce代码位于：
+\family typewriter
+python/derivation.py
+\family default
+ ，并且C++代码位于：
+\family typewriter
+python/generated/*.h
+\family default
+ 。
+\end_layout
+
+\begin_layout Section
+风速估计
+\end_layout
+
+\begin_layout Standard
+因为风速对评估飞行环境十分重要，并且为了容错，所以除了在主要的24-EKF估计器中估计风速之外，ECL还采用另外不同模型的3-EKF算法来估计风速。
+\end_layout
+
+\begin_layout Subsection
+假设
+\end_layout
+
+\begin_layout Standard
+假设飞行器为近水平面姿态。飞行器有
+\begin_inset Formula $z$
+\end_inset
+
+轴方向上的运动，但是飞行器以近水平面姿态运动。对于旋翼飞机这意味着零侧滑(Zero sideslip)假设。
+\end_layout
+
+\begin_layout Standard
+假设风速为近水平面风场，因此
+\begin_inset Formula $z$
+\end_inset
+
+轴方向风速为
+\begin_inset Formula $0$
+\end_inset
+
+。用
+\begin_inset Formula $V_{wind_{N}}/V_{wind_{E}}$
+\end_inset
+
+表示在 NED 坐标系中在北/东 (N/E) 方向上的风速，则风速向量
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+表示为
+\begin_inset Formula 
+\[
+\boldsymbol{V}_{wind}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+真实空速(True Air Speed, TAS)，又称真空速，是表示飞行器飞行时相对于周围空气运动的速度。真实空速的方程与温度和空气密度相关。在这里做一个简化
+，假设其为飞行器相对于地球固定坐标系的速度向量
+\begin_inset Formula $\boldsymbol{V}_{I}$
+\end_inset
+
+和风速向量
+\begin_inset Formula $\boldsymbol{V}_{wind}$
+\end_inset
+
+的差值，并乘上真实空速缩放因子
+\begin_inset Formula $k_{tas}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+所以，最终的要估计的状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]
+\]
+
+\end_inset
+
+并且假设风场在短时间内不会有大的变化，所以采用固定过程模型。
+\end_layout
+
+\begin_layout Standard
+外部系统输入航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+，还有GPS、光流、外部视觉等传感器提供飞行器的速度向量
+\begin_inset Formula $\boldsymbol{V}_{I}=\left[\begin{array}{ccc}
+V_{N} & V_{E} & V_{D}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+，我们关注N/E方向的地面速度方差
+\begin_inset Formula $\boldsymbol{\sigma}^{2}=\left[\begin{array}{cc}
+\sigma_{V_{N}}^{2} & \sigma_{V_{E}}^{2}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+。对于风速的过程噪声分量为
+\begin_inset Formula $Q_{w}$
+\end_inset
+
+，对于真实空速过程噪声分量为
+\begin_inset Formula $Q_{k_{tas}}$
+\end_inset
+
+。对于固定翼飞机，由空速传感器提供真实空速测量值
+\begin_inset Formula $TAS_{meas}$
+\end_inset
+
+，其测量噪声为
+\begin_inset Formula $R_{tas}$
+\end_inset
+
+；对于旋翼飞机，由合成侧滑
+\begin_inset Formula $\mathrm{beta}$
+\end_inset
+
+计算真实空速测量值，其测量噪声为
+\begin_inset Formula $R_{beta}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+初始化
+\end_layout
+
+\begin_layout Standard
+初始化阶段的主要目标是通过地面速度初始化风速协方差。这是一种快速算法，与时间更新阶段的方程不一样。
+\end_layout
+
+\begin_layout Standard
+由外部输入航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+。根据近水平面的假设，根据飞行器地面速度、航向和空速测量值计算风速估计值(状态向量)
+\begin_inset Formula 
+\[
+\mathrm{wind}_{est}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}
+\end{array}\right]=\left[\begin{array}{c}
+V_{N}\\
+V_{E}
+\end{array}\right]-\left[\begin{array}{c}
+\cos\left(\psi\right)\\
+\sin\left(\psi\right)
+\end{array}\right]\cdot TAS_{meas}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+风速向量的估计与水平速度(
+\begin_inset Formula $V_{N}/V_{E}$
+\end_inset
+
+)，航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+，合成侧滑
+\begin_inset Formula $\mathrm{beta}$
+\end_inset
+
+，空速测量值
+\begin_inset Formula $TAS_{meas}$
+\end_inset
+
+这
+\begin_inset Formula $5$
+\end_inset
+
+个量相关。因为是零侧滑，所以使用航向角
+\begin_inset Formula $\psi$
+\end_inset
+
+的偏导数传播合成侧滑方差。因此，风速的状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+，其为相对于这
+\begin_inset Formula $5$
+\end_inset
+
+个量的Jacobian矩阵，
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{F} & =\dfrac{\partial\left(\mathrm{wind}_{est}\right)}{\partial\left(\left[\begin{array}{c}
+V_{N}\\
+V_{E}\\
+\psi\\
+\psi\\
+TAS_{meas}
+\end{array}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设置初始状态协方差矩阵的对角线为前面
+\begin_inset Formula $5$
+\end_inset
+
+个量的方差
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{0}=\mathrm{diag}\left(\left[\begin{array}{c}
+\sigma_{V_{N}}^{2}\\
+\sigma_{V_{E}}^{2}\\
+\sigma_{\psi}^{2}\\
+\sigma_{beta}^{2}\\
+\sigma_{tas}^{2}
+\end{array}\right]\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+，获得初始化时的状态协方差矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+的估计值
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{P} & =\boldsymbol{F}\boldsymbol{P}_{0}\boldsymbol{F}^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设置状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+初始值为
+\begin_inset Formula 
+\[
+\boldsymbol{x}=\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+时间更新
+\end_layout
+
+\begin_layout Standard
+因为算法采用的是固定过程模型，
+\begin_inset Formula $\boldsymbol{x}_{k+1}=\boldsymbol{x}_{k}$
+\end_inset
+
+，所以我们只需要提供协方差矩阵
+\begin_inset Formula $\boldsymbol{P}$
+\end_inset
+
+的预测方程
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{k|k-1}=\boldsymbol{P}_{k-1|k-1}+\left[\begin{array}{c}
+Q_{w}\\
+Q_{w}\\
+Q_{k_{tas}}
+\end{array}\right]\cdot\mathrm{d}t
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+测量更新
+\end_layout
+
+\begin_layout Subsubsection
+真实空速融合
+\end_layout
+
+\begin_layout Standard
+对于带有空速传感器的非旋翼无人机，采用这个分支。
+\end_layout
+
+\begin_layout Standard
+计算真实空速预测值
+\begin_inset Formula $TAS_{pred}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+TAS_{pred} & =\left\Vert \boldsymbol{V}_{I}-\boldsymbol{V}_{wind}\right\Vert _{2}\cdot k_{tas}\\
+ & =\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}\cdot k_{tas}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+真实空速的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{tas}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{tas} & =\dfrac{\partial\left(TAS_{pred}\right)}{\partial\boldsymbol{x}_{k}}\\
+ & =\dfrac{\partial\left(\sqrt{\left(V_{N}-V_{wind_{N}}\right)^{2}+\left(V_{E}-V_{wind_{E}}\right)^{2}+V_{D}^{2}}\cdot k_{tas}\right)}{\partial\left(\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算新息(或残差)协方差
+\begin_inset Formula $S$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+S=\boldsymbol{H}\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{{\rm T}}+R_{tas}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最佳卡尔曼增益
+\begin_inset Formula $\boldsymbol{K}_{3\times1}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{K}=\boldsymbol{P}_{k|k-1}\boldsymbol{H}^{{\rm T}}S^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+更新(后验)的协方差
+\begin_inset Formula $\boldsymbol{P}_{3\times3}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\boldsymbol{P}_{k|k}=\boldsymbol{P}_{k|k-1}-\boldsymbol{K}\boldsymbol{H}\boldsymbol{P}_{k|k-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后注意，风速融合频率不超过
+\begin_inset Formula $10\ \mathrm{Hz}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+合成侧滑融合
+\end_layout
+
+\begin_layout Standard
+对于提供虚拟合成侧滑数值的旋翼无人机，采用这个分支。
+\end_layout
+
+\begin_layout Standard
+计算在飞行器机体坐标系中的相对于地球坐标系的风速向量
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind}^{N} & =\boldsymbol{V}_{I}-\boldsymbol{V}_{wind}\\
+ & =\left[\begin{array}{c}
+V_{N}-V_{wind_{N}}\\
+V_{E}-V_{wind_{E}}\\
+V_{D}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据外部输入的姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+得到从机体坐标系到导航坐标系的旋转矩阵
+\begin_inset Formula $\left[T\right]_{B}^{N}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\left[T\right]_{B}^{N}=\boldsymbol{R}\left(q\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算相对于机体坐标系的风速
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{V}_{wind}^{B} & =\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\cdot\boldsymbol{V}_{wind}^{N}\\
+ & =\left[\begin{array}{c}
+V_{wind_{X}}\\
+V_{wind_{Y}}\\
+V_{wind_{Z}}
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+合成侧滑模型的小角度近似方程为
+\begin_inset Formula 
+\[
+\mathrm{beta}=\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}
+\]
+
+\end_inset
+
+并且根据零侧滑假设，
+\begin_inset Formula $-\mathrm{beta}$
+\end_inset
+
+即为新息。
+\end_layout
+
+\begin_layout Standard
+计算合成侧滑的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{beta}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{beta} & =\dfrac{\partial\left(\mathrm{beta}\right)}{\partial\boldsymbol{x}_{k}}\\
+ & =\dfrac{\partial\left(\dfrac{V_{wind_{Y}}}{V_{wind_{X}}}\right)}{\partial\left(\left[\begin{array}{c}
+V_{wind_{N}}\\
+V_{wind_{E}}\\
+k_{tas}
+\end{array}\right]\right)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+后面的计算如上一小节一样。
+\end_layout
+
+\begin_layout Section
+代码描述与结果
+\end_layout
+
+\begin_layout Subsection
+初始化
+\end_layout
+
+\begin_layout Standard
+SymForce代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def init_wind_using_airspeed(
+\end_layout
+
+\begin_layout Plain Layout
+
+        v_local: geo.V3,
+\end_layout
+
+\begin_layout Plain Layout
+
+        heading: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        airspeed: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        v_var: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        heading_var: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        sideslip_var: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        airspeed_var: T.Scalar, 
+\end_layout
+
+\begin_layout Plain Layout
+
+) -> (geo.V2, geo.M22):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    # Initialise wind states assuming zero side slip and horizontal flight
+\end_layout
+
+\begin_layout Plain Layout
+
+    wind = geo.V2(v_local[0] - airspeed * sm.cos(heading), v_local[1] - airspeed
+ * sm.sin(heading))
+\end_layout
+
+\begin_layout Plain Layout
+
+    # Zero sideslip, propagate the sideslip variance using partial derivatives
+ w.r.t heading
+\end_layout
+
+\begin_layout Plain Layout
+
+    J = wind.jacobian([v_local[0], v_local[1], heading, heading, airspeed])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    R = geo.M55()
+\end_layout
+
+\begin_layout Plain Layout
+
+    R[0,0] = v_var
+\end_layout
+
+\begin_layout Plain Layout
+
+    R[1,1] = v_var
+\end_layout
+
+\begin_layout Plain Layout
+
+    R[2,2] = heading_var
+\end_layout
+
+\begin_layout Plain Layout
+
+    R[3,3] = sideslip_var
+\end_layout
+
+\begin_layout Plain Layout
+
+    R[4,4] = airspeed_var
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    P = J * R * J.T
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    return (wind, P)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C++代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+template <typename Scalar> 
+\end_layout
+
+\begin_layout Plain Layout
+
+void InitWindUsingAirspeed(const matrix::Matrix<Scalar, 3, 1>& v_local,
+ const Scalar heading,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           const Scalar airspeed, const Scalar v_var, const
+ Scalar heading_var,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           const Scalar sideslip_var, const Scalar airspeed_var,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           matrix::Matrix<Scalar, 2, 1>* const wind = nullptr,
+\end_layout
+
+\begin_layout Plain Layout
+
+                           matrix::Matrix<Scalar, 2, 2>* const P = nullptr)
+ {
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Total ops: 22
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Input arrays
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Intermediate terms (7)
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp0 = std::cos(heading);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp1 = std::sin(heading);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp2 = std::pow(_tmp1, Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp3 = std::pow(airspeed, Scalar(2)) * sideslip_var;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp4 = std::pow(_tmp0, Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp5 = _tmp0 * _tmp1;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp6 = -_tmp3 * _tmp5 + _tmp5 * airspeed_var;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Output terms (2)
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (wind != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 2, 1>& _wind = (*wind);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _wind(0, 0) = -_tmp0 * airspeed + v_local(0, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+    _wind(1, 0) = -_tmp1 * airspeed + v_local(1, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (P != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 2, 2>& _P = (*P);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _P(0, 0) = _tmp2 * _tmp3 + _tmp4 * airspeed_var + v_var;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _P(1, 0) = _tmp6;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _P(0, 1) = _tmp6;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _P(1, 1) = _tmp2 * airspeed_var + _tmp3 * _tmp4 + v_var;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+时间更新
+\end_layout
+
+\begin_layout Standard
+因为是固定模型，所以时间更新阶段很简单，只有手写的C++代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+void
+\end_layout
+
+\begin_layout Plain Layout
+
+WindEstimator::update(uint64_t time_now)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (!_initialised) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	// set reset state to false (is set to true when initialise fuction is
+ called later)
+\end_layout
+
+\begin_layout Plain Layout
+
+	_wind_estimator_reset = false;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	// run covariance prediction at 1Hz
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (time_now - _time_last_update < 1_s || _time_last_update == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (_time_last_update == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			_time_last_update = time_now;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	float dt = (float)(time_now - _time_last_update) * 1e-6f;
+\end_layout
+
+\begin_layout Plain Layout
+
+	_time_last_update = time_now;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	matrix::Matrix3f Qk;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Qk(0, 0) = _wind_psd * dt;
+\end_layout
+
+\begin_layout Plain Layout
+
+	Qk(1, 1) = Qk(0, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+	Qk(2, 2) = _tas_scale_psd * dt;
+\end_layout
+
+\begin_layout Plain Layout
+
+	_P += Qk;
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+测量更新
+\end_layout
+
+\begin_layout Subsubsection
+真实空速融合
+\end_layout
+
+\begin_layout Standard
+SymForce代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fuse_airspeed(
+\end_layout
+
+\begin_layout Plain Layout
+
+        v_local: geo.V3,
+\end_layout
+
+\begin_layout Plain Layout
+
+        state: geo.V3,
+\end_layout
+
+\begin_layout Plain Layout
+
+        P: geo.M33,
+\end_layout
+
+\begin_layout Plain Layout
+
+        airspeed: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        R: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        epsilon: T.Scalar 
+\end_layout
+
+\begin_layout Plain Layout
+
+) -> (geo.V3, geo.V3, T.Scalar, T.Scalar):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    vel_rel = geo.V3(v_local[0] - state[0], v_local[1] - state[1], v_local[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+    airspeed_pred = vel_rel.norm(epsilon=epsilon) * state[2]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    innov = airspeed - airspeed_pred
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    H = geo.V1(airspeed_pred).jacobian(state)
+\end_layout
+
+\begin_layout Plain Layout
+
+    innov_var = (H * P * H.T + R)[0,0]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    K = P * H.T / sm.Max(innov_var, epsilon)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    return (geo.V3(H), K, innov_var, innov)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C++代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+template <typename Scalar>
+\end_layout
+
+\begin_layout Plain Layout
+
+void FuseAirspeed(const matrix::Matrix<Scalar, 3, 1>& v_local,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  const matrix::Matrix<Scalar, 3, 1>& state, const matrix::Matri
+x<Scalar, 3, 3>& P,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  const Scalar airspeed, const Scalar R, const Scalar epsilon,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  matrix::Matrix<Scalar, 1, 3>* const H = nullptr,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  matrix::Matrix<Scalar, 3, 1>* const K = nullptr, Scalar*
+ const innov_var = nullptr,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  Scalar* const innov = nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Total ops: 56
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Input arrays
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Intermediate terms (11)
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp0 = -state(0, 0) + v_local(0, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp1 = -state(1, 0) + v_local(1, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp2 = std::sqrt(Scalar(std::pow(_tmp0, Scalar(2)) + std::pow(_t
+mp1, Scalar(2)) +
+\end_layout
+
+\begin_layout Plain Layout
+
+                                        epsilon + std::pow(v_local(2, 0),
+ Scalar(2))));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp3 = state(2, 0) / _tmp2;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp4 = _tmp0 * _tmp3;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp5 = _tmp1 * _tmp3;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp6 = -P(0, 0) * _tmp4;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp7 = -P(1, 1) * _tmp5;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp8 = P(2, 2) * _tmp2;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp9 = R + _tmp2 * (-P(0, 2) * _tmp4 - P(1, 2) * _tmp5 +
+ _tmp8) -
+\end_layout
+
+\begin_layout Plain Layout
+
+                       _tmp4 * (-P(1, 0) * _tmp5 + P(2, 0) * _tmp2 + _tmp6)
+ -
+\end_layout
+
+\begin_layout Plain Layout
+
+                       _tmp5 * (-P(0, 1) * _tmp4 + P(2, 1) * _tmp2 + _tmp7);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp10 = Scalar(1.0) / (math::max<Scalar>(_tmp9, epsilon));
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Output terms (4)
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (H != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 1, 3>& _H = (*H);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 0) = -_tmp4;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 1) = -_tmp5;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 2) = _tmp2;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (K != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 3, 1>& _K = (*K);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(0, 0) = _tmp10 * (-P(0, 1) * _tmp5 + P(0, 2) * _tmp2 + _tmp6);
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(1, 0) = _tmp10 * (-P(1, 0) * _tmp4 + P(1, 2) * _tmp2 + _tmp7);
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(2, 0) = _tmp10 * (-P(2, 0) * _tmp4 - P(2, 1) * _tmp5 + _tmp8);
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (innov_var != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    Scalar& _innov_var = (*innov_var);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _innov_var = _tmp9;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (innov != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    Scalar& _innov = (*innov);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _innov = -_tmp2 * state(2, 0) + airspeed;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+合成侧滑融合
+\end_layout
+
+\begin_layout Standard
+SymForce代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def fuse_beta(
+\end_layout
+
+\begin_layout Plain Layout
+
+        v_local: geo.V3,
+\end_layout
+
+\begin_layout Plain Layout
+
+        state: geo.V3,
+\end_layout
+
+\begin_layout Plain Layout
+
+        P: geo.M33,
+\end_layout
+
+\begin_layout Plain Layout
+
+        q_att: geo.V4,
+\end_layout
+
+\begin_layout Plain Layout
+
+        R: T.Scalar,
+\end_layout
+
+\begin_layout Plain Layout
+
+        epsilon: T.Scalar 
+\end_layout
+
+\begin_layout Plain Layout
+
+) -> (geo.V3, geo.V3, T.Scalar, T.Scalar):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    vel_rel = geo.V3(v_local[0] - state[0], v_local[1] - state[1], v_local[2])
+\end_layout
+
+\begin_layout Plain Layout
+
+    relative_wind_body = quat_to_rot(q_att).T * vel_rel
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    # Small angle approximation of side slip model
+\end_layout
+
+\begin_layout Plain Layout
+
+    # Protect division by zero using epsilon
+\end_layout
+
+\begin_layout Plain Layout
+
+    beta_pred = add_epsilon_sign(relative_wind_body[1] / relative_wind_body[0],
+ relative_wind_body[0], epsilon)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    innov = 0.0 - beta_pred
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    H = geo.V1(beta_pred).jacobian(state)
+\end_layout
+
+\begin_layout Plain Layout
+
+    innov_var = (H * P * H.T + R)[0,0]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    K = P * H.T / sm.Max(innov_var, epsilon)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    return (geo.V3(H), K, innov_var, innov)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C++代码：
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+template <typename Scalar>
+\end_layout
+
+\begin_layout Plain Layout
+
+void FuseBeta(const matrix::Matrix<Scalar, 3, 1>& v_local, const matrix::Matrix<
+Scalar, 3, 1>& state,
+\end_layout
+
+\begin_layout Plain Layout
+
+              const matrix::Matrix<Scalar, 3, 3>& P, const matrix::Matrix<Scalar
+, 4, 1>& q_att,
+\end_layout
+
+\begin_layout Plain Layout
+
+              const Scalar R, const Scalar epsilon, matrix::Matrix<Scalar,
+ 1, 3>* const H = nullptr,
+\end_layout
+
+\begin_layout Plain Layout
+
+              matrix::Matrix<Scalar, 3, 1>* const K = nullptr, Scalar* const
+ innov_var = nullptr,
+\end_layout
+
+\begin_layout Plain Layout
+
+              Scalar* const innov = nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Total ops: 75
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Input arrays
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Intermediate terms (23)
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp0 = 2 * v_local(2, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp1 = std::pow(q_att(1, 0), Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp2 = std::pow(q_att(2, 0), Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp3 = std::pow(q_att(0, 0), Scalar(2)) - std::pow(q_att(3,
+ 0), Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp4 = _tmp1 - _tmp2 + _tmp3;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp5 = -state(0, 0) + v_local(0, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp6 = -state(1, 0) + v_local(1, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp7 = q_att(0, 0) * q_att(3, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp8 = q_att(1, 0) * q_att(2, 0);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp9 = 2 * _tmp7 + 2 * _tmp8;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp10 = _tmp0 * (-q_att(0, 0) * q_att(2, 0) + q_att(1, 0)
+ * q_att(3, 0)) +
+\end_layout
+
+\begin_layout Plain Layout
+
+                        _tmp4 * _tmp5 + _tmp6 * _tmp9;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp11 =
+\end_layout
+
+\begin_layout Plain Layout
+
+      _tmp10 + epsilon * (2 * math::min<Scalar>(0, (((_tmp10) > 0) - ((_tmp10)
+ < 0))) + 1);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp12 = Scalar(1.0) / (_tmp11);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp13 = -2 * _tmp7 + 2 * _tmp8;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp14 = -_tmp1 + _tmp2 + _tmp3;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp15 = _tmp0 * (q_att(0, 0) * q_att(1, 0) + q_att(2, 0)
+ * q_att(3, 0)) +
+\end_layout
+
+\begin_layout Plain Layout
+
+                        _tmp13 * _tmp5 + _tmp14 * _tmp6;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp16 = _tmp15 / std::pow(_tmp11, Scalar(2));
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp17 = -_tmp12 * _tmp13 + _tmp16 * _tmp4;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp18 = -_tmp12 * _tmp14 + _tmp16 * _tmp9;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp19 = P(0, 0) * _tmp17;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp20 = P(1, 1) * _tmp18;
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp21 =
+\end_layout
+
+\begin_layout Plain Layout
+
+      R + _tmp17 * (P(1, 0) * _tmp18 + _tmp19) + _tmp18 * (P(0, 1) * _tmp17
+ + _tmp20);
+\end_layout
+
+\begin_layout Plain Layout
+
+  const Scalar _tmp22 = Scalar(1.0) / (math::max<Scalar>(_tmp21, epsilon));
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  // Output terms (4)
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (H != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 1, 3>& _H = (*H);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 0) = _tmp17;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 1) = _tmp18;
+\end_layout
+
+\begin_layout Plain Layout
+
+    _H(0, 2) = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (K != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    matrix::Matrix<Scalar, 3, 1>& _K = (*K);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(0, 0) = _tmp22 * (P(0, 1) * _tmp18 + _tmp19);
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(1, 0) = _tmp22 * (P(1, 0) * _tmp17 + _tmp20);
+\end_layout
+
+\begin_layout Plain Layout
+
+    _K(2, 0) = _tmp22 * (P(2, 0) * _tmp17 + P(2, 1) * _tmp18);
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (innov_var != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    Scalar& _innov_var = (*innov_var);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _innov_var = _tmp21;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+  if (innov != nullptr) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    Scalar& _innov = (*innov);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    _innov = -_tmp12 * _tmp15;
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+小结
+\end_layout
+
+\begin_layout Standard
+对比以前老版本的SymPy的输出代码，SymForce的输出代码的格式要漂亮一些，至少能读个半懂，能了解一些其中的步骤和意图。并且有了SymForce提供的封装
+函数，应用程序总体上也会简洁易读一些，不会被原先那些古古怪怪的代码打断。至于SymForce的输出代码能否运行得更快一些，因为风速估计的算法的规模太小，所以无法
+判断。
+\end_layout
+
+\end_body
+\end_document
