@@ -44,4 +44,6 @@
 
 22. [Rotational Error Metrics for Quadrotor Control](https://arxiv.org/abs/2011.11909)
 
+23. [Adaptive adjustment of noise covariance in Kalman filter for dynamic state estimation](https://arxiv.org/abs/1702.00884)
+
 
