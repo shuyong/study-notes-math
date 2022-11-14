@@ -184,13 +184,13 @@ Alireza Khosravian, Jochen Trumpf, Robert Mahony, Tarek Hamel
 \begin_layout Standard
 采样和延迟会对任何观测器或滤波器的稳定性和鲁棒性产生负面影响，如果它们没有得到适当补偿，则会降低其性能[18]–[24]。解决测量采样和延迟问题的典型估计器设计
 方法有：Lyapunov-Krasovskii修正估计器设计、带乱序测量的随机滤波(Out-Of-Sequence Measurements,
- OOSM)和复合观测器预测器设计。解决传感器时延问题的经典方法是采用一个对无时延测量具有期望性能的估计器，并修改其新息项，以便将每个时延测量与其相应的后向时移
-估计进行比较。如果无延迟估计器具有Lyapunov稳定性证明，则可以使用Lyapunov-Krasovskii函数[25]，[26]对改进估计器进行稳定性分析。
-尽管这些改进的估计器在实践中普遍使用(参见文献[27]，[28])，但它们需要复杂的稳定性分析和谨慎保守的增益调整，导致产生的估计器的不良瞬态响应。OOSM随机
-滤波已经得到了广泛的研究[29]-[33]，尽管大多数文献都集中在目标跟踪应用上。尽管OOSM滤波方法灵活，易于处理采样和延迟数据以及乱序测量，但它们通常具有显
-著的内存和处理要求，这对于大多数嵌入式观测器设计应用来说是不切实际的，除非线性系统模型中有更简单的OOSM滤波器可用[20]、[29] 。针对具有采样和延迟测量
-的姿态估计问题，文献[34]中提议了一种改进的扩展卡尔曼滤波算法，并给出了一种新的实时实现结构。尽管该算法在实际应用中表现出了良好的性能，但由于需要与传感器延迟
-补偿相关的传播阶段，该算法存在收敛性不明确、计算量大等缺点。文献[19]、[24]、[35]提议了
+ OOSM)和复合观测器预测器设计。解决传感器延迟问题的经典方法是采用一个对无延迟测量具有期望性能的估计器，并修改其新息项，以便将每个延迟测量与其相应的后向时移
+估计进行比较。如果无延迟估计器具有Lyapunov稳定性证明，则可以使用Lyapunov-Krasovskii函数[25]，文献[26]对改进估计器进行稳定性分
+析。尽管这些改进的估计器在实践中普遍使用(参见文献[27]，[28])，但它们需要复杂的稳定性分析和谨慎保守的增益调整，导致产生的估计器的不良瞬态响应。OOSM
+随机滤波已经得到了广泛的研究[29]-[33]，尽管大多数文献都集中在目标跟踪应用上。尽管OOSM滤波方法灵活，易于处理采样和延迟数据以及乱序测量，但它们通常具
+有显著的内存和处理要求，这对于大多数嵌入式观测器设计应用来说是不切实际的，除非线性系统模型中有更简单的OOSM滤波器可用[20]、[29] 。针对具有采样和延迟
+测量的姿态估计问题，在文献[34]中提议了一种改进的扩展卡尔曼滤波算法，并给出了一种新的实时实现结构。尽管该算法在实际应用中表现出了良好的性能，但由于需要与传感
+器延迟补偿相关的传播阶段，该算法存在收敛性不明确、计算量大等缺点。文献[19]、[24]、[35]提议了
 \begin_inset Formula $\mathbb{R}^{n}$
 \end_inset
 
@@ -206,9 +206,9 @@ Alireza Khosravian, Jochen Trumpf, Robert Mahony, Tarek Hamel
 \end_inset
 
 ，而不诉诸参数化，线性化，或离散化。本文的主要贡献是有效地利用姿态运动学和向量测量模型的对称性，设计了一个简单的通用预测器，它不依赖于观测器或滤波器的选择。也就
-是说，我们提议的预测器可以与任何在理想条件下(即当它被连续无时延向量测量馈送时)具有渐近稳定估计误差的观测器或滤波器组合，并且预测器-观测器组合在非理想条件下(
+是说，我们提议的预测器可以与任何在理想条件下(即当它被连续无延迟向量测量馈送时)具有渐近稳定估计误差的观测器或滤波器组合，并且预测器-观测器组合在非理想条件下(
 即采样和延迟)保持这些稳定性测量)。所提议的预测器是递归的，只需要很小的计算能力，非常适合于实际应用中的嵌入式实现。我们假设每个传感器测量的延迟是已知的，也就是
-说我们需要数据的精确时间戳，然而，这是数据的唯一条件。在这种假设下，增益调谐过程和观测器的稳定性与时滞的大小无关，即使对于时变时滞或OOSM测量也是有效的，尽管
+说我们需要数据的精确时间戳，然而，这是数据的唯一条件。在这种假设下，增益调参过程和观测器的稳定性与时滞的大小无关，即使对于时变时滞或OOSM测量也是有效的，尽管
 本文没有明确考虑后者。该方法直接推广到多速率测量情况，无需进一步修改。通过一个仿真例子，我们证明了我们的预测器-观测器方法的性能明显优于Lyapunov-Kra
 sowskii方法。
 \end_layout
@@ -270,7 +270,7 @@ name "sec:2"
 
 \begin_layout Standard
 姿态确定传感器的目的是测量通常是连续时间物体的物理量。这些物理量的例子是分别由恒星传感器或太阳传感器感测的恒星或太阳的光强度、由地球传感器感测的地球表面的红外反
-射或由磁强计感测的地球磁场，所有这些都是连续时间物体。然而，实际上，姿态传感器只能以特定的采样率提供这些物理量的样本。此外，由于各种原因，例如传感器的物理部分的
+射或由磁强计感测的地球磁场，所有这些都是连续时间对象。然而，实际上，姿态传感器只能以特定的采样率提供这些物理量的样本。此外，由于各种原因，例如传感器的物理部分的
 响应速度慢、传感器的内部处理时间和通信延迟，这些样本通常相对于所测量的物理量被延迟。在下面的两小节中，我们将对传感器中的采样和延迟建模进行一般性讨论。这些讨论将
 在第 
 \begin_inset CommandInset ref
@@ -308,7 +308,7 @@ noprefix "false"
 \end_inset
 
  所示的模型，包括采样和延迟对传感器输出的影响。该模型的灵感来自于传感器在测量物理量时发生的物理过程。该模型由零阶保持(zero-order-hold,
- ZOH)块组成，分别对采样效果进行建模，并对采样前后的两个延迟块分别进行模型化，分别对采样前和后采样延迟进行建模。图 
+ ZOH)块组成，分别对采样效果进行建模，并对ZOH前后的两个延迟块分别进行模型化，分别对采样前和采样后延迟进行建模。图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:1"
@@ -318,7 +318,7 @@ noprefix "false"
 
 \end_inset
 
- 模型左侧的预采样延迟
+ 模型左侧的采样后延迟
 \begin_inset Formula $\rho_{i}$
 \end_inset
 
@@ -353,7 +353,7 @@ noprefix "false"
 \begin_inset Formula $t_{k_{i}}$
 \end_inset
 
-生成样本。该样本锁定在ZOH的输出，直到在时间
+生成样本。该样本被锁定在ZOH的输出中，直到在时间
 \begin_inset Formula $t_{k_{i}+1}$
 \end_inset
 
@@ -460,9 +460,9 @@ name "fig:1"
 \end_layout
 
 \begin_layout Standard
-在实践中，后采样延迟对由于传感器中的内部信号处理或由于从传感器向用户传输信息的通信延迟而引起的延迟进行建模。对于恒星跟踪器，采样后延迟主要是由于与图像处理算法相
-关联的处理时间，图像处理算法分析恒星跟踪器拍摄的图像以识别图像中的恒星，并将每个识别的恒星与其板载星表中相应的恒星相关联。在室内飞行环境中，后采样时延还可以用来
-模拟由VICON或OptiTrack系统到机体姿态估计系统的通信时延所引起的时延。它还可以模拟与GPS模块内部处理相关的测量延迟。
+在实践中，采样后延迟对由于传感器中的内部信号处理或由于从传感器向用户传输信息的通信延迟而引起的延迟进行建模。对于恒星跟踪器，采样后延迟主要是由于与图像处理算法相
+关联的处理时间，图像处理算法分析恒星跟踪器拍摄的图像以识别图像中的恒星，并将每个识别的恒星与其板载星表中相应的恒星相关联。在室内飞行环境中，采样后延迟还可以用来
+模拟由VICON或OptiTrack系统到板载姿态估计系统的通信延迟所引起的延迟。它还可以模拟与GPS模块内部处理相关的测量延迟。
 \end_layout
 
 \begin_layout Subsection
@@ -510,7 +510,7 @@ noprefix "false"
 
 \end_inset
 
- ，但更便于用于补偿采样和延迟的影响。在本节后面，我们将讨论这两个模型等价的条件。
+ ，但更便于用于采样和延迟效应的补偿。在本节后面，我们将讨论这两个模型等价的条件。
 \end_layout
 
 \begin_layout Standard
@@ -619,7 +619,7 @@ noprefix "false"
 \begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)_{k_{i}=1}^{\infty}$
 \end_inset
 
-是单调递增的(同样，这个假设对于我们的方法来说不是必需的，但是它是为了表达的清晰而强加的)。与第 
+是单调递增的(再一次强调，这个假设对于我们的方法来说不是必需的，但它是为了表达的清晰而强加的)。与第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:2.1"
@@ -633,7 +633,7 @@ noprefix "false"
 \begin_inset Formula $\left(t_{k_{i}}^{\prime}\right)$
 \end_inset
 
-是用户已知的，并且可以用于补偿采样和延迟的影响。显然，图 
+是用户已知的，并且可以用于采样和延迟效应的补偿。显然，图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:1"
@@ -715,7 +715,7 @@ noprefix "false"
 \begin_inset Formula $\sigma_{i}$
 \end_inset
 
-的组合以及图 
+的组合，并且图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:1"
@@ -773,7 +773,7 @@ noprefix "false"
 
 \end_inset
 
- 的形式。这尤其意味着，就传感器的输入-输出特性而言，不需要分别知道预采样和后采样延迟的值。事实上，正如我们在第 
+ 的形式。这尤其意味着，就传感器的输入-输出特性而言，不需要分别知道采样后和采样后延迟的值。事实上，正如我们在第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:3"
@@ -783,7 +783,7 @@ noprefix "false"
 
 \end_inset
 
- 节所展示的，只有知识的物理值
+ 节所展示的，仅有物理值
 \begin_inset Formula $y_{i}\left(t\right)$
 \end_inset
 
@@ -791,7 +791,7 @@ noprefix "false"
 \begin_inset Formula $\tau_{i}$
 \end_inset
 
-足以从采样和延迟传感器输出再现物理量
+的知识就足以从已采样和已延迟的传感器输出中再现物理量
 \begin_inset Formula $y_{i}\left(t\right)$
 \end_inset
 
@@ -830,7 +830,7 @@ name "subsec:2.3"
 \begin_inset Formula $\{A\}$
 \end_inset
 
-的旋转。刚体姿态运动学由
+的旋转。刚体姿态运动学给出为
 \begin_inset Formula 
 \begin{equation}
 \dot{R}(t)=R(t)\Omega(t)_{\times},\quad R(0)=R_{0}\label{eq:3}
@@ -942,7 +942,7 @@ noprefix "false"
 
 \end_inset
 
-)，得到采样和延迟分别对应于图 
+)，其中采样和延迟分别对应于图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:1"
@@ -970,7 +970,7 @@ noprefix "false"
 \begin_inset Formula $\Omega(t)$
 \end_inset
 
-的连续测量以及采样和延迟向量测量
+的连续测量以及已采样和已延迟的向量测量
 \begin_inset Formula $z_{i}(t)$
 \end_inset
 
@@ -1013,7 +1013,7 @@ noprefix "false"
 
 \end_inset
 
-)来设计一种算法，补偿采样和采样前后延迟的影响，并估计姿态。我们在这里提议的解决第 
+)来设计一种算法，对采样前和采样后延迟的效应做补偿，并估计姿态。我们在这里提议的解决第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:2"
@@ -1045,7 +1045,7 @@ noprefix "false"
 \begin_inset Formula $y_{i}(t)$
 \end_inset
 
-的连续时间预测。 预测器依赖于连续时间(或实际上在高频)的
+的连续时间预测。 预测器依赖于连续时间(或实际上处于高频)的
 \begin_inset Formula $\Omega(t)$
 \end_inset
 
@@ -1420,7 +1420,7 @@ noprefix "false"
 \begin_inset Formula $y_{i}^{p}(t)$
 \end_inset
 
-(即用方程(
+ ( 即用方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:7"
@@ -1438,7 +1438,7 @@ noprefix "false"
 \begin_inset Formula $y_{i}^{p}(t)$
 \end_inset
 
-)产生稳定的估计误差动态，则定理 
+ )产生稳定的估计误差动态，则定理 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "theorem 1"
@@ -1482,7 +1482,7 @@ noprefix "false"
 \begin_inset Formula $\Delta_{0}\in\mathrm{SO}(3)$
 \end_inset
 
-的所有选择保留观测器的稳定性属性。特别地，如果将文献[4]的常增益观测器用作方程(
+的所有选择保留观测器的稳定性属性。特别地，如果将文献[4]的常量增益观测器用作方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:7"
@@ -1721,17 +1721,7 @@ name "sec:4"
 \begin_inset Formula $R(t)$
 \end_inset
 
-的轨迹，我们实现了方程(
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:3"
-plural "false"
-caps "false"
-noprefix "false"
-
-\end_inset
-
-)使用
+的轨迹，我们使用
 \begin_inset Formula $\Omega(t)=\left[0;0;8\right]\ (\mathrm{deg/s})$
 \end_inset
 
@@ -1751,7 +1741,17 @@ noprefix "false"
 \begin_inset Formula $R_{0}$
 \end_inset
 
-。我们假设姿态传感器提供与参考方向相对应的向量测量
+实现了方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。我们假设姿态传感器提供与参考方向相对应的向量测量
 \begin_inset Formula $\mathring{y_{1}}=\left[\begin{array}{ccc}
 1 & 0 & 0\end{array}\right]^{\mathrm{T}}$
 \end_inset
@@ -1761,7 +1761,7 @@ noprefix "false"
 0 & 1 & 0\end{array}\right]^{\mathrm{T}}$
 \end_inset
 
-。虽然在实践中，向量测量的数量可能很高，并且它们的方向不一定是成对垂直的(例如，对于恒星跟踪器)，但是这里我们只考虑两个垂直方向的向量测量，以避免对增益调谐的不
+。虽然在实践中，向量测量的数量可能很高，并且它们的方向不一定是成对垂直的(例如，对于恒星跟踪器)，但是这里我们只考虑两个垂直方向的向量测量，以避免对增益调参的不
 必要讨论，并且只关注采样和延迟效应。对于模型
 \begin_inset Formula $z_{1}(t)$
 \end_inset
@@ -1798,7 +1798,7 @@ noprefix "false"
 
 \end_inset
 
- 的框图中，采样前后的延迟为
+ 的框图中，采样前和采样后的延迟为
 \begin_inset Formula $\rho_{1}=\rho_{2}=0.1\ (s)$
 \end_inset
 
@@ -1818,7 +1818,7 @@ noprefix "false"
 \begin_inset Formula $0.01$
 \end_inset
 
-的零平均高斯噪声添加到向量测量
+的零均值高斯噪声添加到向量测量
 \begin_inset Formula $z_{1}(t)$
 \end_inset
 
@@ -1884,7 +1884,7 @@ noprefix "false"
 
 \end_inset
 
-)中选择标量常数观测器增益
+)中选择标量常量观测器增益
 \begin_inset Formula 
 \begin{equation}
 \dot{\hat{R}}(t)=\hat{R}(t)\left(\Omega(t)+l_{1}y_{1}^{p}(t)_{\times}\hat{y}_{1}(t)+l_{2}y_{2}^{p}(t)_{\times}\hat{y}_{2}(t)\right)
@@ -1900,7 +1900,8 @@ noprefix "false"
 \begin_inset Formula $l_{i}>0,i=1,2$
 \end_inset
 
-。我们将这种组合预测器-观测器的性能与文献[4]中常增益观测器的一种ad-hoc方法进行了比较，以适应采样和延迟向量测量的情况。ad-hoc观测器的动力学为
+。我们将这种组合预测器-观测器的性能与文献[4]中常量增益观测器的一种ad-hoc方法进行了比较，以适应已采样和已延迟的向量测量的情况。ad-hoc观测器的动力
+学为
 \begin_inset Formula $\dot{\hat{R}}_{\mathrm{ad}}(t)=\hat{R}_{\mathrm{ad}}(t)(\Omega(t)+\alpha(t))\times$
 \end_inset
 
@@ -1912,7 +1913,7 @@ noprefix "false"
 \begin_inset Formula $R(t)$
 \end_inset
 
-和
+的估计，并且
 \begin_inset Formula $\alpha(t)$
 \end_inset
 
@@ -1924,7 +1925,7 @@ noprefix "false"
 \begin_inset Formula $z_{1}\left(t_{k_{1}}^{\prime}\right)$
 \end_inset
 
-时，ad-hoc观测器的新息项受恒定增益观测器的启发，如
+时，ad-hoc观测器的新息项受常量增益观测器的激励，如
 \begin_inset Formula $\alpha\left(t_{k_{1}}^{\prime}\right)=\bar{l}_{1}z_{1}\left(t_{k_{1}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}$
 \end_inset
 
@@ -1940,7 +1941,7 @@ noprefix "false"
 \begin_inset Formula $\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}$
 \end_inset
 
-进行比较，其中测量延迟的影响
+进行比较，其中测量的延迟效应
 \begin_inset Formula $\tau_{1}$
 \end_inset
 
@@ -1949,7 +1950,7 @@ noprefix "false"
 status open
 
 \begin_layout Plain Layout
-由于考虑了新息项中延迟的影响，可以将其视为Lyapunov-Krasovskii项[25]、[26]、[35]。
+由于考虑了新息项中的延迟效应，可以将其视为Lyapunov-Krasovskii项[25]、[26]、[35]。
 \end_layout
 
 \end_inset
@@ -1986,11 +1987,11 @@ status open
 \begin_inset Formula $\bar{l}_{1}z_{1}\left(t_{k_{1}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{1}}^{\prime}-\tau_{1}\right)^{\top}\mathring{y}_{1}+\bar{l}_{2}z_{2}\left(t_{k_{2}}^{\prime}\right)_{\times}\hat{R}_{\mathrm{ad}}\left(t_{k_{2}}^{\prime}-\tau_{2}\right)^{\top}\mathring{y}_{2}$
 \end_inset
 
-。对于没有任何向量测量样本的时间(即对于所有
+。对于没有任何向量测量样本是可用的时间段(即对于所有
 \begin_inset Formula $t\notin\left(t_{k_{1}}\right)_{k_{i}=1}^{\infty}\cup\left(t_{k_{2}}\right)_{k_{i}=1}^{\infty}$
 \end_inset
 
-)，新息项为零，将观测器简化为姿态运动学的正积分。这个新息项的数学公式如下
+)，新息项为零，将观测器简化为姿态运动学的前向积分。该新息项的数学公式如下
 \begin_inset Formula 
 \[
 \alpha(t)=\begin{cases}
@@ -2049,8 +2050,8 @@ noprefix "false"
 \begin_inset Formula $\tilde{\theta}(t)=\frac{180}{\pi}\arccos\left(1-0.5\mathrm{tr}\left(I-\hat{R}(t)R(t)^{\top}\right)\right)$
 \end_inset
 
-。请注意，在姿态传感器提供向量测量的第一个样本之后，观测器的轨迹可用。红色线条显示了稳态估计误差，这说明了即使在传感器高延迟、低采样率和高噪声的情况下，我们提议
-的方法仍然具有良好的性能。图 
+。注意，在姿态传感器提供向量测量的第一个样本之后，观测器的轨迹可用。红色线条显示了稳态估计误差，这说明了即使在传感器高延迟、低采样率和高噪声的情况下，我们提议的
+方法仍然具有良好的性能。图 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:5"
@@ -2099,11 +2100,11 @@ noprefix "false"
 \end_inset
 
  ，我们的预测器-观测器的稳态误差几乎比ad-hoc观测器的稳态误差小一个数量级。接下来，我们将传感器延迟增加到
-\begin_inset Formula $\rho_{1}=\rho_{2}=0.5(\mathrm{~s})$
+\begin_inset Formula $\rho_{1}=\rho_{2}=0.5~(\mathrm{s})$
 \end_inset
 
 和
-\begin_inset Formula $\sigma_{1}=\sigma_{2}=1.5(\mathrm{~s})$
+\begin_inset Formula $\sigma_{1}=\sigma_{2}=1.5~(\mathrm{s})$
 \end_inset
 
 ，产生
@@ -2312,7 +2313,7 @@ name "fig:6"
 
 \end_inset
 
-大时延组合预测器-观测器方程(
+具有大传感器延迟的组合预测器-观测器方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:5"
@@ -2377,7 +2378,7 @@ name "fig:7"
 
 \end_inset
 
-具有大传感器时延的ad-hoc观测器的姿态估计误差。
+具有大传感器延迟的ad-hoc观测器的姿态估计误差。
 \end_layout
 
 \end_inset
@@ -2508,7 +2509,7 @@ name "fig:8"
 
 \end_inset
 
-具有时延不确定性的组合预测器-观测器方程(
+具有延迟不确定性的组合预测器-观测器方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:5"
@@ -2558,7 +2559,7 @@ name "sec:5"
 
 \begin_layout Standard
 我们提议了一种组合预测器-观测器的姿态估计方法，用于存在采样和延迟向量测量的姿态估计问题。利用姿态运动学和系统输出映射的对称性，我们提议的预测器能够重建向量测量
-的连续无时延预测。所提议的预测器是通用的，可以与任意观测器或滤波器相结合。当与几何姿态观测器相结合时，与Lyapunov-Krasovskii方法相比，本文提议
+的连续无延迟预测。所提议的预测器是通用的，可以与任意观测器或滤波器相结合。当与几何姿态观测器相结合时，与Lyapunov-Krasovskii方法相比，本文提议
 的预测器-观测器方法在仿真中表现出了更好的性能。
 \end_layout
 
@@ -2848,7 +2849,7 @@ noprefix "false"
 \begin_inset Formula $t\geq0$
 \end_inset
 
-都是常数，这尤其意味着，对于所有
+都是常量，这尤其意味着，对于所有
 \begin_inset Formula $t_{1},t_{2}\geq0$
 \end_inset
 
@@ -2909,7 +2910,7 @@ end{proof}
 \begin_inset Formula $t_{2}=t$
 \end_inset
 
-，并调用引理 
+，并援引引理 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lemma 1"
@@ -2927,7 +2928,7 @@ noprefix "false"
 \begin_inset Formula $t\in\left[t_{k_{i}}^{\prime},t_{k_{i}+1}^{\prime}\right)$
 \end_inset
 
-并回调方程(
+并回想方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:2"
@@ -2945,7 +2946,7 @@ noprefix "false"
 \begin_inset Formula $y_{i}(t)=\Delta(t)^{\top}\Delta\left(t_{k_{i}}^{\prime}-\tau_{i}\right)z_{i}(t)$
 \end_inset
 
-，与方程(
+，其与方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:6"
@@ -2955,7 +2956,7 @@ noprefix "false"
 
 \end_inset
 
-)一起意味着，对于所有的
+)一起表明，对于所有的
 \begin_inset Formula $t\geq t_{1_{i}}$
 \end_inset
 
