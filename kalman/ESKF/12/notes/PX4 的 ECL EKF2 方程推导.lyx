@@ -9332,7 +9332,7 @@ a_{D}
 \Delta P_{N}\\
 \Delta P_{E}\\
 \Delta P_{D}
-\end{array}\right]=\dfrac{1}{2}\left(\left(V_{D}^{\prime}\right)_{k-1}+\left(V_{D}^{\prime}\right)_{k}\right)\cdot\mathrm{d}t_{\mathrm{imu}}\\
+\end{array}\right]=\dfrac{1}{2}\left(\left(\boldsymbol{V}_{NED}^{\prime}\right)_{k-1}+\left(\boldsymbol{V}_{NED}^{\prime}\right)_{k}\right)\cdot\mathrm{d}t_{\mathrm{imu}}\\
 \left(\boldsymbol{P}_{NED}^{\prime}\right)_{k} & =\left(\boldsymbol{P}_{NED}^{\prime}\right)_{k-1}+\boldsymbol{\Delta P}
 \end{align*}
 
@@ -10611,7 +10611,7 @@ noprefix "false"
 
 \end_inset
 
- 章。
+ 章的描述。
 \end_layout
 
 \begin_layout Standard
@@ -11068,8 +11068,8 @@ Jacobian矩阵，设计人员只需要考虑信息的关联关系而不需要关
 \end_layout
 
 \begin_layout Standard
-以上章节的方程是基于面向流程的分析方式进行组织。但是在实际工程中，问题十分复杂，所以ECL/EKF2的代码流程也十分复杂，我们还需要基于另一个维度的分析，即面向
-问题方面的分析。
+以上章节的方程基于面向流程的分析方式进行组织。但是在实际工程中，问题十分复杂，所以ECL/EKF2的代码流程也十分复杂，我们还需要基于另一个维度的分析，即面向问
+题方面的分析。
 \end_layout
 
 \begin_layout Standard
@@ -11232,7 +11232,11 @@ D_{M}\left(\boldsymbol{x}\right)=\sqrt{\left(\boldsymbol{x}-\boldsymbol{\mu}\rig
 \end_layout
 
 \begin_layout Standard
-在卡尔曼滤波的应用中，我们以状态的当前时刻的预测值
+在卡尔曼滤波的应用中，我们以状态的当前
+\begin_inset Formula $k$
+\end_inset
+
+时刻的预测值
 \begin_inset Formula $\hat{\boldsymbol{x}}_{k\mid k-1}$
 \end_inset
 
@@ -11903,7 +11907,7 @@ H_{true}=\begin{cases}
 \begin_inset Formula $\alpha=0.1$
 \end_inset
 
-，代表着在短时间内，高度不会有太大的变化。后面两节内容将讨论高度偏差估计器的设计和应用。
+，代表着在最小5Hz的采样时间内，高度不会有太大的变化。后面两节内容将讨论高度偏差估计器的设计和应用。
 \end_layout
 
 \begin_layout Subsection
@@ -12063,7 +12067,11 @@ P=P-K\cdot P
 \begin_inset Formula $\mathrm{signed\_innov\_test\_ratio}=\mathrm{sign}\left(\tilde{y}\right)\cdot\mathrm{innov\_test\_ratio}$
 \end_inset
 
-的值，正常情况下应该是正负符号均匀出现，均值趋向零。如果不符合条件，则说明状态出现大的偏差，在下次迭代时，加大过程噪声方差。
+的值，正常情况下应该是一段时间内正负符号均匀出现(连续出现同一种符号的时间
+\begin_inset Formula $t<10~s$
+\end_inset
+
+)，均值趋向零。如果不符合条件，则说明状态出现大的偏差，在下次迭代时，加大过程噪声方差。
 \end_layout
 
 \begin_layout Subsection
