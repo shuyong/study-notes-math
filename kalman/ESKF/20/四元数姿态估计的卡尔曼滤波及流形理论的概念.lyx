@@ -189,7 +189,7 @@ Pablo Bernal-Polo and Humberto Martínez-Barberá
 \begin_inset Formula $2$
 \end_inset
 
-个参考坐标系相关的旋转变换表示：定位到该系统的参考坐标系和外部参考坐标系。参考文献[4]对态度表征进行了全面的综述。用于表示旋转变换的参数化可以是奇异的，也可以
+个参考坐标系相关的旋转变换表示：锚定到该系统的参考坐标系和外部参考坐标系。参考文献[4]对姿态表征进行了全面的综述。用于表示旋转变换的参数化可以是奇异的，也可以
 是不连续的。表 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -538,9 +538,17 @@ Unit quaternion
 \end_layout
 
 \begin_layout Standard
-考虑到特殊正交群SO(3)具有三维性，理想情况下，我们将寻求由3个参数表示的连续非奇异表示。然而，自1964年以来，我们知道“…在拓扑上不可能有一个全局三维参数
-化没有奇点的旋转群”[5]。知道了这一点，对于方向，我们可以说单位四元数是最方便的表示，并且我们是将要使用的。参考文献[6]回顾了1982年以前的姿态估计文献，
-当时欧拉角等其它参数化很常见，为基于现代四元数的姿态估计奠定了基础。在这项工作之后，许多其他人探索了这一观点，并证明了其优越性[7,8,9,10,11,12]。
+考虑到特殊正交群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+具有三维性，理想情况下，我们将寻求由
+\begin_inset Formula $3$
+\end_inset
+
+个参数表示的连续非奇异表示。然而，自1964年以来，我们知道“…在拓扑上不可能有一个全局三维参数化没有奇点的旋转群”[5]。知道了这一点，对于方向，我们可以说单
+位四元数是最方便的表示，并且我们是将要使用的。参考文献[6]回顾了1982年以前的姿态估计文献，当时欧拉角等其它参数化很常见，为基于现代四元数的姿态估计奠定了基
+础。在这项工作之后，许多其他人探索了这一观点，并证明了其优越性[7,8,9,10,11,12]。
 \end_layout
 
 \begin_layout Standard
@@ -570,7 +578,7 @@ Unit quaternion
 \begin_inset Formula $\mathbb{R}^{4}$
 \end_inset
 
-中的单位球体)中，我们使用流形理论的基本概念来定义单位四元数概率分布的均值和协方差矩阵。根据这些定义，我们开发了两种基于Kalman滤波器的估计器(一种基于EK
+中的单位球面)中，我们使用流形理论的基本概念来定义单位四元数概率分布的均值和协方差矩阵。根据这些定义，我们开发了两种基于Kalman滤波器的估计器(一种基于EK
 F，另一种基于UKF)，以自然和令人满意的方式得出了“乘法更新”和“协方差校正步骤”的概念。这些思想的自然兴起为通用导航算法的发展奠定了坚实的基础。最后，通过仿
 真分析了这两种估计器的估计精度。
 \end_layout
@@ -866,7 +874,7 @@ p_{0}\mathbf{q}+q_{0}\mathbf{p}+\mathbf{p}\times\mathbf{q}
 \begin_inset Formula $S^{3}$
 \end_inset
 
-单位球体中。这个空间是一个流形，并且这些数学对象的一些概念在我们的正文中是有用的。特别是图表(chart)的概念特别有趣。
+单位球面中。这个空间是一个流形，并且这些数学对象的一些概念在我们的正文中是有用的。特别是图表(chart)的概念特别有趣。
 \end_layout
 
 \begin_layout Subsection
@@ -913,7 +921,7 @@ name "subsec:2.3"
 \end_inset
 
 不代表旋转，我们如何定义单位四元数的协方差？(单位四元数在乘法下形成一个群，但在加法下不形成群。这意味着两个单位四元数相加可能不会产生另一个单位四元数。因此，两
-个单位四元数的相加可能不代表旋转。)如果每个四元数在单位球体中是等概率的，协方差矩阵是什么？我们不能重新定义协方差矩阵，因为Kalman滤波器在其推导方程中使用
+个单位四元数的相加可能不代表旋转。)如果每个四元数在单位球面中是等概率的，协方差矩阵是什么？我们不能重新定义协方差矩阵，因为Kalman滤波器在其推导方程中使用
 这种精确形式，但是我们可以利用流形的特性。让我们检索一些重要的定义：
 \end_layout
 
@@ -1264,7 +1272,7 @@ noprefix "false"
 
 \end_inset
 
- 列出了这些图表定义以及它们的定义域(domain)和图像(image)。我们必须确保这些图是双射的，以便它们正确地定义同胚，并且确保它们不把
+ 列出了这些图表定义以及它们的定义域(domain)和象(image)。我们必须确保这些图是双射的，以便它们正确地定义同胚，并且确保它们不把
 \begin_inset Formula $\boldsymbol{q}$
 \end_inset
 
@@ -1276,7 +1284,7 @@ noprefix "false"
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
-中的不同点，因为它们表示相同的旋转。我们通过为每个图表指定定义域和图像的定义来实现这一点。
+中的不同点，因为它们表示相同的旋转。我们通过为每个图表指定定义域和象的定义来实现这一点。
 \end_layout
 
 \begin_layout Standard
@@ -1295,7 +1303,7 @@ name "tab:2"
 
 \end_inset
 
-所研究图表(chart)的主要特征。
+所研究的图表(chart)的主要特征。
 \end_layout
 
 \end_inset
@@ -1350,11 +1358,11 @@ noprefix "false"
 
 \end_inset
 
- 显示了如何通过每个命名的图表将球体
+ 显示了如何通过每个命名的图表将球面
 \begin_inset Formula $S^{2}$
 \end_inset
 
-(四元数所在的球体
+ (四元数所在的球面
 \begin_inset Formula $S^{3}$
 \end_inset
 
@@ -1362,7 +1370,7 @@ noprefix "false"
 \begin_inset Formula $\mathbb{R}^{2}$
 \end_inset
 
-(包含图表图像的
+(包含图表的象的
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
@@ -1531,7 +1539,7 @@ name "fig:2"
 \begin_inset Formula $\varphi$
 \end_inset
 
-必然会产生空间的变形。然而，对于特征四元数(球体顶部)邻域的四元数，我们的图表表现为这些四元数的虚部与
+必然会产生空间的变形。然而，对于特征四元数(球面顶部)邻域的四元数，我们的图表表现为这些四元数的虚部与
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
@@ -1546,11 +1554,11 @@ noprefix "false"
 \end_inset
 
 )所示。这是一个理想的性质，因为这意味着特征四元数周围的空间与欧几里德空间非常相似，而欧几里德空间正是设计Kalman滤波器的空间。但这只发生在特征四元数附近。
-不论怎样，我们可以将这个性质推广到任何四元数
+不论怎样，我们可以将这个性质推广到任意四元数
 \begin_inset Formula $\bar{\boldsymbol{q}}\in S^{3}$
 \end_inset
 
-，注意任何四元数
+，注意任意四元数
 \begin_inset Formula $\boldsymbol{q}\in S^{3}$
 \end_inset
 
@@ -1616,7 +1624,7 @@ noprefix "false"
 \begin_inset Formula $\boldsymbol{\delta}^{\bar{\boldsymbol{q}}}=\bar{\boldsymbol{q}}^{\ast}\ast\boldsymbol{q}$
 \end_inset
 
-，并且在这里我们把这记录为：通过图表
+，并且在这里我们把这表示为：通过图表
 \begin_inset Formula $\varphi_{\bar{\boldsymbol{q}}}$
 \end_inset
 
@@ -1628,7 +1636,7 @@ noprefix "false"
 \begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{q}}}$
 \end_inset
 
-。然后，我们会有一组图表
+。然后，我们会有一个图表集合
 \begin_inset Formula $\left\{ \varphi_{\bar{\boldsymbol{q}}}\right\} _{\bar{\boldsymbol{q}}}$
 \end_inset
 
@@ -1773,7 +1781,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Subsection
-过渡映射
+转移映射
 \end_layout
 
 \begin_layout Standard
@@ -1785,7 +1793,7 @@ noprefix "false"
 \begin_inset Formula $\bar{\boldsymbol{p}}$
 \end_inset
 
-为中心的图表表示我们的概率分布感兴趣。过渡映射的概念与此相关。
+为中心的图表表示我们的概率分布感兴趣。转移映射的概念与此相关。
 \end_layout
 
 \begin_layout Standard
@@ -1798,7 +1806,7 @@ status open
 \backslash
 begin{definition}[
 \backslash
-textbf{过渡映射, Transition map}]
+textbf{转移映射, Transition map}]
 \end_layout
 
 \end_inset
@@ -1854,7 +1862,7 @@ status open
 \backslash
 textup{
 \backslash
-textbf{过渡映射(transition map)}}
+textbf{转移映射(transition map)}}
 \end_layout
 
 \end_inset
@@ -1937,7 +1945,7 @@ end{definition}
 \begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}$
 \end_inset
 
-，两者之间相关联的过渡映射，这样执行
+，两者之间相关联的转移映射，这样执行
 \end_layout
 
 \begin_layout Standard
@@ -2055,7 +2063,7 @@ noprefix "false"
 
 \end_inset
 
- 显示了所研究图表的过渡映射。这些过渡映射的详细推导见附录 
+ 显示了所研究图表的转移映射。这些转移映射的详细推导见附录 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:A"
@@ -2075,7 +2083,7 @@ noprefix "false"
 
 \end_inset
 
- 试图提供一些关于如何通过每个图表的过渡映射变换点的见解。
+ 试图提供一些关于如何通过每个图表的转移映射变换点的直觉。
 \end_layout
 
 \begin_layout Standard
@@ -2094,7 +2102,7 @@ name "tab:3"
 
 \end_inset
 
-研究图表的过渡映射。
+所研究图表的转移映射。
 \end_layout
 
 \end_inset
@@ -2156,7 +2164,7 @@ name "fig:3"
 
 \end_inset
 
-使用每个图表定义的过渡映射变换以
+使用每个图表定义的转移映射变换以
 \begin_inset Formula $\bar{\boldsymbol{q}}$
 \end_inset
 
@@ -2213,7 +2221,7 @@ name "sec:3"
 \begin_inset Formula $\boldsymbol{\omega}_{t}^{\prime}$
 \end_inset
 
-编码。我们将把它们看作随机变量，我们将尝试用卡尔曼滤波器估计它们的值。
+编码。我们将把它们看作随机变量，我们将尝试用Kalman滤波器估计它们的值。
 \end_layout
 
 \begin_layout Standard
@@ -2326,7 +2334,7 @@ name "sec:3"
 \begin_inset Formula $\boldsymbol{\omega}_{t}^{m}$
 \end_inset
 
-(其提供关于方向的相对变化的信息)，以及向量
+ (其提供关于方向的相对变化的信息)，以及向量
 \begin_inset Formula $\mathbf{v}_{t}^{m}$
 \end_inset
 
@@ -2334,7 +2342,7 @@ name "sec:3"
 \begin_inset Formula $\mathbf{v}_{t}$
 \end_inset
 
-(其在外部参考坐标系
+ (其在外部参考坐标系
 \begin_inset Formula $\mathcal{S}$
 \end_inset
 
@@ -2760,7 +2768,7 @@ noprefix "false"
 \begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
 \end_inset
 
-为中心的图表中的任意点，我们需要“浸透(saturate)”到每个图表图像中包含的最接近点。在以
+为中心的图表中的任意点，我们需要“浸透(saturate)”到每个图表的象中包含的最接近点。在以
 \begin_inset Formula $\bar{\boldsymbol{q}}_{n|n-1}$
 \end_inset
 
@@ -2808,7 +2816,7 @@ noprefix "false"
 
 \end_inset
 
- 中提供的过渡映射了解
+ 中提供的转移映射了解
 \begin_inset Formula $\mathbf{e}^{\bar{\boldsymbol{p}}}\left(\mathbf{e}^{\bar{\boldsymbol{q}}}\right)$
 \end_inset
 
@@ -2938,7 +2946,7 @@ name "tab:4"
 
 \end_inset
 
-研究图表的过渡映射的
+所研究图表的转移映射的
 \begin_inset Formula $\mathbf{T}$
 \end_inset
 
@@ -3241,7 +3249,7 @@ noprefix "false"
 \begin_inset Formula $\varphi$
 \end_inset
 
-的图像中最接近的点。有了这些新的sigma点，我们可以得到UKF中概率分布的均值和协方差矩阵。首先，定义
+的象中最接近的点。有了这些新的sigma点，我们可以得到UKF中概率分布的均值和协方差矩阵。首先，定义
 \begin_inset Formula $\mathcal{Z}_{j}:=\left(\mathcal{Z}_{j}^{\mathbf{v}},\mathcal{Z}_{j}^{\boldsymbol{\omega}}\right){}^{\mathrm{T}}$
 \end_inset
 
@@ -3429,7 +3437,7 @@ name "sec:4"
 \end_layout
 
 \begin_layout Standard
-我们试着用模拟测试来回答三个问题。第一个问题是，有没有一个图表，我们可以得到更准确的态度估计？第二个问题是，什么算法产生最精确的姿态估计，MEKF还是MUKF？
+我们试着用模拟测试来回答三个问题。第一个问题是，有没有一个图表，我们可以得到更准确的姿态估计？第二个问题是，什么算法产生最精确的姿态估计，MEKF还是MUKF？
 最后一个问题源于这样一个事实，即以前的姿态估计算法，例如乘法扩展卡尔曼滤波器，没有考虑像MEKF中的方程(
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3440,7 +3448,7 @@ noprefix "false"
 
 \end_inset
 
-)那样将概率分布从一个图表更新到另一个图表。然而，他们的估计员表现良好[6,7,12]。第三个问题是，这种“图表更新”是否意味着姿态估计的准确性有所提高？
+)那样将概率分布从一个图表更新到另一个图表。然而，他们的估计器表现良好[6,7,12]。第三个问题是，这种“图表更新”是否意味着姿态估计的准确性有所提高？
 \end_layout
 
 \begin_layout Standard
@@ -3648,7 +3656,11 @@ e_{\theta}=\dfrac{1}{T}\int_{0}^{T}\theta_{e}\left(t\right)dt.\label{eq:73}
 \begin_inset Formula $\overset{\ast}{\boldsymbol{\omega}}_{0}^{\prime}$
 \end_inset
 
-到0，设置更新频率
+到
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+，设置更新频率
 \begin_inset Formula $f_{\mathrm{update}}$
 \end_inset
 
@@ -3668,7 +3680,7 @@ e_{\theta}=\dfrac{1}{T}\int_{0}^{T}\theta_{e}\left(t\right)dt.\label{eq:73}
 \begin_inset Formula $(0,Q_{\mathrm{max}}^{\mathbf{v}}]$
 \end_inset
 
-中，初始化估计算法。MEKF的初始化包括设置
+中生成，初始化估计算法。MEKF的初始化包括设置
 \begin_inset Formula $\bar{\boldsymbol{q}}_{0|0}=1$
 \end_inset
 
@@ -3700,7 +3712,7 @@ e_{\theta}=\dfrac{1}{T}\int_{0}^{T}\theta_{e}\left(t\right)dt.\label{eq:73}
 \begin_inset Formula $\mathbf{0}$
 \end_inset
 
-，因为观察到有时需要“打破对称性”才能使算法收敛；尤其是当我们没有为RV图表应用图表更新(当我们执行“重置操作”时)。两种算法中出现的协方差矩阵都初始化为
+，因为观察到有时需要“打破对称性”才能使算法收敛；尤其是当我们没有为RV图表应用图表更新时(当我们执行“重置操作”时)。两种算法中出现的协方差矩阵都初始化为
 \begin_inset Formula $\mathbf{Q}_{n}^{\boldsymbol{\omega}}=\mathbf{I}\ \mathrm{rads}^{2}/\mathrm{s}^{4}$
 \end_inset
 
@@ -3788,7 +3800,7 @@ noprefix "false"
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
-单位球体的均匀分布中取样不同的
+单位球面的均匀分布中取样不同的
 \begin_inset Formula $\mathbf{v}_{t}$
 \end_inset
 
@@ -3804,7 +3816,7 @@ noprefix "false"
 \begin_inset Formula $\mathbf{r}_{t}^{\boldsymbol{\omega}}$
 \end_inset
 
-的每个分量的值ωt是由均值和方差为零的正态分布分别得到
+的每个分量的值从零均值和方差为
 \begin_inset Formula $\sigma_{\mathbf{v}}^{2}R^{\mathbf{v}}$
 \end_inset
 
@@ -3812,7 +3824,7 @@ noprefix "false"
 \begin_inset Formula $R^{\boldsymbol{\omega}}$
 \end_inset
 
-。方程(
+的正态分布分别得到。方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:23"
@@ -4317,7 +4329,7 @@ name "fig:5"
 \end_layout
 
 \begin_layout Standard
-我们观察到没有特别有利的图表。在所有条件相同的情况下，我们会选择RP图。对于这个图表，不必担心定义域，因为它映射了
+我们观察到没有特别有利的图表。在所有条件相同的情况下，我们会选择RP图表。对于这个图表，不必担心定义域，因为它映射
 \begin_inset Formula $\boldsymbol{q}$
 \end_inset
 
@@ -4325,7 +4337,7 @@ name "fig:5"
 \begin_inset Formula $-\boldsymbol{q}$
 \end_inset
 
-具有相同的
+为具有相同的
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
@@ -4333,7 +4345,7 @@ name "fig:5"
 \begin_inset Formula $\mathbf{T}$
 \end_inset
 
-矩阵；或相同的图像，因为它们都是
+矩阵；或相同的象，因为它们都是
 \begin_inset Formula $\mathbb{R}^{3}$
 \end_inset
 
@@ -4345,7 +4357,7 @@ name "fig:5"
 \begin_inset Formula $\mathbf{T}$
 \end_inset
 
-矩阵对于RP图更简单。这些计算优势使我们更喜欢RP图。
+矩阵对于RP图更简单。这些计算优势使我们更喜欢RP图表。
 \end_layout
 
 \begin_layout Subsubsection
@@ -4439,7 +4451,7 @@ noprefix "false"
 
 \end_inset
 
-)，MUKF更新频率通常低于MEKF的更新频率，这意味着其估计的准确性较差。那么，带RP图的MEKF似乎是我们最好的选择。
+)，MUKF更新频率通常低于MEKF的更新频率，这意味着其估计的准确性较差。那么，带RP图表的MEKF似乎是我们最好的选择。
 \end_layout
 
 \begin_layout Subsubsection
@@ -4547,7 +4559,7 @@ name "sec:5"
 \begin_inset Formula $\mathbb{R}^{4}$
 \end_inset
 
-中的单位球体。这些定义帮助我们开发了用于方向估计的Kalman滤波器，其中姿态由单位四元数表示。它们还帮助我们解决了“协方差校正步骤”的问题。两个估计已经发展：
+中的单位球面。这些定义帮助我们开发了用于方向估计的Kalman滤波器，其中姿态由单位四元数表示。它们还帮助我们解决了“协方差校正步骤”的问题。两个估计已经发展：
 一个基于EKF(MEKF)，另一个基于UKF(MUKF)。对MEKF和MUKF进行了仿真测试，得到了一些结果。模拟结果如下：
 \end_layout
 
@@ -4822,7 +4834,7 @@ arabic{equation}}
 \end_layout
 
 \begin_layout Section
-过渡映射的推导
+转移映射的推导
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:A"
@@ -4833,7 +4845,7 @@ name "sec:A"
 \end_layout
 
 \begin_layout Standard
-本附录包含每个图表的过渡映射的推导。
+本附录包含每个图表的转移映射的推导。
 \end_layout
 
 \begin_layout Subsection
@@ -4905,7 +4917,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mathbf{e}^{\bar{\boldsymbol{p}}}=2\mathbf{\delta}^{\bar{\boldsymbol{p}}}=\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\sqrt{4-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}.\label{eq:A3}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}=\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-\sqrt{4-\left\Vert \mathbf{e}^{\bar{\boldsymbol{q}}}\right\Vert ^{2}}\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}.\label{eq:A3}
 \end{equation}
 
 \end_inset
@@ -4982,7 +4994,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\boldsymbol{\mathbf{\delta}}^{\bar{\boldsymbol{p}}}}{\delta_{0}^{\bar{\boldsymbol{p}}}}=2\dfrac{\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}.\label{eq:A6}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{\delta_{0}^{\bar{\boldsymbol{p}}}}=2\dfrac{\bar{\delta}_{0}\mathbf{e}^{\bar{\boldsymbol{q}}}-2\bar{\boldsymbol{\delta}}-\bar{\boldsymbol{\delta}}\times\mathbf{e}^{\bar{\boldsymbol{q}}}}{2\bar{\delta}_{0}+\bar{\boldsymbol{\delta}}\cdot\mathbf{e}^{\bar{\boldsymbol{q}}}}.\label{eq:A6}
 \end{equation}
 
 \end_inset
@@ -5139,7 +5151,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\mathbf{\delta}^{\bar{\boldsymbol{p}}}}{\parallel\mathbf{\delta}^{\bar{\boldsymbol{p}}}\parallel}\arcsin\parallel\mathbf{\delta}^{\bar{\boldsymbol{p}}}\parallel,\label{eq:A12}
+\mathbf{e}^{\bar{\boldsymbol{p}}}=2\dfrac{\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}}{\parallel\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\parallel}\arcsin\parallel\boldsymbol{\delta}^{\bar{\boldsymbol{p}}}\parallel,\label{eq:A12}
 \end{equation}
 
 \end_inset
@@ -5160,7 +5172,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-注意，所有过渡映射都使用
+注意，所有转移映射都使用
 \begin_inset Formula $\bar{\boldsymbol{\delta}}$
 \end_inset
 
@@ -5182,7 +5194,7 @@ noprefix "false"
 
 \end_inset
 
-)之后得到的结果。但是，我们的选择使过渡映射采用更简单的形式。另外，还要计算四元数
+)之后得到的结果。但是，我们的选择使转移映射采用更简单的形式。另外，还要计算四元数
 \begin_inset Formula $\bar{\boldsymbol{\delta}}$
 \end_inset
 
@@ -5260,7 +5272,7 @@ noprefix "false"
 \begin_inset Formula $t$
 \end_inset
 
-时的期望值ω 。执行
+时的期望值。执行
 \begin_inset Formula $\bar{\boldsymbol{\omega}}_{0}^{\prime}=\bar{\boldsymbol{\omega}}_{n-1\vert n-1}^{\prime}$
 \end_inset
 
@@ -5486,7 +5498,7 @@ noprefix "false"
 \begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}=\mathbf{0}$
 \end_inset
 
-。知道单位球体中的任意四元数都可以表示为中心四元数
+。知道单位球面中的任意四元数都可以表示为中心四元数
 \begin_inset Formula $\bar{\boldsymbol{q}}$
 \end_inset
 
@@ -5558,7 +5570,7 @@ status open
  & =\dfrac{1}{2}\left[\boldsymbol{\delta}\ast\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\ast\boldsymbol{\delta}\right]=\label{eq:A26b}\\
  & =\dfrac{1}{2}\left[\left(\begin{array}{c}
 \delta_{0}\\
-\boldsymbol{\mathbf{\delta}}
+\boldsymbol{\delta}
 \end{array}\right)\ast\left(\begin{array}{c}
 0\\
 \boldsymbol{\omega}^{\prime}
@@ -5567,15 +5579,15 @@ status open
 \bar{\boldsymbol{\omega}}^{\prime}
 \end{array}\right)\ast\left(\begin{array}{c}
 \delta_{0}\\
-\boldsymbol{\mathbf{\delta}}
+\boldsymbol{\delta}
 \end{array}\right)\right]=\label{eq:A26c}\\
  & =\dfrac{1}{2}\left(\begin{array}{c}
--\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)\cdot\boldsymbol{\mathbf{\delta}}\\
-\delta_{0}\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)-\left(\boldsymbol{\omega}^{\prime}+\bar{\boldsymbol{\omega}}^{\prime}\right)\times\boldsymbol{\mathbf{\delta}}
+-\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)\cdot\boldsymbol{\delta}\\
+\delta_{0}\left(\boldsymbol{\omega}^{\prime}-\bar{\boldsymbol{\omega}}^{\prime}\right)-\left(\boldsymbol{\omega}^{\prime}+\bar{\boldsymbol{\omega}}^{\prime}\right)\times\boldsymbol{\delta}
 \end{array}\right)=\label{eq:A26d}\\
  & =\dfrac{1}{2}\left(\begin{array}{c}
--\Delta\boldsymbol{\omega}^{\prime}\cdot\boldsymbol{\mathbf{\delta}}\\
-\delta_{0}\Delta\boldsymbol{\omega}^{\prime}-\left(2\bar{\boldsymbol{\omega}}^{\prime}+\Delta\boldsymbol{\omega}^{\prime}\right)\times\boldsymbol{\mathbf{\delta}}
+-\Delta\boldsymbol{\omega}^{\prime}\cdot\boldsymbol{\delta}\\
+\delta_{0}\Delta\boldsymbol{\omega}^{\prime}-\left(2\bar{\boldsymbol{\omega}}^{\prime}+\Delta\boldsymbol{\omega}^{\prime}\right)\times\boldsymbol{\delta}
 \end{array}\right).\label{eq:A26e}
 \end{align}
 
@@ -6275,7 +6287,7 @@ name "sec:C"
 \end_layout
 
 \begin_layout Standard
-我们的过渡映射方程(
+我们的转移映射方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:A3"
@@ -7286,7 +7298,7 @@ status open
 \end_layout
 
 \begin_layout Standard
-注意，我们的过渡映射的线性近似对于在
+注意，我们的转移映射的线性近似对于在
 \begin_inset Formula $\bar{\mathbf{e}}^{\bar{\boldsymbol{q}}}$
 \end_inset
 
