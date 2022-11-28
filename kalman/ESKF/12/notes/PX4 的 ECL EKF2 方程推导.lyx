@@ -219,7 +219,7 @@ status open
 \begin_inset Formula $k$
 \end_inset
 
-”时刻，一个真实状态的观测(或测量)
+”时刻，一个真实状态的观测(或测量) 
 \begin_inset Formula $\boldsymbol{z}_{k}$
 \end_inset
 
@@ -5719,6 +5719,34 @@ noprefix "false"
  章“惯性航位推算”中的讨论。
 \end_layout
 
+\begin_layout Subsection
+IMU偏差的自校正
+\end_layout
+
+\begin_layout Standard
+检查以上融合方程可以发现，没有一种传感器测量值直接校正增量角度偏差
+\begin_inset Formula $\boldsymbol{\Delta\theta}_{b}$
+\end_inset
+
+和增量速度偏差
+\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+\end_inset
+
+。这两者是通过校正后的姿态四元数
+\begin_inset Formula $q$
+\end_inset
+
+和速度
+\begin_inset Formula $\boldsymbol{V}_{NED}$
+\end_inset
+
+，以及各传感器的噪声一起影响在EKF中计算出来的，这种方法被称为传感器的自校正。但是因为没有测量值对其进行直接校正，这两个偏差有可能发散，所以需要对其进行限制，
+\begin_inset Formula $\left|\boldsymbol{\Delta\theta}_{b}\right|<20^{\circ}/s\cdot\Delta t,\ \left|\boldsymbol{\Delta V}_{b}\right|<0.4m/s^{2}\cdot\Delta t$
+\end_inset
+
+。
+\end_layout
+
 \begin_layout Section
 地形高差估计的EKF方程
 \begin_inset CommandInset label
@@ -10587,7 +10615,7 @@ noprefix "false"
 \end_layout
 
 \begin_layout Enumerate
-使用估计数据的模块。有多个，靠订阅消息获取估计新息，参见第 
+使用估计数据的模块。有多个，靠订阅消息获取估计信息，参见第 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:输出状态"
@@ -11833,7 +11861,7 @@ name "sec:高度数据的管理"
 \end_layout
 
 \begin_layout Standard
-在在24-EKF的状态向量中，
+在24-EKF的状态向量中，
 \begin_inset Formula $\boldsymbol{P}_{NED}=\left[\begin{array}{ccc}
 P_{N} & P_{E} & P_{D}\end{array}\right]^{\mathrm{T}}$
 \end_inset
@@ -11856,7 +11884,7 @@ noprefix "false"
 
 \end_inset
 
- 章维护的地形高度，仍然可以得到海拔高度，数据都是
+ 章维护的地形高度，仍然可以得到海拔高度，测量数据都是
 \begin_inset Formula $z$
 \end_inset
 
@@ -12577,7 +12605,7 @@ name "sec:估计器多实例的管理"
 为了容错，很多飞行器会有两个IMU，甚至会有两个磁力计。在以前的应用里，一个在工作一个在备份，这实际上是一种浪费。如今可以根据IMU和磁力计的数量以及自动驾驶仪
 的CPU能力，可以运行多个24-EKF实例，将IMU和磁力计的数据交叉输入以计算估计值。通过每个24-EKF实例使用不同的传感器组合，提供了一系列更广泛的传感器
 错误的保护。 通过比较每个24-EKF实例的内部一致性，EKF选择器能够确定具有最佳数据一致性的24-EKF和传感器组合。 这样可以检测和隔离IMU偏差、饱和或
-数据卡住等故障。
+数据卡顿等故障。
 \end_layout
 
 \begin_layout Standard
