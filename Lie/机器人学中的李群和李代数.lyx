@@ -1,0 +1,2986 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "机器人学中的李群和李代数"
+\pdf_author "Jonathan Selig"
+\pdf_keywords "Cliﬀord algebra, Lie algebras, Lie groups, rigid body motions, robotics."
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "机器人学中的李群和李代数"
+target "https://www.researchgate.net/publication/226140062_Lie_Groups_and_Lie_Algebras_in_Robotics"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Jonathan Selig
+\end_layout
+
+\begin_layout Date
+January 2006
+\end_layout
+
+\begin_layout Abstract
+在本讲座中，通过在标准三维欧几里得空间上的表示来介绍刚体运动群。与机器人学相关的是，机器人的连杆通常被建模为刚体。此外，机器人的有效载荷通常也是一个刚体，因此机
+器人学的大部分内容都与理解刚性变换和这些变换的序列有关。Chasles定理被提出，即：一般刚体运动是旋量运动，即围绕空间中的一条直线旋转，然后沿该直线平移。
+\end_layout
+
+\begin_layout Abstract
+我们介绍了Reuleaux低副。这些本质上是在刚体运动的某个子群下不变性表面。这种表面可以是机械关节的消光表面。通过这种方式，机器人中使用的基本机械关节可以被分
+类。这些表面在机器人方面也有其它应用。在机器人抓握中，它们正是使用无摩擦手指无法固定的表面。在机器人视觉中，这些表面的对称性是无法检测的运动。
+\end_layout
+
+\begin_layout Abstract
+接下来介绍了李代数。考虑了关于一个关节的单参数刚性运动。我们给出了李代数元素与
+\begin_inset Formula $1$
+\end_inset
+
+自由度关节之间的对应关系。定义了从李代数到群的指数映射，并使用指数乘积公式来描述串联机器人的正向运动学。对于指数映射的Rodrigues公式，使用一组互消幂等元
+被推导出来。
+\end_layout
+
+\begin_layout Abstract
+我们探索了指数映射的导数。特别地，推导了正向运动学的雅可比矩阵。我们还推导出更多的一般性结果，这些结果被用于说明逆向运动学问题如何能被投射为一组常微分方程。
+\end_layout
+
+\begin_layout Section
+简介—刚体运动
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+大量的机器人都与在空间中移动刚体有关。这里的机器人通常是如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示的工业机器人手臂，但这里介绍的大多数材料都适用于并联控制器和闭环机构。也有一些应用于移动机器人和机器人视觉。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Lie_Groups_and_Lie_Algebras_in_Robotics-1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+一个六关节工业机器人手臂。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常认为构成机器人连杆的部件是刚性的，并且有效载荷或工具也通常是一个刚体。因此，机器人学中的一个重要问题是跟踪这些刚体。
+\end_layout
+
+\begin_layout Standard
+众所周知，任意刚性变换都可以由旋转、平移和反射组成。物理机器无法执行反射，因此我们应该真正谈论适当的刚性变换，不包括反射。适当的刚性变换可以用
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵表示。这些矩阵可以被写成分区形式
+\begin_inset Formula 
+\[
+A=\left(\begin{array}{cc}
+R & \mathbf{t}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $R$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+旋转矩阵，
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+是平移向量。
+\end_layout
+
+\begin_layout Standard
+这些矩阵对空间中的点的作用给出为，
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\mathbf{p}^{\prime}\\
+1
+\end{array}\right)=\left(\begin{array}{cc}
+R & \mathbf{t}\\
+0 & 1
+\end{array}\right)\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+R\mathbf{p}+\mathbf{t}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{p}^{\prime}$
+\end_inset
+
+是一个点的原始的和变换后的位置向量。
+\end_layout
+
+\begin_layout Standard
+有两种方法可以使用这些矩阵来描述刚体的位置和方向。如果我们使用一个主动观点，我们可以就机体的标准“起始”位置达成一致，机体的任意后续位置和方向都由刚性变换来描述
+，该变换将机体的起始位置移动到其当前位置和方向。
+\end_layout
+
+\begin_layout Standard
+在被动观点中，一个坐标帧被固连在机体中，现在机体的位置和方向由坐标变换给出，该坐标变换将当前帧中的点的坐标用起始帧中的坐标表达出来。由于历史原因，这种被动观点似
+乎在机器人学中更受欢迎，尽管主动观点通常更简单。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Lie_Groups_and_Lie_Algebras_in_Robotics-2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+涉及两个坐标帧的向量。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这两种观点关系很简单。被动观点给出的变换是主动变换的逆映射。为了看到这一点，假设新帧的原点相对于原始帧在位置向量
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+处。现在，原始帧中的一个任意点
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+相对于新帧具有位置向量
+\begin_inset Formula $\mathbf{p}^{\prime}=\mathbf{p}-\mathbf{t}$
+\end_inset
+
+，参见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。一般来说，新帧的方向与原始帧的方向不同，假设它由旋转
+\begin_inset Formula $R$
+\end_inset
+
+给出。也就是说，新帧
+\begin_inset Formula $\mathbf{i}^{\prime}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{j}^{\prime}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{k}^{\prime}$
+\end_inset
+
+的基向量给出为，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{i}^{\prime}=R\mathbf{i},\quad\mathbf{j}^{\prime}=R\mathbf{j},\quad\mathbf{k}^{\prime}=R\mathbf{k}
+\]
+
+\end_inset
+
+如果我们将点的位置向量在原始帧中写为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{p}=x\mathbf{i}+y\mathbf{j}+z\mathbf{k}
+\]
+
+\end_inset
+
+则在新帧中，该点将具有坐标，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{p}^{\prime}=x^{\prime}\mathbf{i}^{\prime}+y^{\prime}\mathbf{j}^{\prime}+z^{\prime}\mathbf{k}^{\prime}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $x^{\prime}=\mathbf{p}^{\prime}\cdot\mathbf{i}^{\prime}=(\mathbf{p}-\mathbf{t})^{T}R\mathbf{i}$
+\end_inset
+
+诸如此类。因此新坐标可以用旧坐标表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+x^{\prime}\\
+y^{\prime}\\
+z^{\prime}
+\end{array}\right)=R^{T}\left(\begin{array}{c}
+x\\
+y\\
+z
+\end{array}\right)-R^{T}\mathbf{t}
+\]
+
+\end_inset
+
+将其与一般刚性变换的逆映射相比较，该逆映射给出为，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+R & \mathbf{t}\\
+0 & 1
+\end{array}\right)^{-1}=\left(\begin{array}{cc}
+R^{T} & -R^{T}\mathbf{t}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所有可能的刚体变换的空间是李群的一个例子。所以我们自然而然地被引导去研究李群。
+\end_layout
+
+\begin_layout Section
+李群
+\end_layout
+
+\begin_layout Standard
+一般来说，群可以被认为是对称性运算的集合。最初这些是代数方程的对称性。我们将对这里的几何图形的对称性感兴趣。
+\end_layout
+
+\begin_layout Standard
+群的定义是对称运算性质的抽象。有四个公理。所以从形式上看，一个群是一个带有二元操作的集合
+\begin_inset Formula $G$
+\end_inset
+
+，通常写成并列。
+\end_layout
+
+\begin_layout Itemize
+该群必须在其二元运算下是封闭的。
+\end_layout
+
+\begin_layout Itemize
+该运算必须是可结合的。
+\end_layout
+
+\begin_layout Itemize
+该群必须具有唯一的特征元素。
+\end_layout
+
+\begin_layout Itemize
+群中的每个元素都必须具有唯一的逆元素。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\quad\;\;$
+\end_inset
+
+注意，方形矩阵的集合可以很容易地成为群，群乘积通过矩阵乘法来建模，这当然是可结合的。群的特征元素由特征矩阵表示。群元素的逆由逆矩阵表示，因此要求集合中的矩阵都是
+非奇异的，这非常重要。
+\end_layout
+
+\begin_layout Standard
+李群必须满足以下附加公理。
+\end_layout
+
+\begin_layout Itemize
+群元素的集合
+\begin_inset Formula $G$
+\end_inset
+
+必须形成一个可微流形。
+\end_layout
+
+\begin_layout Itemize
+群运算必须是一个可微映射。做为一个映射，群运算发送
+\begin_inset Formula $G\times G\longrightarrow G$
+\end_inset
+
+ 。在成对的群元素
+\begin_inset Formula $g_{1},g_{2}\in G$
+\end_inset
+
+上，该映射具有效应
+\begin_inset Formula $\left(g_{1},g_{2}\right)\mapsto g_{1}g_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+从一个群元素到其逆元素的映射必须是一个可微映射。在一个元素
+\begin_inset Formula $g\in G$
+\end_inset
+
+上，该映射具有效应
+\begin_inset Formula $g\mapsto g^{-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\quad\;\;$
+\end_inset
+
+可微流形本质上是一个我们可以在其上进行微积分的空间。从局部来看，它看起来像
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+，但从全局来看，它可能非常不同。通常认为这样的流形是由
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的碎片拼凑而成的。标准示例是一个球面，它可以由两个补丁构成，一个覆盖北半球，另一个覆盖南半球。补丁也可以被认为是流形的局部坐标系统，一般来说，流形没有全局坐标系
+统。
+\end_layout
+
+\begin_layout Standard
+非奇异
+\begin_inset Formula $n\times n$
+\end_inset
+
+矩阵的集合就是这样一个李群的例子，该群的底层流形只是
+\begin_inset Formula $\mathbb{R}^{n^{2}}$
+\end_inset
+
+中的一个开集，也就是
+\begin_inset Formula $\mathbb{R}^{n^{2}}$
+\end_inset
+
+中删除了行列式为零的矩阵的闭集。其它公理显然是满足的，矩阵乘法显然是可微的，逆映射也是如此。对于
+\begin_inset Formula $n$
+\end_inset
+
+阶的一般线性群，该群通常表示为
+\begin_inset Formula $GL(n)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+该群的子空间也可以是群。旋转矩阵就是一个很好的例子。这些是
+\begin_inset Formula $3\times3$
+\end_inset
+
+的矩阵，它们也满足，
+\begin_inset Formula 
+\[
+R^{T}R=I,\quad\text{ and }\quad\mathrm{det}(R)=1.
+\]
+
+\end_inset
+
+这些方程在
+\begin_inset Formula $GL(3)$
+\end_inset
+
+中定义了一个非奇异的代数变体。可以证明这样的子空间是一个可微流形。在这种情况下，该群流形是
+\begin_inset Formula $3$
+\end_inset
+
+维投影空间
+\begin_inset Formula $\mathbb{PR}^{3}$
+\end_inset
+
+。该空间可以被认为是通过
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+中原点的直线的空间，或者被认为是具有对跖点标识的
+\begin_inset Formula $3$
+\end_inset
+
+维球面。该群通常表示为
+\begin_inset Formula $SO(3)$
+\end_inset
+
+，即
+\begin_inset Formula $3$
+\end_inset
+
+阶特殊正交群。
+\end_layout
+
+\begin_layout Standard
+接下来，我们将详细研究我们最关心的李群；刚体变换群。
+\end_layout
+
+\begin_layout Section
+有限旋量运动
+\end_layout
+
+\begin_layout Standard
+在机器人学中，刚性变换群被称为
+\begin_inset Formula $SE(3)$
+\end_inset
+
+，它被认为是表示特殊欧几里得群。它是
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的半直积，即围绕原点的旋转，加上
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+平移。
+\begin_inset Formula 
+\[
+SE(3)=SO(3)\rtimes\mathbb{R}^{3}
+\]
+
+\end_inset
+
+在直积中，这些因素不会相互作用。半直积表示旋转作用于平移。这可以从
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵中很容易看出，如果我们将两个这样的矩阵相乘，我们得到，
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+R_{2} & \mathbf{t}_{2}\\
+0 & 1
+\end{array}\right)\left(\begin{array}{cc}
+R_{1} & \mathbf{t}_{1}\\
+0 & 1
+\end{array}\right)=\left(\begin{array}{cc}
+R_{2}R_{1} & R_{2}\mathbf{t}_{1}+\mathbf{t}_{2}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+注意第一个平移向量在加到第二个平移向量之前是如何旋转的。
+\end_layout
+
+\begin_layout Standard
+群的半直积的群流形简单地只是各因子流形的笛卡尔乘积。因此，
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的群流形只是
+\begin_inset Formula $\mathbb{PR}^{3}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+的笛卡尔乘积。注意，这也是刚体的位形流形，刚体的每个位置和方向对应于一个群元素，反之亦然。
+\end_layout
+
+\begin_layout Standard
+在本节的最后，我们简要介绍一下Chasles的定理。这个最初是几何的定理可以追溯到19世纪30年代，远远早于Lie研究“连续群”的工作。该定理指出，每个刚性变换
+(纯平移除外)都是一个有限旋量(screw)运动。也就是说，围绕一条直线的旋转同时沿着该直线的平移，参见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Lie_Groups_and_Lie_Algebras_in_Robotics-3.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+一个有限旋量运动。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一个围绕穿过原点的直线的有限旋量运动具有以下形式
+\begin_inset Formula 
+\[
+A(\theta)=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+是着沿旋转轴的单位向量，
+\begin_inset Formula $\theta$
+\end_inset
+
+是旋转角度，并且
+\begin_inset Formula $p$
+\end_inset
+
+是运动旋距。由于旋转轴是
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+，我们还期望
+\begin_inset Formula $R\hat{\mathbf{x}}=\hat{\mathbf{x}}$
+\end_inset
+
+。换句话说，
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+是
+\begin_inset Formula $R$
+\end_inset
+
+的一个特征向量，其具有单位特征值。
+\end_layout
+
+\begin_layout Standard
+一般来说，如果直线不通过原点，则可以通过共轭来找到变换。假设
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是直线上的一个点，那么我们可以将
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+平移回原点，执行上面的旋量运动，最后将原点平移回
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+。这给出
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+I & \mathbf{u}\\
+0 & 1
+\end{array}\right)\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}\\
+0 & 1
+\end{array}\right)\left(\begin{array}{cc}
+I & \mathbf{u}\\
+0 & 1
+\end{array}\right)=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}+(I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+现在Chales定理等于：给定一个任意的刚性变换，它总是可以用上述形式表示。也就是说，我们必须求解，
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+R & \mathbf{t}\\
+0 & 1
+\end{array}\right)=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}+(I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+对于
+\begin_inset Formula $p$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+给定
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+和
+\begin_inset Formula $R$
+\end_inset
+
+，假设我们可以从
+\begin_inset Formula $R$
+\end_inset
+
+中找到
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+，那么就不难看出
+\begin_inset Formula 
+\[
+\frac{\theta p}{2\pi}=\hat{\mathbf{x}}\cdot\mathbf{t}.
+\]
+
+\end_inset
+
+这给出了旋距(pitch) 
+\begin_inset Formula $p$
+\end_inset
+
+。现在我们有一个对于
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的线性方程系统，
+\begin_inset Formula 
+\[
+(I-R)\mathbf{u}=\frac{\theta p}{2\pi}\hat{\mathbf{x}}-\mathbf{t}.
+\]
+
+\end_inset
+
+这些方程是奇异的，但
+\begin_inset Formula $(I-R)$
+\end_inset
+
+的核显然是
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+，因此这些方程是一致的，并且有可能找到
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的解，其上可与
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+的任意倍数相加。在实践中，合理的做法是要求
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+垂直于
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+。如果变换是纯平移，则
+\begin_inset Formula $R=I$
+\end_inset
+
+，并且上述运算就会失败，这是唯一无法找到
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的情况。纯旋转对应于零旋距，
+\begin_inset Formula $p=0$
+\end_inset
+
+。旋量运动和纯平移通常被视为具有有限旋距的旋量运动。
+\end_layout
+
+\begin_layout Standard
+注意，如果我们在同一条直线上有两个旋距相同的旋量运动，则这些变换可交换。只有在通过原点的直线上才需要检查这一点，共轭可以用来将其轻松扩展到一般情况。因此，举例来
+说，我们有
+\begin_inset Formula 
+\[
+\left(\begin{array}{cc}
+R\left(\theta_{2}\right) & \frac{\theta_{2}p}{2\pi}\hat{\mathbf{x}}\\
+0 & 1
+\end{array}\right)\left(\begin{array}{cc}
+R\left(\theta_{1}\right) & \frac{\theta_{1}p}{2\pi}\hat{\mathbf{x}}\\
+0 & 1
+\end{array}\right)=\left(\begin{array}{cc}
+R\left(\theta_{1}+\theta_{2}\right) & \frac{\left(\theta_{1}+\theta_{2}\right)p}{2\pi}\hat{\mathbf{x}}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+记住，这里的旋转是围绕同一轴的。由此可以看出，在同一直线上具有相同旋距的所有旋量运动的集合构成了一个群。也就是说，集合在群运算下是封闭的。这些是
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的单参数子群。
+\end_layout
+
+\begin_layout Section
+机械关节
+\end_layout
+
+\begin_layout Standard
+在19世纪末，Franz Reuleaux描述了他所说的“低副”[7]。这是一对表面，它们可以在保持表面接触的同时相对于彼此移动。他认为这些是最基本的机械关节的
+理想化。他发现了六种可能性，参见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Lie_Groups_and_Lie_Algebras_in_Robotics-4.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4"
+
+\end_inset
+
+六种Reuleaux低副
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以给出一个简单的群论证明，这些是唯一的可能性。关键的观察是，这些表面在
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的某些子群下必须是不变的。该子群表示表面的对称性。对于一个关节，该子群将给出关节两侧之间可能的相对运动。
+\end_layout
+
+\begin_layout Standard
+要找到这些表面，考虑在单参数( 
+\begin_inset Formula $1$
+\end_inset
+
+ 维)子群下表面的不变量。
+\end_layout
+
+\begin_layout Itemize
+零旋距子群对应于围绕一条直线的旋转。在这种子群下的表面不变量只是一个旋转表面。
+\end_layout
+
+\begin_layout Itemize
+有限旋距子群对应于一个固定方向的平移，因此任意平移表面在该子群下都是不变的。
+\end_layout
+
+\begin_layout Itemize
+具有有限的、非零旋距的子群有螺旋表面做为不变量。这给出了前三个的Reuleux低副。
+\end_layout
+
+\begin_layout Standard
+为了找到更多的Reuleux关节副，就要考虑如何将子群组合起来，以形成更大的子群。相对于这些更大的子群而言，表面的不变量必须具有上述属性中的一个以上。
+\end_layout
+
+\begin_layout Itemize
+所以圆柱体是一个旋转表面和一个平移表面(以及任意旋距的螺旋面)。
+\end_layout
+
+\begin_layout Itemize
+球面相对于空间
+\begin_inset Formula $SO(3)$
+\end_inset
+
+中的旋转子群是不变的。也就是说，球面是围绕其任意直径旋转的表面。
+\end_layout
+
+\begin_layout Itemize
+一个相对于
+\begin_inset Formula $SE(2)$
+\end_inset
+
+的平面是平面中的一组刚性变换。
+\end_layout
+
+\begin_layout Standard
+只要稍加注意，就有可能证明这些是唯一的可能性—Reuleaux发现了它们的全部！
+\end_layout
+
+\begin_layout Standard
+在机械工程中，与Reuleaux低副相对应的关节具有特殊的名称。与旋转副相对应的简单铰链关节称为旋转关节。对应于平移副的滑动关节称为棱柱关节，对应于螺旋副的关节
+为螺旋关节，有时为螺杆关节。球窝关节更恰当地称为球形关节，最后两对形成圆柱形和平面关节。
+\end_layout
+
+\begin_layout Standard
+实际的机器人可能有任意这些关节，但最常见的是驱动旋转关节或棱柱关节。旋转关节可以用电动机精确且容易地控制。当需要较大的力时，液压油缸可用作驱动棱柱关节。然而，对
+于液压油缸，行程长度很难精确控制。
+\end_layout
+
+\begin_layout Standard
+可以找到
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的所有子群。零维子群是点群，仅是旋转的子群，以及晶体学中熟悉的
+\begin_inset Formula $230$
+\end_inset
+
+个空间群。对于高维子群，参见Hervé [4]。
+\end_layout
+
+\begin_layout Section
+不可见运动与抓握
+\end_layout
+
+\begin_layout Standard
+Reuleaux低副出现在机器人领域的其它地方。
+\end_layout
+
+\begin_layout Standard
+考虑通过在物体表面放置无摩擦的手指来约束物体。手指只能施加垂直于物体表面的力。众所周知，有一些表面是无法被任意数量的无摩擦力手指完全约束的。这些表面正是Reul
+eaux低副。
+\end_layout
+
+\begin_layout Standard
+很容易看出，一个低副是“不可抓握的”，对称性将移动表面，使得表面上任意点的速度垂直于接触法线。因此，这些运动不能受到约束。
+\end_layout
+
+\begin_layout Standard
+要证明任意“不可抓握的”表面都必须具有对称性有点困难。本质上，表面的法线空间被认为是六维力-扭矩向量，称为力旋量(wrenches)。对于一个“不可抓握的”表面
+，法线不会张成力旋量的六维向量空间。因此，会有一个对偶六维向量，它会湮灭所有法线，这个向量会产生对称性。它是李代数的一个元素，见下文。
+\end_layout
+
+\begin_layout Standard
+在机器人视觉中，一个常见的问题是在给定场景的两个或多个连续图像的情况下重建对象的运动。光流场由图像强度的差异构成。然而，众所周知，物体的某些运动无法通过这种方式
+检测到，Horn给出了一个围绕任意直径旋转的球面的例子[5]。
+\end_layout
+
+\begin_layout Standard
+很明显，所有Reuleaux低副的运动都无法通过这种方式检测到。很明显，如果我们不考虑与连续图像完全同步的正多面体的离散对称性，这些运动将是唯一无法检测到的刚体
+运动。例如，如果四面体在我们捕获的图像之间执行对称，我们就不会期望看到它的运动。另一方面，我们并不局限于刚性运动。可能有其它运动对于这样的系统是不可见的，但这可
+能在很大程度上取决于照明条件。例如，再次考虑球面的运动，这一次球面正在远离观察者，同时以这样的速度扩展，即图像中的视轮廓保持不变。这在点光源下是可以检测到的，但
+在某些照明条件下，这样的移动是无法检测到的。
+\end_layout
+
+\begin_layout Section
+正向运动学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:6"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从上面可以清楚地看出，围绕一个
+\begin_inset Formula $1$
+\end_inset
+
+自由度关节的运动可以通过单参数子群来参数化。
+\end_layout
+
+\begin_layout Standard
+一般情况下是一个螺旋关节，其中对应的单参数子群可以写成
+\begin_inset Formula 
+\[
+A(\theta)=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}+(I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+是关节轴的方向，
+\begin_inset Formula $p$
+\end_inset
+
+是关节的旋距，并且
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是关节轴上某一点的位置向量。旋转关节在实际机器中最常见，这些关节对应于零旋距的子群，
+\begin_inset Formula 
+\[
+A(\theta)=\left(\begin{array}{cc}
+R & (I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+有时使用棱柱形关节，这种关节对应的单参数子群的形式是，
+\begin_inset Formula 
+\[
+A(\theta)=\left(\begin{array}{cc}
+I & \theta\hat{\mathbf{t}}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\hat{\mathbf{t}}$
+\end_inset
+
+是关节的方向。注意在上面的每一种情况下，当参数为零时，都会给出特征元素。
+\end_layout
+
+\begin_layout Standard
+对于串联机器人，如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，重要的是要找到末端执行器所经历的变换。这个问题通常被称为机器人的正向运动学。让我们为机器人固定一个标准或起始位置。在起始位形中，所有关节变量均为零。现在
+，为了将机器人移动到一组关节变量
+\begin_inset Formula $\boldsymbol{\theta}^{T}=\left(\theta_{1},\theta_{2},\theta_{3},\theta_{4},\theta_{5},\theta_{6}\right)$
+\end_inset
+
+指定的位置，我们可以从远端关节
+\begin_inset Formula $\theta_{6}$
+\end_inset
+
+开始依次执行关节运动；离机器人底座最远的那个。末端执行器围绕该关节的运动由矩阵
+\begin_inset Formula $A_{6}\left(\theta_{6}\right)$
+\end_inset
+
+给出。接下来，我们移动第五个关节，该关节的轴不会受到最后一个关节运动的影响，因此对工具的影响仅为
+\begin_inset Formula $A_{5}\left(\theta_{5}\right)$
+\end_inset
+
+。通过这种方式，我们可以沿着手臂向下移动，并推断出末端执行器或工具的整体变换，
+\begin_inset Formula 
+\[
+K\left(\boldsymbol{\theta}\right)=A_{1}\left(\theta_{1}\right)A_{2}\left(\theta_{2}\right)A_{3}\left(\theta_{3}\right)A_{4}\left(\theta_{4}\right)A_{5}\left(\theta_{5}\right)A_{6}\left(\theta_{6}\right)
+\]
+
+\end_inset
+
+该表达式表示机器人末端执行器相对于起始位形所经历的主动变换。如果我们知道机器人关节轴在起始位形中的位置，则可以直接计算“
+\begin_inset Formula $A$
+\end_inset
+
+”矩阵。
+\end_layout
+
+\begin_layout Standard
+在机器人文献中，也经常使用工具帧坐标，并根据该帧给出正向运动学。具体而言，工具帧是一个坐标系统，固连到机器人的末端执行器。我们寻求一种被动坐标变换，将固连在机器
+人基座连杆中的帧转换为工具帧中的坐标。假设在机器人的起始位置，从基座连杆帧到工具帧的主动变换由矩阵
+\begin_inset Formula $B$
+\end_inset
+
+给出。在机器人的任意位形中，基座连杆帧和工具帧之间的整体变换将由一个变换给出，即跟随末端执行器本身的变换，
+\begin_inset Formula $B$
+\end_inset
+
+到在起始位置中的工具帧的变换。这就是
+\begin_inset Formula $K\left(\boldsymbol{\theta}\right)B$
+\end_inset
+
+。这仍然是一个有效的变换，要将其转换为坐标变换，正如我们在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中看到的那样，我们只需求逆矩阵。因此，根据工具帧坐标的运动学给出为，
+\begin_inset Formula 
+\[
+\left(K\left(\boldsymbol{\theta}\right)B\right)^{-1}=B^{-1}A_{6}^{-1}\left(\theta_{6}\right)A_{5}^{-1}\left(\theta_{5}\right)A_{4}^{-1}\left(\theta_{4}\right)A_{3}^{-1}\left(\theta_{3}\right)A_{2}^{-1}\left(\theta_{2}\right)A_{1}^{-1}\left(\theta_{1}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+李代数
+\end_layout
+
+\begin_layout Standard
+在1900年，Ball发表了关于“旋量理论”的影响性论文[1]。事后看来，很明显，Ball的旋量只是
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的李代数的元素。更准确地说，运动旋量(twists)对应于李代数的元素，旋量(screws)是由李代数形成的射影空间的元素。这种区别在下文中不会用到。
+\end_layout
+
+\begin_layout Standard
+李群及其李代数的理论是几年后由Lie、Klein、Killing和Cartan等人发展起来的。所以现在我们可以利用李理论的观点，升级Ball的原始旋量理论。
+\end_layout
+
+\begin_layout Standard
+一个李群的李代数可以用几种不同的方式定义。历史上，李代数元素被认为是无穷小的群元素。在这里，我们可以将一个群的李代数看作特征元素处的切空间。为了找到李代数元素，
+我们在群中取一条曲线，并在特征处求导数。
+\end_layout
+
+\begin_layout Standard
+我们可以使用
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的
+\begin_inset Formula $4\times4$
+\end_inset
+
+表示来确定其李代数。正如我们在上面看到的，有限旋量运动可被写为，
+\begin_inset Formula 
+\[
+A(\theta)=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}+(I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $R$
+\end_inset
+
+是围绕轴线
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+的旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+，并且
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+是轴线上的点。这定义了一系列由
+\begin_inset Formula $\theta$
+\end_inset
+
+参数化的刚性变换。此外，当
+\begin_inset Formula $\theta=0$
+\end_inset
+
+时，我们得到特征变换。
+\end_layout
+
+\begin_layout Standard
+所以取
+\begin_inset Formula $\theta=0$
+\end_inset
+
+的导数给出了李代数的一个典型元素，
+\begin_inset Formula 
+\[
+S=\left(\begin{array}{cc}
+\Omega & \frac{\omega p}{2\pi}\hat{\mathbf{x}}-\Omega\mathbf{u}\\
+0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+这里，
+\begin_inset Formula $\Omega=dR(0)/d\theta$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+反对称矩阵。这可以通过辨别确保
+\begin_inset Formula $R$
+\end_inset
+
+为正交的关系来看出
+\begin_inset Formula 
+\[
+\frac{d}{d\theta}RR^{T}=\frac{dR}{d\theta}R^{T}+R\frac{dR^{T}}{d\theta}=\frac{dI}{d\theta}=0
+\]
+
+\end_inset
+
+当
+\begin_inset Formula $\theta=0$
+\end_inset
+
+时我们有这个
+\begin_inset Formula $R=I$
+\end_inset
+
+，并且因此，
+\begin_inset Formula 
+\[
+\frac{dR(0)}{d\theta}+{\frac{dR(0)^{T}}{d\theta}}^{T}=0
+\]
+
+\end_inset
+
+现在，
+\begin_inset Formula $3\times3$
+\end_inset
+
+反对称矩阵对应于
+\begin_inset Formula $3$
+\end_inset
+
+维向量，
+\begin_inset Formula 
+\[
+\Omega=\left(\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\omega_{i}$
+\end_inset
+
+是向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的分量。有了这些定义，矩阵
+\begin_inset Formula $\Omega$
+\end_inset
+
+与任意
+\begin_inset Formula $3$
+\end_inset
+
+维向量的乘积精确地建模为
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+与其的向量乘积，即对于任意
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+，
+\begin_inset Formula $\Omega\mathbf{p}=\boldsymbol{\omega}\times\mathbf{p}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，我们可以看到
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+是机体的角速度向量，
+\begin_inset Formula $\omega$
+\end_inset
+
+是其幅值。
+\end_layout
+
+\begin_layout Standard
+一个李代数
+\begin_inset Formula $se(3)$
+\end_inset
+
+的一般元素，是一个具有分区形式的矩阵，
+\begin_inset Formula 
+\[
+S=\left(\begin{array}{cc}
+\Omega & \mathbf{v}\\
+\mathbf{0} & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些矩阵形成
+\begin_inset Formula $6$
+\end_inset
+
+维向量空间，并且通常有用的是将该空间的元素写成
+\begin_inset Formula $6$
+\end_inset
+
+维向量，
+\begin_inset Formula 
+\[
+\mathbf{s}=\left(\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+伴随表示
+\end_layout
+
+\begin_layout Standard
+到目前为止，
+\begin_inset Formula $SE(3)$
+\end_inset
+
+这个群已经被它的
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵表示所定义了。有时，将群视为一个抽象的对象，并考虑其不同的表示是很有用的。这里的表示是一种线性表示，也就是说，我们通过矩阵或更普遍的线性变换来表示群元素。群
+乘积通过矩阵乘法来建模，并且通过矩阵逆来对群中的逆进行建模。对于任意一个群，都有许多这样的表示，这里我们看的是一个可以定义为任意群定义的表示。任意李群都线性地作
+用于其李代数。这种表示被称为群的伴随表示。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $SE(3)$
+\end_inset
+
+，根据
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵我们可以将其写为
+\begin_inset Formula 
+\[
+S^{\prime}=ASA^{-1}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $A=A(g)$
+\end_inset
+
+是与某个群元素
+\begin_inset Formula $g$
+\end_inset
+
+相对应的
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵。 根据
+\begin_inset Formula $6$
+\end_inset
+
+维向量所表示的李代数，我们得到，
+\begin_inset Formula 
+\[
+\mathbf{s}^{\prime}=\mathrm{Ad}(g)\mathbf{s}
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $\mathrm{Ad}(g)$
+\end_inset
+
+是一个
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵，表示群元素
+\begin_inset Formula $g$
+\end_inset
+
+，在这个伴随表示中的矩阵的一般形式为，
+\begin_inset Formula 
+\[
+\mathrm{Ad}(g)=\left(\begin{array}{cc}
+R & 0\\
+TR & R
+\end{array}\right)
+\]
+
+\end_inset
+
+同样，
+\begin_inset Formula $R$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+的旋转矩阵，但
+\begin_inset Formula $T$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+的反对称矩阵，对应于一个平移向量
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+该群对其李代数的这种伴随作用可以扩展到李代数对其自身的作用。根据
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的
+\begin_inset Formula $4\times4$
+\end_inset
+
+表示，这可以解释如下。将
+\begin_inset Formula $S_{2}$
+\end_inset
+
+做为李代数的一个元素，做为
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵。现在假设
+\begin_inset Formula $A(\theta)$
+\end_inset
+
+是一个对应于李代数元素
+\begin_inset Formula $S_{1}$
+\end_inset
+
+的单参数子群，即
+\begin_inset Formula $dA(0)/d\theta=S_{1}$
+\end_inset
+
+。现在，如果我们对该群的伴随作用进行微分，即
+\begin_inset Formula $AS_{2}A^{-1}$
+\end_inset
+
+，并设定
+\begin_inset Formula $\theta=0$
+\end_inset
+
+，我们就可以得到交换子，
+\begin_inset Formula 
+\[
+S_{1}S_{2}-S_{2}S_{1}=\left[S_{1},S_{2}\right]
+\]
+
+\end_inset
+
+根据
+\begin_inset Formula $6$
+\end_inset
+
+维向量，交换子可被写为，
+\begin_inset Formula 
+\[
+\mathrm{ad}\left(\mathbf{s}_{1}\right)\mathbf{s}_{2}=\left(\begin{array}{cc}
+\Omega_{1} & 0\\
+V_{1} & \Omega_{1}
+\end{array}\right)\left(\begin{array}{c}
+\boldsymbol{\omega}_{2}\\
+\mathbf{v}_{2}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+符号
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+，小写，表示李代数对自身的伴随作用。元素的交换子是李代数的一个关键特征，在机器人学中，这些交换子出现在机器人的动力学和许多其它 应用中。注意，在
+\begin_inset Formula $6$
+\end_inset
+
+维的李代数的表示的分区形式中，交换子可被写为，
+\begin_inset Formula 
+\[
+\left[\mathbf{s}_{1},\mathbf{s}_{2}\right]=\mathrm{ad}\left(\mathbf{s}_{1}\right)\mathbf{s}_{2}=\left(\begin{array}{c}
+\boldsymbol{\omega}_{1}\times\boldsymbol{\omega}_{2}\\
+\mathbf{v}_{1}\times\boldsymbol{\omega}_{2}+\boldsymbol{\omega}_{1}\times\mathbf{v}_{2}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+指数映射
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:9"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+指数映射将李代数元素发送到李群。在原点周围的区域中，映射保证为同胚，因此我们可以使用李代数做为群的坐标系统，但只能在包含特征的补丁中使用。对于
+\begin_inset Formula $SE(3)$
+\end_inset
+
+，这块补丁相当大，我们只需要将旋转角度保持在
+\begin_inset Formula $\pm\pi$
+\end_inset
+
+之间。指数映射提供了李代数和群之间的联系。
+\end_layout
+
+\begin_layout Standard
+一般来说，矩阵
+\begin_inset Formula $X$
+\end_inset
+
+的指数由级数定义，
+\begin_inset Formula 
+\[
+e^{X}=I+X+\frac{1}{2!}X^{2}+\frac{1}{3!}X^{3}+\cdots
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $X^{2}$
+\end_inset
+
+是矩阵乘积
+\begin_inset Formula $X^{2}=XX$
+\end_inset
+
+等等。可以证明这个级数收敛，如果
+\begin_inset Formula $X$
+\end_inset
+
+是一个表示李代数元素的矩阵，则指数
+\begin_inset Formula $e^{X}$
+\end_inset
+
+将是表示相应李群元素的矩阵。该映射本质上与表示无关。
+\end_layout
+
+\begin_layout Standard
+一对矩阵指数的乘积通常不是指数之和的指数。这是因为指数可能不可交换。然而，如果
+\begin_inset Formula $S$
+\end_inset
+
+是一个固定旋量，则很明显
+\begin_inset Formula 
+\[
+e^{\theta_{1}S}e^{\theta_{2}S}=e^{\left(\theta_{1}+\theta_{2}\right)S}
+\]
+
+\end_inset
+
+这也是单参数子群，我们可以写为，
+\begin_inset Formula 
+\[
+A(\theta)=e^{\theta S}
+\]
+
+\end_inset
+
+这意味着我们可以将一个旋量
+\begin_inset Formula $S$
+\end_inset
+
+与任意
+\begin_inset Formula $1$
+\end_inset
+
+自由度机械关节相关联。我们稍后将会看到如何做到这一点的细节。现在，只需观察六关节工业机器人的正向运动学，如上面第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述，可以写为
+\begin_inset Formula 
+\[
+K\left(\boldsymbol{\theta}\right)=e^{\theta_{1}S_{1}}e^{\theta_{2}S_{2}}e^{\theta_{3}S_{3}}e^{\theta_{4}S_{4}}e^{\theta_{5}S_{5}}e^{\theta_{6}S_{6}}
+\]
+
+\end_inset
+
+参数
+\begin_inset Formula $\theta_{i}$
+\end_inset
+
+，通常被称为关节参数，如果关节是旋转的，则称为关节角度。这种串联机器人的正向运动学形式是由Brockett [2]提出来的。
+\end_layout
+
+\begin_layout Standard
+按照承诺，我们接下来将研究如何将旋量与机械关节相关联。对于每个关节，我们可以关联一个单参数子群，
+\begin_inset Formula 
+\[
+e^{\theta S}=\left(\begin{array}{cc}
+R & \frac{\theta p}{2\pi}\hat{\mathbf{x}}+(I-R)\mathbf{u}\\
+0 & 1
+\end{array}\right)
+\]
+
+\end_inset
+
+其中旋量
+\begin_inset Formula $S$
+\end_inset
+
+具有这样的形式，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+S=\left(\begin{array}{cc}
+\Omega & \mathbf{v}\\
+0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+如果我们首先看旋转部分，我们期望
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+沿着旋转轴旋转，因此
+\begin_inset Formula $R\hat{\mathbf{x}}=\hat{\mathbf{x}}$
+\end_inset
+
+。将其与
+\begin_inset Formula $\theta$
+\end_inset
+
+进行微分，并设定
+\begin_inset Formula $\theta=0$
+\end_inset
+
+，我们得到，
+\begin_inset Formula 
+\[
+\Omega\hat{\mathbf{x}}=\boldsymbol{\omega}\times\hat{\mathbf{x}}=0
+\]
+
+\end_inset
+
+由此，我们可以得出结论，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+与
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+成正比。事实上，定义
+\begin_inset Formula $\boldsymbol{\omega}=\hat{\mathbf{x}}$
+\end_inset
+
+是有意义的，这样参数
+\begin_inset Formula $\theta$
+\end_inset
+
+就成为旋转角度。接下来，我们看一下
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+，旋量运动轴上的一个点。在这里，我们期望，
+\begin_inset Formula 
+\[
+A(\theta)\left(\begin{array}{c}
+\mathbf{u}\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+\mathbf{u}+\frac{\theta p}{2\pi}\hat{\mathbf{x}}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+也就是说，旋量轴上的一个点被简单地沿轴线平移。
+\begin_inset Formula $\theta=0$
+\end_inset
+
+时的导数给出为
+\begin_inset Formula 
+\[
+S\left(\begin{array}{c}
+\mathbf{u}\\
+1
+\end{array}\right)=\left(\begin{array}{c}
+\frac{p}{2\pi}\hat{\mathbf{x}}\\
+0
+\end{array}\right)
+\]
+
+\end_inset
+
+这就是，
+\begin_inset Formula 
+\[
+\Omega\mathbf{u}+\mathbf{v}=\frac{\theta p}{2\pi}\hat{\mathbf{x}}
+\]
+
+\end_inset
+
+用
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+替换
+\begin_inset Formula $\hat{\mathbf{x}}$
+\end_inset
+
+并重新排列，我们得到结果
+\begin_inset Formula 
+\[
+\mathbf{v}=\mathbf{u}\times\boldsymbol{\omega}+\frac{p}{2\pi}\boldsymbol{\omega}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，如果关节的旋距消失
+\begin_inset Formula $p=0$
+\end_inset
+
+，即关节是纯旋转的，则我们与之相关联的旋量为，
+\begin_inset Formula 
+\[
+\mathbf{s}=\left(\begin{array}{c}
+\omega\\
+\mathbf{u}\times\boldsymbol{\omega}
+\end{array}\right)
+\]
+
+\end_inset
+
+其由构成关节轴的直线的Plücker坐标简单地给出。对于螺旋关节，我们在旋量的
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+部分添加额外的项
+\begin_inset Formula $\frac{p}{2\pi}\boldsymbol{\omega}$
+\end_inset
+
+，其中
+\begin_inset Formula $p$
+\end_inset
+
+是关节的旋距。上述内容不适用于棱柱形关节，但它们很容易处理。使用与上述相同的论证，一个允许在
+\begin_inset Formula $\hat{\mathbf{v}}$
+\end_inset
+
+方向上移动的棱柱形关节将由一个旋量表示为，
+\begin_inset Formula 
+\[
+\mathbf{s}=\left(\begin{array}{c}
+\mathbf{0}\\
+\hat{\mathbf{v}}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般来说，计算矩阵指数相当困难，但在刚体运动的情况下，我们很幸运，这个问题相对简单。
+\end_layout
+
+\begin_layout Standard
+考虑一下
+\begin_inset Formula $4\times4$
+\end_inset
+
+表示中的一个典型元素，
+\begin_inset Formula 
+\[
+S=\left(\begin{array}{cc}
+\Omega & \mathbf{v}\\
+0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+任意这样的矩阵都满足多项式方程，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+S^{4}+|\omega|^{2}S^{2}=0
+\]
+
+\end_inset
+
+这可以通过直接计算来检查。该方程因式分解为
+\begin_inset Formula 
+\[
+S^{4}+|\omega|^{2}S^{2}=S^{2}\left(S+i|\omega|I\right)\left(S-i|\omega|I\right)
+\]
+
+\end_inset
+
+现在我们可以找到
+\begin_inset Formula $S$
+\end_inset
+
+的三个矩阵函数，标记为
+\begin_inset Formula $P_{0}$
+\end_inset
+
+、
+\begin_inset Formula $P_{+}$
+\end_inset
+
+和
+\begin_inset Formula $P_{-}$
+\end_inset
+
+, 如果
+\begin_inset Formula $i\neq j$
+\end_inset
+
+，则满足
+\begin_inset Formula $P_{i}^{2}=P_{i}$
+\end_inset
+
+和
+\begin_inset Formula $P_{i}P_{j}=0$
+\end_inset
+
+，这样的系统被称为互消幂等元系统。这些矩阵给出为，
+\begin_inset Formula 
+\[
+\begin{aligned}P_{0} & =\frac{1}{|\omega|^{2}}\left(S^{2}+|\omega|^{2}I\right),\\
+P_{+} & =\frac{1}{2i|\omega|^{3}}S^{2}\left(S-i|\omega|I\right),\\
+P_{-} & =\frac{-1}{2i|\omega|^{3}}S^{2}\left(S+i|\omega|I\right).
+\end{aligned}
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $i=\sqrt{-1}$
+\end_inset
+
+是虚数单位。这里我们还需要幂零，
+\begin_inset Formula $N_{0}=\frac{1}{|\omega|^{2}}S\left(S^{2}+|\omega|^{2}I\right)$
+\end_inset
+
+。该幂零满足
+\begin_inset Formula $N_{0}^{2}=0$
+\end_inset
+
+，
+\begin_inset Formula $N_{0}P_{+}=N_{0}P_{-}=0$
+\end_inset
+
+和
+\begin_inset Formula $N_{0}P_{0}=N_{0}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+所有这些的要点是，我们可以将我们的原始矩阵
+\begin_inset Formula $S$
+\end_inset
+
+写为
+\begin_inset Formula 
+\[
+S=N_{0}-i|\omega|P_{+}+i|\omega|P_{-}
+\]
+
+\end_inset
+
+并因此，当我们取
+\begin_inset Formula $S$
+\end_inset
+
+的幂时，我们只需要取
+\begin_inset Formula $P_{+}$
+\end_inset
+
+和
+\begin_inset Formula $P_{-}$
+\end_inset
+
+的系数的幂，因为没有交叉项，并且矩阵的幂是简单的。因此，指数化后我们得到，
+\begin_inset Formula 
+\[
+e^{S}=I+N_{0}+\left(e^{-i|\omega|}-1\right)P_{+}+\left(e^{i|\omega|}-1\right)P_{-}
+\]
+
+\end_inset
+
+我们也可以直接看出，
+\begin_inset Formula $I=P_{0}+P_{+}+P_{-}$
+\end_inset
+
+ ，因此指数可以简化为，
+\begin_inset Formula 
+\[
+e^{S}=P_{0}+N_{0}+e^{-i|\omega|}P_{+}+e^{i|\omega|}P_{-}
+\]
+
+\end_inset
+
+最后，将
+\begin_inset Formula $S$
+\end_inset
+
+代入回去，并用三角函数替换复指数，我们得到结果
+\begin_inset Formula 
+\[
+e^{S}=I+S+\frac{1}{|\omega|^{2}}\left(1-\cos|\omega|\right)S^{2}+\frac{1}{|\omega|^{3}}\left(|\omega|-\sin|\omega|\right)S^{3}
+\]
+
+\end_inset
+
+群
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的相应公式被称为Rodrigues公式。 
+\end_layout
+
+\begin_layout Standard
+我们可以对
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的伴随表示产生类似的结果。在该表示中李代数的典型元素给出为，
+\begin_inset Formula 
+\[
+\mathrm{ad}(\mathbf{s})=\left(\begin{array}{cc}
+\Omega & 0\\
+V & \Omega
+\end{array}\right)
+\]
+
+\end_inset
+
+通常，我们期望
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵满足
+\begin_inset Formula $6$
+\end_inset
+
+次多项式方程，然而，这些矩阵满足
+\begin_inset Formula $5$
+\end_inset
+
+次方程，
+\begin_inset Formula 
+\[
+\mathrm{ad}(\mathbf{s})^{5}+2|\omega|^{2}\mathrm{ad}(\mathbf{s})^{3}+|\omega|^{4}\mathrm{ad}(\mathbf{s})=0
+\]
+
+\end_inset
+
+这种关系可以用以下面一对
+\begin_inset Formula $3\times3$
+\end_inset
+
+反对称矩阵之间的关系轻松验证，
+\begin_inset Formula 
+\[
+\Omega^{2}V\Omega^{2}+|\omega|^{2}(\Omega V+V\Omega)=-|\omega|^{4}V
+\]
+
+\end_inset
+
+反过来，这种关系可以通过使用这些矩阵和向量乘积之间的连接来验证，对于任意向量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+，
+\begin_inset Formula $V\mathbf{x}=\mathbf{v}\times\mathbf{x}$
+\end_inset
+
+，然后使用向量三重积的熟悉公式进行验证。
+\end_layout
+
+\begin_layout Standard
+上述的
+\begin_inset Formula $5$
+\end_inset
+
+次方程因式分解为
+\begin_inset Formula 
+\[
+\mathrm{ad}(\mathbf{s})^{5}+2|\omega|^{2}\mathrm{ad}(\mathbf{s})^{3}+|\omega|^{4}\mathrm{ad}(\mathbf{s})=\mathrm{ad}(\mathbf{s})\left(\mathrm{ad}(\mathbf{s})+i|\omega|I\right)^{2}\left(\mathrm{ad}(\mathbf{s})-i|\omega|I\right)^{2}
+\]
+
+\end_inset
+
+所以这一次我们有两个重复因子，因此我们像以前一样寻找三个幂等元和两个幂零元，一个与每个重复因子相关。
+\begin_inset Formula 
+\[
+\begin{aligned}P_{0} & =\frac{1}{|\omega|^{4}}\left(\mathrm{ad}(\mathbf{s})+i|\omega|I\right)^{2}\left(\mathrm{ad}(\mathbf{s})-i|\omega|I\right)^{2}\\
+ & =\left(\mathrm{ad}(\mathbf{s})^{4}+2|\omega|^{2}\mathrm{ad}(\mathbf{s})^{2}+|\omega|^{4}I\right)/|\omega|^{4}\\
+P_{+} & =\frac{-1}{4|\omega|^{4}}\mathrm{ad}(\mathbf{s})\left(\mathrm{ad}(\mathbf{s})-i|\omega|I\right)^{2}\left(2\mathrm{ad}(\mathbf{s})+3i|\omega|I\right)\\
+ & =-\left(2\mathrm{ad}(\mathbf{s})^{4}-i|\omega|\mathrm{ad}(\mathbf{s})^{3}+4|\omega|^{2}\mathrm{ad}(\mathbf{s})^{2}-3i|\omega|^{3}\mathrm{ad}(\mathbf{s})\right)/4|\omega|^{4},\\
+N_{+} & =\frac{1}{4|\omega|^{4}}\mathrm{ad}(\mathbf{s})\left(\mathrm{ad}(\mathbf{s})+i|\omega|I\right)\left(\mathrm{ad}(\mathbf{s})-i|\omega|I\right)^{2}\\
+ & =\left(\mathrm{ad}(\mathbf{s})^{4}-i|\omega|\mathrm{ad}(\mathbf{s})^{3}+|\omega|^{2}\mathrm{ad}(\mathbf{s})^{2}-i|\omega|^{3}\mathrm{ad}(\mathbf{s})\right)/4|\omega|^{4},\\
+P_{-} & =\frac{-1}{4|\omega|^{4}}\mathrm{ad}(\mathbf{s})\left(\mathrm{ad}(\mathbf{s})+i|\omega|I\right)^{2}\left(2\mathrm{ad}(\mathbf{s})-3i|\omega|I\right)\\
+ & =-\left(2\mathrm{ad}(\mathbf{s})^{4}+i|\omega|\mathrm{ad}(\mathbf{s})^{3}+4|\omega|^{2}\mathrm{ad}(\mathbf{s})^{2}+3i|\omega|^{3}\mathrm{ad}(\mathbf{s})\right)/4|\omega|^{4},\\
+N_{-} & =\frac{1}{4|\omega|^{4}}\mathrm{ad}(\mathbf{s})\left(\mathrm{ad}(\mathbf{s})+i|\omega|I\right)^{2}\left(\mathrm{ad}(\mathbf{s})-i|\omega|I\right)\\
+ & =\left(\mathrm{ad}(\mathbf{s})^{4}+i|\omega|\mathrm{ad}(\mathbf{s})^{3}+|\omega|^{2}\mathrm{ad}(\mathbf{s})^{2}+I|\omega|^{3}\mathrm{ad}(\mathbf{s})\right)/4|\omega|^{4}.
+\end{aligned}
+\]
+
+\end_inset
+
+通过检查，我们有
+\begin_inset Formula 
+\[
+\mathrm{ad}(\mathbf{s})=-i|\omega|P_{+}-i|\omega|N_{+}+i|\omega|P_{-}+i|\omega|N_{-}
+\]
+
+\end_inset
+
+并和往常一样我们也有，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+I=P_{0}+P_{+}+P_{-}
+\]
+
+\end_inset
+
+注意，对于矩阵
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset Formula $N$
+\end_inset
+
+，使得满足
+\begin_inset Formula $P^{2}=P$
+\end_inset
+
+，
+\begin_inset Formula $N^{2}=0$
+\end_inset
+
+和
+\begin_inset Formula $PN=N$
+\end_inset
+
+的条件，它们之和的第
+\begin_inset Formula $k$
+\end_inset
+
+次方简单地为
+\begin_inset Formula $(P+N)^{k}=P+kN$
+\end_inset
+
+。因此，从
+\begin_inset Formula $se(3)$
+\end_inset
+
+的伴随表示来看，矩阵
+\begin_inset Formula $\mathrm{ad}(\mathbf{s})$
+\end_inset
+
+的指数可以写为
+\begin_inset Formula 
+\[
+e^{\mathrm{ad}(\mathbf{s})}=I+\left(e^{-i|\omega|}-1\right)P_{+}-i|\omega|e^{-i|\omega|}N_{+}+\left(e^{i|\omega|}-1\right)P_{-}+i|\omega|e^{i|\omega|}N_{-}
+\]
+
+\end_inset
+
+或者
+\begin_inset Formula 
+\[
+e^{\mathrm{ad}(\mathbf{s})}=P_{0}+e^{-i|\omega|}P_{+}-i|\omega|e^{-i|\omega|}N_{+}+e^{i|\omega|}P_{-}+i|\omega|e^{i|\omega|}N_{-}
+\]
+
+\end_inset
+
+将
+\begin_inset Formula $\mathrm{ad}(\mathbf{s})$
+\end_inset
+
+的次方中的幂等元和幂零元展开，我们最终得到结果
+\begin_inset Formula 
+\[
+\begin{aligned}e^{\mathrm{ad}(\mathbf{s})}=I & +\frac{1}{2|\omega|}\left(3\sin|\omega|-|\omega|\cos|\omega|\right)\mathrm{ad}(\mathbf{s})\\
+ & +\frac{1}{2|\omega|^{2}}\left(4-4\cos|\omega|-|\omega|\sin|\omega|\right)\mathrm{ad}^{2}(\mathbf{s})^{2}\\
+ & +\frac{1}{2|\omega|^{3}}\left(\sin|\omega|-|\omega|\cos|\omega|\right)\mathrm{ad}(\mathbf{s})^{3}\\
+ & +\frac{1}{2|\omega|^{4}}\left(2-2\cos|\omega|-|\omega|\sin|\omega|\right)\mathrm{ad}(\mathbf{s})^{4}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+指数的导数
+\end_layout
+
+\begin_layout Standard
+假设我们在李群(这里是
+\begin_inset Formula $SE(3)$
+\end_inset
+
+ )中给定一条路径做为指数，
+\begin_inset Formula 
+\[
+g(t)=e^{X(t)}.
+\]
+
+\end_inset
+
+我们如何才能找到这个公式的导数，并且它代表什么？
+\end_layout
+
+\begin_layout Standard
+在上一节中，我们遇到了一个简单情况，即李代数
+\begin_inset Formula $X(t)$
+\end_inset
+
+中的路径只是
+\begin_inset Formula $tX_{0}$
+\end_inset
+
+，其中
+\begin_inset Formula $X_{0}$
+\end_inset
+
+是代数中的常量元素。这种路径的导数很简单，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d}{dt}e^{tX_{0}}=X_{0}e^{tX_{0}}
+\]
+
+\end_inset
+
+然而，当
+\begin_inset Formula $X(t)$
+\end_inset
+
+更加复杂时，这就不再有效。问题是
+\begin_inset Formula $dX/dt=\dot{X}$
+\end_inset
+
+不一定与
+\begin_inset Formula $X$
+\end_inset
+
+可交换，因此对指数的扩展进行微分给出为
+\begin_inset Formula 
+\[
+\begin{aligned}\frac{d}{dt}e^{X}= & \dot{X}+\frac{1}{2!}(\dot{X}X+X\dot{X})+\frac{1}{3!}\left(\dot{X}X^{2}+X\dot{X}X+X^{2}\dot{X}\right)+\cdots\\
+ & \cdots+\frac{1}{(k+1)!}\left(\dot{X}X^{k}+X\dot{X}X^{k-1}+\cdots+X^{k}\dot{X}\right)+\cdots
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在文献[3]中，Hausdorﬀ表明
+\begin_inset Formula 
+\[
+\left(\frac{d}{dt}e^{X}\right)e^{-X}=\dot{X}+\frac{1}{2!}[X,\dot{X}]+\frac{1}{3!}[X,[X,\dot{X}]]+\frac{1}{4!}[X,[X,[X,\dot{X}]]]+\cdots
+\]
+
+\end_inset
+
+这个方程的右侧将被缩写为
+\begin_inset Formula $X_{d}$
+\end_inset
+
+。注意，这个矩阵由迭代交换子的总和组成，因此
+\begin_inset Formula $X_{d}$
+\end_inset
+
+是李代数的一个元素。上述Hausdorﬀ公式意味着
+\begin_inset Formula 
+\[
+\frac{d}{dt}e^{X}=X_{d}e^{X}
+\]
+
+\end_inset
+
+在旋转群
+\begin_inset Formula $SO(3)$
+\end_inset
+
+中，这意味着
+\begin_inset Formula $X_{d}$
+\end_inset
+
+对应于运动的角速度。在
+\begin_inset Formula $SE(3)$
+\end_inset
+
+中，刚体运动群的相应向量是运动的速度旋量。该方程在几个应用中都很重要。例如，在一个典型的动力学模拟中，运动方程将被数值求解，以确定速度旋量，或角速度和线速度。通
+常必须从这些量中找到变换矩阵。本质上，必须求解上述方程，以确定所考虑的刚体所经历的刚性转换。在大多数商业应用中，通常采用初级的方法来求解这个问题。这是因为计算速
+度远比精度重要。
+\end_layout
+
+\begin_layout Standard
+使用向量来表示李代数，Hausdorﬀ公式可以简洁地写为
+\begin_inset Formula 
+\[
+\mathbf{x}_{d}=\sum_{k=0}^{\infty}\frac{1}{(k+1)!}\mathrm{ad}^{k}(\mathbf{x})\dot{\mathbf{x}}
+\]
+
+\end_inset
+
+与往常一样，
+\begin_inset Formula $\mathrm{ad}()$
+\end_inset
+
+是李代数的伴随表示。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $SE(3)$
+\end_inset
+
+，我们可以使用上文第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的幂等元和幂零元来计算这个无限总和。这给出了
+\begin_inset Formula 
+\[
+\begin{aligned}\sum_{k=0}^{\infty}\frac{1}{(k+1)!}\mathrm{ad}(\mathbf{s})^{k}= & P_{0}+\sum_{k=0}^{\infty}\frac{(-i|\omega|)^{k}}{(k+1)!}P_{+}+\sum_{k=0}^{\infty}\frac{k(-i|\omega|)^{k}}{(k+1)!}N_{+}\\
+ & +\sum_{k=0}^{\infty}\frac{(i|\omega|)^{k}}{(k+1)!}P_{-}+\sum_{k=0}^{\infty}\frac{k(i|\omega|)^{k}}{(k+1)!}N_{-}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算无限总和给出
+\begin_inset Formula 
+\[
+\begin{aligned}\sum_{k=0}^{\infty}\frac{1}{(k+1)!}\mathrm{ad}(\mathbf{s})^{k}=P_{0} & +\frac{1}{-i|\omega|}\left(e^{-i|\omega|}-1\right)P_{+}\\
+ & +\frac{1}{-i|\omega|}\left((-i|\omega|-1)e^{-i|\omega|}+1\right)N_{+}\\
+ & +\frac{1}{i|\omega|}\left(e^{i|\omega|}-1\right)P_{-}\\
+ & +\frac{1}{i|\omega|}\left((i|\omega|-1)e^{i|\omega|}+1\right)N_{-}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入幂等元和幂零元给出
+\begin_inset Formula 
+\[
+\begin{aligned}\sum_{k=0}^{\infty}\frac{1}{(k+1)!}\mathrm{ad}(\mathbf{s})^{k}=I & +\frac{1}{2|\omega|^{2}}(4-|\omega|\sin|\omega|-4\cos|\omega|)\mathrm{ad}(\mathbf{s})\\
+ & +\frac{1}{2|\omega|^{3}}(4|\omega|-5\sin|\omega|+|\omega|\cos|\omega|)\mathrm{ad}(\mathbf{s})^{2}\\
+ & +\frac{1}{2|\omega|^{4}}(2-|\omega|\sin|\omega|-2\cos|\omega|)\mathrm{ad}(\mathbf{s})^{3}\\
+ & +\frac{1}{2|\omega|^{5}}(2|\omega|-3\sin|\omega|+|\omega|\cos|\omega|)\mathrm{ad}(\mathbf{s})^{4}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种格式对动力学模拟不是特别有用，把
+\begin_inset Formula $\dot{\mathbf{s}}$
+\end_inset
+
+做为方程的主题会更有用。这将允许使用直接数值方法。这样的求逆在一般情况下是可能的，参见文献[3]。其结果是另一个无限级数，但不必遵循此路线，因为可以使用幂等元更
+直接地求逆上述公式。回想一下
+\begin_inset Formula $P_{0}+P_{+}+P_{-}=I$
+\end_inset
+
+所以对于任意常数
+\begin_inset Formula $a_{i},b_{i}$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\begin{aligned}\left(a_{0}P_{0}\right. & \left.+\:a_{+}P_{+}+b_{+}N_{+}+a_{-}P_{-}+b_{-}N_{-}\right)\\
+ & *\left(\frac{1}{a_{0}}P_{0}+\frac{1}{a_{+}}P_{+}-\frac{b_{+}}{a_{+}^{2}}N_{+}+\frac{1}{a_{-}}P_{-}-\frac{b_{-}}{a_{-}^{2}}N_{-}\right)\\
+= & \left(P_{0}+P_{+}+P_{-}\right)=I
+\end{aligned}
+\]
+
+\end_inset
+
+这些计算有点超出了手工计算的范围，但使用计算机代数软件包，如Maple或Mathematica，则很容易计算出来。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\mathbf{s}_{d}$
+\end_inset
+
+是满足
+\begin_inset Formula $\frac{d}{dt}e^{\mathrm{ad}(\mathbf{s})}=\mathrm{ad}\left(\mathbf{s}_{d}\right)e^{\mathrm{ad}(\mathbf{s})}$
+\end_inset
+
+的李代数元素，则我们有结果
+\begin_inset Formula 
+\[
+\begin{aligned}\dot{\mathbf{s}}= & \left(I-\frac{1}{2}\mathrm{ad}(\mathbf{s})+\left(\frac{2}{|\omega|^{2}}\frac{|\omega|+3\sin|\omega|}{4|\omega|(\cos|\omega|-1)}\right)\mathrm{ad}(\mathbf{s})^{2}+\right.\\
+ & \left.+\left(\frac{1}{|\omega|^{4}}+\frac{|\omega|+\sin|\omega|}{4|\omega|^{3}(\cos|\omega|-1)}\right)\mathrm{ad}(\mathbf{s})^{4}\right)\mathbf{s}_{d}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意上面没有
+\begin_inset Formula $\mathrm{ad}(\mathbf{s})^{3}$
+\end_inset
+
+的项。
+\end_layout
+
+\begin_layout Standard
+最后在这里，我们来看看这些导数的解释。考虑一个以时间
+\begin_inset Formula $t$
+\end_inset
+
+为参数的刚性运动的一般序列，则我们可以从上面看出
+\begin_inset Formula 
+\[
+\frac{dA}{dt}A^{-1}=S_{d}
+\]
+
+\end_inset
+
+是李代数的一个元素，它对应于瞬时速度。
+\begin_inset Formula $\Omega$
+\end_inset
+
+或
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+部分是角速度，而
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+部分是旋量轴上某一点的线速度。我们可以找到以这种运动方式运动的机体上的这一个点的速度，如下所示。在时间
+\begin_inset Formula $t=0$
+\end_inset
+
+时，假设该点具有位置向量
+\begin_inset Formula $\mathbf{p}_{0}$
+\end_inset
+
+，在随后的任意时间，其位置给出为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)=A(t)\left(\begin{array}{c}
+\mathbf{p}_{0}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+将其相对于时间进行微分，得到
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\dot{\mathbf{p}}\\
+0
+\end{array}\right)=\dot{A}A^{-1}\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)=S_{d}\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+因此，该点的速度为，
+\begin_inset Formula 
+\[
+\dot{\mathbf{p}}=\boldsymbol{\omega}\times\mathbf{p}+\mathbf{v}
+\]
+
+\end_inset
+
+旋量
+\begin_inset Formula $S_{d}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{s}_{d}$
+\end_inset
+
+将被称为运动的速度旋量。
+\end_layout
+
+\begin_layout Section
+雅可比矩阵
+\end_layout
+
+\begin_layout Standard
+机器人运动学的指数形式对于推导微分性质很有用，例如雅可比矩阵。
+\end_layout
+
+\begin_layout Standard
+考虑附着到机器人末端执行器的一个点，在机器人的起始位置，该点具有位置向量
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+。因此，在机器人后续的任意位形中，该点的位置将给出为，
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\mathbf{p}^{\prime}\\
+1
+\end{array}\right)=K(\boldsymbol{\theta})\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+如果关节以
+\begin_inset Formula $\dot{\theta}_{1},\dot{\theta}_{2},\ldots\dot{\theta}_{6}$
+\end_inset
+
+的速率移动，则该点的速度将为，
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\dot{\mathbf{p}}\\
+0
+\end{array}\right)=\left(\dot{\theta}_{1}\frac{\partial K}{\partial\theta_{1}}+\dot{\theta}_{2}\frac{\partial K}{\partial\theta_{2}}+\cdots+\dot{\theta}_{6}\frac{\partial K}{\partial\theta_{6}}\right)\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+偏导数在起始位置处容易计算，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\partial K}{\partial\theta_{i}}=e^{\theta_{1}S_{1}}\cdots S_{i}e^{\theta_{i}S_{i}}\cdots e^{\theta_{6}S_{6}}=S_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以在起始位置，该点的速度是，
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\dot{\mathbf{p}}\\
+0
+\end{array}\right)=\left(\dot{\theta}_{1}S_{1}+\dot{\theta}_{2}S_{2}+\cdots+\dot{\theta}_{6}S_{6}\right)\left(\begin{array}{c}
+\mathbf{p}\\
+1
+\end{array}\right)
+\]
+
+\end_inset
+
+这比它看起来更普遍。如果我们选择机器人的当前位形做为起始位形，则上述论点将适用。因此，这里的
+\begin_inset Formula $S_{i}$
+\end_inset
+
+表示第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的当前位置。或者，我们可以让
+\begin_inset Formula $\mathbf{s}_{i}^{0}$
+\end_inset
+
+表示机器人关节旋量的起始位置。关节的后续的位形给出为，
+\begin_inset Formula 
+\[
+\mathbf{s}_{i}=e^{\theta_{1}\mathrm{ad}\left(\mathbf{s}_{1}^{0}\right)}e^{\theta_{2}\mathrm{ad}\left(\mathbf{s}_{2}^{0}\right)}\ldots e^{\theta_{i-1}\mathrm{ad}\left(\mathbf{s}_{i-1}^{0}\right)}\mathbf{s}_{i}^{0}
+\]
+
+\end_inset
+
+因此，我们有
+\begin_inset Formula 
+\[
+\frac{\partial K}{\partial\theta_{i}}K^{-1}=S_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，我们可以通过简单地带入李代数的伴随表示来找到机器人末端执行器的速度旋量。因此，
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right)=\mathbf{s}_{1}\dot{\theta}_{1}+\mathbf{s}_{2}\dot{\theta}_{2}+\cdots+\mathbf{s}_{6}\dot{\theta}_{6}
+\]
+
+\end_inset
+
+如果我们将其与速度
+\begin_inset Formula $\mathbf{s}_{d}=J\dot{\boldsymbol{\theta}}$
+\end_inset
+
+的雅可比关系进行比较，我们可以看到
+\begin_inset Formula $6\times6$
+\end_inset
+
+雅可比矩阵的列必须是机器人的当前关节旋量，
+\begin_inset Formula 
+\[
+J=\begin{array}{c}
+\left(\mathbf{s}_{1}\left|\mathbf{s}_{2}\right|\mathbf{s}_{3}\left|\mathbf{s}_{4}\right|\mathbf{s}_{5}\mid\mathbf{s}_{6}\right)\end{array}
+\]
+
+\end_inset
+
+这是一个众所周知的结果。
+\end_layout
+
+\begin_layout Standard
+上述内容的一个直接应用是机器人控制。假设我们希望机器人的末端执行器遵循一个由指数
+\begin_inset Formula $e^{\mathbf{s}(t)}$
+\end_inset
+
+给出的路径。在这个问题的传统方法中，沿着路径的刚性运动将被计算出来，然后用逆向运动学程序来找到相应的关节角度。现在通过数值积分方程来确定关节角度可能更有效，
+\begin_inset Formula 
+\[
+J\dot{\boldsymbol{\theta}}=\mathbf{s}_{d}
+\]
+
+\end_inset
+
+对于当前的大多数工业设计，雅可比矩阵
+\begin_inset Formula $J$
+\end_inset
+
+可以符号化地求逆，尽管这一点似乎没有得到广泛认可。另外，
+\begin_inset Formula $\mathbf{s}_{d}$
+\end_inset
+
+也可以使用上面给出的公式计算出来。
+\end_layout
+
+\begin_layout Section
+结束语
+\end_layout
+
+\begin_layout Standard
+在这场简短的讲座中，我们仅有足够的时间来概括群论如何应用于机器人。为了简洁起见，省略了几个重要的应用。虽然我们已经讨论了串联机械手臂的正向运动学，但逆向运动学是
+本课题的一个关键问题。在这里，我们知道我们想把机器人的末端执行器放在哪里，我们必须计算出实现这一目标所需的关节角度。尽管上面已经简要介绍了一种使用微分方程的方法
+，但当机器人的雅可比矩阵变得奇异时，这显然会遇到困难。对这些机器人奇异性的研究是群论被有效应用的另一个问题，参见文献[6]。对于并联机构，例如Gough-Stw
+art平台，逆向运动学是直接的，正向运动学是困难的。
+\end_layout
+
+\begin_layout Standard
+机器人动力学需要群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的另一对表示。首先，作用在刚体上的力和扭矩可以组合成一个单一的
+\begin_inset Formula $6$
+\end_inset
+
+维向量，被称为力旋量。力旋量根据一种对于伴随表示的对偶表示，即余伴随表示，进行变换。
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的一个意外性质意味着伴随和余伴随表示是相似的。在Ball最初的旋量理论中，速度和力旋量被视为同一种对象，然而，为了取得进展，最简单的方法是将它们分开。我们所需要
+的第二种表示是伴随表示的对称乘积。然后这种表示的元素可以被解释为
+\begin_inset Formula $6\times6$
+\end_inset
+
+惯性矩阵。
+\end_layout
+
+\begin_layout Standard
+群论在机器人视觉中有许多应用。现在，所用的群可能有所不同。例如，有一些摄像机校准问题的公式，使用群
+\begin_inset Formula $SL(4)$
+\end_inset
+
+来模拟可能的摄像机参数。当然，在讨论相机时，射影几何是很重要的，并且有与此种几何相关的射影群。与几何光学相关的群是辛群
+\begin_inset Formula $Sp(6,\mathbb{R})$
+\end_inset
+
+，这是空间中直线的复形的对称群。
+\end_layout
+
+\begin_layout Standard
+最后，上述演示仅使用了矩阵和向量。使用Clifford代数来表示刚体运动群及其所作用的各种空间会有一些优点。Clifford代数中的关系和公式往往比它们的矩阵对
+应物更简洁，并且这对于符号表达和手工计算很有用。Clifford代数的另一个优点是群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+可以被非常紧凑地表示，并且这允许我们研究该群本身的几何结构。参见Joan Lasenby在本次会议稍后的讲座。
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+R.S.
+ Ball.
+ 
+\emph on
+The Theory of Screws
+\emph default
+.
+ Cambridge University Press, Cambridge, 1900.
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Brockett.
+ Robotic manipulators and the product of exponential formula.
+ In P.
+ Fuhrman ed.
+ 
+\emph on
+Proc.
+ Mathematical Theory of Networks and Systems
+\emph default
+ pp.
+ 120–129, 1984.
+\end_layout
+
+\begin_layout Enumerate
+F.
+ Hausdorﬀ.
+ Die Symbolische exponential formel in den gruppen theorie.
+ Berichte de Sächicen Akademie de Wissenschaften (Math Phys Klasse) vol.
+ 58, pp.
+ 19–48, 1906.
+\end_layout
+
+\begin_layout Enumerate
+J.M.
+ Hervé Analyse Structurelle de Mecanismes par Groupe des Displacements.
+ 
+\emph on
+Mechanism and Machine Theory
+\emph default
+ 13:437-450, 1978.
+\end_layout
+
+\begin_layout Enumerate
+B.K.P Horn.
+ 
+\emph on
+Robot Vision
+\emph default
+ Cambridge, MA:MIT Press, 1986.
+ 1987.
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Karger.
+ Classiﬁcation of serial robot-manipulators with non-removable singularities.
+ 
+\emph on
+J.
+ Mech.
+ Design
+\emph default
+ 30:202–208, 1996.
+\end_layout
+
+\begin_layout Enumerate
+F.
+ Reuleaux 
+\emph on
+Theoretische Kinematic: Grunzüge einer Theorie des Maschinwesens
+\emph default
+ Braunschweig: Vieweg, 1875.
+ Trans.
+ A.B.
+ W.
+ Kennedy as 
+\emph on
+The Kinematics of Machinery
+\emph default
+, London: Macmillan, 1876.
+ Reprinted, New York: Dover, 1963.
+\end_layout
+
+\end_body
+\end_document
