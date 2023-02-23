@@ -9,6 +9,7 @@
 05. [Lie Group Formulation of Articulated Rigid Body Dynamics - 2012](http://www.cs.cmu.edu/~junggon/tools/liegroupdynamics.pdf)
     + 铰接刚体动力学的李群公式
     + [GEAR (Geometric Engine for Articulated Rigid-body simulation)](http://www.cs.cmu.edu/~junggon/tools/gear.html)
+    + 虽然文中采用右手坐标系，但推导过程中使用了左手坐标系，导致伴随矩阵和别人不一样。
 06. [VSLAM pose initialization via Lie groups and Lie algebras optimization - 2013](http://refbase.cvc.uab.es/files/rgs2013c.pdf)
     + 基于李群和李代数优化的VSLAM姿态初始化
 07. [Lie Groups for 2D and 3D Transformations - 2017](http://ethaneade.com/lie.pdf)

@@ -1,0 +1,6955 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{remark}{Remark}
+%\newtheorem{problem}{Problem}
+%\newtheorem{fact}{Fact}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{定理}
+\newtheorem{remark}{备注}
+\newtheorem{problem}{问题}
+\newtheorem{fact}{事实}
+\newtheorem{lemma}{引理}
+\newtheorem{corollary}{推论}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{input:}}
+\renewcommand{\algorithmicensure}{\textbf{output:}}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "铰接刚体动力学的李群公式"
+\pdf_author "Junggon Kim"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "铰接刚体动力学的李群公式"
+target "http://www.cs.cmu.edu/~junggon/tools/liegroupdynamics.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Junggon Kim
+\end_layout
+
+\begin_layout Date
+12/10/2012, Ver 2.01
+\end_layout
+
+\begin_layout Abstract
+在大多数旧式的动力学教科书中，通常描述刚体线性(或平移)和角度(或旋转)运动的公式是分别处理的。例如，著名的牛顿第二定律，
+\begin_inset Formula $\mathrm{f}=\mathrm{ma}$
+\end_inset
+
+，对于一个刚体的平移运动，有它的伙伴公式，所谓的欧拉方程，它描述了机体的旋转运动。然而，将平移和旋转分离，使得推导铰接式刚体系统(如机器人)的运动方程非常复杂。
+\end_layout
+
+\begin_layout Abstract
+在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，使用李群公式推导出一个在3D空间中运动的刚体的优雅的单一运动方程。在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，用刚体的几何公式重写了递归牛顿-欧拉算法(逆向动力学)、铰接机体算法(正向动力学)，以及一个用于开链或树形铰接机体帧统的通用递归算法(混合动力学)。在第
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，将描述受约束系统(如闭环机构)的动力学。最后，在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中，给出了动力学算法的解析导数，这将有助于优化和灵敏度分析。
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+GEAR (用于铰接刚体仿真的几何引擎)是本文算法的一个C++实现。(
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.cs.cmu.edu/~junggon/tools/gear.html"
+literal "false"
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+刚体动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节以几何方式描述单一刚体的运动方程。
+\end_layout
+
+\begin_layout Subsection
+刚体运动
+\end_layout
+
+\begin_layout Standard
+要描述一个刚体的运动，我们需要同时表示机体的位置和方向。设
+\begin_inset Formula $\{B\}$
+\end_inset
+
+是附着在刚体上的一个坐标帧，而
+\begin_inset Formula $\{A\}$
+\end_inset
+
+是一个任意坐标帧，从现在起所有坐标帧都是右手笛卡尔坐标帧，我们可以定义一个3×3矩阵
+\begin_inset Formula 
+\begin{equation}
+R=\left[x_{ab},y_{ab},z_{ab}\right]\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $x_{ab},y_{ab},z_{ab}\in\Re^{3}$
+\end_inset
+
+ 是
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的坐标轴相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的坐标。这种形式的矩阵称为旋转矩阵(
+\emph on
+rotation matrix
+\emph default
+)，因为它可以用来描述刚体相对于参考帧的方向(或旋转)。因为旋转矩阵的列是相互正交的，并且坐标帧是右手的，旋转矩阵有两个性质，
+\begin_inset Formula 
+\begin{equation}
+RR^{\mathrm{T}}=R^{\mathrm{T}}R=I,\quad\mathrm{det}R=1,\label{eq:2}
+\end{equation}
+
+\end_inset
+
+并被表示为 
+\begin_inset Formula $SO(3)$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+符号 
+\begin_inset Formula $SO$
+\end_inset
+
+ 是特殊正交(
+\emph on
+special orthogonal
+\emph default
+)的缩写，并且“特殊”指的是 
+\begin_inset Formula $\det R=+1$
+\end_inset
+
+ 而不是
+\begin_inset Formula $\pm1$
+\end_inset
+
+。更多细节，参见文献[2]。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename liegroupdynamics-fig1.jpg
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+刚体的坐标帧
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $p\in\Re^{3}$
+\end_inset
+
+是
+\begin_inset Formula $\{B\}$
+\end_inset
+
+原点相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+原点的位置向量，并且
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+是
+\begin_inset Formula $\{B\}$
+\end_inset
+
+相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的旋转矩阵。刚体运动的构型空间可用一对
+\begin_inset Formula $(R,p)$
+\end_inset
+
+来表示，并被表示为
+\begin_inset Formula $SE(3)$
+\end_inset
+
+。一个
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵，
+\begin_inset Formula 
+\begin{equation}
+T=\left[\begin{array}{cc}
+R & p\\
+0 & 1
+\end{array}\right]\label{eq:3}
+\end{equation}
+
+\end_inset
+
+被称为
+\begin_inset Formula $T=(R,p)\in SE(3)$
+\end_inset
+
+的齐次表示(
+\emph on
+homogeneous representation
+\emph default
+)，其逆矩阵可用以下方法获得
+\begin_inset Formula 
+\begin{equation}
+T^{-1}=\left[\begin{array}{cc}
+R^{\mathrm{T}} & -R^{\mathrm{T}}p\\
+0 & 1
+\end{array}\right].\label{eq:4}
+\end{equation}
+
+\end_inset
+
+从现在开始，一个简单的声明，
+\begin_inset Formula $T\in SE(3):\{A\}\rightarrow\{B\}$
+\end_inset
+
+，将被用于通知
+\begin_inset Formula $T\in SE(3)$
+\end_inset
+
+表示坐标帧
+\begin_inset Formula $\{B\}$
+\end_inset
+
+相对于另一坐标帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的方向和位置。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的李代数，表示为
+\begin_inset Formula $se(3)$
+\end_inset
+
+，被确定为一个
+\begin_inset Formula $6$
+\end_inset
+
+维向量空间
+\begin_inset Formula $(w,v)\in\Re^{6}$
+\end_inset
+
+，其中
+\begin_inset Formula $w\in so(3)$
+\end_inset
+
+，为
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的李代数。
+\begin_inset Formula $\xi=(w,v)\in\mathrm{se}(3)$
+\end_inset
+
+也可以表示为
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵，
+\begin_inset Formula 
+\begin{equation}
+\xi=\left[\begin{array}{cc}
+[w] & v\\
+0 & 0
+\end{array}\right]\label{eq:5}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $[w]=\scriptsize{\left[\begin{array}{ccc}
+0 & -w_{3} & w_{2}\\
+w_{3} & 0 & -w_{1}\\
+-w_{2} & w_{1} & 0
+\end{array}\right]}\in\Re^{3\times3}$
+\end_inset
+
+ 是一个斜对称矩阵。
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\xi\in se(3)$
+\end_inset
+
+上的
+\begin_inset Formula $T\in SE(3)$
+\end_inset
+
+的伴随作用，
+\begin_inset Formula $\mathrm{Ad}:SE(3)\times se(3)\rightarrow se(3)$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Ad}_{T}\xi=T\xi T^{-1}.\label{eq:6}
+\end{equation}
+
+\end_inset
+
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula $\mathrm{Ad}_{T}$
+\end_inset
+
+可被视为一个线性变换，
+\begin_inset Formula $\mathrm{Ad}_{T}:se(3)\rightarrow se(3)$
+\end_inset
+
+，其由一个
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵定义
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Ad}_{T}=\left[\begin{array}{cc}
+R & 0\\{}
+[p]R & R
+\end{array}\right]\label{eq:7}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $T=(R,p)\in SE(3)$
+\end_inset
+
+。在
+\begin_inset Formula $\xi^{*}\in dse(3)$
+\end_inset
+
+上的
+\begin_inset Formula $T$
+\end_inset
+
+的协伴随作用，
+\begin_inset Formula $\mathrm{Ad}_{T}^{*}:dse(3)\rightarrow dse(3)$
+\end_inset
+
+，是
+\begin_inset Formula $\xi$
+\end_inset
+
+的对偶，由
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵定义
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Ad}_{T}^{*}=\mathrm{Ad}_{T}^{\mathrm{T}}.\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+广义的速度与动力
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $T(t)=\left(R(t),p(t)\right)\in SE(3)$
+\end_inset
+
+ 是附着于刚体的一个坐标帧相对于一个惯性帧的运动轨迹。刚体的广义速度(
+\emph on
+generalized velocity
+\emph default
+)定义为
+\begin_inset Formula 
+\begin{equation}
+V=T^{-1}\dot{T}=\left[\begin{array}{cc}
+[w] & v\\
+0 & 0
+\end{array}\right]\label{eq:9}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $[w]=R^{\mathrm{T}}\dot{R}$
+\end_inset
+
+ 并且 
+\begin_inset Formula $v=R^{\mathrm{T}}\dot{p}$
+\end_inset
+
+。
+\begin_inset Formula $w\in\Re^{3}$
+\end_inset
+
+的物理意义是相对于该惯性帧附着在机体上的坐标帧的旋转(或角度)速度，但以机体坐标帧表达。类似地，
+\begin_inset Formula $v\in\Re^{3}$
+\end_inset
+
+表示这个坐标帧原点相对于该惯性帧的速度，仍以机体帧表达。广义速度是
+\begin_inset Formula $se(3)$
+\end_inset
+
+的一个元素，并可简单地看作是一个
+\begin_inset Formula $6$
+\end_inset
+
+维向量，即，
+\begin_inset Formula 
+\begin{equation}
+V=\left(\begin{array}{c}
+w\\
+v
+\end{array}\right).\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于广义速度是
+\begin_inset Formula $se(3)$
+\end_inset
+
+的一个实例，因此它遵循在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义的伴随变换规则。设
+\begin_inset Formula $\{A\},\{B\}$
+\end_inset
+
+是两个不同的坐标帧，它们附着在同一个刚体上，并且
+\begin_inset Formula $T_{a},T_{b}\in SE(3)$
+\end_inset
+
+表示这两个坐标帧相对于惯性帧的方向和位置。然后，从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)看出，
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+的广义速度具有以下关系：
+\begin_inset Formula 
+\begin{equation}
+V_{b}=\mathrm{Ad}_{T_{ba}}V_{a}\label{eq:11}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $T_{ba}\in SE(3):\{B\}\rightarrow\{A\}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+当坐标帧附着在刚体上时，作用在机体上的广义动力(
+\emph on
+generalized force
+\emph default
+)可被定义为
+\begin_inset Formula 
+\begin{equation}
+F=\left(\begin{array}{c}
+m\\
+f
+\end{array}\right)\label{eq:12}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $m\in\Re^{3}$
+\end_inset
+
+ 和 
+\begin_inset Formula $f\in\Re^{3}$
+\end_inset
+
+ 分别表示在机体帧中观察，作用在机体上的力矩和动力。广义动力称为
+\begin_inset Formula $dse(3)$
+\end_inset
+
+的成员，具有以下变换规则，
+\begin_inset Formula 
+\begin{equation}
+F_{b}=\mathrm{Ad}_{T_{ab}}^{*}F_{a}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $F_{a}$
+\end_inset
+
+ 和 
+\begin_inset Formula $F_{b}$
+\end_inset
+
+ 表示从不同机体帧
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+观察到的广义动力，并且
+\begin_inset Formula $T_{ab}\in SE(3):\{A\}\rightarrow\{B\}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+广义惯量和动量
+\end_layout
+
+\begin_layout Standard
+刚体的动能由以下体积积分给出为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{e}=\int_{\mathrm{vol}}\frac{1}{2}\|v\|^{2}d\mathrm{m}\label{eq:14}
+\end{equation}
+
+\end_inset
+
+这意味着组成机体的所有质量粒子的动能之和。通过引入一个附着在机体上的坐标帧，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以重构为以下简单的二次型，
+\begin_inset Formula 
+\begin{equation}
+\mathrm{e}=\frac{1}{2}V^{\mathrm{T}}\mathcal{I}V\label{eq:15}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $V\in\Re^{6}$
+\end_inset
+
+是机体的广义速度，而
+\begin_inset Formula $\mathcal{I}\in\Re^{6\times6}$
+\end_inset
+
+，即广义惯量(
+\emph on
+generalized inertia
+\emph default
+)，表示相对于机体帧的质量和质量分布。
+\end_layout
+
+\begin_layout Standard
+为了得到机体广义惯量的显式形式，设
+\begin_inset Formula $r\in\Re^{3}$
+\end_inset
+
+为一个机体点相对于机体帧的位置，并且
+\begin_inset Formula $(R,p)\in SE(3)$
+\end_inset
+
+分别表示机体帧相对于惯性帧的方向和位置。使用
+\begin_inset Formula $\|v\|^{2}=\|\dot{p}+\dot{R}r\|^{2}$
+\end_inset
+
+，
+\begin_inset Formula $R^{\mathrm{T}}\dot{R}=[w]$
+\end_inset
+
+和
+\begin_inset Formula $R^{\mathrm{T}}\dot{p}=v$
+\end_inset
+
+，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可重写为
+\begin_inset Formula 
+\begin{align}
+\mathrm{e} & =\frac{1}{2}\int_{\mathrm{vol}}\left(\|\dot{p}\|^{2}+2\dot{p}^{\mathrm{T}}\dot{R}r+\|\dot{R}r\|^{2}\right)d\mathrm{m}\label{eq:16}\\
+ & =\frac{1}{2}\left\{ \dot{p}^{\mathrm{T}}\dot{p}\int_{\mathrm{vol}}d\mathrm{m}-2\dot{p}^{\mathrm{T}}R\left(\int_{\mathrm{vol}}[r]d\mathrm{m}\right)w+w^{\mathrm{T}}\left(\int_{\mathrm{vol}}[r]^{\mathrm{T}}[r]d\mathrm{m}\right)w\right\} \label{eq:17}\\
+ & =\frac{1}{2}\left\{ \mathrm{m}v^{\mathrm{T}}v-2v^{\mathrm{T}}\left(\int_{\mathrm{vol}}[r]d\mathrm{m}\right)w+w^{\mathrm{T}}\left(\int_{\mathrm{vol}}[r]^{\mathrm{T}}[r]d\mathrm{m}\right)w\right\} \label{eq:18}\\
+ & =\frac{1}{2}V^{\mathrm{T}}\mathcal{I}V\label{eq:19}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $V=(w,v)$
+\end_inset
+
+是机体的广义速度，而广义惯量
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+具有以下显式矩阵形式：
+\begin_inset Formula 
+\begin{equation}
+\mathcal{I}=\left[\begin{array}{cc}
+\int_{\mathrm{vol}}[r]^{\mathrm{T}}[r]d\mathrm{m} & \int_{\mathrm{vol}}[r]d\mathrm{m}\\
+\int_{\mathrm{vol}}[r]^{\mathrm{T}}d\mathrm{m} & \mathrm{m}\mathbf{1}
+\end{array}\right].\label{eq:20}
+\end{equation}
+
+\end_inset
+
+广义惯量是对称正定的，并且它的上对角项，
+\begin_inset Formula $I=$
+\end_inset
+
+ 
+\begin_inset Formula $\int_{\mathrm{vol}}[r]^{\mathrm{T}}[r]d\mathrm{m}$
+\end_inset
+
+，是众所周知的刚体相对于机体帧的
+\begin_inset Formula $3\times3$
+\end_inset
+
+惯量矩阵的定义。如果机体帧的原点位于质心上，则由于
+\begin_inset Formula $\int_{\mathrm{vol}}[r]d\mathrm{m}=0$
+\end_inset
+
+，因此广义惯量成为块对角矩阵。另外，如果机体帧的方向也与机体的主轴重合，则广义惯量成为对角线矩阵。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+是附着在机体上的坐标帧，
+\begin_inset Formula $\mathcal{I}_{a}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{I}_{b}$
+\end_inset
+
+是对应于这两个坐标帧的机体的广义惯量。使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及在坐标帧变化时机体动能应保持不变的事实，可以获得以下广义惯量之间的变换规则：
+\begin_inset Formula 
+\begin{equation}
+\mathcal{I}_{b}=\mathrm{Ad}_{T_{ab}}^{*}\mathcal{I}_{a}\mathrm{Ad}_{T_{ab}}\label{eq:21}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $T_{ab}\in SE(3):\{A\}\rightarrow\{B\}$
+\end_inset
+
+。如果给定质量
+\begin_inset Formula $\mathrm{m}$
+\end_inset
+
+和在质心坐标帧
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+一个坐标帧，其原点位于机体质心上。
+\end_layout
+
+\end_inset
+
+中的惯量矩阵，
+\begin_inset Formula $I_{c}\in\Re^{3\times3}$
+\end_inset
+
+，可以由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)得到任意机体帧的广义转动惯量，而不必使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，为
+\begin_inset Formula 
+\begin{equation}
+\mathcal{I}=\left[\begin{array}{cc}
+RI_{c}R^{\mathrm{T}}+\mathrm{m}[p]^{\mathrm{T}}[p] & \mathrm{m}[p]\\
+\mathrm{m}[p]^{\mathrm{T}} & \mathrm{m}\mathbf{1}
+\end{array}\right]\label{eq:22}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $(R,p)\in SE(3)$
+\end_inset
+
+ 表示质心帧相对于机体帧的方向和位置。
+\end_layout
+
+\begin_layout Standard
+刚体的广义动量(
+\emph on
+generalized momentum
+\emph default
+)定义为
+\begin_inset Formula 
+\begin{equation}
+L=\mathcal{I}V\label{eq:23}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+ 和 
+\begin_inset Formula $V$
+\end_inset
+
+ 是机体的广义惯量和速度，在附着在机体上的一个坐标帧中表达。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $L_{a}$
+\end_inset
+
+ 和 
+\begin_inset Formula $L_{b}$
+\end_inset
+
+ 是一个机体的广义动量，分别在不同的机体帧中表达，
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+。使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以推导出广义动量的以下变换规则：
+\begin_inset Formula 
+\begin{equation}
+L_{b}=\mathrm{Ad}_{T_{ab}}^{*}L_{a}\label{eq:24}
+\end{equation}
+
+\end_inset
+
+这与广义动力是一样的，实际上，广义动量也被称为
+\begin_inset Formula $dse(3)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $se(3)$
+\end_inset
+
+ 和 
+\begin_inset Formula $dse(3)$
+\end_inset
+
+的时间导数
+\end_layout
+
+\begin_layout Standard
+回想一下，一个
+\begin_inset Formula $3$
+\end_inset
+
+维向量
+\begin_inset Formula $x=\sum_{i=1}^{3}x_{i}\hat{e}_{i}$
+\end_inset
+
+的时间导数，在一个移动坐标帧
+\begin_inset Formula $\left\{ \hat{e}_{i}\right\} $
+\end_inset
+
+中表达，可获得为
+\begin_inset Formula 
+\begin{equation}
+\frac{d}{dt}x=\sum_{i=1}^{3}\left\{ \left(\frac{d}{dt}x_{i}\right)\hat{e}_{i}+x_{i}\left(\frac{d}{dt}\hat{e}_{i}\right)\right\} =\dot{x}+w\times x\label{eq:25}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\dot{x}=\sum_{i=1}^{3}\left(\frac{d}{dt}x_{i}\right)\hat{e}_{i}=\left(\frac{dx_{1}}{dt},\frac{dx_{2}}{dt},\frac{dx_{3}}{dt}\right)$
+\end_inset
+
+ 是
+\begin_inset Formula $x$
+\end_inset
+
+的分量上的时间导数，而
+\begin_inset Formula $w$
+\end_inset
+
+是移动帧的角速度。
+\end_layout
+
+\begin_layout Standard
+在移动帧中表达的
+\begin_inset Formula $se(3)$
+\end_inset
+
+和
+\begin_inset Formula $dse(3)$
+\end_inset
+
+的时间导数具有更一般化的形式，获得导数的一种简单方法是将
+\begin_inset Formula $se(3)$
+\end_inset
+
+ (或
+\begin_inset Formula $dse(3)$
+\end_inset
+
+)变换到静止坐标帧中，在静止坐标帧中进行微分，并(正确地)假设
+\begin_inset Formula $se(3)$
+\end_inset
+
+ (或
+\begin_inset Formula $dse(3)$
+\end_inset
+
+)的导数可以用
+\begin_inset Formula $se(3)$
+\end_inset
+
+ (或
+\begin_inset Formula $dse(3)$
+\end_inset
+
+)的规则进行变换，将导数变换回原始移动坐标帧。
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+在文献[1]中，用这种方法得到了空间速度的时间导数，它类似于本文中的广义速度。
+\end_layout
+
+\end_inset
+
+注意，将静止坐标帧中的向量相对于时间进行微分只是得到它的分量导数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lemma}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "lemma:1"
+
+\end_inset
+
+设 
+\begin_inset Formula $X\in se(3)$
+\end_inset
+
+ 可在附着于刚体的一个移动帧中表达。则
+\begin_inset Formula $X$
+\end_inset
+
+的时间导数可通过下式获得
+\begin_inset Formula 
+\begin{equation}
+\frac{d}{dt}X=\dot{X}+\mathrm{ad}_{V}X\label{eq:26}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\dot{X}$
+\end_inset
+
+ 是
+\begin_inset Formula $X$
+\end_inset
+
+的分量上的时间导数，并且
+\begin_inset Formula $\mathrm{ad}_{V}:se(3)\rightarrow se(3)$
+\end_inset
+
+是一个线性变换，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{ad}_{V}=\left[\begin{array}{cc}
+[w] & 0\\{}
+[v] & [w]
+\end{array}\right]\label{eq:27}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $V=(w,v)\in se(3)$
+\end_inset
+
+ 是机体的广义速度。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}[证明]
+\end_layout
+
+\end_inset
+
+设 
+\begin_inset Formula $T=(R,p)\in SE(3)$
+\end_inset
+
+ 表示移动帧相对于静止在空间中的惯性帧的方向和位置。通过将
+\begin_inset Formula $X$
+\end_inset
+
+变换到惯性帧，在那里进行微分，然后将结果变换回原来的机体帧，就可以得到
+\begin_inset Formula 
+\[
+\frac{d}{dt}X=\mathrm{Ad}_{T^{-1}}\frac{d^{\prime}}{dt}\left(\mathrm{Ad}_{T}X\right)=\dot{X}+\mathrm{Ad}_{T^{-1}}\frac{d^{\prime}}{dt}\left(\mathrm{Ad}_{T}\right)X
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\frac{d^{\prime}}{dt}$
+\end_inset
+
+ 表示分量微分，并且 
+\begin_inset Formula $\dot{X}=\frac{d^{\prime}}{dt}X$
+\end_inset
+
+。使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 
+\begin_inset Formula $V=(w,v)=\left(R^{\mathrm{T}}\dot{R},R^{\mathrm{T}}\dot{p}\right)$
+\end_inset
+
+，可以证明 
+\begin_inset Formula $\mathrm{Ad}_{T^{-1}}\frac{d^{\prime}}{dt}\left(\mathrm{Ad}_{T}\right)=\mathrm{ad}_{V}$
+\end_inset
+
+，如下所示：
+\begin_inset Formula 
+\[
+\begin{aligned}\mathrm{Ad}_{T^{-1}}\frac{d^{\prime}}{dt}\mathrm{Ad}_{T} & =\left[\begin{array}{cc}
+R^{\mathrm{T}} & 0\\
+-R^{\mathrm{T}}[p] & R^{\mathrm{T}}
+\end{array}\right]\left[\begin{array}{cc}
+\dot{R} & 0\\{}
+[\dot{p}]R+[p]\dot{R} & \dot{R}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+[w] & 0\\{}
+[v] & [w]
+\end{array}\right]
+\end{aligned}
+\]
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lemma}
+\end_layout
+
+\end_inset
+
+设 
+\begin_inset Formula $Y\in dse(3)$
+\end_inset
+
+ 在附着于刚体的移动帧中表达。则 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的时间导数可通过下式获得
+\begin_inset Formula 
+\begin{equation}
+\frac{d}{dt}Y=\dot{Y}-\mathrm{ad}_{V}^{*}Y\label{eq:28}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\dot{Y}$
+\end_inset
+
+ 是 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的分量上的时间导数，并且 
+\begin_inset Formula $\mathrm{ad}_{V}^{*}:dse(3)\rightarrow dse(3)$
+\end_inset
+
+ 是一个线性变换，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{ad}_{V}^{*}=\mathrm{ad}_{V}^{\mathrm{T}}=\left[\begin{array}{cc}
+[w] & 0\\{}
+[v] & [w]
+\end{array}\right]^{\mathrm{T}}\label{eq:29}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $V=(w,v)\in\mathrm{se}(3)$
+\end_inset
+
+ 是机体的广义速度。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}[证明]
+\end_layout
+
+\end_inset
+
+类似于引理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lemma:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 的证明， 
+\begin_inset Formula $Y\in dse(3)$
+\end_inset
+
+ 的导数可由下式获得
+\begin_inset Formula 
+\[
+\frac{d}{dt}Y=\mathrm{Ad}_{T}^{*}\frac{d^{\prime}}{dt}\left(\mathrm{Ad}_{T^{-1}}^{*}Y\right)=\dot{Y}+\mathrm{Ad}_{T}^{*}\frac{d^{\prime}}{dt}\left(\mathrm{Ad}_{T^{-1}}^{*}\right)Y.
+\]
+
+\end_inset
+
+使用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 
+\begin_inset Formula $V=(w,v)=\left(R^{\mathrm{T}}\dot{R},R^{\mathrm{T}}\dot{p}\right)$
+\end_inset
+
+，可以证明 
+\begin_inset Formula $\mathrm{Ad}_{T}^{*}\frac{d^{\prime}}{dt}\mathrm{Ad}_{T^{-1}}^{*}=-\mathrm{ad}_{V}^{*}$
+\end_inset
+
+，如下所示：
+\begin_inset Formula 
+\[
+\begin{aligned}\mathrm{Ad}_{T}^{*}\frac{d^{\prime}}{dt}\mathrm{Ad}_{T^{-1}}^{*} & =\left[\begin{array}{cc}
+R^{\mathrm{T}} & -R^{\mathrm{T}}[p]\\
+0 & R^{\mathrm{T}}
+\end{array}\right]\left[\begin{array}{cc}
+\dot{R} & {[\dot{p}]R+[p]\dot{R}}\\
+0 & \dot{R}
+\end{array}\right]\\
+ & =\left[\begin{array}{cc}
+w & [v]\\
+0 & [w]
+\end{array}\right]=-\mathrm{ad}_{V}^{\mathrm{T}}=-\mathrm{ad}_{V}^{*}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+刚体的几何动力学
+\end_layout
+
+\begin_layout Standard
+刚体的运动方程可以写为
+\begin_inset Formula 
+\begin{equation}
+F=\frac{d}{dt}L\label{eq:30}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $F$
+\end_inset
+
+ 表示作用在机体上的广义动力的净总和，并且 
+\begin_inset Formula $L$
+\end_inset
+
+ 是机体的广义动量。使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，刚体的运动方程可以写为
+\begin_inset Formula 
+\begin{equation}
+F=\mathcal{I}\dot{V}-\mathrm{ad}_{V}^{*}\mathcal{I}V\label{eq:31}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\dot{V}$
+\end_inset
+
+ 是机体广义速度的分量上的时间导数。注意，
+\begin_inset Formula $\dot{L}=\dot{\mathcal{I}}V+\mathcal{I}\dot{V}=\mathcal{I}\dot{V}$
+\end_inset
+
+，因为 
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+ 的分量不变化。
+\end_layout
+
+\begin_layout Standard
+机体的动力学方程是坐标不变的，即方程的结构在坐标帧变化时仍然保持不变。设
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+为机体的坐标帧，
+\begin_inset Formula $V_{a}$
+\end_inset
+
+和
+\begin_inset Formula $V_{b}$
+\end_inset
+
+为广义速度，
+\begin_inset Formula $F_{a}$
+\end_inset
+
+和
+\begin_inset Formula $F_{b}$
+\end_inset
+
+为广义动力，并且
+\begin_inset Formula $\mathcal{I}_{a}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{I}_{b}$
+\end_inset
+
+分别为
+\begin_inset Formula $\{A\}$
+\end_inset
+
+和
+\begin_inset Formula $\{B\}$
+\end_inset
+
+对应的广义惯量。使用变换规则，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，可以很容易地将相对于
+\begin_inset Formula $\{A\}$
+\end_inset
+
+的动力学方程，
+\begin_inset Formula $F_{a}=\mathcal{I}_{a}\dot{V}_{a}-\mathrm{ad}_{V_{a}}^{*}\mathcal{I}_{a}V_{a}$
+\end_inset
+
+，变换为在
+\begin_inset Formula $\{B\}$
+\end_inset
+
+中的方程，
+\begin_inset Formula $F_{b}=\mathcal{I}_{b}\dot{V}_{b}-\mathrm{ad}_{V_{b}}^{*}\mathcal{I}_{b}V_{b}$
+\end_inset
+
+，并且这表明方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在坐标帧变化下的坐标不变性(coordinate invariance)。
+\end_layout
+
+\begin_layout Section
+开链系统的动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $q\in\Re^{n}$
+\end_inset
+
+ 表示系统中所有关节的坐标集合，并且对于开链系统，
+\begin_inset Formula $n$
+\end_inset
+
+等于系统的自由度。系统的动力学方程可以写为
+\begin_inset Formula 
+\begin{equation}
+M\ddot{q}+b=\tau\label{eq:32}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $M(q)\in\Re^{n\times n}$
+\end_inset
+
+ 是系统的对称质量矩阵，
+\begin_inset Formula $b(q,\dot{q})\in\Re^{n}$
+\end_inset
+
+ 表示科里奥利项(Coriolis term)、离心项和重力项，并且 
+\begin_inset Formula $\tau\in\Re^{n}$
+\end_inset
+
+ 表示对应于系统坐标 
+\begin_inset Formula $q$
+\end_inset
+
+ 的扭矩(或动力)向量。
+\end_layout
+
+\begin_layout Standard
+我们假设当前系统状态
+\begin_inset Formula $(q,\dot{q})$
+\end_inset
+
+是完全已知的。用规定的加速度
+\begin_inset Formula $\ddot{q}$
+\end_inset
+
+计算关节力矩(或平移坐标的力) 
+\begin_inset Formula $\tau$
+\end_inset
+
+ 被称为逆向动力学(
+\emph on
+inverse dynamics
+\emph default
+)。它通常用于获得所需的关节力矩，使系统沿指定的关节轨迹移动。另一方面，根据给定的关节力矩
+\begin_inset Formula $\tau$
+\end_inset
+
+计算得到的关节加速度 
+\begin_inset Formula $\ddot{q}$
+\end_inset
+
+ 被称为正向动力学(
+\emph on
+forward dynamics
+\emph default
+)，通常通过积分计算的加速度来及时模拟系统运动，以获得下一个时间步骤的系统状态。
+\end_layout
+
+\begin_layout Standard
+通常，在模拟过程中，输入到关节坐标的命令可以是扭矩或加速度，并且对于所有坐标，命令类型不必相同。让我们把运动方程改写为
+\begin_inset Formula 
+\begin{equation}
+M\left(\begin{array}{c}
+\ddot{q}_{u}\\
+\ddot{q}_{v}
+\end{array}\right)+b=\left(\begin{array}{c}
+\tau_{u}\\
+\tau_{v}
+\end{array}\right)\label{eq:33}
+\end{equation}
+
+\end_inset
+
+其中，下标“
+\begin_inset Formula $u$
+\end_inset
+
+”表示具有规定加速度的关节坐标，下标“
+\begin_inset Formula $v$
+\end_inset
+
+”表示具有给定或已知扭矩的坐标。我们通过求解运动方程，从规定的
+\begin_inset Formula $\left(\ddot{q}_{u},\tau_{v}\right)$
+\end_inset
+
+可以获得
+\begin_inset Formula $\left(\tau_{u},\ddot{q}_{v}\right)$
+\end_inset
+
+，这被称为混合动力学(
+\emph on
+hybrid dynamics
+\emph default
+)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+我们遵循文献[1]的术语。
+\end_layout
+
+\end_inset
+
+。混合动力学的一个可能的解是重新排列方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)并使用直接矩阵求逆进行求解。例如，扭矩指定的关节坐标的结果加速度可获取为
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}_{v}=M_{vv}^{-1}\left(\tau_{v}-b_{v}-M_{uv}\ddot{q}_{u}\right)\label{eq:34}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $M=\small{\left[\begin{array}{cc}
+M_{uu} & M_{uv}\\
+M_{uv} & M_{vv}
+\end{array}\right]},b=\small{\left(\begin{array}{c}
+b_{u}\\
+b_{v}
+\end{array}\right)}$
+\end_inset
+
+并且 
+\begin_inset Formula $q=\small{\left(\begin{array}{c}
+q_{u}\\
+q_{v}
+\end{array}\right)}$
+\end_inset
+
+。但是，该方法对于一个复杂的系统并不有效，因为它需要建立质量矩阵，并求逆对应于未规定的关节的子矩阵，这导致
+\begin_inset Formula $O\left(n^{2}\right)+O\left(n_{b}^{3}\right)$
+\end_inset
+
+算法，其中
+\begin_inset Formula $n$
+\end_inset
+
+和
+\begin_inset Formula $n_{v}$
+\end_inset
+
+分别表示所有坐标数和未规定坐标数。
+\end_layout
+
+\begin_layout Standard
+在表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中总结了逆向、正向和混合动力学的输入和输出。注意，混合动力学是传统逆向动力学和正向动力学的推广，即当 
+\begin_inset Formula $q_{u}=q$
+\end_inset
+
+ (逆向动力学)和 
+\begin_inset Formula $q_{v}=q$
+\end_inset
+
+ (正向动力学)时，可以将其视为混合动力学的极端情况。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+逆向动力学
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\ddot{q}\rightarrow\tau$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+正向动力学
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\tau\rightarrow\ddot{q}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+混合动力学
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left(\ddot{q}_{u},\tau_{v}\right)\rightarrow\left(\tau_{u},\ddot{q}_{v}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:1"
+
+\end_inset
+
+动力学算法的输入与输出
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+递归逆向动力学
+\end_layout
+
+\begin_layout Standard
+在文献[3]中提出了一个使用第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所示几何符号的递归牛顿-欧拉逆向动力学算法。在这里，该算法略有修改，以支持多自由度关节的公式。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\{0\}$
+\end_inset
+
+是在空间中静止的惯性帧，
+\begin_inset Formula $\{i\}$
+\end_inset
+
+是附着在开链系统的第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的坐标帧，并且
+\begin_inset Formula $\{\lambda(i)\}$
+\end_inset
+
+是附着在第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的父机体的坐标帧。另外，设
+\begin_inset Formula $T_{i}\in SE(3):\{0\}\rightarrow\{i\}$
+\end_inset
+
+，
+\begin_inset Formula $T_{\lambda(i)}\in SE(3):\{0\}\rightarrow\{\lambda(i)\}$
+\end_inset
+
+，并且
+\begin_inset Formula $T_{\lambda(i),i}\in SE(3):\{\lambda(i)\}\rightarrow\{i\}$
+\end_inset
+
+ 。从
+\begin_inset Formula $T_{i}=T_{\lambda(i)}T_{\lambda(i),i}$
+\end_inset
+
+和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义速度可以重写为
+\begin_inset Formula 
+\begin{align}
+V_{i} & =T_{i}^{-1}\dot{T}_{i}\label{eq:35}\\
+ & =T_{\lambda(i),i}^{-1}T_{\lambda(i)}^{-1}\left(\dot{T}_{\lambda(i)}T_{\lambda(i),i}+T_{\lambda(i)}\dot{T}_{\lambda(i),i}\right)\label{eq:36}\\
+ & =\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+S_{i}\dot{q}_{i}\label{eq:37}
+\end{align}
+
+\end_inset
+
+其中 
+\begin_inset Formula $S_{i}\dot{q}_{i}=T_{\lambda(i),i}^{-1}\dot{T}_{\lambda(i),i}\in se(3)$
+\end_inset
+
+ 表示第
+\begin_inset Formula $i$
+\end_inset
+
+个机体相对于其父机体的相对速度。
+\begin_inset Formula $S_{i}=S_{i}\left(q_{i}\right)\in\left(se(3)\times n_{i}\right)$
+\end_inset
+
+被称为连接第
+\begin_inset Formula $i$
+\end_inset
+
+个机体与其父机体的关节的雅可比矩阵，并且
+\begin_inset Formula $q_{i}\in\Re^{n_{i}}$
+\end_inset
+
+表示该关节的坐标向量。
+\end_layout
+
+\begin_layout Standard
+如方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 所示，需要系统中所有物体广义速度的分量上的时间导数来建立每个机体的动力学方程。回想对于任意矩阵
+\begin_inset Formula $A$
+\end_inset
+
+，
+\begin_inset Formula $\dot{A}^{-1}=-A^{-1}\dot{A}A^{-1}$
+\end_inset
+
+，并且对于任意
+\begin_inset Formula $\xi_{1},\xi_{2}\in se(3)$
+\end_inset
+
+，
+\begin_inset Formula $\mathrm{ad}_{\xi_{1}}\xi_{2}=\xi_{1}\xi_{2}-\xi_{2}\xi_{1}$
+\end_inset
+
+，因此可以对于
+\begin_inset Formula $V_{i}$
+\end_inset
+
+推导以下公式，
+\begin_inset Formula $V_{i}$
+\end_inset
+
+的分量上的时间导数为：
+\begin_inset Formula 
+\begin{align}
+\dot{V}_{i}= & \frac{d^{\prime}}{dt}\left(T_{\lambda(i),i}^{-1}V_{\lambda(i)}T_{\lambda(i),i}\right)+\dot{S}_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}\label{eq:38}\\
+= & -T_{\lambda(i),i}^{-1}\dot{T}_{\lambda(i),i}T_{\lambda(i),i}^{-1}V_{\lambda(i)}T_{\lambda(i),i}+T_{\lambda(i),i}^{-1}\dot{V}_{\lambda(i)}T_{\lambda(i),i}\nonumber \\
+ & +T_{\lambda(i),i}^{-1}V_{\lambda(i)}\dot{T}_{\lambda(i),i}+\dot{S}_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}\label{eq:39}\\
+= & \mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}\label{eq:40}\\
+= & \mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}\label{eq:41}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 非常适合递归地计算开链系统中每个机体，从地面到系统末端的广义速度，及其分量方向的时间导数，因为地面的速度和加速度在大多数情况下是已知的。
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+可以假设
+\begin_inset Formula $V_{0}=0$
+\end_inset
+
+和
+\begin_inset Formula $\dot{V}_{0}=(0,g)$
+\end_inset
+
+，其中
+\begin_inset Formula $g\in\Re^{3}$
+\end_inset
+
+表示在惯性帧中观察的重力向量，具有适当的方向和大小。
+\end_layout
+
+\end_inset
+
+ 注意，
+\begin_inset Formula $\dot{S}_{i}\neq0$
+\end_inset
+
+，因为关节雅可比矩阵
+\begin_inset Formula $S_{i}$
+\end_inset
+
+通常是
+\begin_inset Formula $q_{i}$
+\end_inset
+
+的函数。
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $F_{i}\in dse(3)$
+\end_inset
+
+ 是由父机体通过连接关节传递给第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义动力，并且
+\begin_inset Formula $F_{i}^{\mathrm{ext}}\in dse(3)$
+\end_inset
+
+是环境作用于第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义动力。
+\begin_inset Formula $F_{i}$
+\end_inset
+
+和
+\begin_inset Formula $F_{i}^{\mathrm{ext}}$
+\end_inset
+
+两者都在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中表达。根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的运动方程可以写为
+\begin_inset Formula 
+\begin{equation}
+F_{i}+F_{i}^{\mathrm{ext}}-\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}F_{k}=\mathcal{I}_{i}\dot{V}_{i}-\mathrm{ad}_{V_{i}}^{*}\mathcal{I}_{i}V_{i}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+其中，方程式左侧表示作用在机体上的净力，
+\begin_inset Formula $\mu(i)$
+\end_inset
+
+是第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的子机体集合，并且
+\begin_inset Formula $-\mathrm{Ad}_{T_{i,k}^{-1}}^{*}F_{k}$
+\end_inset
+
+是广义动力，由第
+\begin_inset Formula $k$
+\end_inset
+
+个子机体传递过来，在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中表达。应该注意的是，对于每个机体的广义动力
+\begin_inset Formula $F_{i}$
+\end_inset
+
+，可通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)递归计算，从末端到地面，因为末端机体没有子机体。
+\end_layout
+
+\begin_layout Standard
+开链系统的递归逆向动力学算法如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示，以下是几何逆向动力学的符号列表：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $i=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的索引。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\lambda(i)=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的父机体的索引。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mu(i)=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的子机体的索引集合。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $q_{i}\in\Re^{n_{i}}=$
+\end_inset
+
+ 连接第
+\begin_inset Formula $i$
+\end_inset
+
+个机体与其父机体的第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的坐标。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\tau_{i}\in\Re^{n_{i}}=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个关节施加的扭矩(或动力)。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T_{\lambda(i),i}\in SE(3):\{\lambda(i)\}\rightarrow\{i\}$
+\end_inset
+
+，一个
+\begin_inset Formula $q_{i}$
+\end_inset
+
+的函数。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $V_{i}\in se(3)=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义速度，在机体帧
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中观察。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\dot{V}_{i}\in se(3)=$
+\end_inset
+
+ 
+\begin_inset Formula $V_{i}$
+\end_inset
+
+的分量上的时间导数。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $S_{i}\in\left(\mathrm{se}(3)\times n_{i}\right)=$
+\end_inset
+
+ 
+\begin_inset Formula $T_{\lambda(i),i}$
+\end_inset
+
+的雅可比矩阵，在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中观察。
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $S_{i}=\left[T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}^{-1}}{\partial q_{i}^{1}},\cdots,T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}^{-1}}{\partial q_{i}^{n}i}\right]$
+\end_inset
+
+，其中 
+\begin_inset Formula $q_{i}^{k}\in\Re$
+\end_inset
+
+ 表示第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的第
+\begin_inset Formula $k$
+\end_inset
+
+个坐标 ，即
+\begin_inset Formula $q_{i}=\left(q_{i}^{1},\cdots,q_{i}^{n_{i}}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathcal{I}_{i}=$
+\end_inset
+
+ 第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义惯量，在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中观察。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $F_{i}\in dse(3)=$
+\end_inset
+
+ 从其父机体通过连接关节传递到第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的广义动力，在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中观察。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $F_{i}^{\mathrm{ext}}\in dse(3)=$
+\end_inset
+
+ 环境作用在第
+\begin_inset Formula $i$
+\end_inset
+
+个机体上的广义动力，在
+\begin_inset Formula $\{i\}$
+\end_inset
+
+中观察。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:2"
+
+\end_inset
+
+递归逆向动力学
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $T_{\lambda(i),i}=\text{function of }q_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $V_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+S_{i}\dot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\dot{V}_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $F_{i}=\mathcal{I}_{i}\dot{V}_{i}-\mathrm{ad}_{V_{i}}^{*}\mathcal{I}_{i}V_{i}-F_{i}^{\mathrm{ext}}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}F_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\tau_{i}=S_{i}^{\mathrm{T}}F_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+递归正向动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Featherstone [1] 发现第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的动力学方程可以重新表述为以下形式，
+\begin_inset Formula 
+\begin{equation}
+F_{i}=\hat{\mathcal{I}}_{i}\dot{V}_{i}+\hat{\mathcal{B}}_{i}\label{eq:43}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\hat{\mathcal{I}}_{i}$
+\end_inset
+
+ 被称为机体的铰接机体惯量(
+\emph on
+articulated body inertia
+\emph default
+)，并且
+\begin_inset Formula $\hat{\mathcal{B}}_{i}$
+\end_inset
+
+是关联的偏置力(bias force)。他还指出，可以递归地计算开链系统中每个机体对应的铰接机体惯量和偏置力，使用这些新的量，可以用
+\begin_inset Formula $O(n)$
+\end_inset
+
+算法求解正向动力学。在文献[4]中报告了一个铰接机体惯量法的李群公式。在这里，提出了一种支持多自由度关节模型的更一般形式的几何公式。 
+\end_layout
+
+\begin_layout Standard
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)开始，我们将证明相同形式的动力学方程仍然适用于第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的父机体(第
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+个机体)，并且
+\begin_inset Formula $\hat{\mathcal{I}}_{\lambda(i)}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathcal{B}}_{\lambda(i)}$
+\end_inset
+
+可由
+\begin_inset Formula $\hat{\mathcal{I}}_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathcal{B}}_{i}$
+\end_inset
+
+计算出来，这导致了它们的逆向递归过程。
+\end_layout
+
+\begin_layout Standard
+假设第
+\begin_inset Formula $i$
+\end_inset
+
+个机体的运动方程可以写为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。对于在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\dot{V}_{i}$
+\end_inset
+
+，通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入，可以得到
+\begin_inset Formula 
+\begin{equation}
+F_{i}=\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+S_{i}\ddot{q}_{i}+\dot{S}_{i}\dot{q}_{i}\right)+\hat{\mathcal{B}}_{i},\label{eq:44}
+\end{equation}
+
+\end_inset
+
+并从 
+\begin_inset Formula $S_{i}^{\mathrm{T}}F_{i}=\tau_{i}$
+\end_inset
+
+，未知的 
+\begin_inset Formula $\ddot{q}_{i}$
+\end_inset
+
+ 可写为
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}_{i}=\left(S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}\right)^{-1}\left\{ \tau_{i}-S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}\right)-S_{i}^{\mathrm{T}}\hat{\mathcal{B}}_{i}\right\} .\label{eq:45}
+\end{equation}
+
+\end_inset
+
+从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，第
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+个机体的动力学方程变为
+\begin_inset Formula 
+\begin{equation}
+F_{\lambda(i)}=\mathcal{I}_{\lambda(i)}\dot{V}_{\lambda(i)}-\mathrm{ad}_{V_{\lambda(i)}}^{*}\mathcal{I}_{\lambda(i)}V_{\lambda(i)}-F_{\lambda(i)}^{\mathrm{ext}}+\sum_{k\in\mu(\lambda(i))}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}F_{k},\label{eq:46}
+\end{equation}
+
+\end_inset
+
+并对于在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:46"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $F_{k}$
+\end_inset
+
+，通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入，可以得到
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}F_{\lambda(i)}= & \mathcal{I}_{\lambda(i)}\dot{V}_{\lambda(i)}-\mathrm{ad}_{V_{\lambda(i)}^{*}}^{*}\mathcal{I}_{\lambda(i)}V_{\lambda(i)}-F_{\lambda(i)}^{ext}\\
+ & +\sum_{k\in\mu(\lambda(i))}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{I}}_{k}\left(\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}\dot{V}_{\lambda(i)}+\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+S_{k}\ddot{q}_{k}+\dot{S}_{k}\dot{q}_{k}\right)+\hat{\mathcal{B}}_{k}\right\} .
+\end{aligned}
+\label{eq:47}
+\end{equation}
+
+\end_inset
+
+对于在方程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+中未知数的
+\begin_inset Formula $\ddot{q}_{k}$
+\end_inset
+
+，通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入，并根据
+\begin_inset Formula $\dot{V}_{\lambda(i)}$
+\end_inset
+
+排列方程，可以得到对于第
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+个机体的动力学方程，所期望的形式如下：
+\begin_inset Formula 
+\begin{equation}
+F_{\lambda(i)}=\hat{\mathcal{I}}_{\lambda(i)}\dot{V}_{\lambda(i)}+\hat{\mathcal{B}}_{\lambda(i)}\label{eq:48}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{align}
+\hat{\mathcal{I}}_{\lambda(i)}= & \mathcal{I}_{\lambda(i)}+\sum_{k\in\mu(\lambda(i))}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{I}}_{k}-\hat{\mathcal{I}}_{k}S_{k}\left(S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}S_{k}\right)^{-1}S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}\right\} \mathrm{Ad}_{T_{\lambda(i),k}^{-1}}\label{eq:49}\\
+\hat{\mathcal{B}}_{\lambda(i)}= & -\mathrm{ad}_{V_{\lambda(i)}}^{*}\mathcal{I}_{\lambda(i)}V_{\lambda(i)}-F_{\lambda(i)}^{\mathrm{ext}}\nonumber \\
+ & +\sum_{k\in\mu(\lambda(i))}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{B}}_{k}+\hat{\mathcal{I}}_{k}\left(\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+\dot{S}_{k}\dot{q}_{k}\right)\right.\nonumber \\
+ & \left.+\hat{\mathcal{I}}_{k}S_{k}\left(S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}S_{k}\right)^{-1}\left(\tau_{k}-S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}\left(\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+\dot{S}_{k}\dot{q}_{k}\right)-S_{k}^{\mathrm{T}}\hat{\mathcal{B}}_{k}\right)\right\} .\label{eq:50}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+综上所述，开链系统正向动力学的
+\begin_inset Formula $O(n)$
+\end_inset
+
+算法由以下三个主要递归过程组成：
+\end_layout
+
+\begin_layout Enumerate
+正向递归：使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于每个机体递归计算
+\begin_inset Formula $V_{i}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+逆向递归：使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:49"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:50"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于每个机体递归计算
+\begin_inset Formula $\hat{\mathcal{I}}_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\mathcal{B}}_{i}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+正向递归：使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对于每个机体递归地计算
+\begin_inset Formula $\ddot{q}_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{V}_{i}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中显示了开链系统的正向动力学算法，为了方程的简单和效率，增加了一些中间变量，如
+\begin_inset Formula $\eta_{i},\Psi_{i},\Pi_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\beta_{i}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3"
+
+\end_inset
+
+递归正向动力学
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $T_{\lambda(i),i}=\text{function of }q_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $V_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+S_{i}\dot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\eta_{i}=\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{\mathcal{I}}_{i}=\mathcal{I}_{i}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\Pi_{k}\mathrm{Ad}_{T_{i,k}^{-1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{\mathcal{B}}_{i}=-\mathrm{ad}_{V_{i}}^{*}\mathcal{I}_{i}V_{i}-F_{i}^{\mathrm{ext}}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\beta_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Psi_{i}=\left(S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}\right)^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Pi_{i}=\hat{\mathcal{I}}_{i}-\hat{\mathcal{I}}_{i}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\beta_{i}=\hat{\mathcal{B}}_{i}+\hat{\mathcal{I}}_{i}\left\{ \eta_{i}+S_{i}\Psi_{i}\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\ddot{q}_{i}=\Psi_{i}\left\{ \tau_{i}-S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)-S_{i}^{\mathrm{T}}\hat{\mathcal{B}}_{i}\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\dot{V}_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+S_{i}\ddot{q}_{i}+\eta_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $F_{i}=\hat{\mathcal{I}}_{i}\dot{V}_{i}+\hat{\mathcal{B}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+递归混合动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在文献[5]中报道了一种用于开链系统混合动力学的几何递归算法，但该表述基于单自由度关节。本文提出了更一般的几何混合动力学形式，以更方便地支持多自由度的关节。
+\end_layout
+
+\begin_layout Standard
+可以用类似于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节的正向动力学的方法推导开链系统的混合动力学。让我们回到方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。与正向动力学的情况不同，由于在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中对应于主动关节的
+\begin_inset Formula $\ddot{q}_{k}$
+\end_inset
+
+是已知的，因此可以根据
+\begin_inset Formula $\dot{V}_{\lambda(i)}$
+\end_inset
+
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，仅为被动关节的
+\begin_inset Formula $\ddot{q}_{k}$
+\end_inset
+
+来排列方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:47"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，如下所示：
+\begin_inset Formula 
+\begin{equation}
+F_{\lambda(i)}=\hat{\mathcal{I}}_{\lambda(i)}\dot{V}_{\lambda(i)}+\hat{\mathcal{B}}_{\lambda(i)}\label{eq:51}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{align}
+\hat{\mathcal{I}}_{\lambda(i)}= & \mathcal{I}_{\lambda(i)}+\sum_{k\in\{\mu(\lambda(i))\cap u\}}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\hat{\mathcal{I}}_{k}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}\nonumber \\
+ & +\sum_{k\in\{\mu(\lambda(i))\cap v\}}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{I}}_{k}-\hat{\mathcal{I}}_{k}S_{k}\left(S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}S_{k}\right)^{-1}S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}\right\} \mathrm{Ad}_{T_{\lambda(i),k}^{-1}}\label{eq:52}\\
+\hat{\mathcal{B}}_{\lambda(i)}= & -\mathrm{ad}_{V_{\lambda(i)}}^{*}\mathcal{I}_{\lambda(i)}V_{\lambda(i)}-F_{\lambda(i)}^{\mathrm{ext}}\nonumber \\
+ & +\sum_{k\in\{\mu(\lambda(i))\cap u\}}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{B}}_{k}+\hat{\mathcal{I}}_{k}\left(\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+\dot{S}_{k}\dot{q}_{k}+S_{k}\ddot{q}_{k}\right)\right\} \nonumber \\
+ & +\sum_{k\in\{\mu(\lambda(i))\cap v\}}\mathrm{Ad}_{T_{\lambda(i),k}^{-1}}^{*}\left\{ \hat{\mathcal{B}}_{k}+\hat{\mathcal{I}}_{k}\left(\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+\dot{S}_{k}\dot{q}_{k}\right)\right.\nonumber \\
+ & \left.+\hat{\mathcal{I}}_{k}S_{k}\left(S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}S_{k}\right)^{-1}\left(\tau_{k}-S_{k}^{\mathrm{T}}\hat{\mathcal{I}}_{k}\left(\mathrm{ad}_{V_{k}}S_{k}\dot{q}_{k}+\dot{S}_{k}\dot{q}_{k}\right)-S_{k}^{\mathrm{T}}\hat{\mathcal{B}}_{k}\right)\right\} .\label{eq:53}
+\end{align}
+
+\end_inset
+
+其中“
+\begin_inset Formula $u$
+\end_inset
+
+”和“
+\begin_inset Formula $v$
+\end_inset
+
+”分别表示系统中规定的加速度和规定的扭矩。表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了开链系统的混合动力学算法。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:4"
+
+\end_inset
+
+递归混合动力学
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $T_{\lambda(i),i}=\text{function of }q_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $V_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+S_{i}\dot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\eta_{i}=\mathrm{ad}_{V_{i}}S_{i}\dot{q}_{i}+\dot{S}_{i}\dot{q}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{\mathcal{I}}_{i}=\mathcal{I}_{i}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\Pi_{k}\mathrm{Ad}_{T_{i,k}^{-1}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\hat{\mathcal{B}}_{i}=-\mathrm{ad}_{V_{i}}^{*}\mathcal{I}_{i}V_{i}-F_{i}^{\mathrm{ext}}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\beta_{k}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$i 
+\backslash
+in u$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Pi_{i}=\hat{\mathcal{I}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\beta_{i}=\hat{\mathcal{B}}_{i}+\hat{\mathcal{I}}_{i}\left(\eta_{i}+S_{i}\ddot{q}_{i}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ELSE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Psi_{i}=\left(S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}\right)^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\Pi_{i}=\hat{\mathcal{I}}_{i}-\hat{\mathcal{I}}_{i}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\beta_{i}=\hat{\mathcal{B}}_{i}+\hat{\mathcal{I}}_{i}\left\{ \eta_{i}+S_{i}\Psi_{i}\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$i 
+\backslash
+in u$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\dot{V}_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+S_{i}\ddot{q}_{i}+\eta_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $F_{i}=\hat{\mathcal{I}}_{i}\dot{V}_{i}+\hat{\mathcal{B}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\tau_{i}=S_{i}^{\mathrm{T}}F_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ELSE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\ddot{q}_{i}=\Psi_{i}\left\{ \tau_{i}-S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)-S_{i}^{\mathrm{T}}\hat{\mathcal{B}}_{i}\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\dot{V}_{i}=\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+S_{i}\ddot{q}_{i}+\eta_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $F_{i}=\hat{\mathcal{I}}_{i}\dot{V}_{i}+\hat{\mathcal{B}}_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+受约束系统的动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $q\in\Re^{n}$
+\end_inset
+
+ 表示无约束开链系统中的一组关节坐标，并且
+\begin_inset Formula $A(q)\dot{q}=0$
+\end_inset
+
+表示对系统
+\begin_inset Formula $\left(A\in\Re^{m\times n}\right)$
+\end_inset
+
+施加的一组
+\begin_inset Formula $m$
+\end_inset
+
+维约束。例如，对于闭环系统，可以通过切割关节环来获得(虚拟的)无约束开链系统，并且被强制执行的闭环约束可以写为
+\begin_inset Formula $f(q)=0$
+\end_inset
+
+，其可线性化为
+\begin_inset Formula $A\dot{q}=0$
+\end_inset
+
+的形式，其中
+\begin_inset Formula $A=\frac{\partial f}{\partial q}$
+\end_inset
+
+是受约束的雅可比矩阵。
+\end_layout
+
+\begin_layout Standard
+受约束系统的运动方程可被写为：
+\begin_inset Formula 
+\begin{align}
+M\ddot{q}+b & =\tau+A^{\mathrm{T}}\lambda\label{eq:54}\\
+A\dot{q} & =0\label{eq:55}
+\end{align}
+
+\end_inset
+
+其中方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)表示无约束开链系统的运动方程，附加约束力
+\begin_inset Formula $J^{\mathrm{T}}\lambda$
+\end_inset
+
+作用在构型空间
+\begin_inset Formula $q$
+\end_inset
+
+上，并且拉格朗日乘子
+\begin_inset Formula $\lambda\in\Re^{m}$
+\end_inset
+
+给出约束力的相对大小。
+\end_layout
+
+\begin_layout Standard
+类似于上一节(第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)，我们将推导受约束系统的逆向动力学
+\begin_inset Formula $(\ddot{q}\rightarrow\tau)$
+\end_inset
+
+，正向动力学
+\begin_inset Formula $(\tau\rightarrow\ddot{q})$
+\end_inset
+
+和混合动力学
+\begin_inset Formula $\left(\left(\ddot{q}_{u},\tau_{v}\right)\rightarrow\left(\tau_{u},\ddot{q}_{v}\right)\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $q=\left(q_{u},q_{v}\right)$
+\end_inset
+
+。我们假设当前系统状态
+\begin_inset Formula $(q,\dot{q})$
+\end_inset
+
+已知且与约束一致，并且
+\begin_inset Formula $A$
+\end_inset
+
+为满秩。
+\end_layout
+
+\begin_layout Subsection
+受约束系统的逆向动力学
+\end_layout
+
+\begin_layout Standard
+当给定系统的当前状态
+\begin_inset Formula $(q,\dot{q})$
+\end_inset
+
+和加速度
+\begin_inset Formula $(\ddot{q})$
+\end_inset
+
+时，逆向动力学找到满足运动方程的关节力矩
+\begin_inset Formula $(\tau)$
+\end_inset
+
+。我们假定状态和规定加速度
+\begin_inset Formula $(q,\dot{q},\ddot{q})$
+\end_inset
+
+满足约束
+\begin_inset Formula $A\dot{q}=0$
+\end_inset
+
+及其微分
+\begin_inset Formula $A\ddot{q}+\dot{A}\dot{q}=0$
+\end_inset
+
+，并着重于求解在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中具有附加约束力的无约束系统的运动方程。
+\end_layout
+
+\begin_layout Standard
+受约束系统的逆向动力学解可能不是唯一的，这取决于约束和执行器的数量。例如，当所有关节都可以驱动时，任意约束力
+\begin_inset Formula $\lambda$
+\end_inset
+
+及其相应的关节力矩
+\begin_inset Formula $\tau=M\ddot{q}+b-A^{\mathrm{T}}\lambda$
+\end_inset
+
+变为方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的一个解，并且一个特定的解是
+\begin_inset Formula $\tau=M\ddot{q}+b$
+\end_inset
+
+且
+\begin_inset Formula $\lambda=0$
+\end_inset
+
+，其中系统的行为如同无约束的开环系统。一般情况下，如果系统是冗余驱动或有太多的执行器，使系统以规定的方式移动所需的关节力矩是不唯一的，在这种情况下，我们往往要选
+择一个最佳的解。相反，如果执行器的数量少于移动系统所需的最小值，就会像预期的那样没有解。
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $q=\left(q_{a},q_{p}\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $q_{a}$
+\end_inset
+
+和
+\begin_inset Formula $q_{p}$
+\end_inset
+
+分别表示驱动关节坐标和非驱动或被动关节坐标。被动关节力矩
+\begin_inset Formula $\tau_{p}$
+\end_inset
+
+不必为零，但假定它们由系统状态确定。我们希望找到主动关节扭矩
+\begin_inset Formula $\left(\tau_{a}\right)$
+\end_inset
+
+以满足方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)或
+\begin_inset Formula 
+\begin{equation}
+\left(\begin{array}{c}
+\tau_{ar}\\
+\tau_{pr}
+\end{array}\right)=\left(\begin{array}{c}
+\tau_{a}+A_{a}^{\mathrm{T}}\lambda\\
+\tau_{p}+A_{p}^{\mathrm{T}}\lambda
+\end{array}\right)\label{eq:56}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\tau_{r}=M\ddot{q}+b$
+\end_inset
+
+ 是无约束开链系统的逆向动力学解，下标“
+\begin_inset Formula $a$
+\end_inset
+
+”和“
+\begin_inset Formula $p$
+\end_inset
+
+”分别表示主动坐标帧和被动坐标帧的分量，并且下标“
+\begin_inset Formula $r$
+\end_inset
+
+”表示无约束动力学解。由于我们已经知道
+\begin_inset Formula $\tau_{p}$
+\end_inset
+
+，我们可以通过求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的下一行或下式来获得约束力
+\begin_inset Formula $\lambda$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+A_{p}^{\mathrm{T}}\lambda=\tau_{pr}-\tau_{p}.\label{eq:57}
+\end{equation}
+
+\end_inset
+
+如果 
+\begin_inset Formula $m=n_{p}$
+\end_inset
+
+，其中 
+\begin_inset Formula $m$
+\end_inset
+
+ 和 
+\begin_inset Formula $n_{p}$
+\end_inset
+
+ 分别表示约束数量和非驱动坐标
+\begin_inset Formula $\left(A_{p}\in\Re^{m\times n_{p}}\right)$
+\end_inset
+
+，存在一个唯一的解
+\begin_inset Formula $\lambda=\left(A_{p}^{\mathrm{T}}\right)^{-1}\left(\tau_{pr}-\tau_{p}\right)$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+我们假设
+\begin_inset Formula $A$
+\end_inset
+
+为满秩。
+\end_layout
+
+\end_inset
+
+。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的上一行，主动关节扭矩可获得为
+\begin_inset Formula 
+\begin{equation}
+\tau_{a}=\tau_{ar}-A_{a}^{\mathrm{T}}\left(A_{p}^{\mathrm{T}}\right)^{-1}\left(\tau_{pr}-\tau_{p}\right).\label{eq:58}
+\end{equation}
+
+\end_inset
+
+例如，在闭环约束两个平移轴和一个旋转轴
+\begin_inset Formula $(m=3)$
+\end_inset
+
+的平面五杆机构系统中，如果存在两个主动关节(即五个关节中的三个为被动关节，并且
+\begin_inset Formula $n_{p}=3$
+\end_inset
+
+ )，只要
+\begin_inset Formula $A_{p}$
+\end_inset
+
+为满秩或构形不奇异，就可以从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:58"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)获得唯一的主动关节。
+\end_layout
+
+\begin_layout Standard
+但是，如果 
+\begin_inset Formula $m>n_{p}$
+\end_inset
+
+ (例如，具有三个或更多主动关节的平面五杆机构)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+我们称之为冗余驱动系统。
+\end_layout
+
+\end_inset
+
+ ，对于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)就有无穷多个的解，可以写为
+\begin_inset Formula 
+\begin{equation}
+\lambda=\left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)+\mathcal{N}\left(A_{p}^{\mathrm{T}}\right)\label{eq:59}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $(\cdot)^{\dagger}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathcal{N}(\cdot)$
+\end_inset
+
+ 分别表示矩阵的Moore-Penrose伪逆和零空间，从而得出主动关节力矩的一般解，如下所示。
+\begin_inset Formula 
+\begin{align}
+\tau_{a} & =\tau_{ar}-A_{a}^{\mathrm{T}}\lambda\label{eq:60}\\
+ & =\tau_{ar}-A_{a}^{\mathrm{T}}\left\{ \left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)+\mathcal{N}\left(A_{p}^{\mathrm{T}}\right)\right\} \label{eq:61}
+\end{align}
+
+\end_inset
+
+我们可以在这里选择最佳解决方案：
+\end_layout
+
+\begin_layout Itemize
+约束力最小化：其解变为 
+\begin_inset Formula $\tau_{a}=\tau_{ar}-A_{a}^{\mathrm{T}}\lambda^{*}$
+\end_inset
+
+ ，其中 
+\begin_inset Formula $\lambda^{*}=\left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+最小主动关节力矩：我们可以通过在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中探索
+\begin_inset Formula $A_{p}^{\mathrm{T}}$
+\end_inset
+
+的零空间找到它 。例如，在
+\begin_inset Formula $n>m>n_{p}$
+\end_inset
+
+的情况下，
+\begin_inset Formula 
+\begin{align}
+\tau_{a} & =\left(\mathbf{1}-A_{a}^{\mathrm{T}}N\left(A_{a}^{\mathrm{T}}N\right)^{\dagger}\right)\left\{ \tau_{ar}-A_{a}^{\mathrm{T}}\left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)\right\} \label{eq:62}\\
+\lambda & =\left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)+Ns^{*}\label{eq:63}\\
+s^{*} & =\left(A_{a}^{\mathrm{T}}N\right)^{\dagger}\left\{ \tau_{ar}-A_{a}^{\mathrm{T}}\left(A_{p}^{\mathrm{T}}\right)^{\dagger}\left(\tau_{pr}-\tau_{p}\right)\right\} \label{eq:64}
+\end{align}
+
+\end_inset
+
+最小化 
+\begin_inset Formula $\left\Vert \tau_{a}\right\Vert ^{2}$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{1}\in\Re^{n_{a}\times n_{a}}$
+\end_inset
+
+表示单位矩阵，并且
+\begin_inset Formula $N\in\Re^{m\times\left(m-n_{p}\right)}$
+\end_inset
+
+表示
+\begin_inset Formula $A_{p}^{\mathrm{T}}\in\Re^{n_{p}\times m}$
+\end_inset
+
+的零空间的基。作为这种情况的特例，如果所有关节都被驱动
+\begin_inset Formula $\left(n>m,n_{p}=0\right)$
+\end_inset
+
+，
+\begin_inset Formula $N$
+\end_inset
+
+成为一个单位矩阵，并因此最小关节力矩和相应的约束力可以写为
+\begin_inset Formula 
+\begin{align}
+\tau & =\tau_{r}-A^{\mathrm{T}}\lambda\label{eq:65}\\
+\lambda & =\left(A^{\mathrm{T}}\right)^{\dagger}\tau_{r}=\left(AA^{\mathrm{T}}\right)^{-1}A\tau_{r},\label{eq:66}
+\end{align}
+
+\end_inset
+
+这也可以直接从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)推导得出。在
+\begin_inset Formula $n<m$
+\end_inset
+
+的情况下，
+\begin_inset Formula $\tau_{a}=0$
+\end_inset
+
+为最小力矩解，这意味着由于约束过多，系统形成一个不可移动的结构。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $m<n_{p}$
+\end_inset
+
+的情况下(例如，只有一个主动关节的平面五杆机构)，我们无法找到使系统精确地按规定
+\begin_inset Formula $(q,\dot{q},\ddot{q})$
+\end_inset
+
+运动的主动关节力矩。然而，即使在这样一个系统中，我们仍然可以找到一个主动关节力矩的解，它必须适用于使主动关节精确地遵循规定的加速度
+\begin_inset Formula $\left(\ddot{q}_{a}\right)$
+\end_inset
+
+，同时让其他被动关节以被动方式移动。为此参见受约束系统的混合动力学(第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)。
+\end_layout
+
+\begin_layout Subsection
+受约束系统的正向动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+与求解依赖于系统性质和构型的约束系统的逆向动力学相反，正向动力学找到响应于所施加关节力矩
+\begin_inset Formula $(\tau)$
+\end_inset
+
+的结果加速度
+\begin_inset Formula $(\ddot{q})$
+\end_inset
+
+总是有唯一的解。
+\end_layout
+
+\begin_layout Standard
+通过微分受约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以得到 
+\begin_inset Formula $A\ddot{q}+\dot{A}\dot{q}=0$
+\end_inset
+
+，并将其与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)结合，我们可以获得的约束力为
+\begin_inset Formula 
+\begin{equation}
+\lambda=-\left(AM^{-1}A^{\mathrm{T}}\right)^{-1}\left(A\ddot{q}_{r}+\dot{A}\dot{q}\right)\label{eq:67}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\ddot{q}_{r}=M^{-1}(\tau-b)$
+\end_inset
+
+ 是无约束开链系统的正向动力学解，假设不存在约束 [2]。一 旦从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)获得约束力后，通过求解考虑约束力的无约束开链系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的正向动力学，我们可以获得关节加速度。
+\end_layout
+
+\begin_layout Standard
+为在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中提高计算效率，我们可以使用在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的开链系统的
+\begin_inset Formula $O(n)$
+\end_inset
+
+递归正向动力学算法。递归算法不仅可用于获得
+\begin_inset Formula $\ddot{q}_{r}$
+\end_inset
+
+，而且可通过运行算法
+\begin_inset Formula $m$
+\end_inset
+
+次来计算
+\begin_inset Formula $M^{-1}A^{\mathrm{T}}$
+\end_inset
+
+。更具体地说，我们通过调用正向动力学算法(但忽略项
+\begin_inset Formula $b$
+\end_inset
+
+，即与重力和关节速度相关的项)，可以用
+\begin_inset Formula $A^{\mathrm{T}}$
+\end_inset
+
+的第
+\begin_inset Formula $i$
+\end_inset
+
+列设置关节扭矩，以计算
+\begin_inset Formula $M^{-1}A_{i}^{\mathrm{T}}$
+\end_inset
+
+，并对所有列重复此操作。注意，在重复过程中，通过重用动力学算法中已计算的中间量，可以节省大量计算。
+\end_layout
+
+\begin_layout Standard
+我们可以通过将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:54"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)拆分为两个方程来进一步节省计算量
+\begin_inset Formula 
+\begin{equation}
+M\ddot{q}+b=\tau+A^{\mathrm{T}}\lambda\longrightarrow\begin{cases}
+M\ddot{q}_{r}+b & =\tau\\
+M\ddot{q}_{c} & =A^{\mathrm{T}}\lambda
+\end{cases}\label{eq:68}
+\end{equation}
+
+\end_inset
+
+并且这表明，将无约束开链系统的两个解求和，可以得到约束系统的正向动力学解，即， 
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}=\ddot{q}_{r}+\ddot{q}_{c}\label{eq:69}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\ddot{q}_{r}$
+\end_inset
+
+ 是假定不存在约束的无约束开链系统的解，并且
+\begin_inset Formula $\ddot{q}_{c}$
+\end_inset
+
+是将约束力施加到开链系统时忽略上述项
+\begin_inset Formula $b$
+\end_inset
+
+的解。总之，我们需要一次完整版本的递归开链正向动力学算法
+\begin_inset Formula $\left(\ddot{q}=M^{-1}(\tau-b)\right)$
+\end_inset
+
+的调用，以及
+\begin_inset Formula $m+1$
+\end_inset
+
+次简化版本的动力学算法
+\begin_inset Formula $\left(\ddot{q}=M^{-1}\tau\right)$
+\end_inset
+
+的调用。结果算法的复杂度变为
+\begin_inset Formula $O(n)+O\left(m^{3}\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $m$
+\end_inset
+
+表示约束数量，
+\begin_inset Formula $O\left(m^{3}\right)$
+\end_inset
+
+用于求逆
+\begin_inset Formula $AM^{-1}A^{T}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+受约束系统的混合动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $q=\left(q_{u},q_{v}\right)$
+\end_inset
+
+，其中 
+\begin_inset Formula $q_{u}$
+\end_inset
+
+ 和 
+\begin_inset Formula $q_{v}$
+\end_inset
+
+ 分别是具有规定加速度和给定或已知扭矩的关节坐标。受约束系统的运动方程可以重写为
+\begin_inset Formula 
+\begin{align}
+M\left(\begin{array}{c}
+\ddot{q}_{u}\\
+\ddot{q}_{v}
+\end{array}\right)+b & =\left(\begin{array}{c}
+\tau_{u}\\
+\tau_{v}
+\end{array}\right)+A^{\mathrm{T}}\lambda\label{eq:70}\\
+A\left(\begin{array}{c}
+\ddot{q}_{u}\\
+\ddot{q}_{v}
+\end{array}\right)+\dot{A}\dot{q} & =0,\label{eq:71}
+\end{align}
+
+\end_inset
+
+并且混合动力学算法通过求解受约束动力学方程，从给定的
+\begin_inset Formula $\left(\ddot{q}_{u},\tau_{v}\right)$
+\end_inset
+
+找到
+\begin_inset Formula $\left(\tau_{u},\ddot{q}_{v}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+我们首先证明约束力
+\begin_inset Formula $\lambda$
+\end_inset
+
+可以以类似于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的形式获得。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)我们得到
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}_{v}=M_{vv}^{-1}\left(\tau_{v}-b_{v}-M_{uv}\ddot{q}_{u}+A_{v}^{\mathrm{T}}\lambda\right)\label{eq:72}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $M=\small{\left[\begin{array}{cc}
+M_{uu} & M_{uv}\\
+M_{uv} & M_{vv}
+\end{array}\right]},b=\small{\left(\begin{array}{c}
+b_{u}\\
+b_{v}
+\end{array}\right)}$
+\end_inset
+
+ 并且 
+\begin_inset Formula $A=\left[\begin{array}{cc}
+A_{u} & A_{v}\end{array}\right]$
+\end_inset
+
+。将其代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)将导致
+\begin_inset Formula 
+\begin{equation}
+\left(A_{v}M_{vv}^{-1}A_{v}^{\mathrm{T}}\right)\lambda=-\left\{ A_{u}\ddot{q}_{u}+A_{v}M_{vv}^{-1}\left(\tau_{v}-b_{v}-M_{uv}\ddot{q}_{u}\right)+\dot{A}\dot{q}\right\} .\label{eq:73}
+\end{equation}
+
+\end_inset
+
+如果 
+\begin_inset Formula $m\leq n_{v}$
+\end_inset
+
+，其中 
+\begin_inset Formula $m$
+\end_inset
+
+ 和 
+\begin_inset Formula $n_{v}$
+\end_inset
+
+ 表示约束数量和扭矩指定坐标 
+\begin_inset Formula $\left(A_{v}\in\Re^{m\times n_{v}},M_{vv}\in\Re^{n_{v}\times n_{v}}\right)$
+\end_inset
+
+，对于约束力
+\begin_inset Formula $\lambda$
+\end_inset
+
+就存在唯一解，并且导致对于
+\begin_inset Formula $\left(\tau_{u},\ddot{q}_{v}\right)$
+\end_inset
+
+也存在唯一解
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+再一次，我们假设
+\begin_inset Formula $A$
+\end_inset
+
+为满秩。
+\end_layout
+
+\end_inset
+
+。在这种情况下，约束力可通过以下方式获得。
+\begin_inset Formula 
+\begin{align}
+\lambda & =-\left(A_{v}M_{vv}^{-1}A_{v}^{\mathrm{T}}\right)^{-1}\left\{ A_{u}\ddot{q}_{u}+A_{v}M_{vv}^{-1}\left(\tau_{v}-b_{v}-M_{uv}\ddot{q}_{u}\right)+\dot{A}\dot{q}\right\} \label{eq:74}\\
+ & =-\left(A_{v}M_{vv}^{-1}A_{v}^{\mathrm{T}}\right)^{-1}\left\{ A_{u}\ddot{q}_{u}+A_{v}\ddot{q}_{rv}+\dot{A}\dot{q}\right\} \label{eq:75}\\
+ & =-\left(A_{v}M_{vv}^{-1}A_{v}^{\mathrm{T}}\right)^{-1}\left(A\ddot{q}_{r}+\dot{A}\dot{q}\right)\label{eq:76}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}_{rv}=M_{vv}^{-1}\left(\tau_{v}-b_{v}-M_{uv}\ddot{q}_{u}\right)\label{eq:77}
+\end{equation}
+
+\end_inset
+
+表示无约束开链系统中扭矩指定坐标的结果加速度，并且
+\begin_inset Formula $\ddot{q}_{r}=\left(\ddot{q}_{u},\ddot{q}_{rv}\right)$
+\end_inset
+
+表示无约束系统的加速度。注意，
+\begin_inset Formula $\ddot{q}_{u}$
+\end_inset
+
+是规定的加速度，并且通过使用在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中描述的递归算法可以有效地获得
+\begin_inset Formula $\ddot{q}_{rv}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+类似于正向动力学(第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)的情况，通过调用递归开链混合动力学算法的简化版本
+\begin_inset Formula $m$
+\end_inset
+
+次，可以有效地获得
+\begin_inset Formula $M_{vv}^{-1}A_{v}^{\mathrm{T}}$
+\end_inset
+
+。更具体地说，可以很容易地从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:77"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)识别出，当忽略与重力和关节速度相关的项时，
+\begin_inset Formula $M_{vv}^{-1}A_{vi}^{\mathrm{T}}$
+\end_inset
+
+可以解释为作为扭矩指定的坐标的结果加速度，并且将输入到无约束开链系统的关节命令设置为
+\begin_inset Formula $\left(\ddot{q}_{u}=0,\tau_{v}=A_{vi}^{\mathrm{T}}\right)$
+\end_inset
+
+，其中
+\begin_inset Formula $A_{vi}^{\mathrm{T}}$
+\end_inset
+
+表示
+\begin_inset Formula $A_{v}^{\mathrm{T}}$
+\end_inset
+
+的第
+\begin_inset Formula $i$
+\end_inset
+
+列。 
+\end_layout
+
+\begin_layout Standard
+一旦我们从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中获得约束力
+\begin_inset Formula $\lambda$
+\end_inset
+
+，我们就可以通过使用开链系统的递归混合动力学算法求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)获得
+\begin_inset Formula $\left(\tau_{u},\ddot{q}_{v}\right)$
+\end_inset
+
+。但是，将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)拆分为两个方程可以提高计算效率，如我们在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中所讨论的。该方程可重写为
+\begin_inset Formula 
+\begin{equation}
+M\left(\begin{array}{c}
+\ddot{q}_{u}\\
+\ddot{q}_{v}
+\end{array}\right)+b=\left(\begin{array}{c}
+\tau_{u}\\
+\tau_{v}
+\end{array}\right)+A^{\mathrm{T}}\lambda\quad\longrightarrow\left\{ \begin{array}{c}
+M\left(\begin{array}{c}
+\ddot{q}_{u}\\
+\ddot{q}_{vr}
+\end{array}\right)+b=\left(\begin{array}{c}
+\tau_{ur}\\
+\tau_{v}
+\end{array}\right)\\
+M\left(\begin{array}{c}
+0\\
+\ddot{q}_{vc}
+\end{array}\right)\quad=\left(\begin{array}{c}
+\tau_{uc}\\
+A_{v}^{\mathrm{T}}\lambda
+\end{array}\right)
+\end{array}\right.\label{eq:78}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\left(\ddot{q}_{u},\tau_{v}\right)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\left(0,A_{v}^{\mathrm{T}}\lambda\right)$
+\end_inset
+
+ 分别是无约束开链系统两个混合动力学问题的输入。这种拆分表明，受约束系统的原始混合动力学问题的解可获得为 
+\begin_inset Formula 
+\begin{align}
+\tau_{u} & =\tau_{ur}+\tilde{\tau}_{uc}\label{eq:79}\\
+\ddot{q}_{v} & =\ddot{q}_{vr}+\ddot{q}_{vc}\label{eq:80}
+\end{align}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\tilde{\tau}_{uc}=\tau_{uc}-A_{u}^{\mathrm{T}}\lambda$
+\end_inset
+
+注意，当
+\begin_inset Formula $q_{v}=q$
+\end_inset
+
+时，混合动力学的解与在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的正向动力学的解完全匹配。
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $m>n_{v}$
+\end_inset
+
+，约束力不是唯一确定的，这类似于逆向动力学当执行器多于所需
+\begin_inset Formula $\left(m>n_{p}\right)$
+\end_inset
+
+时的情况。在这种情况下，如果
+\begin_inset Formula $\ddot{q}_{u}$
+\end_inset
+
+设置为任意值，对于
+\begin_inset Formula $\ddot{q}_{v}$
+\end_inset
+
+有可能不存在满足约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)或
+\begin_inset Formula $A_{v}\ddot{q}_{v}=-A_{u}\ddot{q}_{u}-\dot{A}\dot{q}$
+\end_inset
+
+的解。如果仔细设置
+\begin_inset Formula $\ddot{q}_{u}$
+\end_inset
+
+，使得存在满足约束条件的加速度，则对于加速度指定坐标
+\begin_inset Formula $\left(\tau_{u}\right)$
+\end_inset
+
+的关节力矩有无穷多个解，并可通过探索
+\begin_inset Formula $A_{v}^{\mathrm{T}}$
+\end_inset
+
+的零空间来选择最优解。逆向动力学的解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:61"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)提供了一个更简单的公式，其中对于混合动力学中的符号，下标“
+\begin_inset Formula $a$
+\end_inset
+
+”和“
+\begin_inset Formula $p$
+\end_inset
+
+”必须分别替换为“
+\begin_inset Formula $u$
+\end_inset
+
+”和“
+\begin_inset Formula $v$
+\end_inset
+
+”。
+\end_layout
+
+\begin_layout Section
+几何动力学的微分
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+基本导数
+\end_layout
+
+\begin_layout Standard
+对于使用链式规则微分递归动力学算法，下面的导数是有用的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lemma}
+\end_layout
+
+\end_inset
+
+设 
+\begin_inset Formula $p\in\Re$
+\end_inset
+
+ 是一个任意标量变量，并且 
+\begin_inset Formula $T\in SE(3)$
+\end_inset
+
+ 是 
+\begin_inset Formula $p$
+\end_inset
+
+的一个函数。则
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial}{\partial p}\mathrm{Ad}_{T}=\mathrm{ad}_{\frac{\partial T}{\partial p}T^{-1}}\mathrm{Ad}_{T}.\label{eq:81}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lemma}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{proof}[证明]
+\end_layout
+
+\end_inset
+
+设 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 为一个任意 
+\begin_inset Formula $se(3)$
+\end_inset
+
+。若将 
+\begin_inset Formula $\mathrm{Ad}_{T}$
+\end_inset
+
+ 视为一个 
+\begin_inset Formula $6\times6$
+\end_inset
+
+ 矩阵，则
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial}{\partial p}\left(\mathrm{Ad}_{T}\xi\right)=\frac{\partial}{\partial p}\left(\mathrm{Ad}_{T}\right)\xi+\mathrm{Ad}_{T}\frac{\partial\xi}{\partial p}.\label{eq:82}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $\mathrm{Ad}_{T}$
+\end_inset
+
+ 也可以看作是一个线性映射，
+\begin_inset Formula $\mathrm{Ad}_{T}:\xi\rightarrow T\xi T^{-1}$
+\end_inset
+
+，并在这种情况下，
+\begin_inset Formula 
+\begin{align}
+\frac{\partial}{\partial p}\left(\mathrm{Ad}_{T}\xi\right) & =\frac{\partial}{\partial p}\left(T\xi T^{-1}\right)\label{eq:83}\\
+ & =\frac{\partial T}{\partial p}\xi T^{-1}+T\frac{\partial\xi}{\partial p}T^{-1}+T\xi\frac{\partial T^{-1}}{\partial p}\label{eq:84}\\
+ & =\frac{\partial T}{\partial p}T^{-1}T\xi T^{-1}-T\xi T^{-1}\frac{\partial T}{\partial p}T^{-1}+T\frac{\partial\xi}{\partial p}T^{-1}\label{eq:85}\\
+ & =\mathrm{ad}_{\frac{\partial T}{\partial p}T^{-1}}\mathrm{Ad}_{T}\xi+\mathrm{Ad}_{T}\frac{\partial\xi}{\partial p}.\label{eq:86}
+\end{align}
+
+\end_inset
+
+由于 
+\begin_inset Formula $\xi\in se(3)$
+\end_inset
+
+ 是任意的，可以从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:82"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 和 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:86"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中看出 
+\begin_inset Formula $\frac{\partial}{\partial p}\mathrm{Ad}_{T}=\mathrm{ad}_{\frac{\partial T}{\partial p}T^{-1}}\mathrm{Ad}_{T}$
+\end_inset
+
+。
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{proof}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{corollary}
+\end_layout
+
+\end_inset
+
+设 
+\begin_inset Formula $p\in\Re$
+\end_inset
+
+ 是一个任意标量变量，并且 
+\begin_inset Formula $T_{\lambda(i),i}\in SE(3):\{\lambda(i)\}\rightarrow\{i\}$
+\end_inset
+
+。则
+\begin_inset Formula 
+\begin{align}
+\frac{\partial}{\partial p}\mathrm{Ad}_{T_{\lambda(i),i}}^{-1} & =-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\label{eq:87}\\
+\frac{\partial}{\partial p}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}^{*} & =-\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}^{*}\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}^{*}\label{eq:88}
+\end{align}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\frac{\partial h_{i}}{\partial p}\in se(3)$
+\end_inset
+
+ 被定义为
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial h_{i}}{\partial p}=T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}}{\partial p}.\label{eq:89}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{corollary}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{corollary}
+\end_layout
+
+\end_inset
+
+如果 
+\begin_inset Formula $p=q_{i}^{k}$
+\end_inset
+
+，其中 
+\begin_inset Formula $q_{i}^{k}$
+\end_inset
+
+ 表示第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的第
+\begin_inset Formula $k$
+\end_inset
+
+个坐标，则
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial h_{i}}{\partial p}=S_{i}^{k}\label{eq:90}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $S_{i}^{k}\in se(3)$
+\end_inset
+
+ 表示第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的雅可比矩阵的第
+\begin_inset Formula $k$
+\end_inset
+
+列，
+\begin_inset Formula $S_{i}\in\left(se(3)\times n_{i}\right)$
+\end_inset
+
+。如果
+\begin_inset Formula $p\notin q_{i}=\left\{ q_{i}^{1},\cdots,q_{i}^{n_{i}}\right\} $
+\end_inset
+
+, 则
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial h_{i}}{\partial p}=0.\label{eq:91}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{corollary}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+动力学的导数
+\end_layout
+
+\begin_layout Standard
+通过应用链式规则于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:87"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:88"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，逆向、正向和混合动力学的递归算法可以相对于一个任意标量变量
+\begin_inset Formula $p\in\Re$
+\end_inset
+
+进行微分。 表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了递归逆向动力学的导数，并且它可以用给定的
+\begin_inset Formula $\left(\frac{\partial q}{\partial p},\frac{\partial\dot{q}}{\partial p},\frac{\partial\ddot{q}}{\partial p}\right)$
+\end_inset
+
+求解
+\begin_inset Formula $\frac{\partial\tau}{\partial p}$
+\end_inset
+
+。在表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中给出了递归正向动力学的导数，它用给定的
+\begin_inset Formula $\frac{\partial\tau}{\partial p}$
+\end_inset
+
+来计算
+\begin_inset Formula $\frac{\partial\ddot{q}}{\partial p}$
+\end_inset
+
+。递归混合动力学的导数，用给定的
+\begin_inset Formula $\left(\frac{\partial q}{\partial p},\frac{\partial\dot{q}}{\partial p},\frac{\partial\ddot{q}_{u}}{\partial p},\frac{\partial\tau_{v}}{\partial p}\right)$
+\end_inset
+
+求解
+\begin_inset Formula $\left(\frac{\partial\tau_{u}}{\partial p},\frac{\partial\ddot{q}_{v}}{\partial p}\right)$
+\end_inset
+
+，如表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:5"
+
+\end_inset
+
+递归逆向动力学的导数
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{aligned}\frac{\partial h_{i}}{\partial p}\triangleq & T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}}{\partial p}\\
+\frac{\partial V_{i}}{\partial p}= & \mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial V_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\\
+\frac{\partial\dot{V}_{i}}{\partial p}= & \mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\ddot{q}_{i}+S_{i}\frac{\partial\ddot{q}_{i}}{\partial p}\\
+ & +\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}S_{i}\dot{q}_{i}+\mathrm{ad}_{V_{i}}\left(\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\right)+\frac{\partial\dot{S}_{i}}{\partial p}\dot{q}_{i}+\dot{S}_{i}\frac{\partial\dot{q}_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{aligned}\frac{\partial F_{i}}{\partial p}= & \frac{\partial\mathcal{I}_{i}}{\partial p}\dot{V}_{i}+\mathcal{I}_{i}\frac{\partial\dot{V}_{i}}{\partial p}-\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}^{*}\mathcal{I}_{i}V_{i}-\mathrm{ad}_{V_{i}}^{*}\left(\frac{\partial\mathcal{I}_{i}}{\partial p}V_{i}+\mathcal{I}_{i}\frac{\partial V_{i}}{\partial p}\right)-\frac{\partial F_{i}^{\mathrm{ext}}}{\partial p}\\
+ & +\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\left(\frac{\partial F_{k}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}^{*}F_{k}\right)\\
+\frac{\partial\tau_{i}}{\partial p}= & \frac{\partial S_{i}}{\partial p}^{\mathrm{T}}F_{i}+S_{i}^{\mathrm{T}}\frac{\partial F_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:6"
+
+\end_inset
+
+递归正向动力学的导数
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{aligned}\frac{\partial h_{i}}{\partial p} & \triangleq T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}}{\partial p}\\
+\frac{\partial V_{i}}{\partial p} & =\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial V_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\\
+\frac{\partial\eta_{i}}{\partial p} & =\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}S_{i}\dot{q}_{i}+\mathrm{ad}_{V_{i}}\left(\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\right)+\frac{\partial\dot{S}_{i}}{\partial p}\dot{q}_{i}+\dot{S}_{i}\frac{\partial\dot{q}_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{aligned}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}= & \frac{\partial\mathcal{I}_{i}}{\partial p}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\left\{ \frac{\partial\Pi_{k}}{\partial p}-\Pi_{k}\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}-\left(\Pi_{k}\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}\right)^{\mathrm{T}}\right\} \mathrm{Ad}_{T_{i,k}^{-1}}\\
+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}= & -\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}^{*}\mathcal{I}_{i}V_{i}-\mathrm{ad}_{V_{i}}^{*}\left(\frac{\partial\mathcal{I}_{i}}{\partial p}V_{i}+\mathcal{I}_{i}\frac{\partial V_{i}}{\partial p}\right)-\frac{\partial F_{i}^{\mathrm{ext}}}{\partial p}\\
+ & \ +\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\left(\frac{\partial\beta_{k}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}^{*}\beta_{k}\right)\\
+\frac{\partial\Psi_{i}}{\partial p}= & -\Psi_{i}\left\{ S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}S_{i}+\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}+\left(\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}\right)^{\mathrm{T}}\right\} \Psi_{i}\\
+\frac{\partial\Pi_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}-\left\{ \hat{\mathcal{I}}_{i}S_{i}\frac{\partial\Psi_{i}}{\partial p}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\frac{\partial\hat{\mathcal{I}}}{\partial p}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\left(\frac{\partial\hat{\mathcal{I}}}{\partial p}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\right)^{\mathrm{T}}\right.\\
+ & \left.+\hat{\mathcal{I}}_{i}\frac{\partial S_{i}}{\partial p}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\left(\hat{\mathcal{I}}_{i}\frac{\partial S_{i}}{\partial p}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\right)^{\mathrm{T}}\right\} \\
+\frac{\partial\beta_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\left\{ \eta_{i}+S_{i}\Psi_{i}\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right\} \\
+ & +\hat{\mathcal{I}}\left\{ \frac{\partial\eta_{i}}{\partial p}+\left(\frac{\partial S_{i}}{\partial p}\Psi_{i}+S_{i}\frac{\partial\Psi_{i}}{\partial p}\right)\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right.\\
+ & \left.+S_{i}\Psi_{i}\left(\frac{\partial\tau_{i}}{\partial p}-\frac{\partial S_{i}}{\partial p}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)-S_{i}^{\mathrm{T}}\left(\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\eta_{i}+\hat{\mathcal{I}}_{i}\frac{\partial\eta_{i}}{\partial p}+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}\right)\right)\right\} 
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\begin{aligned}\frac{\partial\ddot{q}_{i}}{\partial p}= & \frac{\partial\Psi_{i}}{\partial p}\left\{ \tau_{i}-S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)-S_{i}^{\mathrm{T}}\hat{\mathcal{B}}_{i}\right\} \\
+ & +\Psi_{i}\left\{ \frac{\partial\tau_{i}}{\partial p}-\left(\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\right)\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)\right.\\
+ & -S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial\eta_{i}}{\partial p}\right)\\
+ & \left.-\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{B}}_{i}-S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}\right\} \\
+\frac{\partial\dot{V}_{i}}{\partial p}= & \mathrm{Ad}_{T_{\lambda(i),i}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\ddot{q}_{i}+S_{i}\frac{\partial\ddot{q}_{i}}{\partial p}+\frac{\partial\eta_{i}}{\partial p}\\
+\frac{\partial F_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\dot{V}_{i}+\hat{\mathcal{I}}_{i}\frac{\partial\dot{V}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:7"
+
+\end_inset
+
+递归混合动力学的导数
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial h_{i}}{\partial p} & \triangleq T_{\lambda(i),i}^{-1}\frac{\partial T_{\lambda(i),i}}{\partial p}\\
+\frac{\partial V_{i}}{\partial p} & =\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial V_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}V_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\\
+\frac{\partial\eta_{i}}{\partial p} & =\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}S_{i}\dot{q}_{i}+\mathrm{ad}_{V_{i}}\left(\frac{\partial S_{i}}{\partial p}\dot{q}_{i}+S_{i}\frac{\partial\dot{q}_{i}}{\partial p}\right)+\frac{\partial\dot{S}_{i}}{\partial p}\dot{q}_{i}+\dot{S}_{i}\frac{\partial\dot{q}_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{backward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}= & \frac{\partial\mathcal{I}_{i}}{\partial p}+\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\left\{ \frac{\partial\Pi_{k}}{\partial p}-\Pi_{k}\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}-\left(\Pi_{k}\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}\right)^{\mathrm{T}}\right\} \mathrm{Ad}_{T_{i,k}^{-1}}\\
+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}= & -\mathrm{ad}_{\frac{\partial V_{i}}{\partial p}}^{*}\mathcal{I}_{i}V_{i}-\mathrm{ad}_{V_{i}}^{*}\left(\frac{\partial\mathcal{I}_{i}}{\partial p}V_{i}+\mathcal{I}_{i}\frac{\partial V_{i}}{\partial p}\right)-\frac{\partial F_{i}^{\mathrm{ext}}}{\partial p}\\
+ & \ +\sum_{k\in\mu(i)}\mathrm{Ad}_{T_{i,k}^{-1}}^{*}\left(\frac{\partial\beta_{k}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{k}}{\partial p}}^{*}\beta_{k}\right)
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$i 
+\backslash
+in u$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial\Pi_{i}}{\partial p} & =\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\\
+\frac{\partial\beta_{i}}{\partial p} & =\frac{\partial\mathcal{\mathcal{B}}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\left(\eta_{i}+S_{i}\ddot{q}_{i}\right)+\hat{\mathcal{I}}_{i}\left(\frac{\partial\eta_{i}}{\partial p}+\frac{\partial S_{i}}{\partial p}\ddot{q}_{i}+S_{i}\frac{\partial\ddot{q}_{i}}{\partial p}\right)
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ELSE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial\Psi_{i}}{\partial p}= & -\Psi_{i}\left\{ S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}S_{i}+\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}+\left(\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{I}}_{i}S_{i}\right)^{\mathrm{T}}\right\} \Psi_{i}\\
+\frac{\partial\Pi_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}-\left\{ \hat{\mathcal{I}}_{i}S_{i}\frac{\partial\Psi_{i}}{\partial p}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\frac{\partial\hat{\mathcal{I}}}{\partial p}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\left(\frac{\partial\hat{\mathcal{I}}}{\partial p}S_{i}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\right)^{\mathrm{T}}\right.\\
+ & \left.+\hat{\mathcal{I}}_{i}\frac{\partial S_{i}}{\partial p}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+\left(\hat{\mathcal{I}}_{i}\frac{\partial S_{i}}{\partial p}\Psi_{i}S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\right)^{\mathrm{T}}\right\} \\
+\frac{\partial\beta_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\left\{ \eta_{i}+S_{i}\Psi_{i}\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right\} \\
+ & +\hat{\mathcal{I}}\left\{ \frac{\partial\eta_{i}}{\partial p}+\left(\frac{\partial S_{i}}{\partial p}\Psi_{i}+S_{i}\frac{\partial\Psi_{i}}{\partial p}\right)\left(\tau_{i}-S_{i}^{\mathrm{T}}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)\right)\right.\\
+ & \left.+S_{i}\Psi_{i}\left(\frac{\partial\tau_{i}}{\partial p}-\frac{\partial S_{i}}{\partial p}\left(\hat{\mathcal{I}}_{i}\eta_{i}+\hat{\mathcal{B}}_{i}\right)-S_{i}^{\mathrm{T}}\left(\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\eta_{i}+\hat{\mathcal{I}}_{i}\frac{\partial\eta_{i}}{\partial p}+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}\right)\right)\right\} 
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+WHILE{forward recursion}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$i 
+\backslash
+in u$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial\dot{V}_{i}}{\partial p} & =\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\ddot{q}_{i}+S_{i}\frac{\partial\ddot{q}_{i}}{\partial p}+\frac{\partial\eta_{i}}{\partial p}\\
+\frac{\partial F_{i}}{\partial p} & =\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\dot{V}_{i}+\hat{\mathcal{I}}_{i}\frac{\partial\dot{V}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}\\
+\frac{\partial\tau_{i}}{\partial p} & =\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}F_{i}+S_{i}^{\mathrm{T}}\frac{\partial F_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ELSE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\scriptsize\begin{aligned}\frac{\partial\ddot{q}_{i}}{\partial p}= & \frac{\partial\Psi_{i}}{\partial p}\left\{ \tau_{i}-S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)-S_{i}^{\mathrm{T}}\hat{\mathcal{B}}_{i}\right\} \\
+ & +\Psi_{i}\left\{ \frac{\partial\tau_{i}}{\partial p}-\left({\frac{\partial S_{i}}{\partial p}}^{\mathrm{T}}\hat{\mathcal{I}}_{i}+S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\right)\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\eta_{i}\right)\right.\\
+ & -S_{i}^{\mathrm{T}}\hat{\mathcal{I}}_{i}\left(\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial\eta_{i}}{\partial p}\right)\\
+ & \left.-\frac{\partial S_{i}}{\partial p}^{\mathrm{T}}\hat{\mathcal{B}}_{i}-S_{i}^{\mathrm{T}}\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}\right\} \\
+\frac{\partial\dot{V}_{i}}{\partial p}= & \mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\frac{\partial\dot{V}_{\lambda(i)}}{\partial p}-\mathrm{ad}_{\frac{\partial h_{i}}{\partial p}}\mathrm{Ad}_{T_{\lambda(i),i}^{-1}}\dot{V}_{\lambda(i)}+\frac{\partial S_{i}}{\partial p}\ddot{q}_{i}+S_{i}\frac{\partial\ddot{q}_{i}}{\partial p}+\frac{\partial\eta_{i}}{\partial p}\\
+\frac{\partial F_{i}}{\partial p}= & \frac{\partial\hat{\mathcal{I}}_{i}}{\partial p}\dot{V}_{i}+\hat{\mathcal{I}}_{i}\frac{\partial\dot{V}_{i}}{\partial p}+\frac{\partial\hat{\mathcal{B}}_{i}}{\partial p}
+\end{aligned}
+$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDWHILE
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为获得动力学的导数，需要提前运行递归动力学相关的方程，此外，还需要以下的量
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial S_{i}}{\partial p},\frac{\partial\dot{S}_{i}}{\partial p},\frac{\partial F_{i}^{\mathrm{ext}}}{\partial p},\frac{\partial\mathcal{I}_{i}}{\partial p},\text{ and }\frac{\partial h_{i}}{\partial p}\label{eq:92}
+\end{equation}
+
+\end_inset
+
+其对于每个机体，应在初始化步骤中正确设置。
+\end_layout
+
+\begin_layout Standard
+动力学导数的算法是如此的通用，以至于它们可以应用于对任意标量变量的运动方程的微分。应该注意的是，通过巧妙地实现算法，计算速度可以比原始实现快得多，因为在某些情况
+下，在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:92"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的许多量为零。例如，
+\end_layout
+
+\begin_layout Itemize
+如果 
+\begin_inset Formula $p=q^{k}$
+\end_inset
+
+，其中 
+\begin_inset Formula $q^{k}\in\Re$
+\end_inset
+
+ 表示系统的第
+\begin_inset Formula $k$
+\end_inset
+
+个坐标，则
+\begin_inset Formula 
+\[
+\begin{aligned}-\frac{\partial\mathcal{I}_{i}}{\partial p} & =0\\
+-\frac{\partial S_{i}}{\partial p} & =\frac{\partial\dot{S}_{i}}{\partial p}=\frac{\partial h_{i}}{\partial p}=0\text{ when }q^{k}\notin q_{i}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+如果 
+\begin_inset Formula $p=\dot{q}^{k}$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\begin{aligned}-\frac{\partial S_{i}}{\partial p} & =\frac{\partial\mathcal{I}_{i}}{\partial p}=\frac{\partial h_{i}}{\partial p}=0\\
+-\frac{\partial\dot{S}_{i}}{\partial p} & =0\text{ when }q^{k}\notin q_{i}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+如果 
+\begin_inset Formula $p=\ddot{q}^{k}$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+-\frac{\partial\dot{S}_{i}}{\partial p}=\frac{\partial S_{i}}{\partial p}=\frac{\partial\mathcal{I}_{i}}{\partial p}=\frac{\partial h_{i}}{\partial p}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Roy Featherstone, Robot Dynamics Algorithms, Kluver Academic Publishers,
+ 1987.
+\end_layout
+
+\begin_layout Enumerate
+Richard M.
+ Murray, Zexiang Li and and S.
+ Shankar Sastry, A Mathematical Introduction to Robotic Manipulation, CRC
+ Press, 1994.
+\end_layout
+
+\begin_layout Enumerate
+F.
+ C.
+ Park, J.
+ E.
+ Bobrow and S.
+ R.
+ Ploen, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+A Lie group formulation of robot dynamics,
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ International Journal of Robotics Research, vol.
+ 14, no.
+ 6, pp.
+ 609-618, 1995.
+\end_layout
+
+\begin_layout Enumerate
+S.
+ R.
+ Ploen and F.
+ C.
+ Park, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Coordinate-invariant algorithms for robot dynamics,
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ IEEE Transactions on Robotics and Automation, vol.
+ 15, no.
+ 6, pp.
+ 1130-1136, 1999.
+\end_layout
+
+\begin_layout Enumerate
+Garett A.
+ Sohl and James E.
+ Bobrow, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+A recursive multibody dynamics and sensitivity algorithm for branched kinematic
+ chains,
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ Journal of Dynamic Systems, Measurement, and Control, vol.
+ 123, pp.
+ 391-399, 2001.
+\end_layout
+
+\end_body
+\end_document
