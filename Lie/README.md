@@ -6,6 +6,7 @@
     + 刚体运动与欧几里德群
     + [The Lie group SE(3)](https://www.seas.upenn.edu/~meam620/slides/kinematicsI.pdf)
 04. [Lecture Notes in Lie Groups - 2011](https://arxiv.org/abs/1104.1106)
+    + 关于李群的课程讲义
 05. [Lie Group Formulation of Articulated Rigid Body Dynamics - 2012](http://www.cs.cmu.edu/~junggon/tools/liegroupdynamics.pdf)
     + 铰接刚体动力学的李群公式
     + [GEAR (Geometric Engine for Articulated Rigid-body simulation)](http://www.cs.cmu.edu/~junggon/tools/gear.html)
