@@ -1,0 +1,4069 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{remark}{Remark}
+%\newtheorem{problem}{Problem}
+%\newtheorem{fact}{Fact}
+%\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{定理}
+\newtheorem{remark}{备注}
+\newtheorem{problem}{问题}
+\newtheorem{fact}{事实}
+\newtheorem{lemma}{引理}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{input:}}
+\renewcommand{\algorithmicensure}{\textbf{output:}}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "机器人动力学：方程与算法"
+\pdf_author "Roy Featherstone & David Orin"
+\pdf_keywords "    Robots    ,    Equations    ,    Heuristic algorithms    ,    Orbital robotics    ,    Manipulator dynamics    ,    Acceleration    ,    Computational efficiency    ,    Computational modeling    ,    Lagrangian functions    ,    Computer science"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "机器人动力学：方程与算法"
+target "http://royfeatherstone.org/papers/icra00.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Roy Featherstone & David Orin
+\end_layout
+
+\begin_layout Date
+24-28 April 2000
+\end_layout
+
+\begin_layout Abstract
+本文回顾了机器人动力学研究领域的一些成就，从递归牛顿-欧拉算法的发展到今天的成就。本文给出了最重要的动力学计算的方程与算法，并以通用符号表达，以方便它们的表述和
+比较。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+自从二十多年前最早的工作以来，机器人动力学领域已经做出了许多贡献。在机构动力学领域，机器人学界特别关注计算效率的问题。事实上，许多动力学中最有效的算法，适用于广
+泛的机制，都是由机器人研究人员开发的[23,33,10]。
+\end_layout
+
+\begin_layout Standard
+虽然计算效率对于以更高速度运行的日益复杂的机构的模拟和控制仍然很重要，但动力学问题的其它方面也很重要。算法应该用一组紧凑的方程来表示，以便于开发和实现。另一方面
+，这些方程与从中获得最大计算效率的递归集之间应该有明确的关系。在这方面，空间符号和空间算子代数[11,29]的使用非常有效。另外，对于具有一般几何形状和关节结构
+的机器人机构，开发对其具有适用性的算法也很重要。虽然早期的算法[23,33,10]适用于具有旋转关节或棱柱关节的单一开链式机械手，但通用关节模型已被开发出来并应
+用于更复杂的构型[11]。
+\end_layout
+
+\begin_layout Standard
+本文的目的是回顾机器人动力学中的一些主要贡献。最重要的递归计算的方程和算法将在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中以一种通用、简洁的符号表示。如前所述，这些算法直接适用于树状结构的机制。然后，闭环系统的方程将以紧凑的形式推导，接着是对全局分析技术的讨论。由于篇幅所限，
+我们无法将该领域的所有重要贡献的参考文献包括在内。尽管如此，被引用最多的论文一般都包括在内。
+\end_layout
+
+\begin_layout Section
+机器人动力学的基础工作
+\end_layout
+
+\begin_layout Standard
+早期的机器人动力学研究致力于以最有效的形式表达机器人操纵器和其它单一开链式系统的运动方程。为机器人分析、控制和模拟的最常见计算开发了算法。在本节中，重点将放在概
+述主要贡献和最常被引用的工作上。不幸的是，空间不允许我们对该领域的大量文献进行全面回顾。更多的参考文献见该领域的一些早期书籍[7,11]。
+\end_layout
+
+\begin_layout Standard
+表达运动方程的经典方法是基于该问题的拉格朗日公式[18,31]。使用拉格朗日动力学开发的算法是
+\begin_inset Formula $O(N^{4})$
+\end_inset
+
+，并且必须适应实时控制的需要。高效的低阶算法被用于三个主要的计算。
+\end_layout
+
+\begin_layout Enumerate
+逆向动力学，其中所需的关节执行器扭矩/动力是根据操纵器的轨迹(位置、速度和加速度)的规范计算出来的，
+\end_layout
+
+\begin_layout Enumerate
+正向动力学，其中规范应用的关节执行器扭矩/动力，并确定关节加速度，以及
+\end_layout
+
+\begin_layout Enumerate
+操纵器惯量矩阵，将关节加速度映射到关节力上。
+\end_layout
+
+\begin_layout Standard
+逆向动力学用于前馈控制，而正向动力学则需要用于仿真。惯量(质量)矩阵在分析中使用，在反馈控制中用于线性化动力学，并且是许多正向动力学公式的一个组成部分。
+\end_layout
+
+\begin_layout Standard
+第一批开发机器人逆向动力学
+\begin_inset Formula $O(N)$
+\end_inset
+
+算法的研究人员使用求解问题的牛顿-欧拉(NE)公式。Stepanenko和Vukobratovic [30] 开发了一种用于人类肢体动力学的递归NE方法，Ori
+n等人[26]通过将动力和力矩引用到局部连杆坐标，从而使递归方法更加高效，以便实时控制行走机器的一条腿。Luh、Walker和Paul [23]
+ 通过将大多数的量引用到连杆坐标，开发了一个非常高效的递归算法(RNEA)。RNEA是被引用最多的。Hollerbach [16]开发了一个
+\begin_inset Formula $O(N)$
+\end_inset
+
+递归拉格朗日公式，但发现就算法中所需要的乘法和加/减法的数量而言，其效率远低于RNEA。这些年来，在效率方面取得了进一步的效率。Balafoutis等人[3]以
+及He和Goldenberg [15] 的结果具有代表性，他们比RNEA的早期实现快了
+\begin_inset Formula $1.7$
+\end_inset
+
+倍(对于6-DoF机器人)。
+\end_layout
+
+\begin_layout Standard
+Walker和Orin [33] 将RNEA用于逆向动力学[23]，作为正向动力学的高效算法的基础。他们的方法 3，后来被Featherstone
+ [11] 命名为复合刚体算法(CRBA)，用于计算操纵器链外端的复合刚体集的惯量参数。惯量矩阵的列通过连续应用逆向动力学来非常有效地计算，其中关节速度设置为零
+，并且关节加速度设置为零或一个单位向量。由于这意味着每次只有一个关节在运动，逆向动力学就简化为对处于静态平衡的一组基础连杆，以及处于链条外端运动的一个复合刚体的
+一个非常简单的分析。由于需要求解一个线性方程组，其大小随
+\begin_inset Formula $N$
+\end_inset
+
+的增长而增长，因此该算法是
+\begin_inset Formula $O(N^{3})$
+\end_inset
+
+。对于小的
+\begin_inset Formula $N$
+\end_inset
+
+，一阶项主导了计算，因此结果非常有效。
+\end_layout
+
+\begin_layout Standard
+最早的已知
+\begin_inset Formula $O(N)$
+\end_inset
+
+的正向动力学算法是由Vereschagin [32] 开发的。该算法使用一个递归公式来评估运动方程的Gibbs-Appel形式，并适用于具有旋转关节和棱柱关节的
+无支链。递归公式通过动态规划技术获得。该算法与铰接体算法(ABA)非常相似，但这篇论文远远领先于它的时代，并在十年内一直默默无闻。后来，Armstrong为球形
+关节的机构开发了一种
+\begin_inset Formula $O(N)$
+\end_inset
+
+算法[1]，然后Featherstone开发了ABA [10]。该算法的第一个版本适用于具有单自由度关节的机械手，但第二个版本包括一个通用关节模型，而且速度更快
+[11]。就所需的算术运算总数而言，对于
+\begin_inset Formula $N>9$
+\end_inset
+
+，ABA比CRBA更有效[11]。另外，Brandl等人[8]使用与Featherstone [11,10] 类似的有效变换和连杆坐标，对ABA做了进一步的改进
+，使其在
+\begin_inset Formula $N=6$
+\end_inset
+
+时与CRBA大致相当。多年来，在效率方面有了进一步的提高，McMillan和Orin [24] 是减少计算量的代表(又减少了
+\begin_inset Formula $15\%$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+CRBA的效率与计算关节空间惯量(质量)矩阵的效率直接相关[33]。Featherstone [11]使用有效的变换和连杆坐标，将惯量矩阵的计算减少了约
+\begin_inset Formula $30\%$
+\end_inset
+
+。多年来还取得了一些其它的进展[4,25]，总体上比文献[33]有了接近
+\begin_inset Formula $2$
+\end_inset
+
+倍的改进。Lilly和Orin [22] 开发了四种计算惯量矩阵的方法。他们改进的复合刚体方法包括操纵器Jacobian矩阵的计算，因此它对计算操作空间的惯量矩
+阵非常有效。
+\end_layout
+
+\begin_layout Standard
+Khatib [20] 开发了一种机器人动力学的操作空间公式，其中的方程是在用于指挥机器人的同一坐标系统中表达：笛卡尔坐标和末端执行器的方向。该公式在混合运动/
+动力控制和相关应用中特别成功[21]。
+\end_layout
+
+\begin_layout Standard
+Rodriguez [28] 认识到卡尔曼滤波的概念和技术与正向动力学问题之间的相似性，并为多体动力学的研究开发了空间算子代数框架。这使他和JPL
+ [29] 的其他人能够开发出质量矩阵的替代因子分解，从而推导出ABA。Jain [17] 使用空间算子代数框架为操纵器动力学提供了一个统一的公式。由此，他能够
+比较之前发表的各种
+\begin_inset Formula $O(N^{3})$
+\end_inset
+
+、
+\begin_inset Formula $O(N^{2})$
+\end_inset
+
+和
+\begin_inset Formula $O(N)$
+\end_inset
+
+算法。Ascher, Pai和Cloutier [2] 使用空间算子框架来统一CRBA和ABA的推导，作为解决同一线性系统的两种消除方法。他们还表明，ABA比C
+RBA更准确。
+\end_layout
+
+\begin_layout Standard
+上述工作都与刚体动力学有关，并且因此适用于任意可以由刚体系统对机器人机构进行充分建模的情况。某些形式的非刚体行为，如关节轴承的顺应性，相对容易纳入刚体模型；但弹
+性连杆则更为复杂。Book [6] 解决了这个问题，他开发了一个高效的、递归的拉格朗日公式(使用
+\begin_inset Formula $4\times4$
+\end_inset
+
+矩阵)，用于具有弹性连杆的串行链的逆向和正向动力学。使用了弹性位移的通用模态公式。
+\end_layout
+
+\begin_layout Section
+方程与算法
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本节介绍主要算法和相关方程。为简洁起见，方程式用空间符号表示；但不熟悉这种符号的读者应该仍然能够理解这些材料。
+\end_layout
+
+\begin_layout Standard
+空间向量是
+\begin_inset Formula $6\times1$
+\end_inset
+
+向量，包含速度、加速度和动力等物理量的线性和角度分量。出于技术原因，它们被分为两个向量空间：
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+中的运动类型向量和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+中的动力力类型向量。张量，如惯量，用
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵表示。基础代数是向量空间的对偶系统。文献[12]的附录中对当前版本的空间代数进行了简要描述，而在文献[11]中对先前版本进行了详细描述。
+\end_layout
+
+\begin_layout Subsection
+递归牛顿-欧拉算法
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+具有树状结构的通用机器人机构可以由一组编号为
+\begin_inset Formula $1\ldots N$
+\end_inset
+
+的
+\begin_inset Formula $N$
+\end_inset
+
+个可移动连杆(刚体)、一个编号为
+\begin_inset Formula $0$
+\end_inset
+
+的固定基座连杆和一组连接在连杆之间的
+\begin_inset Formula $N$
+\end_inset
+
+个关节建模，以便关节
+\begin_inset Formula $i$
+\end_inset
+
+从连杆
+\begin_inset Formula $\lambda\left(i\right)$
+\end_inset
+
+连接到连杆
+\begin_inset Formula $i$
+\end_inset
+
+，其中
+\begin_inset Formula $\lambda\left(i\right)$
+\end_inset
+
+是树中连杆
+\begin_inset Formula $i$
+\end_inset
+
+的父级的连杆编号，将基座连杆作为根节点。选择的数字应确保
+\begin_inset Formula $\lambda\left(i\right)<i$
+\end_inset
+
+。在无支链运动链的特殊情况下，
+\begin_inset Formula $\lambda\left(i\right)=i-1$
+\end_inset
+
+，连杆和接头从底部到尖端连续编号。
+\end_layout
+
+\begin_layout Standard
+如果我们设
+\begin_inset Formula $\mathbf{v}_{i}$
+\end_inset
+
+是连杆
+\begin_inset Formula $i$
+\end_inset
+
+的速度，并且
+\begin_inset Formula $\mathbf{v}_{i}^{J}$
+\end_inset
+
+是跨过关节
+\begin_inset Formula $i$
+\end_inset
+
+的速度，则
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{i}^{J}=\mathbf{v}_{i}-\mathbf{v}_{\lambda\left(i\right)}.\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+关节速度也可以用以下形式描述
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{i}^{J}=\mathbf{h}_{i}\dot{\mathbf{q}}_{i},\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{h}_{i}$
+\end_inset
+
+是一个
+\begin_inset Formula $6\times d_{i}$
+\end_inset
+
+矩阵，其张成第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的运动自由度子空间，
+\begin_inset Formula $\dot{\mathbf{q}}_{i}$
+\end_inset
+
+是一个
+\begin_inset Formula $d_{i}\times1$
+\end_inset
+
+的关节自由度变量向量，
+\begin_inset Formula $d_{i}$
+\end_inset
+
+是第
+\begin_inset Formula $i$
+\end_inset
+
+个关节的自由度(DoF)。在1-DoF关节的特殊情况下，
+\begin_inset Formula $\mathbf{h}_{i}$
+\end_inset
+
+是一个描述关节运动轴的向量。
+\end_layout
+
+\begin_layout Standard
+结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)产生
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{i}=\mathbf{v}_{\lambda\left(i\right)}+\mathbf{h}_{i}\dot{\mathbf{q}}_{i},\label{eq:3}
+\end{equation}
+
+\end_inset
+
+这是计算连杆速度的标准递归公式。加速度的等效公式只是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的时间导数：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{a}_{i}=\mathbf{a}_{\lambda\left(i\right)}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i}+\mathbf{h}_{i}\ddot{\mathbf{q}}_{i},\label{eq:4}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{a}_{i}$
+\end_inset
+
+是连杆
+\begin_inset Formula $i$
+\end_inset
+
+的加速度，
+\begin_inset Formula $\ddot{\mathbf{q}}_{i}$
+\end_inset
+
+是关节加速度变量的向量。
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+该方程使用空间加速度。大多数已发表的作品使用标准线性加速度和角加速度来代替，或者单独使用(如文献[23])，或者使用6-D表示法(如空间算子代数)。这种差异在文
+献[11,§2.7]中进行了解释。使用非空间加速度的论文在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中有不同的表达。
+\end_layout
+
+\end_inset
+
+对于旋转关节和棱柱关节以及许多其他特殊情况，
+\begin_inset Formula 
+\[
+\dot{\mathbf{h}}_{i}=\mathbf{v}_{i}\times\mathbf{h}_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定基座的速度和加速度，
+\begin_inset Formula $\mathbf{v}_{0}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{a}_{0}$
+\end_inset
+
+，这些公式依次计算每个连杆的速度和加速度，从基座向外延伸到终端连杆。典型的算法如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = 1$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{v}_{i}=\mathbf{v}_{\lambda\left(i\right)}+\mathbf{h}_{i}\dot{\mathbf{q}}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{a}_{i}=\mathbf{a}_{\lambda\left(i\right)}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i}+\mathbf{h}_{i}\ddot{\mathbf{q}}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+性质
+\begin_inset Formula $\lambda\left(i\right)<i$
+\end_inset
+
+确保
+\begin_inset Formula $\mathbf{v}_{\lambda\left(i\right)}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{v}_{i}$
+\end_inset
+
+之前计算。
+\end_layout
+
+\begin_layout Standard
+连杆
+\begin_inset Formula $i$
+\end_inset
+
+的运动方程为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}_{i}+\mathbf{f}_{i}^{\,x}=\mathbf{I}_{i}\mathbf{a}_{i}+\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i},\label{eq:5}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{I}_{i}$
+\end_inset
+
+是连杆
+\begin_inset Formula $i$
+\end_inset
+
+的空间惯量(
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵)，
+\begin_inset Formula $\mathbf{f}_{i}$
+\end_inset
+
+是通过关节施加到连杆
+\begin_inset Formula $i$
+\end_inset
+
+的净动力，并且
+\begin_inset Formula $\mathbf{f}_{i}^{\,x}$
+\end_inset
+
+是作用在连杆
+\begin_inset Formula $i$
+\end_inset
+
+上的所有其它力的总和。该方程结合了刚体线性运动和角向运动的牛顿方程和欧拉方程。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{f}_{i}^{\,x}$
+\end_inset
+
+可能包括来自弹簧、阻尼器、力场、与环境的接触等因素的贡献；但假设其值已知，或者至少是可以从已知量中计算出来的(在这种情况下，
+\begin_inset Formula $\mathbf{f}_{i}^{\,x}$
+\end_inset
+
+的计算被认为是一个单独的问题)。
+\begin_inset Formula $\mathbf{f}_{i}^{\,x}$
+\end_inset
+
+也可以包括重力对连杆
+\begin_inset Formula $i$
+\end_inset
+
+的影响；但是均匀重力场的特殊情况可以通过给基座施加一个虚拟加速度来进行最有效地模拟：如果
+\begin_inset Formula $\mathbf{g}$
+\end_inset
+
+是重力加速度向量，则将
+\begin_inset Formula $-\mathbf{g}$
+\end_inset
+
+加至
+\begin_inset Formula $\mathbf{a}_{0}$
+\end_inset
+
+ [23]。
+\end_layout
+
+\begin_layout Standard
+如果我们把
+\begin_inset Formula $\mathbf{f}_{i}^{J}$
+\end_inset
+
+定义为从连杆
+\begin_inset Formula $\lambda\left(i\right)$
+\end_inset
+
+通过关节
+\begin_inset Formula $i$
+\end_inset
+
+传递给连杆
+\begin_inset Formula $i$
+\end_inset
+
+的动力，则
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}_{i}=\mathbf{f}_{i}^{J}-\sum_{j\in\mu\left(i\right)}\mathbf{f}_{j}^{J}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mu\left(i\right)$
+\end_inset
+
+是连杆
+\begin_inset Formula $i$
+\end_inset
+
+的子级集合：
+\begin_inset Formula 
+\[
+\mu\left(i\right)=\left\{ j\mid\lambda\left(j\right)=i\right\} .
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)产生
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}_{i}^{J}=\mathbf{I}_{i}\mathbf{a}_{i}+\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i}-\mathbf{f}_{i}^{x}+\sum_{j\in\mu\left(i\right)}\mathbf{f}_{j}^{J},\label{eq:7}
+\end{equation}
+
+\end_inset
+
+这是一个递归公式，用于计算关节力，从末端连杆开始，朝着基座工作。此公式的典型实现如下所示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = 1$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{i}^{J}=\mathbf{I}_{i}\mathbf{a}_{i}+\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i}-\mathbf{f}_{i}^{x}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = N$ 
+\backslash
+TO $1$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$
+\backslash
+lambda
+\backslash
+left(i
+\backslash
+right) 
+\backslash
+neq 0$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{\lambda\left(i\right)}^{J}=\mathbf{f}_{\lambda\left(i\right)}^{J}+\mathbf{f}_{i}^{J}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一步是从关节力的空间向量中提取关节力变量的
+\begin_inset Formula $d_{i}\times1$
+\end_inset
+
+向量
+\begin_inset Formula $\boldsymbol{\tau}_{i}$
+\end_inset
+
+。这是由以下步骤完成
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\tau}_{i}=\mathbf{h}_{i}^{\mathrm{T}}\mathbf{f}_{i}^{J}.\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)共同构成了通用树状结构机制的RNEA。
+\end_layout
+
+\begin_layout Standard
+为获得最大效率，应在连杆坐标中计算这些方程。如果我们为每个连杆指定一个坐标系统，并在其所指连杆的坐标中表示每个空间向量，则方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)需要在表达式中的适当位置包含坐标变换。修改后的方程为
+\begin_inset Formula 
+\begin{align*}
+\mathbf{v}_{i} & =\,{}^{i}\mathbf{X}_{\lambda\left(i\right)}^{M}\mathbf{v}_{\lambda\left(i\right)}+\mathbf{h}_{i}\dot{\mathbf{q}}_{i},\\
+\mathbf{a}_{i} & =\,{}^{i}\mathbf{X}_{\lambda\left(i\right)}^{M}\mathbf{a}_{\lambda\left(i\right)}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i}+\mathbf{h}_{i}\ddot{\mathbf{q}}_{i}
+\end{align*}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+\mathbf{f}_{i}^{J}=\mathbf{I}_{i}\mathbf{a}_{i}+\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i}+\sum_{j\in\mu\left(i\right)}{}^{i}\mathbf{X}_{j}^{F}\mathbf{f}_{j}^{J},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $^{i}\mathbf{X}_{\lambda\left(i\right)}^{M}$
+\end_inset
+
+和
+\begin_inset Formula $^{i}\mathbf{X}_{j}^{F}$
+\end_inset
+
+分别是运动类型向量和动力类型向量的坐标变换矩阵。
+\end_layout
+
+\begin_layout Standard
+完整的牛顿-欧拉算法，在连杆坐标中，看起来像这样：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = 1$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{v}_{i}=\,{}^{i}\mathbf{X}_{\lambda\left(i\right)}^{M}\mathbf{v}_{\lambda\left(i\right)}+\mathbf{h}_{i}\dot{\mathbf{q}}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{a}_{i}=\,{}^{i}\mathbf{X}_{\lambda\left(i\right)}^{M}\mathbf{a}_{\lambda\left(i\right)}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i}+\mathbf{h}_{i}\ddot{\mathbf{q}}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{i}^{J}=\mathbf{I}_{i}\mathbf{a}_{i}+\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i}-\mathbf{f}_{i}^{x}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = N$ 
+\backslash
+TO $1$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\boldsymbol{\tau}_{i}=\mathbf{h}_{i}^{\mathrm{T}}\mathbf{f}_{i}^{J};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$
+\backslash
+lambda
+\backslash
+left(i
+\backslash
+right) 
+\backslash
+neq 0$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{\lambda\left(i\right)}^{J}=\mathbf{f}_{\lambda\left(i\right)}^{J}+\,{}^{\lambda\left(i\right)}\mathbf{X}_{i}^{F}\mathbf{f}_{i}^{J}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+复合刚体算法
+\end_layout
+
+\begin_layout Standard
+正如在文献[33,11]中所解释的，如果我们将树状结构刚体系统的运动方程表示为
+\begin_inset Formula 
+\[
+\mathbf{M}\ddot{\mathbf{q}}+\mathbf{C}\left(\mathbf{q},\dot{\mathbf{q}}\right)=\boldsymbol{\tau},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\ddot{\mathbf{q}}\in\mathrm{M}^{n}$
+\end_inset
+
+是广义加速度向量，
+\begin_inset Formula $\boldsymbol{\tau}\in\mathrm{F}^{n}$
+\end_inset
+
+是广义动力向量，
+\begin_inset Formula $\mathbf{M}:\mathbf{M}^{n}\mapsto\mathrm{F}^{n}$
+\end_inset
+
+是系统质量矩阵(关节空间惯量矩阵)，
+\begin_inset Formula $\mathbf{C}\in\mathrm{F}^{n}$
+\end_inset
+
+包含所有与加速度无关的项，则
+\begin_inset Formula 
+\[
+\begin{aligned}\mathbf{M}\ddot{\mathbf{q}} & =\mathbf{D}\left(\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}\right)-\mathbf{D}\left(\mathbf{q},\dot{\mathbf{q}},\mathbf{0}\right)\\
+ & =\mathbf{D}\left(\mathbf{q},\mathbf{0},\ddot{\mathbf{q}}\right)-\mathbf{D}\left(\mathbf{q},\mathbf{0},\mathbf{0}\right),
+\end{aligned}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{D}\left(\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}\right)$
+\end_inset
+
+是逆向动力学计算函数。速度参数可以设置为零，因为速度项会取消。(重力和
+\begin_inset Formula $\mathbf{f}^{\,x}$
+\end_inset
+
+项也会取消。) 该方程立即为我们提供了计算
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的简单算法：
+\begin_inset Formula 
+\[
+\mathbf{M}\boldsymbol{\delta}_{i}=\mathbf{D}\left(\mathbf{q},\mathbf{0},\boldsymbol{\delta}_{i}\right)-\mathbf{D}\left(\mathbf{q},\mathbf{0},\mathbf{0}\right),\quad i=1\ldots n,
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{\delta}_{i}$
+\end_inset
+
+是一个
+\begin_inset Formula $n\times1$
+\end_inset
+
+向量，第
+\begin_inset Formula $i$
+\end_inset
+
+行为
+\begin_inset Formula $1$
+\end_inset
+
+，其它地方为
+\begin_inset Formula $0$
+\end_inset
+
+。表达式
+\begin_inset Formula $\mathbf{M}\boldsymbol{\delta}_{i}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的第
+\begin_inset Formula $i$
+\end_inset
+
+列。该算法为文献[33]中的方法 1。
+\end_layout
+
+\begin_layout Standard
+我们可以从这个方程中推断出
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的以下物理解释：在一个所有的速度和与加速度无关的力都为零的系统中，
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的
+\begin_inset Formula $i$
+\end_inset
+
+列是导致加速度
+\begin_inset Formula $\boldsymbol{\delta}_{i}$
+\end_inset
+
+的广义动力向量。
+\end_layout
+
+\begin_layout Standard
+如果每个关节都有一个自由度，则关节编号和列索引编号之间存在
+\begin_inset Formula $1:1$
+\end_inset
+
+的对应关系；我们可以将
+\begin_inset Formula $\boldsymbol{\delta}_{i}$
+\end_inset
+
+解释为关节
+\begin_inset Formula $i$
+\end_inset
+
+的单位加速度，而
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的每个单独元素
+\begin_inset Formula $\mathbf{M}_{ji}$
+\end_inset
+
+是关节
+\begin_inset Formula $j$
+\end_inset
+
+处产生加速度
+\begin_inset Formula $\boldsymbol{\delta}_{i}$
+\end_inset
+
+所需的动力。
+\end_layout
+
+\begin_layout Standard
+如果系统包含多个自由度的关节，则我们将
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+视为块矩阵
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+其元素本身为矩阵的矩阵，并将块列
+\begin_inset Formula $i$
+\end_inset
+
+安排为对应于关节
+\begin_inset Formula $i$
+\end_inset
+
+的
+\begin_inset Formula $d_{i}$
+\end_inset
+
+加速度变量的
+\begin_inset Formula $d_{i}$
+\end_inset
+
+实数列组。对
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的行与组合向量，如
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+，也进行类似处理。这允许我们对单个自由度和多个自由度的关节使用相同的符号。
+\end_layout
+
+\begin_layout Standard
+CRBA是一种计算
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的快速算法，它从以下观察结果开始：如果上述零速度系统的加速度为
+\begin_inset Formula $\boldsymbol{\delta}_{i}$
+\end_inset
+
+，则以连杆
+\begin_inset Formula $i$
+\end_inset
+
+为根的整个子树的行为就像一个单一(复合)刚体，加速度等于
+\begin_inset Formula $\mathbf{h}_{i}$
+\end_inset
+
+，系统的其余部分处于静态平衡。因此，
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的(块)列
+\begin_inset Formula $i$
+\end_inset
+
+的元素可以根据以下算法计算。
+\end_layout
+
+\begin_layout Enumerate
+设
+\begin_inset Formula $C_{i}$
+\end_inset
+
+为复合刚体，包括以连杆
+\begin_inset Formula $i$
+\end_inset
+
+为根的子树中的所有连杆，并设
+\begin_inset Formula $\mathbf{I}_{i}^{C}$
+\end_inset
+
+为
+\begin_inset Formula $C_{i}$
+\end_inset
+
+的惯量。
+\end_layout
+
+\begin_layout Enumerate
+设
+\begin_inset Formula $\mathbf{f}_{i}^{\,C}$
+\end_inset
+
+为向
+\begin_inset Formula $C_{i}$
+\end_inset
+
+施加
+\begin_inset Formula $\mathbf{h}_{i}$
+\end_inset
+
+加速度所需的力。该力通过关节
+\begin_inset Formula $i$
+\end_inset
+
+传递给
+\begin_inset Formula $C_{i}$
+\end_inset
+
+；但是，由于连杆
+\begin_inset Formula $\lambda\left(i\right)$
+\end_inset
+
+处于静态平衡状态，这意味着没有净力作用于其上，通过连杆
+\begin_inset Formula $\lambda\left(i\right)$
+\end_inset
+
+传递的力必须与通过连杆
+\begin_inset Formula $i$
+\end_inset
+
+传递的力相同。通过相同的参数，基座和连杆
+\begin_inset Formula $i$
+\end_inset
+
+之间路径上的每个关节传递
+\begin_inset Formula $\mathbf{f}_{i}^{\,C}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+每个元件
+\begin_inset Formula $\mathbf{M}_{ji}$
+\end_inset
+
+，其中
+\begin_inset Formula $j$
+\end_inset
+
+是基座和连杆
+\begin_inset Formula $i$
+\end_inset
+
+之间路径上的关节，由
+\begin_inset Formula $\mathbf{M}_{ji}=\mathbf{h}_{j}^{\mathrm{T}}\mathbf{f}_{i}^{\,C}$
+\end_inset
+
+给出(参见方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))。
+\end_layout
+
+\begin_layout Enumerate
+每个元素
+\begin_inset Formula $\mathbf{M}_{ji}$
+\end_inset
+
+，其中
+\begin_inset Formula $j<i$
+\end_inset
+
+，但不在基座和连杆
+\begin_inset Formula $i$
+\end_inset
+
+之间的路径上，为零。
+\end_layout
+
+\begin_layout Enumerate
+元素
+\begin_inset Formula $\mathbf{M}_{ji}$
+\end_inset
+
+，其中
+\begin_inset Formula $j>i$
+\end_inset
+
+，由
+\begin_inset Formula $\mathbf{M}_{ji}=\mathbf{M}_{ij}^{\mathrm{T}}$
+\end_inset
+
+给出，因为
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+是对称的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+复合刚体的惯量是其组成部分惯量的简单总和，因此
+\begin_inset Formula 
+\[
+\mathbf{I}_{i}^{C}=\sum_{j\in\nu\left(i\right)}\mathbf{I}_{j},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\nu\left(i\right)$
+\end_inset
+
+是子树中每个连杆的连杆编号集合；但是使用递归公式更有效率
+\begin_inset Formula 
+\begin{equation}
+\mathbf{I}_{i}^{C}=\mathbf{I}_{i}+\sum_{j\in\mu\left(i\right)}\mathbf{I}_{j}^{C}.\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+施加在
+\begin_inset Formula $C_{i}$
+\end_inset
+
+上的动力为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{f}_{i}^{\,C}=\mathbf{I}_{i}^{C}\mathbf{h}_{i},
+\]
+
+\end_inset
+
+并且通过关节
+\begin_inset Formula $j\left(j\leq i\right)$
+\end_inset
+
+传递的动力为
+\begin_inset Formula 
+\[
+\mathbf{f}_{i}^{\,C}\left(j\right)=\begin{cases}
+\mathbf{f}_{i}^{\,C} & \mathrm{if}\ i\in\nu\left(j\right)\\
+\mathbf{0} & \mathrm{otherwise};
+\end{cases}
+\]
+
+\end_inset
+
+所以
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+的完整表达式是
+\begin_inset Formula 
+\begin{equation}
+\mathbf{M}_{ji}=\begin{cases}
+\mathbf{h}_{j}^{\mathrm{T}}\mathbf{I}_{i}^{C}\mathbf{h}_{i} & \mathrm{if}\ i\in\nu\left(j\right)\\
+\mathbf{h}_{j}^{\mathrm{T}}\mathbf{I}_{j}^{C}\mathbf{h}_{i} & \mathrm{if}\ j\in\nu\left(i\right)\\
+\mathbf{0} & \mathrm{otherwise}.
+\end{cases}\label{eq:10}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以绝对坐标表示CRBA。该算法在连杆坐标中运行得更快(除非
+\begin_inset Formula $n$
+\end_inset
+
+很大[11])，典型的实现可能看起来像这样：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{M}=\mathbf{0};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = 1$ 
+\backslash
+TO $N$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{I}_{i}^{C}=\mathbf{I}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FOR{$i = N$ 
+\backslash
+TO $1$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{i}^{\,C}\left(i\right)=\mathbf{I}_{i}^{C}\mathbf{h}_{i};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FORALL{$j
+\backslash
+in
+\backslash
+nu
+\backslash
+left(i
+\backslash
+right)$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{M}_{ij}=\mathbf{h}_{i}^{\mathrm{T}}\mathbf{f}_{j}^{\,C}\left(i\right);$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+IF{$
+\backslash
+lambda
+\backslash
+left(i
+\backslash
+right) 
+\backslash
+neq 0$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{I}_{\lambda\left(i\right)}^{C}=\mathbf{I}_{\lambda\left(i\right)}^{C}+\,{}^{\lambda\left(i\right)}\mathbf{X}_{i}^{F}\mathbf{I}_{i}^{C}\,{}^{i}\mathbf{X}_{\lambda\left(i\right)}^{M};$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FORALL{$j
+\backslash
+in
+\backslash
+nu
+\backslash
+left(i
+\backslash
+right)$}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+STATE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\mathbf{f}_{j}^{\,C}\left(\lambda\left(i\right)\right)=\,{}^{\lambda\left(i\right)}\mathbf{X}_{i}^{F}\mathbf{f}_{j}^{\,C}\left(i\right);$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDIF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ENDFOR
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+铰接体算法
+\end_layout
+
+\begin_layout Standard
+ABA的出发点是观察到刚体系统中物体的加速度始终是作用力的线性函数。如果刚体系统的运动因对系统中的任意一个物体施加外部试验力
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+而受到干扰，则该物体的加速度可表达为一个线性方程
+\begin_inset Formula 
+\[
+\mathbf{a}=\boldsymbol{\Phi}\mathbf{f}+\mathbf{b},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+是物体的加速度，
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+是如果
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+为零时的加速度，
+\begin_inset Formula $\boldsymbol{\Phi}:\mathsf{F}^{6}\mapsto\mathsf{M}^{6}$
+\end_inset
+
+是一个
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵。如果所选物体的运动是无约束的，则
+\begin_inset Formula $\boldsymbol{\Phi}$
+\end_inset
+
+是非奇异的，整个方程可以求逆，读取为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}=\mathbf{I}^{A}\mathbf{a}+\mathbf{p}^{A},\label{eq:11}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{I}^{A}=\boldsymbol{\Phi}^{-1}$
+\end_inset
+
+并且
+\begin_inset Formula $\mathbf{p}^{A}=-\mathbf{I}^{A}\mathbf{b}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在铰接体术语中，整个系统被称为铰接体，承受试验力的一个物体被称为手柄(handle)，
+\begin_inset Formula $\mathbf{I}^{A}$
+\end_inset
+
+是手柄的铰接体惯量(ABI)，
+\begin_inset Formula $\mathbf{p}^{A}$
+\end_inset
+
+是相应的导向力(bias force)，这是使手柄加速度为零所需的力。
+\end_layout
+
+\begin_layout Standard
+本练习的要点是，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)适用于任意系统中的任意物体，无论该系统中有多少其他物体，只要所选物体具有完全的运动自由度。这就是ABA的
+\begin_inset Formula $O(N)$
+\end_inset
+
+复杂性的秘密。
+\end_layout
+
+\begin_layout Standard
+ABA中的主要步骤是依次计算每个连杆的ABI和导向力，选择连杆本身作为手柄，以该连杆上的子树作为铰接体。这可以通过使用以下递归公式，从终端连杆开始并朝着基座进行
+计算来完成[11]：
+\begin_inset Formula 
+\begin{align}
+\mathbf{I}_{i}^{A} & =\mathbf{I}_{i}+\sum_{j\in\mu\left(i\right)}\left(\mathbf{I}_{j}^{A}-\mathbf{I}_{j}^{A}\mathbf{h}_{j}\left(\mathbf{h}_{j}^{\mathrm{T}}\mathbf{I}_{j}^{A}\mathbf{h}_{j}\right)^{-1}\mathbf{h}_{j}^{\mathrm{T}}\mathbf{I}_{j}^{A}\right),\label{eq:12}\\
+\mathbf{p}_{i}^{A} & =\mathbf{p}_{i}+\sum_{j\in\mu\left(i\right)}\left(\mathbf{p}_{j}^{\alpha}+\mathbf{I}_{j}^{A}\mathbf{h}_{j}\left(\mathbf{h}_{j}^{\mathrm{T}}\mathbf{I}_{j}^{A}\mathbf{h}_{j}\right)^{-1}\left(\boldsymbol{\tau}_{i}-\mathbf{h}_{j}^{\mathrm{T}}\mathbf{p}_{j}^{\alpha}\right)\right),\label{eq:13}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+\begin{aligned}\mathbf{p}_{i} & =\mathbf{v}_{i}\times\mathbf{I}_{i}\mathbf{v}_{i}-\mathbf{f}_{i}^{\,x},\\
+\mathbf{p}_{j}^{\alpha} & =\mathbf{p}_{j}^{A}+\mathbf{I}_{j}^{A}\dot{\mathbf{h}}_{j}\dot{\mathbf{q}}_{j}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+计算完这些量后，下一步是计算关节加速度。假设
+\begin_inset Formula $\mathbf{a}_{\lambda\left(i\right)}$
+\end_inset
+
+已经被计算出来，我们可以在三个未知量
+\begin_inset Formula $\mathbf{a}_{i}$
+\end_inset
+
+、
+\begin_inset Formula $\mathbf{f}_{i}^{J}$
+\end_inset
+
+和
+\begin_inset Formula $\ddot{\mathbf{q}}_{i}$
+\end_inset
+
+中构建以下方程组：
+\begin_inset Formula 
+\[
+\begin{gathered}\mathbf{a}_{i}=\mathbf{a}_{\lambda\left(i\right)}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i}+\mathbf{h}_{i}\ddot{\mathbf{q}}_{i},\\
+\mathbf{f}_{i}^{J}=\mathbf{I}_{i}^{A}\mathbf{a}_{i}+\mathbf{p}_{i}^{A},\\
+\boldsymbol{\tau}_{i}=\mathbf{h}_{i}^{\mathrm{T}}\mathbf{f}_{i}^{J}.
+\end{gathered}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些方程可以对
+\begin_inset Formula $\ddot{\mathbf{q}}_{i}$
+\end_inset
+
+求解得出
+\begin_inset Formula 
+\begin{equation}
+\ddot{\mathbf{q}}_{i}=\left(\mathbf{h}_{i}^{\mathrm{T}}\mathbf{I}_{i}^{A}\mathbf{h}_{i}\right)^{-1}\left(\boldsymbol{\tau}_{i}-\mathbf{h}_{i}^{\mathrm{T}}\left(\mathbf{I}_{i}^{A}\mathbf{a}_{\lambda\left(i\right)}+\mathbf{p}_{i}^{\alpha}\right)\right),\label{eq:14}
+\end{equation}
+
+\end_inset
+
+这反过来又可以用来评估
+\begin_inset Formula $\mathbf{a}_{i}$
+\end_inset
+
+，如此等等。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)共同描述了绝对坐标中的ABA。该算法在连杆坐标中运行得更快。将ABA转换为连杆坐标的过程与RNEA的相同。
+\end_layout
+
+\begin_layout Subsection
+闭环系统
+\end_layout
+
+\begin_layout Standard
+具有闭合运动回路的系统比树结构系统复杂得多，需要进行冗长的解释才能使其合理；因此，我们建议读者参考文献[27,34]中的冗长解释。
+\end_layout
+
+\begin_layout Standard
+主要问题是联合变量不再是独立的，因为它们受到(可能非常复杂的)环路闭包约束。识别一组独立的位置变量通常是不切实际的，所以大多数算法都是用一个更大的、非独立的变量
+集合工作，并采取措施强制执行它们之间存在的约束。
+\end_layout
+
+\begin_layout Standard
+处理运动环路最常用的方法是从连通图中提取生成树，计算生成树的运动方程，然后添加模拟运动环路效果的环路闭合力。生成树是一个子图，包含原始图中的所有节点和弧的子集，
+并且具有树连通性。相应的树结构机制包含所有实体，但仅包含原始关节中的一个子集，回路闭合力模拟省略关节的效果。
+\end_layout
+
+\begin_layout Standard
+让我们将闭环系统的运动方程表示为：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{M}\ddot{\mathbf{q}}+\mathbf{C}=\boldsymbol{\tau}+\boldsymbol{\tau}_{c},\label{eq:15}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{M}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+是指生成树，并使用运动学树方法计算，
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+是分别包含树关节加速度和动力变量的复合向量，并且
+\begin_inset Formula $\boldsymbol{\tau}_{c}$
+\end_inset
+
+是树关节力向量，模拟缺少关节的影响。运动学环路对树的运动以及树关节变量的值施加以下约束：
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+该方程假设了硬性的约束。对通用的完整性和非完整性约束的处理在文献[27,34]中描述。
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\phi}\left(\mathbf{q}\right)=\mathbf{0}.\label{eq:16}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)一起提供了动力学的完整描述，但形式不方便。通常的下一步是将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)微分两次，以得到一个涉及加速度的方程：
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+在实践中，必须包括约束稳定项，因为微分方程
+\begin_inset Formula $\ddot{\boldsymbol{\phi}}=\mathbf{0}$
+\end_inset
+
+在数值上是不稳定的[27,34]。
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\ddot{\boldsymbol{\phi}}=\boldsymbol{\phi}^{\prime}\ddot{\mathbf{q}}+\dot{\boldsymbol{\phi}^{\prime}}\dot{\mathbf{q}}=\mathbf{0},\label{eq:17}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\phi}^{\prime}=\partial\boldsymbol{\phi}/\partial\mathbf{q}$
+\end_inset
+
+。通常，
+\begin_inset Formula $\boldsymbol{\phi}^{\prime}$
+\end_inset
+
+可以是秩亏的，并且秩可以作为
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+的函数变化；因此，让我们也定义方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的满秩版本：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{L}\ddot{\mathbf{q}}=\mathbf{c},\label{eq:18}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{L}$
+\end_inset
+
+是一个
+\begin_inset Formula $n_{c}\times n$
+\end_inset
+
+矩阵，由
+\begin_inset Formula $\boldsymbol{\phi}^{\prime}$
+\end_inset
+
+的
+\begin_inset Formula $n_{c}$
+\end_inset
+
+个线性无关的行组成，
+\begin_inset Formula $\mathbf{c}$
+\end_inset
+
+包含
+\begin_inset Formula $-\dot{\boldsymbol{\phi}^{\prime}}\dot{\mathbf{q}}$
+\end_inset
+
+的相应元素，并且
+\begin_inset Formula $n_{c}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{\phi}^{\prime}$
+\end_inset
+
+的秩。
+\end_layout
+
+\begin_layout Standard
+这可以证明，环路闭合力总是可以用以下形式表达
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\tau}_{c}=\mathbf{L}^{\mathrm{T}}\boldsymbol{\lambda}+\boldsymbol{\tau}_{a},\label{eq:19}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{\lambda}$
+\end_inset
+
+是未知的约束力变量(或拉格朗日乘子)的
+\begin_inset Formula $n_{c}\times1$
+\end_inset
+
+向量，
+\begin_inset Formula $\boldsymbol{\tau}_{a}$
+\end_inset
+
+表示环路闭合关节中的任意主动力。如果所有这些关节均为被动关节，则
+\begin_inset Formula $\boldsymbol{\tau}_{a}=\mathbf{0}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+现在我们可以结合方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以产生
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cc}
+\mathbf{M} & \mathbf{L}^{\mathrm{T}}\\
+\mathbf{L} & \mathbf{0}
+\end{array}\right]\left[\begin{array}{c}
+\ddot{\mathbf{q}}\\
+-\boldsymbol{\lambda}
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{\tau}-\mathbf{C}+\boldsymbol{\tau}_{a}\\
+\mathbf{c}
+\end{array}\right].\label{eq:20}
+\end{equation}
+
+\end_inset
+
+该方程或类似的东西出现在大多数闭环动力学公式中的某个点上。
+\end_layout
+
+\begin_layout Standard
+下一步是对
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)或其等效项。三种主要方法是
+\end_layout
+
+\begin_layout Enumerate
+对
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\lambda}$
+\end_inset
+
+直接求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\end_layout
+
+\begin_layout Enumerate
+首先求解
+\begin_inset Formula $\boldsymbol{\lambda}$
+\end_inset
+
+，然后使用结果求解
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+，或者
+\end_layout
+
+\begin_layout Enumerate
+对
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)(或方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+))，将结果代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，消除未知的约束力，并求解剩余的未知量。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方法 1 最简单，但通常效率最低。由于系统矩阵的大小为
+\begin_inset Formula $\left(n+n_{c}\right)\times\left(n+n_{c}\right)$
+\end_inset
+
+，因此该方法为
+\begin_inset Formula $O\left(\left(n+n_{c}\right)^{3}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $n\gg n_{c}$
+\end_inset
+
+，方法 2 特别有用，并且它提供了在生成树上使用
+\begin_inset Formula $O(n)$
+\end_inset
+
+算法的机会[5]。根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{L}\mathbf{M}^{-1}\mathbf{L}^{\mathrm{T}}\boldsymbol{\lambda}=\mathbf{c}-\mathbf{L}\mathbf{M}^{-1}\left(\boldsymbol{\tau}-\mathbf{C}+\boldsymbol{\tau}_{a}\right).\label{eq:21}
+\end{equation}
+
+\end_inset
+
+该方程可以通过
+\begin_inset Formula $O(n)$
+\end_inset
+
+算法在
+\begin_inset Formula $O\left(nn_{c}^{2}\right)$
+\end_inset
+
+操作中规划，并在
+\begin_inset Formula $O\left(n_{c}^{3}\right)$
+\end_inset
+
+中求解。一旦
+\begin_inset Formula $\boldsymbol{\lambda}$
+\end_inset
+
+已知，可以在
+\begin_inset Formula $O\left(nn_{c}\right)$
+\end_inset
+
+运算中计算
+\begin_inset Formula $\boldsymbol{\tau}_{c}$
+\end_inset
+
+，并通过
+\begin_inset Formula $O(n)$
+\end_inset
+
+算法求解方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)；所以总的复杂度是
+\begin_inset Formula $O\left(nn_{c}^{2}+n_{c}^{3}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $n-n_{c}$
+\end_inset
+
+很小和/或
+\begin_inset Formula $n_{c}$
+\end_inset
+
+必须在运行时确定，方法 3 就很有用。一个特殊版本的高斯消除法(或类似程序)，配备有数值秩检验，旨在解决欠定系统，直接应用于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以获得
+\begin_inset Formula 
+\[
+\ddot{\mathbf{q}}=\mathbf{K}\mathbf{y}+\ddot{\mathbf{q}}_{0},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+是一个
+\begin_inset Formula $n-n_{c}$
+\end_inset
+
+未知的向量(通常是
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+元素的线性无关子集)，
+\begin_inset Formula $\ddot{\mathbf{q}}_{0}$
+\end_inset
+
+是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的任意特定解，
+\begin_inset Formula $\mathbf{K}$
+\end_inset
+
+是
+\begin_inset Formula $n\times\left(n-n_{c}\right)$
+\end_inset
+
+矩阵，其属性为
+\begin_inset Formula $\mathbf{L}\mathbf{K}=\mathbf{0}$
+\end_inset
+
+。对于
+\begin_inset Formula $\ddot{\mathbf{q}}$
+\end_inset
+
+将该表达式代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并用
+\begin_inset Formula $\mathbf{K}^{\mathrm{T}}$
+\end_inset
+
+对两侧进行预乘，以消除
+\begin_inset Formula $\boldsymbol{\tau}_{c}$
+\end_inset
+
+的
+\begin_inset Formula $\mathbf{L}^{\mathrm{T}}\boldsymbol{\lambda}$
+\end_inset
+
+分量，产生
+\begin_inset Formula 
+\begin{equation}
+\mathbf{K}^{\mathrm{T}}\mathbf{M}\mathbf{K}\mathbf{y}=\mathbf{K}^{\mathrm{T}}\left(\boldsymbol{\tau}-\mathbf{C}+\boldsymbol{\tau}_{a}-\mathbf{M}\ddot{\mathbf{q}}_{0}\right).\label{eq:22}
+\end{equation}
+
+\end_inset
+
+该方法也有立方复杂度，但如果
+\begin_inset Formula $n-n_{c}$
+\end_inset
+
+较小，它可能是最有效的。据报道，它也比方法 1 更稳定[9]。
+\end_layout
+
+\begin_layout Subsection
+全局分析技术
+\end_layout
+
+\begin_layout Standard
+有可能将
+\begin_inset Formula $N$
+\end_inset
+
+个独立刚体系统的运动方程以下列形式表达出来
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}=\mathbf{I}\mathbf{a}+\mathbf{v}\times\mathbf{I}\mathbf{v},\label{eq:23}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+\begin{gathered}\mathbf{f}=\left[\mathbf{f}_{1}^{\mathrm{T}},\ldots,\mathbf{f}_{N}^{\mathrm{T}}\right]^{\mathrm{T}}\in\mathrm{F}^{6N},\\
+\mathbf{a}=\left[\mathbf{a}_{1}^{\mathrm{T}},\ldots,\mathbf{a}_{N}^{\mathrm{T}}\right]^{\mathrm{T}}\in\mathrm{M}^{6N},\\
+\mathbf{I}=\mathrm{diag}\left(\mathbf{I}_{1},\ldots,\mathbf{I}_{N}\right):\mathrm{M}^{6N}\mapsto\mathrm{F}^{6N},
+\end{gathered}
+\]
+
+\end_inset
+
+并如此之类。这样的复合向量和矩阵是Rodriguez等人[28,29,17]所开发的空间算子代数的起点。通过引入两个向量空间
+\begin_inset Formula $\mathsf{M}^{6N}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6N}$
+\end_inset
+
+，我们给出了它们的空间代数处理，这两个向量空间分别是
+\begin_inset Formula $N$
+\end_inset
+
+组
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的笛卡尔乘积。
+\end_layout
+
+\begin_layout Standard
+假设上述系统受到运动学约束，将(瞬时)速度限制在一个
+\begin_inset Formula $n$
+\end_inset
+
+维子空间
+\begin_inset Formula $S\subset\mathsf{M}^{6N}$
+\end_inset
+
+中。因此，加速度受制于
+\begin_inset Formula 
+\[
+\mathbf{a}-\mathbf{a}_{0}\in S\subset\mathsf{M}^{6N},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{a}_{0}$
+\end_inset
+
+是(已知)速度乘积项的向量。如果
+\begin_inset Formula $\mathbf{S}$
+\end_inset
+
+是一个
+\begin_inset Formula $6N\times n$
+\end_inset
+
+矩阵，其性质为
+\begin_inset Formula $\mathrm{Range}\left(\mathbf{S}\right)=S$
+\end_inset
+
+，则
+\begin_inset Formula 
+\begin{equation}
+\mathbf{a}=\mathbf{a}_{0}+\mathbf{S}\boldsymbol{\alpha},\label{eq:24}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+是未知量的向量。
+\end_layout
+
+\begin_layout Standard
+这些运动学约束将对系统施加一定的力。让我们将总作用力定义为
+\begin_inset Formula $\mathbf{f}=\mathbf{f}_{a}+\mathbf{f}_{c}$
+\end_inset
+
+，其中
+\begin_inset Formula $\mathbf{f}_{a}$
+\end_inset
+
+是已知主动力的向量，
+\begin_inset Formula $\mathbf{f}_{c}$
+\end_inset
+
+是未知约束力的向量。因此，受约束系统的运动方程为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{f}_{a}+\mathbf{f}_{c}=\mathbf{I}\mathbf{a}+\mathbf{v}\times\mathbf{I}\mathbf{v}.\label{eq:25}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据虚功原理，
+\begin_inset Formula $\mathbf{S}^{\mathrm{T}}\mathbf{f}_{c}=\mathbf{0}$
+\end_inset
+
+；因此，如果我们用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+，并将结果预乘
+\begin_inset Formula $\mathbf{S}^{\mathrm{T}}$
+\end_inset
+
+，则我们得到
+\begin_inset Formula 
+\begin{equation}
+\mathbf{S}^{\mathrm{T}}\mathbf{I}\mathbf{S}\boldsymbol{\alpha}=\mathbf{S}^{\mathrm{T}}\left(\mathbf{f}_{a}-\mathbf{I}\mathbf{a}_{0}-\mathbf{v}\times\mathbf{I}\mathbf{v}\right).\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该方程的结构与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同，因为它们都使用相同的方法应用约束，并且仅在其开始的系统中有所不同：方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)从运动学树开始，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)从无约束刚体系统开始。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的矩阵比方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的矩阵大，但它们具有稀疏结构，可用于描述低阶算法。
+\end_layout
+
+\begin_layout Standard
+如果我们还引入一个子空间
+\begin_inset Formula $T\subset\mathsf{F}^{6N}$
+\end_inset
+
+表示由运动约束产生的所有可能的约束力的空间，以及一个
+\begin_inset Formula $6N\times(6N-n)$
+\end_inset
+
+矩阵
+\begin_inset Formula $\mathbf{T}$
+\end_inset
+
+以满足
+\begin_inset Formula $\mathrm{Range}\left(\mathbf{T}\right)=T$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\mathbf{f}_{c}=\mathbf{T}\boldsymbol{\beta},\quad\mathbf{T}^{\mathrm{T}}\mathbf{S}=\mathbf{0},\quad\mathbf{T}^{\mathrm{T}}\mathbf{a}=\mathbf{T}^{\mathrm{T}}\mathbf{a}_{0}.
+\]
+
+\end_inset
+
+用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)结合这些方程产生
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{cc}
+\mathbf{I} & \mathbf{T}\\
+\mathbf{T}^{\mathrm{T}} & \mathbf{0}
+\end{array}\right]\left[\begin{array}{c}
+\mathbf{a}\\
+-\boldsymbol{\beta}
+\end{array}\right]=\left[\begin{array}{c}
+\mathbf{f}_{a}-\mathbf{v}\times\mathbf{I}\mathbf{v}\\
+\mathbf{T}^{\mathrm{T}}\mathbf{a}_{0}
+\end{array}\right],\label{eq:27}
+\end{equation}
+
+\end_inset
+
+这显然与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)类似；并对
+\begin_inset Formula $\boldsymbol{\beta}$
+\end_inset
+
+求解得出
+\begin_inset Formula 
+\begin{equation}
+\mathbf{T}^{\mathrm{T}}\mathbf{I}^{-1}\mathbf{T}\boldsymbol{\beta}=\mathbf{T}^{\mathrm{T}}\mathbf{a}_{0}-\mathbf{T}^{\mathrm{T}}\mathbf{I}^{-1}\left(\mathbf{f}_{a}-\mathbf{v}\times\mathbf{I}\mathbf{v}\right),\label{eq:28}
+\end{equation}
+
+\end_inset
+
+这与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)类似。
+\end_layout
+
+\begin_layout Standard
+假设方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中包含的约束是由一组关节造成的，这些关节将物体连接在一起形成一个运动学树，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节所述。在这种情况下，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是单个关节约束的全局表达式
+\begin_inset Formula 
+\[
+\mathbf{a}_{i}-\mathbf{a}_{\lambda\left(i\right)}=\mathbf{h}_{i}\ddot{\mathbf{q}}_{i}+\dot{\mathbf{h}}_{i}\dot{\mathbf{q}}_{i},\quad i=1\ldots N.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该方程可用全局形式表达为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{P}\mathbf{a}=\mathbf{H}\ddot{\mathbf{q}}+\dot{\mathbf{H}}\dot{\mathbf{q}},\label{eq:29}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{H}=\mathrm{diag}\left(\mathbf{h}_{i}\right)$
+\end_inset
+
+，并且
+\begin_inset Formula $\mathbf{P}$
+\end_inset
+
+是关联矩阵，
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+标准关联矩阵的元素是标量
+\begin_inset Formula $+1$
+\end_inset
+
+，
+\begin_inset Formula $-1$
+\end_inset
+
+和
+\begin_inset Formula $0$
+\end_inset
+
+，而不是
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵。参见文献[27,34]。(其关联矩阵
+\begin_inset Formula $S$
+\end_inset
+
+对应于
+\begin_inset Formula $-\mathbf{P}^{\mathrm{T}}$
+\end_inset
+
+。)
+\end_layout
+
+\end_inset
+
+定义如下：
+\begin_inset Formula 
+\[
+\mathbf{P}_{ij}=\left\{ \begin{array}{cl}
+\mathbf{1}_{6\times6} & :j=i\\
+-\mathbf{1}_{6\times6} & :j=\lambda\left(i\right)\\
+\mathbf{0}_{6\times6} & :\mathrm{otherwise}.
+\end{array}\right.
+\]
+
+\end_inset
+
+该矩阵是稀疏的、下三角的且(平凡的)可逆的。其逆矩阵在文献[29]中对应于矩阵
+\begin_inset Formula $\boldsymbol{\phi}^{*}$
+\end_inset
+
+ 。
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)放入与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)相同的形式，我们得到
+\begin_inset Formula $\mathbf{S}=\mathbf{P}^{-1}\mathbf{H}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}=\ddot{\mathbf{q}}$
+\end_inset
+
+。将这些表达式代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得到系统质量矩阵的以下表达式：
+\begin_inset Formula 
+\[
+\mathbf{M}=\mathbf{H}^{\mathrm{T}}\mathbf{P}^{\mathrm{-T}}\mathbf{I}\mathbf{P}^{-1}\mathbf{H},
+\]
+
+\end_inset
+
+这是在文献[29]中描述的牛顿-欧拉分解。该方程的算子解释直接导出RNEA，并通过算子求逆公式推导出ABA。
+\end_layout
+
+\begin_layout Standard
+通过利用其特殊的稀疏结构，可以直接从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中获得另一个用于运动学树的
+\begin_inset Formula $O(N)$
+\end_inset
+
+正向动力学算法：它仅有
+\begin_inset Formula $O(N)$
+\end_inset
+
+个非零元素，并且有一个完美的消除顺序[5]。
+\end_layout
+
+\begin_layout Standard
+对于无支链的特殊情况，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的系数矩阵是块三角对角型的。这意味着它可以在具有
+\begin_inset Formula $O(N)$
+\end_inset
+
+个处理器的并行计算机上在
+\begin_inset Formula $O(\log(N))$
+\end_inset
+
+时间内求解；这是约束-力算法[14,13]的关键步骤。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+本文回顾了机器人动力学领域的一些主要贡献。主要算法和相关方程已使用通用的简洁的符号给出。计算成本的最小化是开发机器人机构控制和仿真新公式和算法的关键。机器人学家
+可以被认为是开发了计算效率最高的的低阶算法，用于逆向动力学、正向动力学和惯量矩阵。
+\end_layout
+
+\begin_layout Standard
+由于篇幅所限，我们无法对机器人动力学中的其它一些主题进行广泛讨论。这些包括运动符号方程的自动生成和简化，并行计算机的算法，以及对特定类别系统的应用。对于一个特定
+的机器人构型，用符号形式表达的运动方程通常需要最少的计算来实现。Kane方程[19]的使用在这方面可能是有价值的，尽管它们的使用也可能涉及到对基本方程的大量操作
+，以将其简化为最简单的形式。通过使用并行算法，研究人员已经能够在
+\begin_inset Formula $O(N)$
+\end_inset
+
+个处理器上将
+\begin_inset Formula $O(N)$
+\end_inset
+
+算法的计算量减少到
+\begin_inset Formula $O(\log N)$
+\end_inset
+
+。机器人动力学在多足机器人、生物力学系统、航天器、柔性结构和水下机器人车辆上的应用，已经将许多基本算法扩展到特定领域的需求。希望随着更复杂的系统和应用的发展，机
+器人动力学的研究将有助于满足性能方面不断扩大的需求。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+W.
+ W.
+ Armstrong, "Recursive Solution to the Equations of Motion of an n-Link
+ Manipulator", Proc.
+ of 5th World Congress on Theory of Machines and Mechanisms, pp.
+ 1343-1346, 1979-July.
+ 
+\end_layout
+
+\begin_layout Enumerate
+U.
+ M.
+ Ascher, D.
+ K.
+ Pai and B.
+ P.
+ Cloutier, "Forward Dynamics Elimination Methods and Formulation Stiffness
+ in Robot Simulation", Int.
+ J.
+ Rob.
+ Research, vol.
+ 16, no.
+ 6, pp.
+ 749-758, 1997.
+ 
+\end_layout
+
+\begin_layout Enumerate
+C.
+ A.
+ Balafoutis, R.
+ V.
+ Patel and P.
+ Misra, "Efficient Modeling and Computation of Manipulator Dynamics Using
+ Orthogonal Cartesian Tensors", IEEE Journal of Robotics and Automation,
+ vol.
+ 4, pp.
+ 665-676, December 1988.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+C.
+ A.
+ Balafoutis and R.
+ V.
+ Patel, "Efficient Computation of Manipulator Inertia Matrices and the Direct
+ Dynamics Problem", IEEE Transactions on Systems Man and Cybernetics, vol.
+ 19, pp.
+ 1313-1321, Sept/Oct 1989.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Baraff, "Linear-Time Dynamics using Lagrange Multipliers", Proc.
+ SIGGRAPH '96, pp.
+ 137-146, 1996-August.
+ 
+\end_layout
+
+\begin_layout Enumerate
+W.
+ J.
+ Book, "Recursive Lagrangian Dynamics of Flexible Manipulator Arms", Int.
+ J.
+ Robotics Research, vol.
+ 3, no.
+ 3, pp.
+ 87-101, 1984.
+ 
+\end_layout
+
+\begin_layout Enumerate
+M.
+ Brady, J.
+ M.
+ Hollerbach, T.
+ L.
+ Johnson, T.
+ Lozano-Perez and M.
+ T.
+ Mason, Robot Motion: Planning and Control, MA, Cambridge:The MIT Press,
+ 1982.
+ 
+\end_layout
+
+\begin_layout Enumerate
+H.
+ Brandl, R.
+ Johanni and M.
+ Otter, "A Very Efficient Algorithm for the Simulation of Robots and Similar
+ Multibody Systems Without Inversion of the Mass Matrix", Proc.
+ of IFAC/IFIP/IMACS International Symposium on Theory of Robots, 1986-December.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ E.
+ Ellis and S.
+ L.
+ Ricker, "Two Numerical Issues in Simulating Constrained Robot Dynamics",
+ IEEE Trans.
+ on Systems Man and Cybernetics, vol.
+ 24, no.
+ 1, pp.
+ 19-27, 1994.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, "The Calculation of Robot Dynamics using Articulated-Body
+ Inertias", Int.
+ J.
+ Robotics Research, vol.
+ 2, no.
+ 1, pp.
+ 13-30, 1983.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, Robot Dynamics Algorithms, Boston/Dordrecht/Lancaster:Kluwer
+ Academic Publishers, 1987.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, "A Divide-and-Conquer Articulated-Body Algorithm for Parallel
+ O(log(n)) Calculation of Rigid-Body Dynamics.
+ Part 1: Basic Algorithm", Int.
+ J.
+ Robotics Research, vol.
+ 18, no.
+ 9, pp.
+ 867-875, 1999.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone and A.
+ Fijany, "A Technique for Analyzing Constrained Rigid-Body Systems and Its
+ Application to the Constraint Force Algorithm", IEEE Trans.
+ Robotics & Automation, vol.
+ 15, no.
+ 6, pp.
+ 1140-1144, 1999.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Fijany, I.
+ Sharf and G.
+ M.
+ T.
+ D'Eleuterio, "Parallel O(log N) Algorithms for Computation of Manipulator
+ Forward Dynamics", IEEE Trans.
+ Robotics & Automation, vol.
+ 11, no.
+ 3, pp.
+ 389-400, June 1995.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+X.
+ He and A.
+ A.
+ Goldenberg, "An Algorithm for Efficient Computation of Dynamics of Robotic
+ Manipulators", Proc.
+ of Fourth International Conference on Advanced Robotics, pp.
+ 175-188, 1989-June.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ M.
+ Hollerbach, "A Recursive Lagrangian Formulation of Manipulator Dynamics
+ and a Comparative Study of Dynamics Formulation Complexity", IEEE Trans.
+ on Systems Man and Cybernetics, vol.
+ SMC-10, no.
+ 11, pp.
+ 730-736, 1980.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ Jain, "Unified Formulation of Dynamics for Serial Rigid Multibody Systems",
+ Journal of Guidance Control and Dynamics, vol.
+ 14, no.
+ 3, pp.
+ 531-542, 1991.
+ 
+\end_layout
+
+\begin_layout Enumerate
+M.
+ E.
+ Kahn and B.
+ Roth, "The Near Minimum-time Control of Open-loop Articulated Kinematic
+ Chains", Journal of Dynamic Systems Measurement and Control, vol.
+ 93, pp.
+ 164-172, 1971.
+ 
+\end_layout
+
+\begin_layout Enumerate
+T.
+ R.
+ Kane and D.
+ A.
+ Levinson, "The Use of Kane's Dynamical Equations in Robotics", Int.
+ J.
+ Robotics Research, vol.
+ 2, no.
+ 3, pp.
+ 3-21, 1983.
+ 
+\end_layout
+
+\begin_layout Enumerate
+O.
+ Khatib, "A Unified Approach to Motion and Force Control of Robot Manipulators:
+ The Operational Space Formulation", IEEE J.
+ Robotics & Automation, vol.
+ 3, no.
+ 1, pp.
+ 43-53, 1987.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+O.
+ Khatib, "Inertial Properties in Robotic Manipulation: An Object-Level Framework
+", Int.
+ J.
+ Robotics Research, vol.
+ 14, no.
+ 1, pp.
+ 19-36, 1995.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ W.
+ Lilly and D.
+ E.
+ Orin, "Alternate Formulations for the Manipulator Inertia Matrix", Internationa
+l Journal of Robotics Research, vol.
+ 10, pp.
+ 64-74, February 1991.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Y.
+ S.
+ Luh, M.
+ W.
+ Walker and R.
+ P.
+ C.
+ Paul, "On-Line Computational Scheme for Mechanical Manipulators", Trans.
+ ASME J.
+ Dynamic Systems Measurement & Control, vol.
+ 102, no.
+ 2, pp.
+ 69-76, 1980.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ McMillan and D.
+ E.
+ Orin, "Efficient Computation of Articulated-Body Inertias Using Successive
+ Axial Screws", IEEE Trans.
+ on Robotics and Automation, vol.
+ 11, pp.
+ 606-611, 1995.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ McMillan and D.
+ E.
+ Orin, "Forward Dynamics of Multilegged Vehicles Using the Composite Rigid
+ Body Method", Proc.
+ of IEEE International Conference on Robotics and Automation, pp.
+ 464-470, 1998-May.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+D.
+ E.
+ Orin, R.
+ B.
+ McGhee, M.
+ Vukobratovic and G.
+ Hartoch, "Kinematic and Kinetic Analysis of Open-chain Linkages Utilizing
+ Newton-Euler Methods", Mathematical Biosciences, vol.
+ 43, pp.
+ 107-130, February 1979.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ E.
+ Roberson and R.
+ Schwertassek, Dynamics of Multibody Systems, Berlin/Heidelberg/New York:Springe
+r-Verlag, 1988.
+ 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Rodriguez, "Kalman Filtering Smoothing and Recursive Robot Arm Forward
+ and Inverse Dynamics", IEEE Journal on Robotics and Automation, vol.
+ RA-3, no.
+ 6, pp.
+ 624-639, 1987.
+ View Article 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Rodriguez, A.
+ Jain and K.
+ Kreutz-Delgado, "A Spatial Operator Algebra for Manipulator Modelling and
+ Control", Int.
+ J.
+ Robotics Research, vol.
+ 10, no.
+ 4, pp.
+ 371-381, 1991.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Y.
+ Stepanenko and M.
+ Vukobratovic, "Dynamics of Articulated Open-chain Active Mechanisms", Math.
+ Biosciences, vol.
+ 28, pp.
+ 137-170, 1976.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ J.
+ Uicker, "Dynamic Force Analysis of Spatial Linkages", Transactions of the
+ ASME Journal of Applied Mechanics, vol.
+ 34, pp.
+ 418-424, 1967.
+ 
+\end_layout
+
+\begin_layout Enumerate
+A.
+ F.
+ Vereshchagin, "Computer Simulation of the Dynamics of Complicated Mechanisms
+ of Robot Manipulators", Engineering Cybernetics, no.
+ 6, pp.
+ 65-70, 1974.
+ 
+\end_layout
+
+\begin_layout Enumerate
+M.
+ W.
+ Walker and D.
+ E.
+ Orin, "Efficient Dynamic Computer Simulation of Robotic Mechanisms", Trans.
+ ASME J.
+ Dynamic Systems Measurement & Control, vol.
+ 104, pp.
+ 205-211, 1982.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Wittenburg, Dynamics of Systems of Rigid Bodies, Stuttgart:B.
+ G.
+ Teubner, 1977.
+\end_layout
+
+\end_body
+\end_document

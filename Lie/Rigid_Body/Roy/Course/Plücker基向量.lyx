@@ -1,0 +1,2966 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Plücker基向量"
+\pdf_author "Roy Featherstone"
+\pdf_keywords " Vectors, Acceleration, Robot kinematics, Linear algebra, Concrete, Terminology"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "Plücker基向量"
+target "http://royfeatherstone.org/papers/icra06plucker.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Roy Featherstone
+\end_layout
+
+\begin_layout Date
+15-19 May 2006
+\end_layout
+
+\begin_layout Abstract
+6-D向量通常以Plücker坐标表示；然而，文献中几乎没有提到产生这些坐标的基向量。本文确定了Plücker基向量，并用它们来解释以下内容：6-D向量与其Pl
+ücker坐标之间的关系，6-D向量与用于定义它的一对3-D向量之间的关系，以及在移动的坐标系统中区分6-D向量的正确方法。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+6-D向量被用来描述刚体的运动和作用在它们身上的动力。因此，它们对于描述刚体系统的运动学和动力学非常有用，特别是对机器人机构。6-D向量有多种形式，如运动旋量(
+twists)、动力旋量(wrenches)、矩量(motors)、空间向量(spatial vectors)、李代数(Lie-algebra)元素和3-D向量
+对的简单串联。例如，参见文献[1]、[2]、[3]、[4]、[6]、[8]、[9]、[10]、[12]、[16]。几乎所有这样的向量都是用Plücker坐标表示
+的
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+这是J.
+ Plücker在1860s发明的坐标系统[11]。
+\end_layout
+
+\begin_layout Standard
+线性代数的一个基本原则是，一个向量空间的坐标系统是由一个基定义的。因此，Plücker坐标也必须由一个基来定义。然而，尽管Plücker坐标被广泛使用，但似乎几
+乎没有人提到产生它们的基向量。作者能找到的唯一例子是在文献[4]中描述的标准基。
+\end_layout
+
+\begin_layout Standard
+基的作用是定义坐标和它们所表示的向量之间的关系。如果没有对Plücker基向量的明确定义，就无法清楚地描述Plücker坐标与其表示的6-D向量之间的关系。这偶
+尔会导致对6-D向量的真实性质的混淆，最近关于6-D加速度向量定义的争论就证明了这一点[5], [7], [13], [14], [15]。有一种倾向是把6-D
+向量看作是3-D向量的有序对，但该模型不准确，因为它没有适当考虑参考点的作用。
+\end_layout
+
+\begin_layout Standard
+本文的主要贡献如下：定义了Plücker基向量；它解释了Plücker坐标向量与其表示的6-D向量之间的关系；它解释了一个6-D向量和定义它的两个3-D向量之间
+的关系；并以加速度为例，说明了如何在移动的Plücker坐标系统中区分6-D向量。为了具体的阐述，本文使用了空间向量的符号和术语；但结果通常适用于任意使用Plü
+cker坐标表示的6-D向量。
+\end_layout
+
+\begin_layout Standard
+本文的其余部分组织如下。首先，描述了Plücker基向量。然后讨论了对偶坐标系统的主题。这与那些6-D向量形式有关，在这些形式中，动力向量被视为占据与运动向量不
+同的向量空间。接下来，引入了一种方便的算子符号，它允许我们表示和操纵坐标向量与其表示的向量之间的映射，这些映射由基向量确定。然后，本文继续研究空间向量和用于定义
+它们的欧几里德向量对之间关系的性质。最后，解释了在移动的Plücker坐标系统中的微分方法，并用结果阐明6-D加速度向量的竞争定义之间的关系。
+\end_layout
+
+\begin_layout Section
+Plücker基向量
+\end_layout
+
+\begin_layout Standard
+不同种类的向量属于不同的向量空间。因此，我们首先定义向量空间
+\begin_inset Formula $\mathsf{E}^{n}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{R}^{n}$
+\end_inset
+
+，分别代表
+\begin_inset Formula $n$
+\end_inset
+
+维欧几里德向量和坐标向量。
+\begin_inset Formula $\mathsf{E}^{n}$
+\end_inset
+
+的元素具有大小和方向的属性，而
+\begin_inset Formula $\mathsf{R}^{n}$
+\end_inset
+
+的元素是
+\begin_inset Formula $n$
+\end_inset
+
+个实数的元组。
+\end_layout
+
+\begin_layout Standard
+空间向量不是欧几里德向量，因此不属于
+\begin_inset Formula $\mathsf{E}^{6}$
+\end_inset
+
+。此外，在描述刚体运动的向量和描述作用在其上的动力的向量之间保持区别是有用的。因此，我们定义两个向量空间，
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+，一个用于空间运动向量，一个用于空间动力向量。
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的元素描述速度、加速度、运动自由度的方向等等。
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的元素描述动力、动量、冲量等等。
+\end_layout
+
+\begin_layout Standard
+空间向量通常由一对3-D欧几里德向量构成。现在让我们检查一下这是如何做到的。特别是，让我们检查速度向量和动力向量的构造。
+\end_layout
+
+\begin_layout Standard
+参考图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+，刚体的速度可以由一对向量指定，
+\begin_inset Formula $\boldsymbol{\omega},\boldsymbol{v}_{O}\in\mathsf{E}^{3}$
+\end_inset
+
+，其中在底层物理空间中，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+是整个物体的角速度，并且
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+是通过任意给定点
+\begin_inset Formula $O$
+\end_inset
+
+的物体固连点的线速度。这两个向量所描述的刚体速度是纯旋转和纯平移的总和，其中物体以角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+围绕通过
+\begin_inset Formula $O$
+\end_inset
+
+的轴旋转，并且纯平移由
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+给出。这可以从公式中看出
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{v}_{P}=\boldsymbol{v}_{O}+\boldsymbol{\omega}\times\overrightarrow{OP},\label{eq:1}
+\end{equation}
+
+\end_inset
+
+式中给出了物体在
+\begin_inset Formula $P$
+\end_inset
+
+的固连点的速度。右侧是由于整个刚体平移
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+而产生的一个分量，以及由于刚体绕通过
+\begin_inset Formula $O$
+\end_inset
+
+的轴旋转
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+而产生的一个分量之和。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename icra06-Figure1.png
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+刚体速度
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+观察这两个向量组合时的含义是如何变化的：
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+本身是一个无实体的角速度，对于
+\begin_inset Formula $O$
+\end_inset
+
+的任意选择都是相同的，而
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+本身具体指的是物体中当前瞬间与
+\begin_inset Formula $O$
+\end_inset
+
+重合的一个点；但当我们将两者结合起来时，他们所描述的刚体速度是专门围绕通过
+\begin_inset Formula $O$
+\end_inset
+
+的轴旋转的总和，以及一个纯平移，其中物体中的每个点都以速度
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+移动。
+\end_layout
+
+\begin_layout Standard
+让我们引入一个笛卡尔坐标帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+，其原点为
+\begin_inset Formula $O$
+\end_inset
+
+。该帧定义了三个相互垂直的方向，
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+。这些方向允许我们定义正交基，
+\begin_inset Formula 
+\begin{equation}
+\mathcal{C}=\left\{ \boldsymbol{i},\boldsymbol{j},\boldsymbol{k}\right\} \subset\mathsf{E}^{3},\label{eq:2}
+\end{equation}
+
+\end_inset
+
+其中单位向量
+\begin_inset Formula $\boldsymbol{i}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{j}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{k}$
+\end_inset
+
+分别指向
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向。该基在
+\begin_inset Formula $\mathsf{E}^{3}$
+\end_inset
+
+上形成笛卡尔坐标系统，因此
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+可以用笛卡尔坐标表示：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\omega}=\omega_{x}\boldsymbol{i}+\omega_{y}\boldsymbol{j}+\omega_{z}\boldsymbol{k}\label{eq:3}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{v}_{O}=v_{Ox}\boldsymbol{i}+v_{Oy}\boldsymbol{j}+v_{Oz}\boldsymbol{k}.\label{eq:4}
+\end{equation}
+
+\end_inset
+
+我们现在可以说，欧几里德向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+由坐标向量
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+坐标向量带有下划线，以区分它们与它们所表示的向量。
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\underline{\boldsymbol{\omega}}=\left[\begin{array}{lll}
+\omega_{x} & \omega_{y} & \omega_{z}\end{array}\right]^{\mathrm{T}}\in\mathsf{R}^{3}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{v}}_{O}=\left[\begin{array}{lll}
+v_{Ox} & v_{Oy} & v_{Oz}\end{array}\right]^{\mathrm{T}}\in\mathsf{R}^{3}$
+\end_inset
+
+表示，分别位于基
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+定义的坐标系统中。
+\end_layout
+
+\begin_layout Standard
+众所周知，这
+\begin_inset Formula $6$
+\end_inset
+
+个数字
+\begin_inset Formula $\omega_{x},\ldots,v_{Oz}$
+\end_inset
+
+是空间向量
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+除基向量以外的空间向量用帽子符号标记。未标记的为基向量。
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\hat{\boldsymbol{v}}\in\mathsf{M}^{6}$
+\end_inset
+
+的Plücker坐标，它表示与两个3D向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+相同的刚体速度。为了建立
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+与其坐标之间的关系，我们在
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+上定义了以下基：
+\begin_inset Formula 
+\begin{equation}
+\mathcal{D}_{O}=\left\{ \boldsymbol{d}_{Ox},\boldsymbol{d}_{Oy},\boldsymbol{d}_{Oz},\boldsymbol{d}_{x},\boldsymbol{d}_{y},\boldsymbol{d}_{z}\right\} \subset\mathsf{M}^{6},\label{eq:5}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{d}_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{d}_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{d}_{Oz}$
+\end_inset
+
+是围绕有向线
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+ (分别在
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向通过
+\begin_inset Formula $O$
+\end_inset
+
+)的单位旋转，
+\begin_inset Formula $\boldsymbol{d}_{x}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{d}_{y}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{d}_{z}$
+\end_inset
+
+是在
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向的单位平移(参见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+(a))。因此，如果物体以
+\begin_inset Formula $\alpha$
+\end_inset
+
+幅值的角速度围绕
+\begin_inset Formula $Ox$
+\end_inset
+
+旋转，那么它的空间速度将是
+\begin_inset Formula $\alpha\boldsymbol{d}_{Ox}$
+\end_inset
+
+。同样，如果物体以
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+的线速度平移，则其空间速度将为
+\begin_inset Formula $v_{Ox}\boldsymbol{d}_{x}+v_{Oy}\boldsymbol{d}_{y}+v_{Oz}\boldsymbol{d}_{z}$
+\end_inset
+
+。注意此表达式与方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的表达式之间的差异：前者是空间向量(即
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的元素)，后者是欧几里德向量(
+\begin_inset Formula $\mathsf{E}^{3}$
+\end_inset
+
+的元素)。第三个示例如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+(b)所示。该示例显示了围绕平行于
+\begin_inset Formula $z$
+\end_inset
+
+轴并通过点
+\begin_inset Formula $(0,r,0)$
+\end_inset
+
+的轴的幅值
+\begin_inset Formula $\alpha$
+\end_inset
+
+旋转。该运动由空间向量
+\begin_inset Formula $\alpha\boldsymbol{d}_{Oz}+r\alpha\boldsymbol{d}_{x}$
+\end_inset
+
+表示。观察平移分量等于原点处的粒子以
+\begin_inset Formula $\alpha$
+\end_inset
+
+的角速度围绕
+\begin_inset Formula $(0,r,0)$
+\end_inset
+
+旋转的速度。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename icra06-Figure2.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+Plücker运动基(a)，以及示例(b)。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过检查可以看出，空间向量
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}=\omega_{x}\boldsymbol{d}_{Ox}+\omega_{y}\boldsymbol{d}_{Oy}+\omega_{z}\boldsymbol{d}_{Oz}+v_{Ox}\boldsymbol{d}_{x}+v_{Oy}\boldsymbol{d}_{y}+v_{Oz}\boldsymbol{d}_{z}\label{eq:6}
+\end{equation}
+
+\end_inset
+
+表示与上述两个向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+所描述的相同的刚体速度。因此，我们可以得出结论，
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+是引起在
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+中与
+\begin_inset Formula $Oxyz$
+\end_inset
+
+相关联的Plücker坐标系统的基，并且坐标向量
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{v}}}_{O}=\left[\begin{array}{cccccc}
+\omega_{x} & \omega_{y} & \omega_{z} & v_{Ox} & v_{Oy} & v_{Oz}\end{array}\right]^{\mathrm{T}}\in\mathsf{R}^{6}\label{eq:7}
+\end{equation}
+
+\end_inset
+
+表示由基
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+定义的在Plücker坐标系统中的空间向量
+\begin_inset Formula $\hat{\boldsymbol{v}}\in\mathsf{M}^{6}$
+\end_inset
+
+。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)通常被写成以下形式
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{v}}}_{O}=\left[\begin{array}{c}
+\underline{\boldsymbol{\omega}}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right],\label{eq:8}
+\end{equation}
+
+\end_inset
+
+其中右侧是两个坐标向量
+\begin_inset Formula $\underline{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{v}}_{O}$
+\end_inset
+
+的串联。
+\end_layout
+
+\begin_layout Standard
+观察方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的下标模式。每个取决于
+\begin_inset Formula $O$
+\end_inset
+
+位置的量的下标中都包含一个
+\begin_inset Formula $O$
+\end_inset
+
+。然而，请注意，
+\begin_inset Formula $\boldsymbol{d}_{Ox}$
+\end_inset
+
+中的下标指的是直线
+\begin_inset Formula $Ox$
+\end_inset
+
+，而
+\begin_inset Formula $v_{Ox}$
+\end_inset
+
+中的下标实际上是两个在一起运行的下标，因为
+\begin_inset Formula $v_{Ox}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+的
+\begin_inset Formula $x$
+\end_inset
+
+坐标。尽管个别项可能会有不同，但可以证明方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)右侧的完整表达式对于
+\begin_inset Formula $Oxyz$
+\end_inset
+
+的位置和方向都是不变量。因此，
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+是刚体速度的一个真正的不变量表示。
+\end_layout
+
+\begin_layout Standard
+空间动力向量以类似的方式构造。作用在单个刚体上的任意作用力系统都等效于单个合力向量
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+，以及力矩向量
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+，其给出了动力系统关于任意给定点
+\begin_inset Formula $O$
+\end_inset
+
+的力矩。虽然
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+本身与
+\begin_inset Formula $O$
+\end_inset
+
+无关，但它所表示的量是沿着穿过
+\begin_inset Formula $O$
+\end_inset
+
+的直线作用在刚体上的动力。
+\end_layout
+
+\begin_layout Standard
+引入坐标帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+和基
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+，我们可以用笛卡尔坐标表示
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}=f_{x}\boldsymbol{i}+f_{y}\boldsymbol{j}+f_{z}\boldsymbol{k}\label{eq:9}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{n}_{O}=n_{Ox}\boldsymbol{i}+n_{Oy}\boldsymbol{j}+n_{Oz}\boldsymbol{k}.\label{eq:10}
+\end{equation}
+
+\end_inset
+
+如前所述，这
+\begin_inset Formula $6$
+\end_inset
+
+个数字
+\begin_inset Formula $n_{Ox},\ldots,f_{z}$
+\end_inset
+
+是空间动力向量
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+的Plücker坐标，表示与
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+相同的动力系统。为了建立
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+与其坐标之间的关系，我们在
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上定义以下基：
+\begin_inset Formula 
+\begin{equation}
+\mathcal{E}_{O}=\left\{ \boldsymbol{e}_{x},\boldsymbol{e}_{y},\boldsymbol{e}_{z},\boldsymbol{e}_{Ox},\boldsymbol{e}_{Oy},\boldsymbol{e}_{Oz}\right\} \subset\mathsf{F}^{6},\label{eq:11}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{e}_{x}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{e}_{y}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{e}_{z}$
+\end_inset
+
+是
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的单位力偶，
+\begin_inset Formula $\boldsymbol{e}_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{e}_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{e}_{Oz}$
+\end_inset
+
+是沿着
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+直线的单位动力。通过检查，可以再次看到，空间向量
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{f}}=n_{Ox}\boldsymbol{e}_{x}+n_{Oy}\boldsymbol{e}_{y}+n_{Oz}\boldsymbol{e}_{z}+f_{x}\boldsymbol{e}_{Ox}+f_{y}\boldsymbol{e}_{Oy}+f_{z}\boldsymbol{e}_{Oz}\label{eq:12}
+\end{equation}
+
+\end_inset
+
+表示与两个向量
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+相同的动力系统。因此，我们可以得出结论，
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+是引起在
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+中与
+\begin_inset Formula $Oxyz$
+\end_inset
+
+相关的Plücker坐标系统的基，并且坐标向量
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{f}}}_{O}=\left[\begin{array}{cccccc}
+n_{Ox} & n_{Oy} & n_{Oz} & f_{x} & f_{y} & f_{z}\end{array}\right]^{\mathrm{T}}\in\mathsf{R}^{6}\label{eq:13}
+\end{equation}
+
+\end_inset
+
+表示由基
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+定义的在Plücker坐标系统中的空间向量
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可写成以下形式
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{f}}}_{O}=\left[\begin{array}{c}
+\underline{\boldsymbol{n}}_{O}\\
+\underline{\boldsymbol{f}}
+\end{array}\right],\label{eq:14}
+\end{equation}
+
+\end_inset
+
+其中，右侧是两个坐标向量
+\begin_inset Formula $\underline{\boldsymbol{n}_{O}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{f}}$
+\end_inset
+
+的串联。
+\end_layout
+
+\begin_layout Section
+对偶坐标系统
+\end_layout
+
+\begin_layout Standard
+无论
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+还是
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+都没有在其元素上定义内积。相反，有一个标量积，它从每个空间中获取一个参数，并产生一个表示功的实数。因此，如果
+\begin_inset Formula $\hat{\boldsymbol{m}}\in\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+，则
+\begin_inset Formula $\hat{\boldsymbol{f}}\boldsymbol{\cdot}\hat{\boldsymbol{m}}$
+\end_inset
+
+是动力
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+作用在随着运动
+\begin_inset Formula $\hat{\boldsymbol{m}}$
+\end_inset
+
+移动的刚体上所做的功。为方便起见，我们将
+\begin_inset Formula $\hat{\boldsymbol{m}}\boldsymbol{\cdot}\hat{\boldsymbol{f}}$
+\end_inset
+
+定义为与
+\begin_inset Formula $\hat{\boldsymbol{f}}\boldsymbol{\cdot}\hat{\boldsymbol{m}}$
+\end_inset
+
+相同的含义，但未定义
+\begin_inset Formula $\hat{\boldsymbol{f}}\boldsymbol{\cdot}\hat{\boldsymbol{f}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{m}}\boldsymbol{\cdot}\hat{\boldsymbol{m}}$
+\end_inset
+
+的表达式。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\mathcal{D}=\left\{ \boldsymbol{d}_{1},\ldots,\boldsymbol{d}_{6}\right\} $
+\end_inset
+
+是
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+上的任意基。对于
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+的任意选择，
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上存在唯一的基
+\begin_inset Formula $\mathcal{E}=\left\{ \boldsymbol{e}_{1},\ldots,\boldsymbol{e}_{6}\right\} $
+\end_inset
+
+，其性质为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{d}_{i}\boldsymbol{\cdot}\boldsymbol{e}_{j}=\begin{cases}
+1 & \mathrm{if}\ i=j\\
+0 & \mathrm{otherwise}.
+\end{cases}\label{eq:15}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+是
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+的对偶(或互易)基，反之亦然。这对
+\begin_inset Formula $(\mathcal{D},\mathcal{E})$
+\end_inset
+
+可以称为对偶基对，或者简单地称为对偶基。它定义了一个包含
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的对偶坐标系统，其中
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的元素通过
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+表示，
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的元素通过
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+表示。对偶坐标系统是欧几里德向量空间中笛卡尔坐标系统的空间-向量等价物。
+\end_layout
+
+\begin_layout Standard
+在任意对偶坐标系统中，以下方程成立：
+\begin_inset Formula 
+\begin{align}
+\hat{\boldsymbol{m}}\boldsymbol{\cdot}\hat{\boldsymbol{f}} & =\underline{\hat{\boldsymbol{m}}}^{\mathrm{T}}\underline{\hat{\boldsymbol{f}}},\label{eq:16}\\
+\boldsymbol{e}_{i}\boldsymbol{\cdot}\hat{\boldsymbol{m}} & =m_{i}\label{eq:17}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{d}_{i}\boldsymbol{\cdot}\hat{\boldsymbol{f}}=f_{i},\label{eq:18}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\underline{\hat{\boldsymbol{m}}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\hat{\boldsymbol{f}}}$
+\end_inset
+
+是坐标向量，分别表示基
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+中的
+\begin_inset Formula $\hat{\boldsymbol{m}}\in\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+，并且
+\begin_inset Formula $m_{i}$
+\end_inset
+
+和
+\begin_inset Formula $f_{i}$
+\end_inset
+
+是单独的坐标。这些结果直接来自于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。如果
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+是任意两个对偶坐标系统，
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}^{\mathsf{M}}$
+\end_inset
+
+是运动向量从
+\begin_inset Formula $A$
+\end_inset
+
+坐标到
+\begin_inset Formula $B$
+\end_inset
+
+坐标的坐标变换矩阵，则动力向量的对应变换矩阵为
+\begin_inset Formula 
+\begin{equation}
+^{B}\boldsymbol{X}_{A}^{\mathsf{F}}=\left(^{B}\boldsymbol{X}_{A}^{\mathsf{M}}\right)^{-\mathrm{T}}.\label{eq:19}
+\end{equation}
+
+\end_inset
+
+该方程源自标量积的不变量性质，对于所有的
+\begin_inset Formula $\hat{\boldsymbol{m}}$
+\end_inset
+
+，
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+，
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+，可以表示为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{m}}}_{A}^{\mathrm{T}}\underline{\hat{\boldsymbol{f}}}_{A}=\underline{\hat{\boldsymbol{m}}}_{B}^{\mathrm{T}}\underline{\hat{\boldsymbol{f}}}_{B}.\label{eq:20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的Plücker基满足方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，因此基对
+\begin_inset Formula $\left(\mathcal{D}_{O},\mathcal{E}_{O}\right)$
+\end_inset
+
+在
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上定义了一个对偶坐标系统。
+\end_layout
+
+\begin_layout Standard
+可以按照不同的顺序写入
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+的元素，前提是对
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+执行相同的操作。其结果是坐标向量中的坐标重新排序。例如，我们可以将
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+重写为
+\begin_inset Formula 
+\[
+\mathcal{D}_{O}=\left\{ \boldsymbol{d}_{x},\boldsymbol{d}_{y},\boldsymbol{d}_{z},\boldsymbol{d}_{Ox},\boldsymbol{d}_{Oy},\boldsymbol{d}_{Oz}\right\} 
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+\mathcal{E}_{O}=\left\{ \boldsymbol{e}_{Ox},\boldsymbol{e}_{Oy},\boldsymbol{e}_{Oz},\boldsymbol{e}_{x},\boldsymbol{e}_{y},\boldsymbol{e}_{z}\right\} ,
+\]
+
+\end_inset
+
+在这种情况下，表示
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的坐标向量为
+\begin_inset Formula 
+\[
+\underline{\hat{\boldsymbol{v}}}_{O}=\left[\begin{array}{cccccc}
+v_{Ox} & v_{Oy} & v_{Oz} & \omega_{x} & \omega_{y} & \omega_{z}\end{array}\right]^{\mathrm{T}}
+\]
+
+\end_inset
+
+并且
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\underline{\hat{\boldsymbol{f}}}_{O}=\left[\begin{array}{cccccc}
+f_{x} & f_{y} & f_{z} & n_{Ox} & n_{Oy} & n_{Oz}\end{array}\right]^{\mathrm{T}}.
+\]
+
+\end_inset
+
+有些作者倾向于在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中线性项在角度项之前的排序，而不是角度项在线性项之前的排序。借助于Plücker基，就可以立即看出这两种排序的差异纯粹是表面的，它们都表示相同的空间向量。
+\end_layout
+
+\begin_layout Section
+基映射
+\end_layout
+
+\begin_layout Standard
+假设
+\begin_inset Formula $\mathcal{B}=\left\{ \boldsymbol{b}_{1},\ldots,\boldsymbol{b}_{n}\right\} $
+\end_inset
+
+是向量空间
+\begin_inset Formula $U$
+\end_inset
+
+上的基。给定
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+，我们可以表示任意向量
+\begin_inset Formula $\boldsymbol{u}\in U$
+\end_inset
+
+用形式
+\begin_inset Formula 
+\[
+\boldsymbol{u}=\sum_{i=1}^{n}\boldsymbol{b}_{i}u_{i},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $u_{i}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+中的坐标。该方程也可以写成以下形式
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{u}=\left[\begin{array}{ccc}
+\boldsymbol{b}_{1} & \cdots & \boldsymbol{b}_{n}\end{array}\right]\left[\begin{array}{c}
+u_{1}\\
+\vdots\\
+u_{n}
+\end{array}\right]=\boldsymbol{\mathcal{B}}\underline{\boldsymbol{u}},\label{eq:21}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+是将坐标向量映射到它们在基
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+中所表示的向量的算子。因此，我们将
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+称为与
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+相关的基映射。形式上，
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+是从
+\begin_inset Formula $\mathsf{R}^{n}$
+\end_inset
+
+到
+\begin_inset Formula $U$
+\end_inset
+
+的映射，定义如下：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{B}}:\mathsf{R}^{n}\mapsto U:\left[\begin{array}{c}
+u_{1}\\
+\vdots\\
+u_{n}
+\end{array}\right]\mapsto\sum_{i=1}^{n}\boldsymbol{b}_{i}u_{i}.\label{eq:22}
+\end{equation}
+
+\end_inset
+
+如果
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+被写成一个
+\begin_inset Formula $1\times n$
+\end_inset
+
+的基向量数组，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所示，那么
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+对
+\begin_inset Formula $\underline{\boldsymbol{u}}$
+\end_inset
+
+的作用可以理解为二者之间形式的矩阵乘法的结果。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\boldsymbol{\mathcal{B}}$
+\end_inset
+
+是
+\begin_inset Formula $1:1$
+\end_inset
+
+映射，并因此是可逆的；所以必须存在一个逆映射，
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}$
+\end_inset
+
+，满足
+\begin_inset Formula $\underline{\boldsymbol{u}}=\boldsymbol{\mathcal{B}}^{-1}\boldsymbol{u}$
+\end_inset
+
+。
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}$
+\end_inset
+
+的形式表达式可以表示为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{B}}^{-1}=\left[\begin{array}{c}
+\boldsymbol{b}_{1}^{*}\boldsymbol{\cdot}\\
+\vdots\\
+\boldsymbol{b}_{n}^{*}\boldsymbol{\cdot}
+\end{array}\right],\label{eq:23}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\left\{ \boldsymbol{b}_{1}^{*},\ldots,\boldsymbol{b}_{n}^{*}\right\} $
+\end_inset
+
+是
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+的对偶基，并且
+\begin_inset Formula $\boldsymbol{b}_{i}^{*}\boldsymbol{\cdot}$
+\end_inset
+
+是将任意向量
+\begin_inset Formula $\boldsymbol{u}\in U$
+\end_inset
+
+映射到标量
+\begin_inset Formula $\boldsymbol{b}_{i}^{*}\boldsymbol{\cdot}\boldsymbol{u}$
+\end_inset
+
+的算子。展开
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}\boldsymbol{\mathcal{B}}$
+\end_inset
+
+给出为
+\begin_inset Formula 
+\[
+\boldsymbol{\mathcal{B}}^{-1}\boldsymbol{\mathcal{B}}=\left[\begin{array}{c}
+\boldsymbol{b}_{1}^{*}\boldsymbol{\cdot}\\
+\vdots\\
+\boldsymbol{b}_{n}^{*}\boldsymbol{\cdot}
+\end{array}\right]\left[\begin{array}{ccc}
+\boldsymbol{b}_{1} & \cdots & \boldsymbol{b}_{n}\end{array}\right]=\left[\begin{array}{ccc}
+\boldsymbol{b}_{1}^{*}\boldsymbol{\cdot}\boldsymbol{b}_{1} & \cdots & \boldsymbol{b}_{1}^{*}\boldsymbol{\cdot}\boldsymbol{b}_{n}\\
+\vdots & \ddots & \vdots\\
+\boldsymbol{b}_{n}^{*}\boldsymbol{\cdot}\boldsymbol{b}_{1} & \cdots & \boldsymbol{b}_{n}^{*}\boldsymbol{\cdot}\boldsymbol{b}_{n}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中由于互易条件方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，它等于单位矩阵。值得关注的特殊情况为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\mathcal{C}}^{-1} & =\left[\begin{array}{c}
+\boldsymbol{i\cdot}\\
+\boldsymbol{j\cdot}\\
+\boldsymbol{k\cdot}
+\end{array}\right],\label{eq:24}\\
+\boldsymbol{\mathcal{D}}_{O}^{-1} & =\left[\begin{array}{c}
+\boldsymbol{e}_{x}\boldsymbol{\cdot}\\
+\vdots\\
+\boldsymbol{e}_{Oz}\boldsymbol{\cdot}
+\end{array}\right]\label{eq:25}
+\end{align}
+
+\end_inset
+
+和
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{E}}_{O}^{-1}=\left[\begin{array}{c}
+\boldsymbol{d}_{Ox}\boldsymbol{\cdot}\\
+\vdots\\
+\boldsymbol{d}_{z}\boldsymbol{\cdot}
+\end{array}\right].\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+基映射为表达向量之间的关系提供了一个简单但强大的工具。为了说明它们的用法，考虑在两个坐标系统
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+之间制订变换矩阵的任务。设
+\begin_inset Formula $\underline{\boldsymbol{u}}_{A}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{u}}_{B}$
+\end_inset
+
+为在
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+坐标中表示向量
+\begin_inset Formula $\boldsymbol{u}\in U$
+\end_inset
+
+的坐标向量。如果
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}$
+\end_inset
+
+是从
+\begin_inset Formula $A$
+\end_inset
+
+到
+\begin_inset Formula $B$
+\end_inset
+
+的坐标变换矩阵，则我们有
+\begin_inset Formula 
+\[
+\underline{\boldsymbol{u}}_{B}=\,{}^{B}\boldsymbol{X}_{A}\,\underline{\boldsymbol{u}}_{A}.
+\]
+
+\end_inset
+
+然而，如果
+\begin_inset Formula $\boldsymbol{\mathcal{B}}_{A}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\mathcal{B}}_{B}$
+\end_inset
+
+是
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+的基映射，则我们也有
+\begin_inset Formula 
+\[
+\underline{\boldsymbol{u}}_{B}=\boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{u}=\boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{\mathcal{B}}_{A}\,\underline{\boldsymbol{u}}_{A},
+\]
+
+\end_inset
+
+所以
+\begin_inset Formula 
+\[
+^{B}\boldsymbol{X}_{A}=\boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{\mathcal{B}}_{A}.
+\]
+
+\end_inset
+
+展开此方程得到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+^{B}\boldsymbol{X}_{A} & =\boldsymbol{\mathcal{B}}_{B}^{-1}\left[\begin{array}{ccc}
+\boldsymbol{b}_{A1} & \cdots & \boldsymbol{b}_{An}\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+\boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{b}_{A1} & \cdots & \boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{b}_{An}\end{array}\right];
+\end{align*}
+
+\end_inset
+
+但是
+\begin_inset Formula $\boldsymbol{\mathcal{B}}_{B}^{-1}\boldsymbol{b}_{Ai}$
+\end_inset
+
+只是在
+\begin_inset Formula $B$
+\end_inset
+
+坐标中表示
+\begin_inset Formula $\boldsymbol{b}_{Ai}$
+\end_inset
+
+的坐标向量，因此我们可以得出结论，
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}$
+\end_inset
+
+是一个方阵，其列是新的坐标系统中旧基向量的坐标。(这是一个标准结果。问题的关键点在于可以获得它的速度。)
+\end_layout
+
+\begin_layout Section
+空间向量与欧几里德向量之间的关系
+\end_layout
+
+\begin_layout Standard
+让我们检查空间向量和用于定义它的一对欧几里德向量之间的关系。如果我们将
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+划分为两个子基，
+\begin_inset Formula $\mathcal{D}_{O}^{rot}=\left\{ \boldsymbol{d}_{Ox},\boldsymbol{d}_{Oy},\boldsymbol{d}_{Oz}\right\} $
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{D}_{O}^{lin}=\left\{ \boldsymbol{d}_{x},\boldsymbol{d}_{y},\boldsymbol{d}_{z}\right\} $
+\end_inset
+
+，则方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以写成如下：
+\begin_inset Formula 
+\begin{align}
+\hat{\boldsymbol{v}} & =\boldsymbol{\mathcal{D}}_{O}^{rot}\underline{\boldsymbol{\omega}}+\boldsymbol{\mathcal{D}}_{O}^{lin}\underline{\boldsymbol{v}}_{O}\nonumber \\
+ & =\boldsymbol{\mathcal{D}}_{O}^{rot}\boldsymbol{\mathcal{C}}^{-1}\boldsymbol{\omega}+\boldsymbol{\mathcal{D}}_{O}^{lin}\boldsymbol{\mathcal{C}}^{-1}\boldsymbol{v}_{O}\nonumber \\
+ & =\boldsymbol{Rot}_{O}^{\mathsf{M}}\boldsymbol{\omega}+\boldsymbol{Lin}^{\mathsf{M}}\boldsymbol{v}_{O},\label{eq:27}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Rot}_{O}^{\mathsf{M}}=\boldsymbol{\mathcal{D}}_{O}^{rot}\boldsymbol{\mathcal{C}}^{-1}=\boldsymbol{d}_{Ox}\boldsymbol{i\cdot}+\boldsymbol{d}_{Oy}\boldsymbol{j\cdot}+\boldsymbol{d}_{Oz}\boldsymbol{k\cdot}\label{eq:28}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Lin}^{\mathsf{M}}=\boldsymbol{\mathcal{D}}_{O}^{lin}\boldsymbol{\mathcal{C}}^{-1}=\boldsymbol{d}_{x}\boldsymbol{i\cdot}+\boldsymbol{d}_{y}\boldsymbol{j\cdot}+\boldsymbol{d}_{z}\boldsymbol{k\cdot}.\label{eq:29}
+\end{equation}
+
+\end_inset
+
+像
+\begin_inset Formula $\boldsymbol{d}_{Ox}\boldsymbol{i\cdot}$
+\end_inset
+
+这样的表达式是将欧几里德向量映射到空间运动向量的二元关系。
+\begin_inset Formula $\boldsymbol{d}_{Ox}\boldsymbol{i\cdot}$
+\end_inset
+
+将任意向量
+\begin_inset Formula $\boldsymbol{v}\in\mathsf{E}^{3}$
+\end_inset
+
+映射到
+\begin_inset Formula $\boldsymbol{d}_{Ox}(\boldsymbol{i}\boldsymbol{\cdot}\boldsymbol{v})=\boldsymbol{d}_{Ox}v_{x}\in\mathsf{M}^{6}$
+\end_inset
+
+，以此类推。因此，算子
+\begin_inset Formula $\boldsymbol{Rot}_{O}^{\mathsf{M}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+都是并矢(二元关系之和)。
+\begin_inset Formula $\boldsymbol{Rot}_{O}^{\mathsf{M}}$
+\end_inset
+
+将欧几里德向量映射到围绕通过
+\begin_inset Formula $O$
+\end_inset
+
+的轴的纯旋转集合；
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+将欧几里德向量映射到纯平移集合。可以看出，
+\begin_inset Formula $\boldsymbol{Rot}_{O}^{\mathsf{M}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+都与产生基
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+的坐标帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+的方向无关。此外，
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+也与
+\begin_inset Formula $O$
+\end_inset
+
+的位置无关。因此，
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+是一个不变量张量，而
+\begin_inset Formula $\boldsymbol{Rot}_{O}^{\mathsf{M}}$
+\end_inset
+
+仅取决于
+\begin_inset Formula $O$
+\end_inset
+
+的位置。
+\end_layout
+
+\begin_layout Standard
+可以对动力向量执行类似的分析：
+\begin_inset Formula 
+\begin{align}
+\hat{\boldsymbol{f}} & =\boldsymbol{\mathcal{E}}_{O}^{rot}\underline{\boldsymbol{n}}_{O}+\boldsymbol{\mathcal{E}}_{O}^{lin}\underline{\boldsymbol{f}}\nonumber \\
+ & =\boldsymbol{\mathcal{E}}_{O}^{rot}\boldsymbol{\mathcal{C}}^{-1}\boldsymbol{n}_{O}+\boldsymbol{\mathcal{E}}_{O}^{lin}\boldsymbol{\mathcal{C}}^{-1}\boldsymbol{f}\nonumber \\
+ & =\boldsymbol{Rot}^{\mathsf{F}}\boldsymbol{n}_{O}+\boldsymbol{Lin}_{O}^{\mathsf{F}}\boldsymbol{f},\label{eq:30}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Rot}^{\mathsf{F}}=\boldsymbol{e}_{x}\boldsymbol{i\cdot}+\boldsymbol{e}_{y}\boldsymbol{j\cdot}+\boldsymbol{e}_{z}\boldsymbol{k\cdot}\label{eq:31}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{Lin}_{O}^{\mathsf{F}}=\boldsymbol{e}_{Ox}\boldsymbol{i\cdot}+\boldsymbol{e}_{Oy}\boldsymbol{j\cdot}+\boldsymbol{e}_{Oz}\boldsymbol{k\cdot}.\label{eq:32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+描述为
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的角度和线性分量是不准确的。然而，可以把它们看作由基张量
+\begin_inset Formula $\boldsymbol{Rot}_{O}^{\mathsf{M}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{Lin}^{\mathsf{M}}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{Rot}^{\mathsf{F}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{Lin}_{O}^{\mathsf{F}}$
+\end_inset
+
+定义的坐标系统中
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的向量-值坐标。
+\end_layout
+
+\begin_layout Standard
+总之，从
+\begin_inset Formula $\mathsf{E}^{3}\times\mathsf{E}^{3}$
+\end_inset
+
+到
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+或
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的映射由一对并矢张量完成，其中一个是不变量，而另一个是参考点位置
+\begin_inset Formula $O$
+\end_inset
+
+的函数，在指定两个欧几里德向量时使用。
+\end_layout
+
+\begin_layout Section
+微分
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\boldsymbol{u}(t)$
+\end_inset
+
+是实变量
+\begin_inset Formula $t$
+\end_inset
+
+的向量-值的可微函数。
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+对
+\begin_inset Formula $t$
+\end_inset
+
+的导数本身就是一个向量，并给出为
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{d}t}\boldsymbol{u}(t)=\lim_{\delta t\rightarrow0}\frac{\boldsymbol{u}(t+\delta t)-\boldsymbol{u}(t)}{\delta t}.\label{eq:33}
+\end{equation}
+
+\end_inset
+
+该方程对任意变量
+\begin_inset Formula $t$
+\end_inset
+
+都有效；但我们将在下面假设
+\begin_inset Formula $t$
+\end_inset
+
+标志时间，并且我们将使用标准的点符号表示时间导数(
+\begin_inset Formula $\mathrm{d}\boldsymbol{u}/\mathrm{d}t=\dot{\boldsymbol{u}}$
+\end_inset
+
+，等等)。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)适用于所有向量，包括坐标向量。因此，坐标向量的导数是其分量形式的导数：
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+u_{1}(t)\\
+\vdots\\
+u_{n}(t)
+\end{array}\right]=\lim_{\delta t\rightarrow0}\frac{1}{\delta t}\left[\begin{array}{c}
+u_{1}(t+\delta t)-u_{1}(t)\\
+\vdots\\
+u_{n}(t+\delta t)-u_{n}(t)
+\end{array}\right]=\left[\begin{array}{c}
+\dot{u}_{1}\\
+\vdots\\
+\dot{u}_{n}
+\end{array}\right].\label{eq:34}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+是
+\begin_inset Formula $U$
+\end_inset
+
+上的一个基，并设
+\begin_inset Formula $\underline{\boldsymbol{u}}$
+\end_inset
+
+是在
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+坐标中表示向量
+\begin_inset Formula $\boldsymbol{u}\in U$
+\end_inset
+
+的坐标向量。
+\begin_inset Formula $\underline{\boldsymbol{u}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+的导数分别是
+\begin_inset Formula $\underline{\dot{\boldsymbol{u}}}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{u}}$
+\end_inset
+
+，但在
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+中表示
+\begin_inset Formula $\dot{\boldsymbol{u}}$
+\end_inset
+
+的坐标向量是
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{u}}$
+\end_inset
+
+。
+\begin_inset Formula $\underline{\dot{\boldsymbol{u}}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{u}}$
+\end_inset
+
+之间的关系给出为
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{u}} & =\boldsymbol{\mathcal{B}}^{-1}\left(\frac{\mathrm{d}}{\mathrm{d}t}\left(\boldsymbol{\mathcal{B}}\underline{\boldsymbol{u}}\right)\right)\nonumber \\
+ & =\boldsymbol{\mathcal{B}}^{-1}\left(\boldsymbol{\mathcal{B}}\underline{\dot{\boldsymbol{u}}}+\dot{\boldsymbol{\mathcal{B}}}\underline{\boldsymbol{u}}\right)\nonumber \\
+ & =\underline{\dot{\boldsymbol{u}}}+\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{\mathcal{B}}}\underline{\boldsymbol{u}}.\label{eq:35}
+\end{align}
+
+\end_inset
+
+这是移动坐标系统中微分的一般公式。如果坐标系统是静止的，则
+\begin_inset Formula $\dot{\boldsymbol{\mathcal{B}}}=\boldsymbol{0}$
+\end_inset
+
+并且
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{u}}=\underline{\dot{\boldsymbol{u}}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+展开
+\begin_inset Formula $\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{\mathcal{B}}}$
+\end_inset
+
+项，给出为
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{\mathcal{B}}^{-1}\dot{\boldsymbol{\mathcal{B}}} & =\boldsymbol{\mathcal{B}}^{-1}\left[\begin{array}{ccc}
+\dot{b}_{1} & \cdots & \dot{b}_{n}\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+\boldsymbol{\mathcal{B}}^{-1}\dot{b}_{1} & \cdots & \boldsymbol{\mathcal{B}}^{-1}\dot{b}_{n}\end{array}\right],
+\end{aligned}
+\]
+
+\end_inset
+
+这是一个方阵，其列是基向量导数的坐标。有三种特殊情况特别令人感兴趣。如果
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+、
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+是从以
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+速度(坐标向量
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}=\left[\begin{array}{cc}
+\underline{\boldsymbol{\omega}}^{\mathrm{T}} & \underline{\boldsymbol{v}}_{O}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+)移动的坐标帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+导出的正交基和Plücker基，则
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{C}}^{-1}\dot{\boldsymbol{\mathcal{C}}}=\underline{\boldsymbol{\omega}}\times,\label{eq:36}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\boldsymbol{\mathcal{D}}}_{O}=\underline{\hat{\boldsymbol{v}}}_{O}\times=\left[\begin{array}{cc}
+\underline{\boldsymbol{\omega}}\times & \boldsymbol{0}\\
+\underline{\boldsymbol{v}}_{O}\times & \underline{\boldsymbol{\omega}}\times
+\end{array}\right]\label{eq:37}
+\end{equation}
+
+\end_inset
+
+和
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{E}}_{O}^{-1}\dot{\boldsymbol{\mathcal{E}}}_{O}=\underline{\hat{\boldsymbol{v}}}_{O}\times^{*}=\left[\begin{array}{cc}
+\underline{\boldsymbol{\omega}}\times & \underline{\boldsymbol{v}}_{O}\times\\
+\boldsymbol{0} & \underline{\boldsymbol{\omega}}\times
+\end{array}\right],\label{eq:38}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\underline{\boldsymbol{\omega}}\times$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵，该矩阵将3D坐标向量
+\begin_inset Formula $\underline{\boldsymbol{u}}$
+\end_inset
+
+映射到叉积
+\begin_inset Formula $\underline{\boldsymbol{\omega}}\times\underline{\boldsymbol{u}}$
+\end_inset
+
+，并且
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}\times$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}\times^{*}$
+\end_inset
+
+是类似的空间-向量算子。
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}\times$
+\end_inset
+
+将一个运动向量映射到一个运动向量，而
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}\times^{*}$
+\end_inset
+
+将一个动力向量映射到一个动力向量。
+\begin_inset Formula $\underline{\boldsymbol{\omega}}\times$
+\end_inset
+
+由公式给出为
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{l}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]\times=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right].\label{eq:39}
+\end{equation}
+
+\end_inset
+
+对于上述三种特殊情况，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)变为
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\mathcal{C}}^{-1}\dot{\boldsymbol{v}} & =\underline{\boldsymbol{v}}+\underline{\boldsymbol{\omega}}\times\underline{\boldsymbol{v}},\label{eq:40}\\
+\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\hat{\boldsymbol{m}}} & =\underline{\dot{\hat{\boldsymbol{m}}}}+\underline{\hat{\boldsymbol{v}}}_{O}\times\underline{\hat{\boldsymbol{m}}}\label{eq:41}
+\end{align}
+
+\end_inset
+
+和
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{E}}_{O}^{-1}\dot{\hat{\boldsymbol{f}}}=\underline{\dot{\hat{\boldsymbol{f}}}}+\underline{\hat{\boldsymbol{v}}}_{O}\times^{*}\underline{\boldsymbol{f}},\label{eq:42}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+、
+\begin_inset Formula $\hat{\boldsymbol{m}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+分别标志
+\begin_inset Formula $\mathsf{E}^{3}$
+\end_inset
+
+、
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的一般元素。除了使用基映射符号外，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:40"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是一个标准结果，可以在许多教科书中找到。观察到，我们只能使用一种微分算子来处理这个问题，而不是通常使用的两种微分算子。这是因为基映射符号为我们提供了一个“表示.
+ .
+ .的坐标向量”的符号。
+\end_layout
+
+\begin_layout Section
+加速度
+\end_layout
+
+\begin_layout Standard
+关于
+\begin_inset Formula $O$
+\end_inset
+
+点的速度还没有说过。
+\begin_inset Formula $O$
+\end_inset
+
+点的作用是指定一个测量某物的点，或者某物通过的点。因此，像
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{d}_{Ox}$
+\end_inset
+
+等量都取决于
+\begin_inset Formula $O$
+\end_inset
+
+点的位置，而不取决于其速度。因此，在不影响空间向量定义的情况下，可以将任意期望的速度指定给
+\begin_inset Formula $O$
+\end_inset
+
+点。然而，如果
+\begin_inset Formula $O$
+\end_inset
+
+点的速度不为零，则
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}_{O}$
+\end_inset
+
+是移动的基，并且在区分空间向量时必须考虑这一点。
+\end_layout
+
+\begin_layout Standard
+回到图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+，假设我们让
+\begin_inset Formula $O$
+\end_inset
+
+跟踪移动物体中的一个点，因此这两个点就永久重合。物体的速度仍然由两个欧几里德向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+来表征；它仍然有一个空间速度
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+，如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)所定义；并且
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+仍将在
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+坐标中由其坐标向量
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{O}$
+\end_inset
+
+表示，如在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所定义的。然而，
+\begin_inset Formula $O$
+\end_inset
+
+本身现在有一个
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+的速度，并且
+\begin_inset Formula $Oxyz$
+\end_inset
+
+也是如此。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\hat{\boldsymbol{v}}_{Oxyz}$
+\end_inset
+
+标志坐标帧的空间速度，并且设
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{Oxyz}$
+\end_inset
+
+是在
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+坐标中表示
+\begin_inset Formula $\hat{\boldsymbol{v}}_{Oxyz}$
+\end_inset
+
+的坐标向量。如果我们设置坐标帧的角速度为零，则
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}_{Oxyz}=\left[\begin{array}{cc}
+\underline{\boldsymbol{0}}^{\mathrm{T}} & \underline{\boldsymbol{v}}_{O}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+刚体的加速度只是其速度的时间导数。因此，图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中物体的空间加速度为
+\begin_inset Formula $\dot{\hat{\boldsymbol{v}}}$
+\end_inset
+
+，在
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+坐标中表示其加速度的坐标向量为
+\begin_inset Formula $\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\hat{\boldsymbol{v}}}$
+\end_inset
+
+。我们可以直接从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中获得
+\begin_inset Formula $\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\hat{\boldsymbol{v}}}$
+\end_inset
+
+的表达式，如下所示：
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\hat{\boldsymbol{v}}} & =\dot{\hat{\boldsymbol{v}}}_{O}+\underline{\hat{\boldsymbol{v}}}_{Oxyz}\times\underline{\hat{\boldsymbol{v}}}_{O}\nonumber \\
+ & =\left[\begin{array}{c}
+\underline{\dot{\boldsymbol{\omega}}}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right]+\left[\begin{array}{c}
+\underline{\boldsymbol{0}}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right]\times\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right]\nonumber \\
+ & =\left[\begin{array}{c}
+\underline{\dot{\boldsymbol{\omega}}}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right]+\left[\begin{array}{c}
+\underline{\boldsymbol{0}}\\
+\underline{\boldsymbol{v}}_{O}\times\underline{\boldsymbol{\omega}}
+\end{array}\right].\label{eq:43}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在经典教科书处理中，刚体的加速度通常由角加速度向量
+\begin_inset Formula $\dot{\boldsymbol{\omega}}$
+\end_inset
+
+和选定的物体固连点的线加速度
+\begin_inset Formula $\ddot{\boldsymbol{r}}$
+\end_inset
+
+定义，该点的位置由
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+给出。如果我们将
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+定义为
+\begin_inset Formula $O$
+\end_inset
+
+相对于某个固定基准点的位置，则
+\begin_inset Formula $\underline{\boldsymbol{v}}_{O}=\underline{\dot{\boldsymbol{r}}}$
+\end_inset
+
+且
+\begin_inset Formula $\underline{\dot{\boldsymbol{v}}}_{O}=\underline{\ddot{\boldsymbol{r}}}$
+\end_inset
+
+，并且方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)变为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\mathcal{D}}_{O}^{-1}\dot{\hat{\boldsymbol{v}}}=\left[\begin{array}{c}
+\underline{\dot{\boldsymbol{\omega}}}\\
+\underline{\ddot{\boldsymbol{r}}}
+\end{array}\right]+\left[\begin{array}{c}
+\underline{\boldsymbol{0}}\\
+\underline{\dot{\boldsymbol{r}}}\times\underline{\boldsymbol{\omega}}
+\end{array}\right].\label{eq:44}
+\end{equation}
+
+\end_inset
+
+右侧的第一项是刚体加速度经典描述中使用的两个向量的串联。由于这个原因，它有时被称为经典的或传统的加速度向量，以便将其与空间加速度区分开来。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中可以看出，经典加速度向量与空间加速度的不同之处在于
+\begin_inset Formula $\left[\begin{array}{cc}
+\underline{\boldsymbol{0}}^{\mathrm{T}} & \left(\underline{\boldsymbol{v}}_{O}\times\underline{\boldsymbol{\omega}}\right)^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+项，这可归因于帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+的线速度。此外，经典加速度向量是空间速度向量在Plücker坐标系统中的分量导数，该坐标系统以
+\begin_inset Formula $\left[\begin{array}{cc}
+\underline{\boldsymbol{0}}^{\mathrm{T}} & \underline{\boldsymbol{v}}_{O}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+的速度移动。这与文献[5]中报告的结果基本相同。
+\end_layout
+
+\begin_layout Standard
+如果没有Plücker基的帮助，这可能会产生以下错误论点：“欧几里德向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{r}}$
+\end_inset
+
+定义刚体的速度；坐标向量
+\begin_inset Formula $\underline{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\dot{\boldsymbol{r}}}$
+\end_inset
+
+在基
+\begin_inset Formula $\mathcal{C}=\left\{ \boldsymbol{i},\boldsymbol{j},\boldsymbol{k}\right\} $
+\end_inset
+
+中表示
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{r}}$
+\end_inset
+
+，这是不变量(因为
+\begin_inset Formula $Oxyz$
+\end_inset
+
+不旋转)；因此
+\begin_inset Formula $\underline{\dot{\boldsymbol{\omega}}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\ddot{\boldsymbol{r}}}$
+\end_inset
+
+是表示
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{r}}$
+\end_inset
+
+的导数的坐标向量；所以
+\begin_inset Formula $\left[\begin{array}{cc}
+\underline{\dot{\boldsymbol{\omega}}}^{\mathrm{T}} & \underline{\ddot{\boldsymbol{r}}}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+是代表加速度的坐标向量。”当我们引入Plücker基时，这个论点中的缺陷就显而易见了：从Plücker坐标到空间速度向量的映射是由基
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+定义的，而不是
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+，并且如果
+\begin_inset Formula $O$
+\end_inset
+
+的速度不为零，则
+\begin_inset Formula $\mathcal{D}_{O}$
+\end_inset
+
+是一个时变坐标系统，并且在执行微分时必须考虑到这一点。
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+本文介绍了Plücker基的概念，以及一种算子符号，以明确表达一个基如何将坐标向量映射到它所表示的向量。利用这些工具，本文解释了以下内容：空间向量和定义它们的3
+-D向量对之间的精确关系；在移动的Plücker坐标系统中区分空间向量的正确方法；以及为什么刚体加速度的经典描述不是空间速度的导数。
+\end_layout
+
+\begin_layout Standard
+虽然本文是用空间向量的语言编写的，但这里报告的结果通常适用于任意以Plücker坐标表示的6-D向量。
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+E.
+ J.
+ Baker and K.
+ Wohlhart.
+ Motor Calculus: A New Theoretical Device for Mechanics.
+ Graz, Austria: Institute for Mechanics, TU Graz, 1996.
+ (English translation of [8] and [9].) 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ S.
+ Ball.
+ A Treatise on the Theory of Screws.
+ London: Cambridge University Press, 1900.
+ Republished 1998.
+ 
+\end_layout
+
+\begin_layout Enumerate
+L.
+ Brand.
+ Vector and Tensor Analysis, 4th ed.
+ New York/London: Wiley/Chapman and Hall, 1953.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone.
+ Robot Dynamics Algorithms.
+ Boston: Kluwer Academic Publishers, 1987.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone.
+ The Acceleration Vector of a Rigid Body.
+ Int.
+ J.
+ Robotics Research, 20(11): 841-846, 2001.
+ 
+\end_layout
+
+\begin_layout Enumerate
+O.
+ Khatib.
+ Inertial Properties in Robotic Manipulation: An Object-Level Framework.
+ Int.
+ J.
+ Robotics Research, 14(1):19-36, 1995.
+ 
+\end_layout
+
+\begin_layout Enumerate
+H.
+ Lipkin.
+ Time Derivatives of Screws with Applications to Dynamics and Stiffness.
+ Mechanism and Machine Theory, 40(3):259-273, 2005.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ von Mises.
+ Motorrechnung, ein neues Hilfsmittel der Mechanik [Motor Calculus: a New
+ Theoretical Device for Mechanics], Zeitschrift für Angewandte Mathematik
+ und Mechanik, 4(2):155-181, 1924.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ von Mises.
+ Anwendungen der Motorrechnung [Applications of the Motor Calculus], Zeitschrift
+ für Angewandte Mathematik und Mechanik, 4(3):193-213, 1924.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ M.
+ Murray, Z.
+ Li and S.
+ S.
+ Sastry.
+ A Mathematical Introduction to Robotic Manipulation.
+ Boca Raton, FL: CRC Press, 1994.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ Plücker.
+ Fundamental Views Regarding Mechanics.
+ Philosophical Transactions, 156:361-380, 1866.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ M.
+ Selig.
+ Geometrical Methods in Robotics.
+ New York: Springer, 1996.
+ 
+\end_layout
+
+\begin_layout Enumerate
+S.
+ Stramigioli and H.
+ Bruyninckx.
+ Geometry of Dynamic and Higher-Order Kinematic Screws.
+ Proc.
+ IEEE Int.
+ Conf.
+ Robotics and Automation, Seoul, Korea, pp.
+ 3344-3349, 2001.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Wohlhart.
+ Time Derivatives of the Velocity Motor.
+ Proc.
+ SYROM 2001, Bucharest, Romania, vol.
+ 2, pp.
+ 371-376, 2001.
+ 
+\end_layout
+
+\begin_layout Enumerate
+K.
+ Wohlhart.
+ Mises Derivatives of Motors and Motor Tensors.
+ Proc.
+ RoManSy 2002, Udine, Italy, pp.
+ 87-98, 2002.
+ 
+\end_layout
+
+\begin_layout Enumerate
+L.
+ S.
+ Woo and F.
+ Freudenstein.
+ Application of Line Geometry to Theoretical Kinematics and the Kinematic
+ Analysis of Mechanical Systems.
+ Journal of Mechanisms, 5:417-460, 1970.
+\end_layout
+
+\end_body
+\end_document

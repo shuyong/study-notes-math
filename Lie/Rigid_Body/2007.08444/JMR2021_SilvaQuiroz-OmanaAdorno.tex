@@ -1,0 +1,126 @@
+%!TEX TS-program = xelatex
+%\pdfoutput=1
+%% LyX 2.3.6.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[twocolumn,american,english,twocolumn, cleanfoot, cleanhead]{asme2e}
+\usepackage[fontset=founder]{ctex}
+\linespread{1.2}
+%\usepackage[T1]{fontenc}
+%\usepackage[latin1]{inputenc}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[xetex]{hyperref}
+\usepackage[xetex]{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%% The class has several options
+%  onecolumn/twocolumn - format for one or two columns per page
+%  10pt/11pt/12pt - use 10, 11, or 12 point font
+%  oneside/twoside - format for oneside/twosided printing
+%  final/draft - format for final/draft copy
+%  cleanfoot - take out copyright info in footer leave page number
+%  cleanhead - take out the conference banner on the title page
+%  titlepage/notitlepage - put in titlepage or leave out titlepage
+%  
+%% The default is oneside, onecolumn, 10pt, final
+
+\usepackage[xetex]{graphicx}
+\usepackage{import}
+\usepackage{makecell}
+\graphicspath{{Images/}}
+
+\newtheorem{lemma}{\normalfont\bfseries 引理}[section]
+
+\newtheorem{definition}[lemma]{\normalfont\bfseries 定义}
+
+\newtheorem{remark}{\normalfont\bfseries 备注}
+
+\usepackage{algorithm,algpseudocode}
+\algnewcommand{\LineComment}[1]{\State \(\triangleright\) #1}
+%\renewcommand{\algorithmicindent}{1em}
+
+%\newcounter{savefootnote}
+%\newcounter{symfootnote}
+%\newcommand{\symfootnote}[1]{%
+%   \setcounter{savefootnote}{\value{footnote}}%
+%   \setcounter{footnote}{\value{symfootnote}}%
+%   \ifnum\value{footnote}>8\setcounter{footnote}{0}\fi%
+%   \let\oldthefootnote=\thefootnote%
+%   \renewcommand{\thefootnote}{\fnsymbol{footnote}}%
+%   \footnote{#1}%
+%   \let\thefootnote=\oldthefootnote%
+%   \setcounter{symfootnote}{\value{footnote}}%
+%   \setcounter{footnote}{\value{savefootnote}}%
+%}
+\definecolor{BLUE}{RGB}{0,0,255}
+\usepackage{caption}
+
+\setlength{\tabcolsep}{0pt}
+
+\makeatother
+
+%\usepackage{babel}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\begin{document}
+\input{macros.tex}
+
+\input{LP_macros.tex}
+\title{\textbf{使用对偶四元数代数的移动机械臂动力学}}
+\author{$\begin{array}{cc}
+\text{\textbf{Frederico} \textbf{Fernandes} \textbf{Afonso} \textbf{Silva},}^{\dagger}\,\text{\textbf{Juan} \textbf{Jos}}\acute{\text{\textbf{e}}}\,\text{\textbf{Quiroz}-\textbf{Oma}}\tilde{\text{\textbf{n}}}\text{\textbf{a},}^{\ddagger} & \quad\text{\textbf{Bruno} \textbf{Vilhena} \textbf{Adorno}}\\
+\text{Graduate Program in Electrical Engineering} & \quad\text{Department of Electrical and Electronic Engineering}\\
+\text{Federal University of Minas Gerais (UFMG)} & \quad\text{The University of Manchester}\\
+\text{Av. Ant\^{o}nio Carlos 6627, 31270-901, Belo Horizonte-MG, Brazil} & \quad\text{Sackville Street, Manchester M13 9PL, United Kingdom}\\
+\text{Email: fredf.afonso@gmail.com,}^{\dagger}\,\text{juanjqogm@gmail.com}^{\ddagger} & \quad\text{Email: bruno.adorno@manchester.ac.uk}
+\end{array}$}
+\maketitle
+\begin{abstract}
+本文提出了两种使用对偶四元数代数求解移动机械臂动力学方程的方法。第一种是基于一般递归牛顿-欧拉公式，并使用运动旋量和动力旋量，通过高级代数运算传播，适用于任意类型的关节和任意参数化。第二种方法是基于高斯最小约束原理(Gauss's Principle of Least Constraint, GPLC)，包含任意等式约束。除了展示GPLC与Gibbs-Appell和Kane的方程的联系，我们还使用它来建模非完整移动机械臂。我们当前的公式比现有技术中的同类公式更通用，尽管GPLC在计算上更昂贵，并且仿真结果表明它们与经典的递归牛顿-欧拉算法一样精确。
+
+\textbf{Keywords: }Mobile Manipulator Dynamics, Dual Quaternion Algebra,
+Newton-Euler Model, Gauss's Principle of Least Constraint, Euler-Lagrange
+Equations, Gibbs-Appell Equations, Kane's Equations.
+\end{abstract}
+
+\input{introduction.tex}
+
+\input{mathematical_preliminaries.tex}
+
+\input{newton_euler.tex}
+
+\input{GaussPrinciple.tex}
+
+\input{results.tex}
+
+\input{conclusion.tex}
+
+\section*{Acknowledgment}
+
+This work was supported by the Brazilian agencies CAPES, CNPq (424011/2016-6
+and 303901/2018-7), and by the INCT (National Institute of Science
+and Technology) under the grant CNPq (Brazilian National Research
+Council) 465755/2014-3.
+
+We would like to thank our colleague Ana Christine de Oliveira for
+providing us with the MATLAB implementation of the CMC used in Section~\ref{sec:Results}.
+
+%\bibliographystyle{asme-latex-unified/asmems4}
+\bibliographystyle{asmems4}
+\bibliography{AnalyticalDynamics,JMR-2019-Gauss,SumsofPowers,UK,Gibbs-Appell,gibbs_vs_appell,NumericalSolvers,Fierro_Lewis,JMR-2019}
+
+\end{document}

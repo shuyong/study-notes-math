@@ -1,0 +1,75 @@
+
+\section{\normalfont\bfseries 结果 \label{sec:Results}}
+
+为了评估对偶四元数牛顿-欧拉形式(dual quaternion Newton-Euler, dqNE)和使用对偶四元数高斯最小约束原理(dual quaternion Gauss's Principle, dqGP)得到的欧拉-拉格朗日模型，我们使用三个不同的机器人进行了仿真；即一个固定基座 $50$ 自由度串联机械手、一个 $9$ 自由度完整移动机械臂和一个 $8$ 自由度非完整移动机械臂。
+
+我们在机器人模拟器 ${\text{V-REP PRO EDU V3.6.2}}$ 上\footnote{可在以下网址获得: https://www.coppeliarobotics.com/}进行了模拟，其使用 Matlab 2020a 接口和对偶四元数代数计算库DQ Robotics \cite{AdornoDQRobotics2020}，运行在Ubuntu 18.04 LTS 64 位(配备Intel Core i7 6500U和8GB RAM)的计算机上。 
+
+此外，我们给出了所提议方法的计算成本，并将其与各自的经典方法进行了比较。
+
+\subsection{\normalfont\bfseries 模拟设置}
+
+考虑到波形之间的多重相关系数(coefficient of multiple correlation, CMC) \cite{Ferrari2010}，通过我们提出的模型获得的广义加速度与来自V-REP的值之间进行了比较。CMC提供介于0和1之间的系数，指示两个给定波形的相似程度。相同波形的CMC等于1，而完全不同的波形的CMC等于0。
+
+模拟器不允许直接读取加速度。因此，为了获得位形加速度向量 $\ddot{\myvec q}$，我们首先读取速度向量 $\dot{\myvec q}\in\mathbb{R}^{n_{\ell}+3}$，然后使用离散低通Butterworth滤波器过滤所有元素 $\dot{q}_{1},\ldots,\dot{q}_{n_{\ell}+3}$，并使用这些值通过数值微分方法以获得加速度，该方法基于一个第二次正向有限差分近似的算法。然后，我们计算了广义加速度波形的每个元素 $\ddot{q}_{i}$，其中$i\in\{1,\ldots,n_{\ell}+3\}$，并计算与V-REP的对应元素之间的CMC。之后，我们使用这些CMC获得模型的平均值、最小值和最大值以及它们的标准偏差。
+
+此外，对于固定基座 $50$ 自由度串联机械臂的模拟，我们还使用了Robotics Toolbox \cite{Corke2017} 以实现的经典的递归牛顿-欧拉算法(recursive Newton-Euler, rtNE)，并计算了它产生的关节加速度波形与V-REP产生的关节加速度波形之间的CMC。\footnote{在本例中，我们使用 Vortex Studio 引擎 (www.cm-labs.com)，因为它为 $50$ 自由度机械臂提供了更好的数值稳定性。}机器人工具箱是一个广泛使用的软件库，其准确性多年来一直得到验证。因此，它是评估通过使用我们的模型获得的CMC的适当基准。
+
+\subsection{\normalfont\bfseries 结果}
+
+表~\ref{tab:cmc} 显示了通过不同动力学模型策略 (dqNE, dqGP, and rtNE) 获得的广义加速度波形与从V-REP获得的值之间的 CMC。
+
+所提议的对偶四元数牛顿-欧拉形式不允许在模型中包含等式约束；因此，它不适用于非完整移动机械臂的动力学建模。同样，当前版本的Robotics Toolbox仅支持固定基座机器人的动力学建模，仅适用于 $50$ 自由度串联机械臂。使用所列策略无法获得模型的情况如表~\ref{tab:cmc} 所示，用 N/A 表示，(即，不可用)即不可用。对于所有其他情况，所有模型的平均值 ($\mathrm{mean}$) 和最小值 ($\mathrm{min}$) 的CMC接近1，具有小的标准偏差 ($\mathrm{std}$) 和高的最大值 $\left(\mathrm{max}\right)$ 的 CMC；由此表明，由它们得到的广义加速度波形与来自V-REP的值具有高度的相似性。
+
+\begin{table*}[t]
+\caption{通过不同动力学模型策略获得的关节加速度波形与通过V-REP获得的值之间的CMC。越接近1，波形越相似。\label{tab:cmc}}
+
+\centering{}{\small{}}%
+\begin{tabular}{cc|cccc|cccc|cccc}
+\hline 
+ & \multicolumn{1}{c}{} & \multicolumn{4}{c}{{\small{}\hspace{1mm}$50$自由度串联机械臂}} & \multicolumn{4}{c}{{\small{}$9$自由度完整移动机械臂}} & \multicolumn{4}{c}{{\small{}~~$8$自由度非完整移动机械臂~~}}\tabularnewline
+\hline 
+{\small{}~~~~~Method~~~~~} &  & {\small{}\hspace{4mm}min\hspace{4mm}} & {\small{}\hspace{4mm}mean\hspace{4mm}} & {\small{}\hspace{4mm}std\hspace{4mm}} & {\small{}\hspace{4mm}max\hspace{4mm}} & {\small{}\hspace{4mm}min\hspace{4mm}} & {\small{}\hspace{4mm}mean\hspace{4mm}} & {\small{}\hspace{4mm}std\hspace{4mm}} & {\small{}\hspace{4mm}max\hspace{4mm}} & {\small{}\hspace{4mm}min\hspace{4mm}} & {\small{}\hspace{4mm}mean\hspace{4mm}} & {\small{}\hspace{4mm}std\hspace{4mm}} & {\small{}\hspace{4mm}max~~~~~}\tabularnewline
+\hline 
+\multicolumn{2}{c|}{{\small{}dqGP~~~}} & {\small{}$0.9044$} & {\small{}$0.9893$} & {\small{}$0.0182$} & {\small{}$0.9993$} & {\small{}$0.9934$} & {\small{}$0.9973$} & {\small{}$0.0026$} & {\small{}$0.9999$} & {\small{}$0.8860$} & {\small{}$0.9839$} & {\small{}$0.0368$} & {\small{}$0.9999$}\tabularnewline
+\multicolumn{2}{c|}{{\small{}dqNE~~~}} & {\small{}$0.9044$} & {\small{}$0.9893$} & {\small{}$0.0182$} & {\small{}$0.9993$} & {\small{}$0.9938$} & {\small{}$0.9977$} & {\small{}$0.0022$} & {\small{}$0.9999$} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A}\tabularnewline
+\multicolumn{2}{c|}{{\small{}rtNE~~}} & {\small{}$0.9044$} & {\small{}$0.9893$} & {\small{}$0.0182$} & {\small{}$0.9993$} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A} & {\small{}N/A}\tabularnewline
+\hline 
+\end{tabular}{\small\par}
+\end{table*}
+
+对于 $50$自由度串联机械臂，dqNE和dqGP均等效于rtNE，这证明了与经典的牛顿-欧拉方法相比，我们所提议的策略的准确性。
+
+对于定性分析，图~\ref{fig:joint_acc_nonholonomic_jaco} 显示了在模拟过程中发现的最小、最大和中间的CMC时，使用dqGP获得的广义加速度，以及V-REP的值。即使对于CMC的最小值(即0.8860)，使用我们的公式获得的加速度也与V-REP的值非常匹配。小的差异产生于两个原因，一是离散化效应，二是因为V-REP中的加速度从有噪声的速度值估计。
+
+\begin{figure}[t]
+\begin{centering}
+{\Huge{}\resizebox{0.93\columnwidth}{!}{\input{Images/results_accel/joint_acc_nonholonomic_jaco.pdf_tex}}}{\Huge\par}
+\par\end{centering}
+\caption{$8$自由度非完整移动机械臂产生的广义加速度波形。实线曲线对应于V-REP值，而点划线曲线对应于使用dqGP分别获得的第一个 ($\text{CMC}=0.8860$)、第九个 ($\text{CMC}=0.9999$)和第五个 ($\text{CMC}=0.9922$) 关节的广义加速度波形值。\label{fig:joint_acc_nonholonomic_jaco}}
+\end{figure}
+
+
+\subsection{\normalfont\bfseries 计算成本}
+
+在这里，我们将所提议的方法与经典方法在每种技术中涉及的乘法和加法的数量方面进行比较。其结果，考虑了 \emph{n} 自由度的串行机器人，汇总在表~\ref{tab:summary_cost_table-1} 中。对于经典的牛顿-欧拉算法，我们考虑 Luh 等人 \cite{Luh1980} 提出的基于三维向量的版本，其数学成本由 Balafoutis \cite{Balafoutis1994} 计算，并且据我们所知，这是文献中最有效的实现之一。此外，对于经典的欧拉-拉格朗日算法，我们考虑的是由 Hollerbach \cite{Hollerbach1980} 所提出的版本。
+
+\begin{table*}[t]
+\noindent \centering{}\caption{对于 \emph{n} 自由度串联机器人，对于所获得的动力学模型，所提议的方法与经典方法的成本比较。
+\label{tab:summary_cost_table-1}}
+{\small{}}%
+\begin{tabular*}{1\textwidth}{@{\extracolsep{\fill}}lcc}
+\hline 
+{\small{}方法} & {\small{}乘法数量} & {\small{}加法数量}\tabularnewline
+\hline 
+{\small{}\makecell[l]{对偶四元数牛顿-欧拉算法 \\(对于任意关节的成本)}} & {\small{}$882n-48$} & {\small{}$724n-40$}\tabularnewline
+{\small{}经典牛顿-欧拉算法 \cite{Balafoutis1994}} & {\small{}$150n-48$} & {\small{}$131n-48$}\tabularnewline
+{\small{}\makecell[l]{对偶四元数欧拉-拉格朗日算法 \\使用高斯最小约束原理}} & \multirow{1}{*}{{\small{}$4n^{3}+386n^{2}+401n$}} & \multirow{1}{*}{{\small{}$\frac{16}{3}n^{3}+326n^{2}+\frac{908}{3}n$}}\tabularnewline
+{\small{}经典欧拉-拉格朗日算法 \cite{Hollerbach1980}} & \multirow{1}{*}{{\small{}$412n-277$}} & \multirow{1}{*}{{\small{}$320n-201$}}\tabularnewline
+\hline 
+\end{tabular*}
+\end{table*}
+
+Luh等人 \cite{Luh1980} 提出的算法比我们的对偶四元数牛顿-欧拉算法成本更低。然而，我们提出的方法的成本是相当保守的，并且是作为一个上限给出的。例如，我们的计算可以通过探索一些事实来进一步优化，其中有几个运算涉及纯对偶四元数，可由八个元素改为六个元素。此外，Balafoutis \cite{Balafoutis1994} 提出的成本不包括获取机器人运动学模型的成本。另外，我们的方法适用于\textbf{任意}类型的关节，并且我们没有优化任意特定类型关节的计算，这与Luh等人 \cite{Luh1980} 不同，他们只考虑了棱柱关节和旋转关节，这被利用以优化计算成本。尽管如此，我们的算法和Luh等人的算法都在自由度数量上具有线性成本，其系数的数量级都相同。
+
+基于高斯最小约束原则的欧拉-拉格朗日方法，与基于基于牛顿-欧拉和经典欧拉-拉格朗日的方法相比，成本更高，正如预期的那样，因为它不是基于递归策略的。然而，这种策略允许考虑加速度中的附加约束，例如，在非完整机器人系统中可以利用。对于这些情况，欧拉-拉格朗日动力学方程由方程  \eqref{eq:FinalGaussUK} 给出。

@@ -1,0 +1,263 @@
+
+\section{\normalfont\bfseries 高斯最小约束原理\label{sec:Gauss-Principle}}
+
+GPLC \cite{Kalaba1993} 是一个微分变分原理，相当于达朗贝尔原理，它基于加速度的变化。对于一个由 $n$ 个机体组成的系统，它可以被表述为最小二乘的最小化问题
+\begin{gather}
+\minim{}{\sum_{i=1}^{n}\frac{1}{2}\left(\myvec a_{c_{i}}-\bar{\myvec a}_{c_{i}}\right)^{T}\mymatrix{\Psi}_{c_{i}}\left(\myvec a_{c_{i}}-\bar{\myvec a}_{c_{i}}\right)},\label{eq:GaussPrinciple}
+\end{gather}
+其中 $\myvec a_{c_{i}}$ 和 $\bar{\myvec a}_{c_{i}}$ 分别是第 $i$ 个刚体在受约束和无约束条件下的质心加速度。此外，$\mymatrix{\Psi}_{c_{i}}\triangleq\mymatrix{\Psi}_{c_{i}}\left(\bar{\mymatrix{\mathbb{I}}}_{i},m_{i}\right)$ 封装了第 $i$ 个刚体的惯性参数，例如惯性张量 $\bar{\mymatrix{\mathbb{I}}}_{i}\in\mathbb{R}^{3\times3}$ 和质量 $m_{i}$。
+
+该原理已在机器人学中用于描述机器人操纵器的动力学 \cite{Bruyninckx2000a} 和刚体模拟 \cite{Redon2002}。Wieber \cite{Wieber2006} 使用GPLC推导出仿人机器人的拉格朗日动力学的解析表达式。Bouyarmane和Kheddar \cite{Bouyarmane2012} 通过处理自由浮动基座机械装置的任意参数化扩展了Wieber的工作。这允许使用旋转矩阵或单位四元数来表示自由浮动基座方向。在本节中，我们为铰接体重写了GPLC，类似于Wieber的公式 \cite{Wieber2006}，但使用对偶四元数代数。与Bouyarmane和Kheddar\cite{Bouyarmane2012}的表述相比，这允许更紧凑和统一的表述。
+
+首先，我们将受约束加速度方程 \eqref{eq:twist_dot_rec} 重写为关节速度和关节加速度向量的线性函数。这允许求解方程 \eqref{eq:GaussPrinciple} 的关节加速度，并因此，附加约束可被包括在优化公式中。然后，我们定义约束来建模非完整移动机械臂。与文献 \cite{Bouyarmane2012} 不同，我们不使用拉格朗日乘子。相反，我们应用了Udwadia-Kalaba的基本方程 \cite{FirdausE.UdwadiaandRobertE.Kalaba1992}，这是一种求解二次优化问题的更简单的方法，如方程 \eqref{eq:GaussPrinciple}。
+
+\subsection{\normalfont\bfseries 受约束加速度 $\protect\myvec a_{c_{i}}$\label{subsec:Constrained-acceleration}}
+
+考虑在图~\ref{fig:mobile_nDOF_robot} 中的机器人系统。该机器人是由几个刚体组成，它们之间通过关节相互制约\footnote{在这种情况下，既有完整约束，也有非完整约束。前者是运动链中相邻连杆之间的约束。后者是移动基座的约束。}。为了将第 $i$ 个质心的运动旋量明确地表达为其雅可比矩阵 $\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}$ 与关节速度向量 $\dot{\myvec q}\in\mathbb{R}^{n}$ 之间的线性组合，我们使用算子 $\vector_{8}:\mathcal{H}\to\mathbb{R}^{8}$，它将一个对偶四元数的系数映射为八维向量，\footnote{给定 $\dq h=h_{1}+\imi h_{2}+\imj h_{3}+\imk h_{4}+\dual\left(h_{5}+\imi h_{6}+\imj h_{7}+\imk h_{8}\right)$，
+$\vector_{8}\dq h=\begin{bmatrix}h_{1} & \cdots & h_{8}\end{bmatrix}^{T}$。}并且 $\hami +_{8}:\mathcal{H}\to\mathbb{R}^{8\times8}$，使得 $\vector_{8}\left(\dq h_{1}\dq h_{2}\right)=\hami +_{8}\left(\dq h_{1}\right)\vector_{8}\dq h_{2}$ \cite{Adorno2011}。因此，从方程 \eqref{eq:x_dot} 中我们获得 $\dq{\xi}_{0,c_{i}}^{c_{i}}=2\left(\dq x_{c_{i}}^{0}\right)^{*}\dot{\dq x}_{c_{i}}^{0}$，这意味着 $\vector_{8}\dq{\xi}_{0,c_{i}}^{c_{i}}=2\hami +_{8}\left(\dq x_{0}^{c_{i}}\right)\vector_{8}\dot{\dq x}_{c_{i}}^{0}$。
+
+因为 $\dq{\xi}_{0,c_{i}}^{c_{i}}\in\mathcal{H}_{p}$，$\vector_{8}\dq{\xi}_{0,c_{i}}^{c_{i}}$ 的第一个和第五个元素等于零，因此我们也使用算子 $\vector_{6}:\mathcal{H}_{p}\to\mathbb{R}^{6}$
+使得 $\vector_{6}\dq{\xi}_{0,c_{i}}^{c_{i}}\triangleq\bar{\mymatrix I}\vector_{8}\dq{\xi}_{0,c_{i}}^{c_{i}}$，
+这里
+\[
+\bar{\mymatrix I}\triangleq\begin{bmatrix}\myvec 0_{3\times1} & \mymatrix I_{3} & \myvec 0_{3\times1} & \myvec 0_{3\times3}\\
+\myvec 0_{3\times1} & \myvec 0_{3\times3} & \myvec 0_{3\times1} & \mymatrix I_{3}
+\end{bmatrix},
+\]
+其中 $\mymatrix I_{3}\in\mathbb{R}^{3\times3}$ 是特征向量，并且 $\mymatrix 0_{m\times n}\in\mathbb{R}^{m\times n}$ 是一个零矩阵。 此外，$\vector_{8}\dot{\dq x}_{c_{i}}^{0}=\mymatrix J_{\dq x_{c_{i}}^{0}}\dot{\myvec q}_{i}$，
+其中 $\dot{\myvec q}_{i}=\begin{bmatrix}\dot{q}_{1} & \cdots & \dot{q}_{i}\end{bmatrix}^{T}$,
+并且 $\mymatrix J_{\dq x_{c_{i}}^{0}}\in\mathbb{R}^{8\times i}$ 是以代数方式获得的雅可比矩阵 \cite{Adorno2011}。因此，
+\begin{align}
+\myvec{\nu}_{c_{i}}\triangleq\vector_{6}\dq{\xi}_{0,c_{i}}^{c_{i}} & =\underset{\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}}{\underbrace{\left[\begin{array}{cc}
+\bar{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}} & \myvec 0_{6\times(n-i)}\end{array}\right]}}\dot{\myvec q},\label{eq:ConstrainedVel}
+\end{align}
+其中 $\bar{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}=2\bar{\mymatrix I}\hami +_{8}\left(\dq x_{0}^{c_{i}}\right)\mymatrix J_{\dq x_{c_{i}}^{0}}\in\mathbb{R}^{6\times i}$。
+
+最后，第 $i$ 个质心的受约束加速度给出为
+\begin{align}
+\myvec a_{c_{i}} & \triangleq\vector_{6}\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}=\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}+\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q}.\label{eq:ConstrainedAcceleration}
+\end{align}
+
+我们回想方程 \eqref{eq:ConstrainedAcceleration} 等价于方程 \eqref{eq:twist_dot_rec}，因为牛顿-欧拉公式隐含地考虑了机体之间的连杆约束。
+
+\subsection{\normalfont\bfseries 无约束加速度 $\bar{\protect\myvec a}_{c_{i}}$}
+
+考虑 $\dq x_{c_{i}}^{0}=\quat r_{c_{i}}^{0}+(1/2)\dual\quat p_{0,c_{i}}^{0}\quat r_{c_{i}}^{0}$，其表示从 $\frame 0$ 到 $\frame{c_{i}}$ 的刚性运动，以及在无约束条件下第 $i$ 个机体在 $\frame{c_{i}}$ 处的运动旋量 $\overline{\dq{\xi}}_{0,c_{i}}^{c_{i}}$。从方程 \eqref{eq:twist_derivative_explicit_form}，无约束加速度明确地给出为
+\begin{align}
+\bar{\myvec a}_{c_{i}} & \triangleq\vector_{6}\dot{\overline{\dq{\xi}}}_{0,c_{i}}^{c_{i}}=\left[\begin{array}{c}
+\vector_{3}\dot{\quat{\omega}}_{0,c_{i}}^{c_{i}}\\
+\vector_{3}\left(\ddot{\quat p}_{0,c_{i}}^{c_{i}}+\dot{\quat p}_{0,c_{i}}^{c_{i}}\times\quat{\omega}_{0,c_{i}}^{c_{i}}\right)
+\end{array}\right],\label{eq.UnconstrainedAcceleration}
+\end{align}
+其中 $\vector_{3}:\mathbb{H}_{p}\to\mathbb{R}^{3}$ 使得 $\vector_{3}(a\imi+b\imj+c\imk)=\begin{bmatrix}a & b & c\end{bmatrix}^{T}$。
+尽管方程 \eqref{eq:ConstrainedAcceleration} 取决于 $\myvec q$，
+$\dot{\myvec q}$，以及 $\ddot{\myvec q}$， 但方程~\eqref{eq.UnconstrainedAcceleration} 不取决于它们，因为它是无约束的。
+
+\subsection{\normalfont\bfseries 欧拉-拉格朗日方程\label{subsec:Euler-Lagrange-equations}}
+
+设 $\mathcal{G}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)=\sum_{i=1}^{n}\frac{1}{2}\left(\myvec a_{c_{i}}-\bar{\myvec a}_{c_{i}}\right)^{T}\mymatrix{\Psi}_{c_{i}}\left(\myvec a_{c_{i}}-\bar{\myvec a}_{c_{i}}\right)$，
+在其中 $\myvec a_{c_{i}}$ 和 $\bar{\myvec a}_{c_{i}}$ 由方程
+ \eqref{eq:ConstrainedAcceleration} 和 \eqref{eq.UnconstrainedAcceleration} 给出，
+其中 $\mymatrix{\Psi}_{c_{i}}\triangleq\mathrm{blkdiag}\left(\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}},m_{i}\mymatrix I_{3}\right)$。
+
+展开 $\mathcal{G}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)$，
+我们获得
+\begin{align}
+\mathcal{G}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right) & =\underset{i=1}{\sum^{n}}\left(\mathcal{G}_{a_{i}}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)+\mathcal{G}_{b_{i}}\left(\myvec q,\dot{\myvec q}\right)\right),\label{eq:ObjectiveFunctionRo}
+\end{align}
+其中\footnote{注意 $\ddot{\myvec q}^{T}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q}=\dot{\myvec q}^{T}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}$
+并且 $\ddot{\myvec q}^{T}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\bar{\myvec a}_{c_{i}}=\bar{\myvec a}_{c_{i}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}$。} $\mathcal{G}_{a_{i}}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)\triangleq\frac{1}{2}\ddot{\myvec q}^{T}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}+\dot{\myvec q}^{T}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}-\ddot{\myvec q}^{T}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\bar{\myvec a}_{c_{i}}$
+并且 $\mathcal{G}_{b_{i}}\left(\myvec q,\dot{\myvec q}\right)\triangleq\frac{1}{2}\bar{\myvec a}_{c_{i}}^{T}\mymatrix{\Psi}_{c_{i}}\bar{\myvec a}_{c_{i}}+\frac{1}{2}\dot{\myvec q}^{T}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q}-\dot{\myvec q}^{T}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\bar{\myvec a}_{c_{i}}$。
+
+从最优性条件，方程 \eqref{eq:GaussPrinciple} 的解被计算为 \cite{Wieber2006}
+\begin{align}
+\frac{\partial\mathcal{G}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)}{\partial\ddot{\myvec q}} & =\frac{\partial}{\partial\ddot{\myvec q}}\left(\underset{i=1}{\sum^{n}}\mathcal{G}_{a_{i}}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)\right)=\myvec 0_{1\times n}.\label{eq:optimalityCond}
+\end{align}
+
+在方程 \eqref{eq:optimalityCond} 中使用方程 \eqref{eq:ObjectiveFunctionRo}，
+我们获得
+\begin{gather}
+\myvec 0_{n\times1}=\underset{i=1}{\sum^{n}}\left(\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\ddot{\myvec q}+\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q}+\Phi\right),\label{eq:JacZero}
+\end{gather}
+其中 $\Phi\triangleq-\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\bar{\myvec a}_{c_{i}}$。
+
+由于 $\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}=\left[\begin{array}{cc}
+\mymatrix J_{\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T} & \mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\end{array}\right]^{T}$，使用方程 \eqref{eq.UnconstrainedAcceleration} 以及 $\mymatrix{\Psi}_{c_{i}}$ 的元素，$\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}}$
+和 $m_{i}$，从方程 \eqref{eq:JacZero} 来的项 $\Phi$ 可被重写为
+\begin{multline}
+\Phi=-\mymatrix J_{\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}}\vector_{3}\dot{\quat{\omega}}_{0,c_{i}}^{c_{i}}-\mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\vector_{3}\quat f_{0,c_{i}}^{c_{i}}\\
+-m_{i}\mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\vector_{3}\left(\dot{\quat p}_{0,c_{i}}^{c_{i}}\times\quat{\omega}_{0,c_{i}}^{c_{i}}\right),\label{eq:Phi}
+\end{multline}
+其中 $\vector_{3}\left(\dot{\quat p}_{0,c_{i}}^{c_{i}}\times\quat{\omega}_{0,c_{i}}^{c_{i}}\right)=-\mymatrix S\left(\quat{\omega}_{0,c_{i}}^{c_{i}}\right)\vector_{3}\dot{\quat p}_{0,c_{i}}^{c_{i}}$，
+其中 $\vector_{3}\dot{\quat p}_{0,c_{i}}^{c_{i}}{=\,}\mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}\dot{\myvec q}$，
+$\quat f_{0,c_{i}}^{c_{i}}{=\,}m_{i}\ddot{\quat p}_{0,c_{i}}^{c_{i}}$，
+并且 $\mymatrix S\left(\cdot\right){\in\,}\mathrm{so(3)}$ 是斜对称矩阵，做为一个算子执行交叉乘积 \cite{spong2006robot}。
+
+此外，由于 $\vector_{3}\quat{\omega}_{0,c_{i}}^{c_{i}}=\mymatrix J_{\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}}\dot{\myvec q}$，
+为了方便起见，我们使用 $\vector_{3}$ 算子将方程 \eqref{eq:euler_eq} 重写为
+\begin{equation}
+\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}}\vector_{3}\dot{\quat{\omega}}_{0,c_{i}}^{c_{i}}{=}\vector_{3}\quat{\tau}_{0,c_{i}}^{c_{i}}{+}\mymatrix S\left(\myvec s_{c_{i}}\right)\mymatrix J_{\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}}\dot{\myvec q},\label{eq:Euler_eq2}
+\end{equation}
+其中 $\myvec s_{c_{i}}\triangleq\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}}\vector_{3}\quat{\omega}_{0,c_{i}}^{c_{i}}$，
+并在方程 \eqref{eq:Phi} 中使用该方程以获得
+
+\begin{multline}
+\Phi=-\mymatrix J_{\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\vector_{3}\quat{\tau}_{0,c_{i}}^{c_{i}}-\mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\vector_{3}\quat f_{0,c_{i}}^{c_{i}}\\
++\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q},\label{eq:Phi_final}
+\end{multline}
+其中
+\begin{equation}
+\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\triangleq\textrm{blkdiag\ensuremath{\left(-\mymatrix S\left(\myvec s_{c_{i}}\right),m_{i}\mymatrix S\left(\quat{\omega}_{0,c_{i}}^{c_{i}}\right)\right)}}.\label{eq:SkewSymetricMatrix}
+\end{equation}
+
+最后，在方程 \eqref{eq:JacZero} 中使用方程 \eqref{eq:Phi_final} 以获得
+\begin{align}
+\mymatrix M_{\text{GP}}\ddot{\myvec q}+\mymatrix C_{\text{GP}}\dot{\myvec q} & =\myvec{\bar{\tau}}_{\mathrm{GP}},\label{eq:EulerLagrangeEq}
+\end{align}
+其中 $\mymatrix M_{\text{GP}}\triangleq\mymatrix M_{\text{GP}}\left(\myvec q\right)\in\mathbb{R}^{n\times n}$
+是惯量矩阵，$\mymatrix C_{\text{GP}}\triangleq\mymatrix C_{\text{GP}}\left(\myvec q,\dot{\myvec q}\right)\in\mathbb{R}^{n\times n}$
+标志非线性动态效应(包括科里奥利项)，
+并且 $\myvec{\bar{\tau}}_{\mathrm{GP}}\triangleq\myvec{\bar{\tau}}_{\mathrm{GP}}\left(\myvec q\right)\in\mathbb{R}^{n}$
+表示作用在系统上的广义力；而且， 
+\begin{align}
+\mymatrix M_{\text{GP}} & \triangleq\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\mymatrix{\Psi}_{c_{i}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}},\label{eq:InertiaMatrix}\\
+\mymatrix C_{\text{GP}} & \triangleq\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\left(\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}+\mymatrix{\Psi}_{c_{i}}\dot{\mymatrix J}_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\right),\label{eq:CoriolisMatrix}\\
+\myvec{\bar{\tau}}_{\mathrm{GP}} & \triangleq\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\myvec{\bar{\varsigma}}_{c_{i}},\label{eq:GeneralizedForcesVector}
+\end{align}
+其中 $\myvec{\bar{\varsigma}}_{c_{i}}$ 是第 $i$ 个质心的动力旋量，被定义为
+\begin{equation}
+\myvec{\bar{\varsigma}}_{c_{i}}\triangleq\begin{bmatrix}\mymatrix 0_{3\times3} & \mymatrix I_{3\times3}\\
+\mymatrix I_{3\times3} & \mymatrix 0_{3\times3}
+\end{bmatrix}\vector_{6}\dq{\zeta}_{0,c_{i}}^{c_{i}},\label{eq:torques_c_i}
+\end{equation}
+其中 $\dq{\zeta}_{0,c_{i}}^{c_{i}}=\quat f_{0,c_{i}}^{c_{i}}+\varepsilon\quat{\tau}_{0,c_{i}}^{c_{i}}$。
+
+此外，由于重力不会在连杆的质心处产生任何合成力矩，因此来自 $\myvec{\bar{\tau}}_{\mathrm{GP}}$ 的重力向量 $\myvec{\tau}_{g}\triangleq\myvec{\tau}_{g}\left(\myvec q\right)$ 通过设置 $\quat{\tau}_{0,c_{i}}^{c_{i}}=0$ 以及 $\quat f_{0,c_{i}}^{c_{i}}=\ad{\quat r_{0}^{c_{i}}}{\quat f_{g_{i}}}$ 获得，其中 $\quat f_{g_{i}}=m_{i}\myvec g$ 和 $\quat g\in\mathbb{H}_{p}$ 分别是重力和重力加速度，都在惯性帧中表达。因此，
+\begin{align}
+\myvec{\tau}_{g} & =\underset{i=1}{\sum^{n}}\mymatrix J_{\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}}^{T}\vector_{3}\left(\ad{\quat r_{0}^{c_{i}}}{\quat f_{g_{i}}}\right).\label{eq:GravityForcesVector}
+\end{align}
+
+通过考虑施加在关节处的广义力 $\myvec{\tau}_{\textrm{GP}}$ 和重力 $\myvec{\tau}_{g}$，作用在系统上的合力为 $\myvec{\bar{\tau}}_{\mathrm{GP}}=\myvec{\tau}_{\textrm{GP}}+\myvec{\tau}_{g}$。设 $\myvec g_{\textrm{GP}}\triangleq-\myvec{\tau}_{g}$，则方程 \eqref{eq:EulerLagrangeEq} 以规范形式改写为
+
+\begin{align}
+\mymatrix M_{\text{GP}}\ddot{\myvec q}+\mymatrix C_{\text{GP}}\dot{\myvec q}+\myvec g_{\textrm{GP}} & =\myvec{\tau}_{\textrm{GP}}.\label{eq:CanonicalEulerLagrange}
+\end{align}
+以这种方式，依靠对偶四元数代数求解方程 \eqref{eq:GaussPrinciple}，导致一个机械系统的欧拉-拉格朗日动力学描述。再一次，我们假设机器人正向运动学和微分运动学在对偶四元数空间中是可用的 \cite{Adorno2011}。
+
+\begin{remark}
+
+设 $\mymatrix A\triangleq\left(1/2\right)\dot{\mymatrix M}_{\text{GP}}-\mymatrix C_{\text{GP}}$，
+则 
+\begin{gather*}
+\mymatrix A=-\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}.}
+\end{gather*}
+由于 $\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)$
+通过构造是斜对称的，则 $\mymatrix A^{T}=\mymatrix{-A}$,
+这意味着
+\begin{align}
+\myvec u^{T}\left(\frac{1}{2}\dot{\mymatrix M}_{\text{GP}}\left(\myvec q\right)-\mymatrix C_{\text{GP}}\left(\myvec q,\dot{\myvec q}\right)\right)\myvec u & =0\label{eq:SkewProperty}
+\end{align}
+对于所有的 $\myvec q,\dot{\myvec q},\myvec u\in\mathbb{R}^{n}$ 成立。性质方程
+\eqref{eq:SkewProperty} 对于使用基于Lyapunov函数的策略，在机器人动态控制中显示形式的闭环稳定性很有用 \cite{Kelly2005}。
+
+\end{remark}
+
+
+\subsection{\normalfont\bfseries 与 Gibbs-Appell 和 Kane 方程的联系}
+
+Gibbs-Appell 和 Kane 方程已被证明是一种强大的数学工具，用以在不使用拉格朗日乘子的情况下描述无约束和受约束的机械系统 \cite{Storch1989,Honein2021}。两者都是获得运动方程的不同方法，但一组方程意味着与另一组方程在意义上是等价的。\cite{Townsend1992,Desloge1987_,Levinson87}
+
+
+
+Gibbs-Appell 方法与高斯最小约束原理密切相关，因为这两种方法都使用在加速度方面的标量二次函数。前者可以被视为后者的一般化 \cite{Ray1972,JRay92}。然而，它们是等价的，并且两者都可以从另一种方法中推导出来 \cite{Ray1972,Lewis1996,Udwadia1998}。尽管如此，与 Gibbs-Appell 和 Kane 方程不同，高斯原理的策略不需要设置准速度(quasi-velocities)，并允许在优化公式中直接考虑附加的约束。
+
+现在，我们使用第~\ref{subsec:Constrained-acceleration}--\ref{subsec:Euler-Lagrange-equations} 节中推导出的方程重写 Gibbs-Appell 和 Kane 方程。此外，我们还表明，机械系统的欧拉-拉格朗日动力学描述可以被证明是 Gibbs-Appell 和 Kane 方程的一个特例。这是通过选择与广义速度相同的准速度来实现的。
+
+对于 $n$ 个刚体，Gibbs-Appell 方程由文献 \cite{Honein2021} 给出为
+\begin{equation}
+\frac{\partial S\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)}{\partial\dot{\myvec u}}=\underset{\myvec{\bar{\tau}}_{\mathrm{GA}}}{\underbrace{\underset{i=1}{\sum^{n}}\left(\frac{\partial}{\partial\myvec u}\myvec{\nu}_{c_{i}}\right)^{T}\myvec{\bar{\varsigma}}_{c_{i}}}},\label{eq:gibbs_appell_init}
+\end{equation}
+其中 
+\begin{equation}
+S\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)\triangleq\underset{i=1}{\sum^{n}}\left(\frac{1}{2}\myvec a_{c_{i}}^{T}\mymatrix{\Psi}_{c_{i}}\myvec a_{c_{i}}+\myvec a_{c_{i}}^{T}\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\myvec{\nu}_{c_{i}}\right)\label{eq:Gibbs-Abbel scalar.}
+\end{equation}
+是位形 $\myvec q$、位形速度 $\dot{\myvec q}$ 和位形加速度 $\ddot{\myvec q}$ 的一个标量函数。向量 $\myvec{\bar{\tau}}_{\mathrm{GA}}$ 包含与准速度 $\myvec u$ 相关的广义力。此外，$\myvec{\nu}_{c_{i}}$ 和 $\myvec{\bar{\varsigma}}_{c_{i}}$ 分别是第 $i$ 个机体的运动旋量和广义力，分别由方程 \eqref{eq:ConstrainedVel} 和 \eqref{eq:torques_c_i} 给出。
+
+我们设 $\myvec u\triangleq\dot{\myvec q}$，并在方程 \eqref{eq:Gibbs-Abbel scalar.} 中使用方程 \eqref{eq:ConstrainedAcceleration}。我们取其结果并应用偏导数 $\partial S/\partial\ddot{\myvec q}$，并然后与方程 \eqref{eq:InertiaMatrix} 和  \eqref{eq:CoriolisMatrix} 进行比较，以获得
+\begin{equation}
+\frac{\partial S\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)}{\partial\ddot{\myvec q}}=\mymatrix M_{\text{GP}}\ddot{\myvec q}+\mymatrix C_{\text{GP}}\dot{\myvec q}.\label{eq:gibbs_appell_right}
+\end{equation}
+
+使用方程 \eqref{eq:ConstrainedVel}，我们获得
+\begin{equation}
+\frac{\partial}{\partial\myvec u}\myvec{\nu}_{c_{i}}=\frac{\partial}{\partial\dot{\myvec q}}\left(\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}\dot{\myvec q}\right)=\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}.\label{eq:partial_velocities}
+\end{equation}
+
+因此，我们将广义力计算为 $\myvec{\bar{\tau}}_{\mathrm{GA}}=\sum_{i=1}^{n}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\myvec{\bar{\varsigma}}_{c_{i}}=\myvec{\bar{\tau}}_{\mathrm{GP}}$
+(参见方程 \eqref{eq:GeneralizedForcesVector})。以这种方式，求解方程 \eqref{eq:gibbs_appell_init}
+导致欧拉-拉格朗日方程，其与使用高斯原理方程 \eqref{eq:EulerLagrangeEq} 获得的方程相同。
+
+另一方面，运动的 Kane 方程由文献 \cite{Kane1983Dynamics} 给出为
+\begin{equation}
+\myvec{\varphi}-\bar{\myvec{\varphi}}=\myvec 0,\label{eq:Kane_equations}
+\end{equation}
+其中 $\myvec{\varphi}$ 包含广义主动力，并且 $\bar{\myvec{\varphi}}$ 包括广义惯性力。
+
+对于 $n$ 个刚体，我们通过对牛顿方程和欧拉方程进行分组，使用 Kane 方法获得运动方程，如下所示\footnote{牛顿方程由 $m_{i}\vector_{3}\ddot{\quat p}_{0,c_{i}}^{c_{i}}{=}\vector_{3}\quat f_{0,c_{i}}^{c_{i}}$ 给出，
+并且欧拉方程由方程 \eqref{eq:Euler_eq2} 给出。}
+\begin{equation}
+\underset{i=1}{\sum^{n}}\left[\begin{array}{c}
+\left(\bar{\mymatrix{\mathbb{I}}}_{i}^{c_{i}}\vector_{3}\dot{\quat{\omega}}_{0,c_{i}}^{c_{i}}-\mymatrix S\left(\myvec s_{c_{i}}\right)\vector_{3}\quat{\omega}_{0,c_{i}}^{c_{i}}\right)\\
+m_{i}\vector_{3}\ddot{\quat p}_{0,c_{i}}^{c_{i}}
+\end{array}\right]=\underset{i=1}{\sum^{n}}\underset{\myvec{\bar{\varsigma}}_{c_{i}}}{\underbrace{\left[\begin{array}{c}
+\vector_{3}\quat{\tau}_{0,c_{i}}^{c_{i}}\\
+\vector_{3}\quat f_{0,c_{i}}^{c_{i}}
+\end{array}\right]}}.\label{eq:FundamentalEquations-1}
+\end{equation}
+
+使用方程 \eqref{eq:SkewSymetricMatrix}，以及后面的事实，$\myvec{\nu}_{c_{i}}=\vector_{6}\dq{\xi}_{0,c_{i}}^{c_{i}}$，其中由在方程 \eqref{eq:twist-body-frame} 中给出的 $\dq{\xi}_{0,c_{i}}^{c_{i}}\triangleq\dq{\xi}_{0,c_{i}}^{c_{i}}\left(\myvec q\right)$，$\myvec a_{c_{i}}=\vector_{6}\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}$，其中由在方程 \eqref{eq.UnconstrainedAcceleration} 中给出的 $\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}\triangleq\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}\left(\myvec q,\dot{\myvec q}\right)$，\footnote{注意，尽管 $\myvec a_{c_{i}}$ 类似于方程 \eqref{eq.UnconstrainedAcceleration}，但它指的是实际加速度，并因此也指受约束的加速度。因此，$\myvec a_{c_{i}}$ 取决于 $\myvec q$ 和 $\dot{\myvec q}$，而方程 \eqref{eq.UnconstrainedAcceleration} 不取决于它们。} 还有 $\vector_{3}\left(\dot{\quat p}_{0,c_{i}}^{c_{i}}\times\quat{\omega}_{0,c_{i}}^{c_{i}}\right)=-\mymatrix S\left(\quat{\omega}_{0,c_{i}}^{c_{i}}\right)\vector_{3}\dot{\quat p}_{0,c_{i}}^{c_{i}}$，我们重写方程 \eqref{eq:FundamentalEquations-1} 为
+\begin{equation}
+\underset{i=1}{\sum^{n}}\underset{\kappa_{i}}{\underbrace{\left(\mymatrix{\Psi}_{c_{i}}\myvec a_{c_{i}}+\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\myvec{\nu}_{c_{i}}\right)}}=\underset{i=1}{\sum^{n}}\myvec{\bar{\varsigma}}_{c_{i}}.\label{eq:FundamentalEquations}
+\end{equation}
+
+因为对于 $i\in\{1,\ldots,n\}$，$\kappa_{i}=\bar{\varsigma}_{c_{i}}$，
+我们将方程 \eqref{eq:FundamentalEquations} 的 $n$ 个项中的每一个 $\kappa_{i}$ 和 $\bar{\varsigma}_{c_{i}}$ 都乘以 $\left(\frac{\partial}{\partial\myvec u}\myvec{\nu}_{c_{i}}\right)^{T}=\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}$，以获得 Kane 方程 \cite{Kane1983Dynamics}，从而得到
+\begin{align}
+\underset{\myvec{\varphi}}{\underbrace{\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\left(\mymatrix{\Psi}_{c_{i}}\myvec a_{c_{i}}+\overline{\mymatrix S}\left(\quat{\omega}_{0,c_{i}}^{c_{i}},\mymatrix{\Psi}_{c_{i}}\right)\myvec{\nu}_{c_{i}}\right)}} & =\underset{\bar{\myvec{\varphi}}}{\underbrace{\underset{i=1}{\sum^{n}}\mymatrix J_{\dq{\xi}_{0,c_{i}}^{c_{i}}}^{T}\myvec{\bar{\varsigma}}_{c_{i}}}}.\label{eq:KaneEquations}
+\end{align}
+
+最后，在方程 \eqref{eq:KaneEquations} 中使用方程 \eqref{eq:ConstrainedVel}、\eqref{eq:ConstrainedAcceleration}、\eqref{eq:InertiaMatrix}、\eqref{eq:CoriolisMatrix} 和 \eqref{eq:GeneralizedForcesVector}，我们获得 $\myvec{\varphi}=\mymatrix M_{\text{GP}}\ddot{\myvec q}+\mymatrix C_{\text{GP}}\dot{\myvec q}$ 和 $\bar{\myvec{\varphi}}=\myvec{\bar{\tau}}_{\mathrm{GP}}$，这与由高斯原理方程 \eqref{eq:EulerLagrangeEq} 获得的动力学方程相同，正如预期的那样。
+
+
+
+因此，当考虑准速度与广义速度(即，$\myvec u\triangleq\dot{\myvec q}$)相同时，高斯原理、Gibbs-Appell 方程和 Kane 方法之间的关系给出为
+\begin{equation}
+\frac{\partial\mathcal{G}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)}{\partial\ddot{\myvec q}}=\frac{\partial S\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right)}{\partial\ddot{\myvec q}}-\myvec{\bar{\tau}}_{\mathrm{GA}}=\myvec{\varphi}-\bar{\myvec{\varphi}}=\myvec 0_{n\times1}.\label{eq:EquivalenceGibbsGauss}
+\end{equation}
+
+
+\subsection{\normalfont\bfseries 使用高斯最小约束原理的受约束机器人系统\label{subsec:Constrained-Robotic-Systems}}
+
+在GPLC公式中可以施加附加的约束。这可以通过拉格朗日乘子 \cite{Bouyarmane2012} 或使用 Udwadia-Kalaba 公式 \cite{FirdausE.UdwadiaandRobertE.Kalaba1992} 来实现。前者需要计算拉格朗日乘子，而后者采用了一种更简单的方法，尽管是等效的，其基于广义逆作为约束二次规划的解。
+
+使用 Udwadia-Kalaba 公式 \cite{FirdausE.UdwadiaandRobertE.Kalaba1992}，附加的约束形式为 $\mymatrix A\ddot{\myvec q}=\myvec b$，其中 $\mymatrix A\triangleq\mymatrix A(\myvec q,\dot{\myvec q})$ 和 $\myvec b\triangleq\myvec b(\myvec q,\dot{\myvec q})$，在方程 \eqref{eq:EulerLagrangeEq} 中被考虑如下
+\begin{align}
+\mymatrix M_{\textrm{GP}}\ddot{\myvec q} & =\mymatrix Q\left(\myvec q,\dot{\myvec q}\right)+\text{\ensuremath{\mymatrix Q}}_{c}\left(\myvec q,\dot{\myvec q}\right),\label{eq:UKformulation}
+\end{align}
+其中 $\mymatrix Q\left(\myvec q,\dot{\myvec q}\right)\triangleq\myvec{\bar{\tau}}_{\mathrm{GP}}-\mymatrix C_{\text{GP}}\dot{\myvec q}$，
+并且附加的项 $\text{\ensuremath{\mymatrix Q}}_{c}\left(\myvec q,\dot{\myvec q}\right)\triangleq\mymatrix M_{\textrm{GP}}^{1/2}\mymatrix D^{+}\left(\myvec b-\mymatrix A\mymatrix M_{\textrm{GP}}^{-1}\mymatrix Q\left(\myvec q,\dot{\myvec q}\right)\right)$
+表示由于附加约束而产生的约束力。
+此外，$\mymatrix D^{+}$ 是 $\mymatrix D$ 的Moore-Penrose广义逆 \cite{spong2006robot}，其中 $\mymatrix D\triangleq\mymatrix A\mymatrix M_{\textrm{GP}}^{-1/2}$。
+
+最后，设 $\mymatrix{\Omega}\triangleq\left(\mymatrix I-\mymatrix M_{\textrm{GP}}^{1/2}\mymatrix D^{+}\mymatrix A\mymatrix M_{\textrm{GP}}^{-1}\right)$，
+我们重写方程 \eqref{eq:UKformulation} 为
+\begin{equation}
+\mymatrix M_{\textrm{GP}}\ddot{\myvec q}+\mymatrix{\Omega}\mymatrix C_{\textrm{GP}}\dot{\myvec q}-\mymatrix M_{\textrm{GP}}^{1/2}\mymatrix D^{+}\myvec b=\mymatrix{\Omega}\myvec{\bar{\tau}}_{\mathrm{GP}}.\label{eq:FinalGaussUK}
+\end{equation}
+
+例如，考虑众所周知的差动驱动的移动机器人，其中非完整约束确保了纯滚动和非滑动运动的条件 \cite{Fierro1997_}。机器人位形由向量 $\myvec q=\left[\begin{array}{ccc}
+x & y & \phi\end{array}\right]^{T}$ 指定，其中 $x,y$ 是位置坐标，而 $\phi$ 是机器人在平面上的方向。该非完整约束给出为
+\begin{equation}
+\underset{\mymatrix A}{\underbrace{\begin{bmatrix}-\sin\phi & \cos\phi & 0\end{bmatrix}}}\dot{\myvec q}=0,\label{eq:first-order-nonholonomic-constraint}
+\end{equation}
+通过取方程 \eqref{eq:first-order-nonholonomic-constraint} 的时间导数，使得 $\dot{\mymatrix A}\dot{\myvec q}+\mymatrix A\ddot{\myvec q}=0$，这可在方程 \eqref{eq:FinalGaussUK} 中被强制执行。因此，$\myvec b=-\dot{\mymatrix A}\dot{\myvec q}$。

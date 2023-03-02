@@ -1,0 +1,113 @@
+
+\section{\normalfont\bfseries 数学预备知识 \label{sec:Mathematical-Preliminaries}}
+
+对偶四元数 \cite{Selig2005} 是以下集合的元素
+\begin{align}
+\mathcal{H} & \triangleq\{\quat h_{\mathcal{P}}+\dual\quat h_{\mathcal{D}}\::\:\quat h_{\mathcal{P}},\quat h_{\mathcal{D}}\in\mathbb{H},\,\dual\neq0,\,\dual^{2}=0\},\label{eq:dq_def}
+\end{align}
+其中
+\begin{align}
+\mathbb{H} & \triangleq\{h_{1}+\imi h_{2}+\imj h_{3}+\imk h_{4}\::\:h_{1},h_{2},h_{3},h_{4}\in\mathbb{R}\}\label{eq:quat_def}
+\end{align}
+是四元数的集合，其中 $\imi$，$\imj$ 和 $\imk$ 是虚数单位，具有性质 $\imi^{2}=\imj^{2}=\imk^{2}=\imi\imj\imk=-1$\cite{Hamilton1844}。
+对偶四元数的加法和乘法类似于实数和复数的对应物。人们必须只遵从对偶单位 $\dual$ 和虚数单位 $\imi,\imj,\imk$ 的性质。
+
+给定 $\dq h\in\mathcal{H}$ 使得
+\[
+\dq h=\underbrace{h_{1}+\imi h_{2}+\imj h_{3}+\imk h_{4}}_{\quat h_{\mathcal{P}}}+\dual\underbrace{\left(h_{5}+\imi h_{6}+\imj h_{7}+\imk h_{8}\right)}_{\quat h_{\mathcal{D}}},
+\]
+算子 $\mathcal{P}\left(\dq h\right)\triangleq\quat h_{\mathcal{P}}$
+和 $\mathcal{D}\left(\dq h\right)\triangleq\quat h_{\mathcal{D}}$
+分别提供 $\dq h$ 的原生部分和对偶部分，
+而算子 $\real{\dq h}\triangleq h_{1}+\dual h_{5}$
+和 $\imag{\dq h}=\imi h_{2}+\imj h_{3}+\imk h_{4}+\dual\left(\imi h_{6}+\imj h_{7}+\imk h_{8}\right)$
+分别提供 $\dq h$ 的实数和虚数部分。
+$\dq h$ 的共轭被定义为 $\dq h^{*}\triangleq\real{\dq h}-\imag{\dq h}$，
+并且其范数给出为 $\norm{\dq h}=\sqrt{\dq h\dq h^{*}}=\sqrt{\dq h^{*}\dq h}$。
+
+单位对偶四元数的子集 $\dq{\mathcal{S}}=\left\{ \dq h\in\mathcal{H}:\norm{\dq h}=1\right\} $ 用于表示三维空间中的位姿(位置和方向)，并在乘法运算下形成群 $\spinr$。\footnote{符号 $\ltimes$ 表示群之间的半直接乘积
+\cite[p. 22]{Selig2005}。} 任意 $\dq x\in\dq{\mathcal{S}}$ 总是可以写为 $\dq x=\quat r+\dual\left(1/2\right)\quat p\quat r$，其中 $\quat p=\imi x+\imj y+\imk z$ 代表三维空间中的位置 $\left(x,y,z\right)$，并且 $\quat r=\cos\left(\phi/2\right)+\quat n\sin\left(\phi/2\right)$ 代表一个旋转，在其中 $\phi\in[0,2\pi)$ 是围绕旋转轴 $\quat n\in\mathbb{H}_{p}\cap\mathbb{S}^{3}$ 的旋转角度，其中 $\mathbb{H}_{p}\triangleq\left\{ \quat h\in\mathbb{H}:\real{\quat h}=0\right\} $ 并且 $\mathbb{S}^{3}=\left\{ \quat h\in\mathbb{H}:\norm{\quat h}=1\right\} $\cite{Selig2005}。
+
+给定纯对偶四元数集合 $\mathcal{H}_{p}=\left\{ \dq h\in\mathcal{H}:\real{\dq h}=0\right\}$，其被用于表示运动旋量(twist)和动力旋量(wrenche)，算子 $\mathrm{Ad}:\dq{\mathcal{S}}\times\mathcal{H}_{p}\to\mathcal{H}_{p}$ 在这些实体上执行刚体运动。例如，给定在帧 $\frame a$ 中表达的运动旋量，即 $\dq{\xi}^{a}\in\mathcal{H}_{p}$，以及单位对偶四元数 $\dq x_{a}^{b}$，其给出 $\frame a$ 相对于 $\frame b$ 的位姿，同样的运动旋量在帧 $\frame b$ 中表达为\footnote{注意，上标表示原始帧，而下标表示已修改的帧。本文始终保持下标和上标的约定。如果没有使用上标，我们就假定是全局惯性帧。}
+\begin{equation}
+\dq{\xi}^{b}=\ad{\dq x_{a}^{b}}{\dq{\xi}^{a}}=\dq x_{a}^{b}\dq{\xi}^{a}\left(\dq x_{a}^{b}\right)^{*}.\label{eq:adj_transf}
+\end{equation}
+
+$\dq x_{b}^{a}$ 的时间导数由文献 \cite{Adorno2017} 给出为
+\begin{equation}
+\dot{\dq x}_{b}^{a}=\frac{1}{2}\dq{\xi}_{ab}^{a}\dq x_{b}^{a}=\frac{1}{2}\dq x_{b}^{a}\dq{\xi}_{ab}^{b},\label{eq:x_dot}
+\end{equation}
+其中 
+\begin{gather}
+\dq{\xi}_{ab}^{a}=\quat{\omega}_{ab}^{a}+\dual\left(\dot{\quat p}_{ab}^{a}+\quat p_{ab}^{a}\times\quat{\omega}_{ab}^{a}\right)\label{eq:twist-inertial-frame}
+\end{gather}
+是帧 $\frame b$ 相对于帧 $\frame a$ 的运动旋量，在帧 $\frame a$ 中表达，\footnote{在这里使用三个索引很重要，因为从第三帧可以看到两个帧之间的运动旋量。因此，例如，$\dq{\xi}_{a,b}^{c}$ 是帧 $\frame b$ 相对于帧 $\frame a$ 的运动旋量，在帧 $\frame c$ 中表达。同样的解释也被用于动力旋量，这将在第~\ref{subsec:dqNE_backward_recursion} 节中适当介绍。} 其中 $\quat{\omega}_{ab}^{a}\in\mathbb{H}_{p}$ 是角速度，并且
+\begin{gather}
+\dq{\xi}_{ab}^{b}=\ad{\dq x_{a}^{b}}{\dq{\xi}_{ab}^{a}}=\quat{\omega}_{ab}^{b}+\dual\dot{\quat p}_{ab}^{b}\label{eq:twist-body-frame}
+\end{gather}
+是在 $\frame b$ 中表达的运动旋量。而且，$\dq{\xi}_{ab}^{a}$ 和 $\dq{\xi}_{ab}^{b}$ 是与 $\spinr$ 相关联的李代数的元素。另外，
+\begin{align}
+\quat p\times\quat{\omega}\triangleq & \frac{\quat p\quat{\omega}-\quat{\omega}\quat p}{2},\label{eq:cross_product}
+\end{align}
+$\quat p,\quat{\omega}\in\mathbb{H}_{p}$，是纯四元数之间的交叉积，类似于在 $\mathbb{R}^{3}$ 中向量之间的交叉积 \cite{Adorno2017}。
+
+$\dq l,\dq s\in\mathcal{H}_{p}$ 之间的叉积，其中
+$\dq l=\quat l+\dual\quat l'$ 和 $\dq s=\quat s+\dual\quat s'$，
+类似于方程 \eqref{eq:cross_product} 并给出为
+\begin{equation}
+\dq l\times\dq s\triangleq\frac{\dq l\dq s-\dq s\dq l}{2}=\quat l\times\quat s+\dual\left(\quat l\times\quat s'+\quat l'\times\quat s\right).\label{eq:cross_product_dq}
+\end{equation}
+
+\begin{lemma}\label{lem:derivative_of_adjoint_transformation}
+
+如果 $\dq x\in\mathcal{\dq S}$，使得 $\dot{\dq x}=(1/2)\dq{\xi}\dq x$
+并且 $\dq{\xi}'\in\mathcal{H}_{p}$，则
+\begin{equation}
+\frac{d}{dt}\left(\ad{\dq x}{\dq{\xi}'}\right)=\ad{\dq x}{\dot{\dq{\xi}'}}+\dq{\xi}\times\left(\ad{\dq x}{\dq{\xi}'}\right).\label{eq:derivative_of_adjoint_transformation}
+\end{equation}
+
+\end{lemma}
+
+\begin{proof}
+
+使用方程 \eqref{eq:adj_transf}，方程 \eqref{eq:x_dot}，以及以下事实
+$\left(\dq{\xi}\dq x\right)^{*}=-\dq x^{*}\dq{\xi}$，我们获得
+\begin{align}
+\frac{d}{dt}\left(\ad{\dq x}{\dq{\xi}}'\right) & =\dot{\dq x}\dq{\xi}'\dq x^{*}+\dq x\dot{\dq{\xi}'}\dq x^{*}+\dq x\dq{\xi}'\dot{\dq x}^{*}\nonumber \\
+ & =\frac{1}{2}\dq{\xi}\left(\dq x\dq{\xi}'\dq x^{*}\right)+\dq x\dot{\dq{\xi}'}\dq x^{*}-\frac{1}{2}\left(\dq x\dq{\xi}'\dq x^{*}\right)\dq{\xi}.\label{eq:adjoint_derivative_intermediate}
+\end{align}
+最后，在方程 \eqref{eq:adjoint_derivative_intermediate} 中使用方程 \eqref{eq:cross_product_dq} 得到方程 \eqref{eq:derivative_of_adjoint_transformation}。
+
+\end{proof}
+
+四元数惯性张量被定义为
+\begin{equation}
+\quat{\mathbb{I}}\triangleq\left(\quat i_{x},\quat i_{y},\quat i_{z}\right)\in\mathbb{H}_{p}^{3}\subset\mathcal{H}^{n},\label{eq:quat_inertia_tensor}
+\end{equation}
+其中 $\quat i_{x}=I_{xx}\imi+I_{xy}\imj+I_{xz}\imk$，$\quat i_{y}=I_{yx}\imi+I_{yy}\imj+I_{yz}\imk$，
+以及 $\quat i_{z}=I_{zx}\imi+I_{zy}\imj+I_{zz}\imk$，这其中 $I_{nn}$，
+其中 $n\in\left\{ x,y,z\right\} $，是刚体的惯性张量的元素。
+
+\begin{definition}\label{def_operator_l}
+
+给定 $\quat A=\left(\quat a_{x},\quat a_{y},\quat a_{z}\right)\in\mathbb{H}_{p}^{3}$
+和 $\quat b\in\mathbb{H}_{p}$，算子 $\mathcal{L}_{3}:\mathbb{H}_{p}^{3}\times\mathbb{H}_{p}\to\mathbb{H}_{p}$，
+被定义为
+\begin{align}
+\mathcal{L}_{3}\left(\quat A\right)\quat b & =\imi\dotproduct{\quat a_{x},\quat b}+\imj\dotproduct{\quat a_{y},\quat b}+\imk\dotproduct{\quat a_{z},\quat b},\label{eq:operator_l}
+\end{align}
+其中 $\dotproduct{\cdot,\cdot}:\mathbb{H}_{p}\to\mathbb{R}$ 是四元数之间的内积；\footnote{在 $\mathbb{H}_{p}$ 中的内积等同于在 $\mathbb{R}^{3}$ 中的内积。} 也就是，给定 $\quat a,\quat b\in\mathbb{H}_{p}$，则 $\dotproduct{\quat a,\quat b}\triangleq-(\quat{ab}+\quat{ba})/2$。
+
+\end{definition}
+
+根据定义~\ref{def_operator_l}，可以得出在(对偶)四元数代数中的角动量 $\quat{\ell}$，给出为
+\begin{equation}
+\quat{\ell}=\mathcal{L}_{3}\left(\quat{\mathbb{I}}\right)\quat{\omega},\label{eq:angular_momentum}
+\end{equation}
+其中 $\quat{\omega}\in\mathbb{H}_{p}$ 是角速度。直接计算表明方程 \eqref{eq:angular_momentum} 等价于向量代数中的对应项。
+
+给定刚体的四元数惯性张量 $\quat{\mathbb{I}}'\in\mathbb{H}_{p}^{3}$，在帧 $\frame{}'$ 中表达，并且刚体的角速度 $\quat{\omega}\in\mathbb{H}_{p}$ 在 $\frame{}$ 帧中表达，在 $\frame{}$ 帧中表达的角动量给出为
+\begin{equation}
+\quat{\ell}=\ad{\quat r^{*}}{\mathcal{L}_{3}\left(\quat{\mathbb{I}}'\right)\ad{\quat r}{\quat{\omega}}},\label{eq:similarity-transformation}
+\end{equation}
+其中 $\quat r$ 是从 $\frame{}^{'}$ 到 $\frame{}$ 的旋转四元数。方程~\eqref{eq:similarity-transformation} 类似于当在 $\mathbb{R}^{3}$ 中使用旋转矩阵和向量的相似性变换时获得的方程。

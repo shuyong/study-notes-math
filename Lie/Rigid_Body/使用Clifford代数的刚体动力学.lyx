@@ -1,0 +1,2089 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "使用Clifford代数的刚体动力学"
+\pdf_author "Jonathan Selig & Eduardo José Bayro-Corrochano"
+\pdf_keywords "Rigid bodies, dynamics, Cliﬀord algebra."
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "使用Clifford代数的刚体动力学"
+target "https://www.researchgate.net/publication/226467424_Rigid_Body_Dynamics_Using_Clifford_Algebra"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+J.
+ M.
+ Selig and E.
+ Bayro-Corrochano
+\end_layout
+
+\begin_layout Date
+March 2010
+\end_layout
+
+\begin_layout Abstract
+在本论文中，刚体动力学被重组为Clifford代数形式。具体而言，使用了代数
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+，它显示了速度、动量和惯量是如何由该代数的元素表示。刚体的运动方程通过微分机体的动量简单地推导出来。
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在本项工作中，我们提出了一个表示刚体动力学的Clifford代数。这样做的大部分动机来自机器人学。在机器人学中，我们通常有几个由简单关节连接的刚体。串联机器人的
+运动方程非常容易推导，其中机器人的机体在串联链中相互连接。这种简单性很大程度上来自于在物理学文献中通常不存在的关于力学的两种观点。相反，当我们要考虑多个刚体时，
+简化单个刚体分析的两个想法实际上使得问题复杂化。第一个想法是将平移和旋转运动分开。在机器人学中，如果我们在同等地位上处理平移速度和旋转速度，事情就会简单得多。我
+们必须放弃的第二个常见简化是机体固连坐标帧，如果我们有几个刚体，我们应该在哪个刚体中固连坐标帧？所以我们选择一个标准的固定惯性帧来工作。然而，这意味着刚体的惯量
+算子将不是恒定的，而是随着刚体相对于标准帧的移动而改变。
+\end_layout
+
+\begin_layout Standard
+用这种方法求机器人运动方程的一个简单方法是旋量理论。在旋量理论中，刚体的转动速度和平移速度结合起来，形成一个称为旋量的六维向量。从本质上讲，这些旋量是刚体运动群
+的李代数的元素，并且现代旋量理论的方法利用这种李理论的观点有很大的优势。
+\end_layout
+
+\begin_layout Standard
+通过利用Clifford代数，我们得到了一个通用的代数框架，图形、视觉、运 动学和现在的动力学问题都可以用这个框架来表达。随着机器人的这些功能越来越紧密地集成到
+实际系统中，我们期望分析这些特征的统一方法将变得有用。
+\end_layout
+
+\begin_layout Standard
+另一个可能从本项工作中受益的领域是所谓的“游戏物理学”，例如，参见文献[8]。这里的问题是为计算机游戏模拟刚体系统。最近提出了许多不同的方法，特别是使用线性规划
+技术，参见文献[16]。这些互补性问题似乎非常适合于Clifford代数中的公式。如果用于显示结果的图形系统也基于Clifford代数，则总体效率可能会有所提高
+。
+\end_layout
+
+\begin_layout Standard
+在其它地方，有人提出Clifford代数可以构成高效计算机算法的基础，例如，参见文献[2]。当然，现代处理器架构似乎更倾向于代数方法。目前计算机硬件的发展很大程
+度上是由图形加速的需求驱动的。图形学中所需的计算本质上是Clifford代数中的计算。事实上，使用四元数来表示旋转在商业计算机图形系统中是很常见的，参见文献[1
+7]。因此，有一些希望，未来的硬件对Clifford代数的支持可能会比现在更好，并因此增加Clifford代数的优势。
+\end_layout
+
+\begin_layout Standard
+然而，声称这里给出的结果将导致动力学的快速算法是不成熟的想法。我们使用的代数相当大，众所周知，这将导致较大的内存需求和较慢的算法。
+\end_layout
+
+\begin_layout Standard
+以前有人曾尝试过使用Clifford代数编写刚体动力学。Hestenes [5]提出了一种使用
+\begin_inset Formula $C\ell(3)$
+\end_inset
+
+的基本
+\begin_inset Formula $3$
+\end_inset
+
+维方法。线速度表示为向量，角速度表示为双向量。所以线性速度和角速度可以组合成代数中的一个项。力和扭矩的处理方法基本相同。然后通过取速度与力的Clifford积并
+提取标量部分，就可以找到功率。然而，这种简洁的公式有一些缺点。该刚体运动群对速度和力的作用有点奇怪，旋转是通过与偶数级的单位元素共轭来实现的，但平移必须作为向量
+添加。如上所述，速度或旋量通过一个李括号运算形成一个李代数，这个运算不在Clifford代数中建模。李代数元素对李代数对偶元素的协伴随作用也不成立。这个运算在动
+力学中特别重要，因为它在运动方程中给出了所谓的科里奥利项。最后，将惯量矩阵表示为一个将双向量映射到双向量的运算。它不是Clifford代数的一个元素。
+\end_layout
+
+\begin_layout Standard
+Hestenes [6]和Hestenes与Fasse [7]介绍了另一种使用代数
+\begin_inset Formula $C\ell(4,1)$
+\end_inset
+
+的方法。在这个代数中，线速度用
+\begin_inset Formula $2$
+\end_inset
+
+级元素表示，角速度用
+\begin_inset Formula $4$
+\end_inset
+
+级元素表示。刚体运动群在这些旋量上的作用现在变得更加清晰，旋转和平移都通过与某些偶数度的单位元素的共轭来表示。然而，该群对力/扭矩元素的作用不明确，上述许多其它
+缺点仍然适用。Abou El Dahab [1]利用Clifford代数给出了Hamilton力学的一个表达方法。在某些方面，所采取的方法与本项工作中采取的方法
+类似。在Clifford代数中，位形空间被假定为向量空间，并且相空间是通过将代数扩大到包含共轭动量向量来构造的。相空间的辛几何是利用一个可分辨的双向量来实现的。
+\end_layout
+
+\begin_layout Standard
+这项工作的初衷仅仅是将Hestenes的
+\begin_inset Formula $C\ell(4,1)$
+\end_inset
+
+方法应用于机器人动力学。然而，上述缺点意味着这不能像要求的那样明确地做到。这一失败促使人们寻找替代方法。
+\end_layout
+
+\begin_layout Standard
+下面报告的另一种方法使用代数
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+。这产生于代数
+\begin_inset Formula $C\ell(0,3,1)$
+\end_inset
+
+的复制。代数
+\begin_inset Formula $C\ell(0,3,1)$
+\end_inset
+
+包含刚体运动群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+及其李代数、旋量和与欧几里得
+\begin_inset Formula $3$
+\end_inset
+
+维空间的点、线和平面相对应的元素的一个副本。通过复制代数，可以找到表示动量，对偶于速度并将速度转化为动量的惯量的元素。因为我们使用的代数是退化的，所以我们必须引
+入shuffle乘积。我们还发现，在代数上使用独异对合元是有帮助的，它将
+\begin_inset Formula $C\ell(0,3,1)$
+\end_inset
+
+的一个副本中的元素与其对应的另一个副本中的元素进行交换。
+\end_layout
+
+\begin_layout Standard
+我们首先用标准的旋量形式对刚体动力学进行简要回顾。
+\end_layout
+
+\begin_layout Section
+刚体动力学
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+刚体动力学的最新形式使用
+\begin_inset Formula $6$
+\end_inset
+
+维向量表示速度和动量。这些向量是刚体运动群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的李代数的有效元素。以分区形式，这些向量可以写为，
+\begin_inset Formula 
+\[
+\mathbf{s}=\left(\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right)=\left(\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}\\
+v_{x}\\
+v_{y}\\
+v_{z}
+\end{array}\right).
+\]
+
+\end_inset
+
+在一瞬间，机体以角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+绕轴旋转，同时以线速度
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+沿同一轴平移。这些
+\begin_inset Formula $6$
+\end_inset
+
+维速度向量称为运动旋量(twist)，有时称为旋量(screw)。
+\end_layout
+
+\begin_layout Standard
+类似地，动量可以写为，
+\begin_inset Formula 
+\[
+\mathcal{P}=\left(\begin{array}{c}
+\mathbf{l}\\
+\mathbf{p}
+\end{array}\right)=\left(\begin{array}{c}
+l_{x}\\
+l_{y}\\
+l_{z}\\
+p_{x}\\
+p_{y}\\
+p_{z}
+\end{array}\right),
+\]
+
+\end_inset
+
+其中角动量是
+\begin_inset Formula $\mathbf{l}$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{p}$
+\end_inset
+
+是线动量。这些
+\begin_inset Formula $6$
+\end_inset
+
+维向量可以称为协旋量(co-screw)，因为它们是旋量的对偶向量。这些协旋量也可用于表示动力旋量(wrench)，即力向量和扭矩向量的组合，
+\begin_inset Formula 
+\[
+\mathcal{W}=\left(\begin{array}{c}
+\boldsymbol{\tau}\\
+\mathbf{F}
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+了解刚性变换群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+如何作用于这些向量是非常重要的。
+\end_layout
+
+\begin_layout Standard
+对于旋量，作用由群在其李代数上的伴随表示给出。这可以用
+\begin_inset Formula $6\times6$
+\end_inset
+
+具有分区形式的矩阵表示，
+\begin_inset Formula 
+\[
+H=\left(\begin{array}{cc}
+R & 0\\
+TR & R
+\end{array}\right),
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $R$
+\end_inset
+
+是一个
+\begin_inset Formula $3\times3$
+\end_inset
+
+旋转矩阵，
+\begin_inset Formula $T$
+\end_inset
+
+是一个反对称的
+\begin_inset Formula $3\times3$
+\end_inset
+
+矩阵，表示平移向量
+\begin_inset Formula $\mathbf{t}$
+\end_inset
+
+，因此对于任意向量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+，
+\begin_inset Formula $T\mathbf{x}=\mathbf{t}\times\mathbf{x}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+旋量根据
+\begin_inset Formula $\mathbf{s}\rightarrow H\mathbf{s}$
+\end_inset
+
+进行变换，但协旋量在对偶表示下进行变换；协伴随(co-adjoint)表示，
+\begin_inset Formula $\mathcal{P}\rightarrow H^{-T}\mathcal{P}$
+\end_inset
+
+。这里
+\begin_inset Formula $H^{-T}$
+\end_inset
+
+是
+\begin_inset Formula $\left(H^{-1}\right)^{T}=\left(H^{T}\right)^{-1}$
+\end_inset
+
+的缩写。该矩阵的分块形式为，
+\begin_inset Formula 
+\[
+H^{-T}=\left(\begin{array}{cc}
+R & TR\\
+0 & R
+\end{array}\right).
+\]
+
+\end_inset
+
+在旋量上的协旋量的求值可以写成矩阵积，
+\begin_inset Formula 
+\[
+\mathcal{P}\left(\mathbf{s}\right)=\mathcal{P}^{T}\mathbf{s}.
+\]
+
+\end_inset
+
+这种组合显然独立于刚体运动的作用；它是一个标量。这使得我们可以用旋量和协旋量来表示刚体的动能，
+\begin_inset Formula 
+\[
+E_{K}=\frac{1}{2}\mathcal{P}\left(\mathbf{s}\right)=\frac{1}{2}\left(\boldsymbol{\omega}\cdot\mathbf{l}+\mathbf{v}\cdot\mathbf{p}\right)=\frac{1}{2}\left(\omega_{x}l_{x}+\omega_{y}l_{y}+\omega_{z}l_{z}+v_{x}p_{x}+v_{y}p_{y}+v_{z}p_{z}\right),
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+是机体的动量协旋量，
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+是其速度旋量。
+\end_layout
+
+\begin_layout Standard
+机体的惯量矩阵可以表示为一个对称的
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵，
+\begin_inset Formula 
+\[
+N=\left(\begin{array}{cc}
+I & mC\\
+mC^{T} & m\mathsf{I}_{3}
+\end{array}\right).
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $I$
+\end_inset
+
+通常是
+\begin_inset Formula $3\times3$
+\end_inset
+
+惯量矩阵，而
+\begin_inset Formula $\mathsf{I}_{3}$
+\end_inset
+
+是
+\begin_inset Formula $3\times3$
+\end_inset
+
+单位矩阵。机体的质量是
+\begin_inset Formula $m$
+\end_inset
+
+，
+\begin_inset Formula $C$
+\end_inset
+
+是表示质心位置向量的反对称矩阵。惯量将速度映射为动量，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathcal{P}=N\mathbf{s}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+惯量矩阵的变换性质可以从动能必须是不变量这一事实推断出来，
+\begin_inset Formula 
+\[
+N\longrightarrow H^{-T}NH^{-1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，我们需要旋量对协旋量的协伴随作用，这就给出了运动方程中的科里奥利项。该作用将用大括号标志。该运算对偶于旋量作用于自身的伴随作用；即李括号，
+\begin_inset Formula 
+\[
+\mathbf{s}_{1}^{T}\left\{ \mathbf{s}_{2},\mathcal{P}\right\} =\left[\mathbf{s}_{1},\mathbf{s}_{2}\right]^{T}\mathcal{P}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在分区的形式下，我们有
+\begin_inset Formula 
+\[
+\left\{ \mathbf{s},\mathcal{P}\right\} =\left\{ \left(\begin{array}{c}
+\boldsymbol{\omega}\\
+\mathbf{v}
+\end{array}\right),\left(\begin{array}{c}
+\mathbf{l}\\
+\mathbf{p}
+\end{array}\right)\right\} =\left(\begin{array}{c}
+\boldsymbol{\omega}\times\mathbf{l}+\mathbf{v}\times\mathbf{p}\\
+\boldsymbol{\omega}\times\mathbf{p}
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在单个刚体的运动方程可被写为，
+\begin_inset Formula 
+\[
+N\frac{d}{dt}\mathbf{s}+\left\{ \mathbf{s},N\mathbf{s}\right\} =\mathcal{W},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathcal{W}$
+\end_inset
+
+是外部动力旋量(力/扭矩协旋量)，作用于机体上。
+\end_layout
+
+\begin_layout Standard
+这不是牛顿和欧拉运动方程的简单组合。这些都是在一个固连的惯性帧中给出的，因此惯量矩阵随着机体的运动而变化。如引言中所述，在机器人学中，由于存在多个相互作用的刚体
+，因此使用单个固连的惯性帧做为参考很方便。
+\end_layout
+
+\begin_layout Section
+刚性变换
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于运动学问题，人们早就知道旋量可以用Clifford代数
+\begin_inset Formula $C\ell(3,0,1)$
+\end_inset
+
+来表示。这是Study的对偶四元数的基础，参见文献[11]。在机器人运动学的上下文中，Bayro-Corrochano和Kähle [3]使用了
+\begin_inset Formula $C\ell(3,0,1)$
+\end_inset
+
+，但是我们在这里将遵循文献[14]，并基于我们对
+\begin_inset Formula $C\ell(3,0,1)$
+\end_inset
+
+的考虑。在这里，我们有
+\begin_inset Formula $3$
+\end_inset
+
+个生成元，它们的平方为
+\begin_inset Formula $-1$
+\end_inset
+
+，并有
+\begin_inset Formula $1$
+\end_inset
+
+个生成元，它的平方为
+\begin_inset Formula $0$
+\end_inset
+
+。就是，
+\begin_inset Formula $e_{1}^{2}=e_{2}^{2}=e_{3}^{2}=-1$
+\end_inset
+
+以及
+\begin_inset Formula $e^{2}=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在这个代数中，我们可以用形式的元素来表示旋转，
+\begin_inset Formula 
+\[
+r=\cos\frac{\theta}{2}+\sin\frac{\theta}{2}\left(u_{x}e_{2}e_{3}+u_{y}e_{3}e_{1}+u_{z}e_{1}e_{2}\right).
+\]
+
+\end_inset
+
+旋转角度为
+\begin_inset Formula $\theta$
+\end_inset
+
+，
+\begin_inset Formula $\left(u_{x},u_{y},u_{z}\right)^{T}$
+\end_inset
+
+是旋转轴方向上的单位向量。这只是用四元数表示旋转，用一种稍微不同的伪装，只需替换
+\begin_inset Formula $e_{2}e_{3}\mapsto i,e_{3}e_{1}\mapsto j$
+\end_inset
+
+和
+\begin_inset Formula $e_{1}e_{2}\mapsto k$
+\end_inset
+
+。因此，这是一种双值表示，或者更确切地说是覆盖群
+\begin_inset Formula $\mathrm{Spin}(3)$
+\end_inset
+
+的表示。
+\end_layout
+
+\begin_layout Standard
+在这个代数中，变换用形式的元素来表示，
+\begin_inset Formula 
+\[
+t=1+\frac{1}{2}\left(t_{x}e_{1}e+t_{y}e_{2}e+t_{z}e_{3}e\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+刚性变换是旋转和平移
+\begin_inset Formula $g=tr$
+\end_inset
+
+的组合，并因此具有一般形式，
+\begin_inset Formula 
+\[
+g=\alpha_{0}+\alpha_{1}e_{2}e_{3}+\alpha_{2}e_{3}e_{1}+\alpha_{3}e_{1}e_{2}+\beta_{0}ee_{1}e_{2}e_{3}+\beta_{1}e_{1}e+\beta_{2}e_{2}e+\beta_{3}e_{3}e,
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\alpha$
+\end_inset
+
+类和
+\begin_inset Formula $\beta$
+\end_inset
+
+类是实系数。注意，有
+\begin_inset Formula $\beta_{0}$
+\end_inset
+
+的项包含Clifford元素
+\begin_inset Formula $ee_{1}e_{2}e_{3}$
+\end_inset
+
+，该项也可以写成
+\begin_inset Formula $-\beta_{0}e_{1}e_{2}e_{3}e$
+\end_inset
+
+，此选择是为了与该主题的对偶四元数方法保持一致。这些系数不是完全任意的，要使这样一个单元成为刚体运动，它必须满足以下条件，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+gg^{*}=1.
+\]
+
+\end_inset
+
+此处的上标
+\begin_inset Formula $*$
+\end_inset
+
+标志Clifford共轭，参见文献[12, Chap.
+ 9]。就系数而言，上述方程只给出了两个关系式，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\alpha_{0}^{2}+\alpha_{1}^{2}+\alpha_{2}^{2}+\alpha_{3}^{2}=1\quad\text{ and }\quad\alpha_{0}\beta_{0}+\alpha_{1}\beta_{1}+\alpha_{2}\beta_{2}+\alpha_{3}\beta_{3}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+刚体运动群的李代数也可以用它来表示。这些是旋量，或者更恰当地说是运动旋量，它们由2级的任意元素表示，
+\begin_inset Formula 
+\[
+\mathbf{s}=\omega_{x}e_{2}e_{3}+\omega_{y}e_{3}e_{1}+\omega_{z}e_{1}e_{2}+v_{x}e_{1}e+v_{y}e_{2}e+v_{z}e_{3}e.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常，
+\begin_inset Formula $\left(\omega_{x},\omega_{y},\omega_{z}\right)^{T}$
+\end_inset
+
+是机体的角速度向量，
+\begin_inset Formula $\left(v_{x},v_{y},v_{z}\right)^{T}$
+\end_inset
+
+是机体的线速度向量。一对旋量
+\begin_inset Formula $\mathbf{s}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{s}_{2}$
+\end_inset
+
+的李括号就是它们的交换子，
+\begin_inset Formula 
+\[
+\left[\mathbf{s}_{1},\mathbf{s}_{2}\right]=\frac{1}{2}\left(\mathbf{s}_{1}\mathbf{s}_{2}-\mathbf{s}_{2}\mathbf{s}_{1}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从李代数到群的指数映射与Clifford代数是一致的，给定一个李代数元素
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+，我 们有，
+\begin_inset Formula 
+\[
+g=e^{\frac{1}{2}\mathbf{z}}=1+\left(\mathbf{z}/2\right)+\frac{1}{2}\left(\mathbf{z}/2\right)^{2}+\cdots,
+\]
+
+\end_inset
+
+这里的因子
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+是由于我们正在工作于
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的双重覆盖。
+\end_layout
+
+\begin_layout Standard
+速度旋量来自于这个关系式的时间导数。如果机体的运动是关于一个常数旋量的匀速运动，这是很简单的，
+\begin_inset Formula $g=e^{\frac{t}{2}\mathbf{s}_{0}}$
+\end_inset
+
+，很容易看出它的导数是，
+\begin_inset Formula 
+\[
+\frac{d}{dt}g=\frac{1}{2}\mathbf{s}_{0}g.
+\]
+
+\end_inset
+
+当运动更一般时，
+\begin_inset Formula $g=e^{\frac{1}{2}\mathbf{z}\left(t\right)}$
+\end_inset
+
+，则它更难证明，但尽管如此，事实是，
+\begin_inset Formula 
+\[
+\frac{d}{dt}g=\frac{1}{2}\mathbf{s}g,
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+是刚体的速度旋量。
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+之间的关系给出为，
+\begin_inset Formula 
+\[
+\mathbf{s}=\sum_{i=0}^{\infty}\frac{1}{\left(i+1\right)!}\mathrm{ad}^{i}\left(\mathbf{z}\right)\frac{d}{dt}\mathbf{z},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{ad}^{i}\left(\mathbf{z}\right)\mathbf{y}=\left[\mathbf{z},\mathrm{ad}^{i-1}\left(\mathbf{z}\right)\mathbf{y}\right]$
+\end_inset
+
+，并且
+\begin_inset Formula $\mathrm{ad}^{1}\left(\mathbf{z}\right)\mathbf{y}=\left[\mathbf{z},\mathbf{y}\right]$
+\end_inset
+
+，参见文献[4]。
+\end_layout
+
+\begin_layout Section
+Shuffle乘积
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:4"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在Clifford代数中的外积或Grassmann积的理论已经确立，例如参见文献[9, Chap.
+ 3]。然而，我们也需要这种运算的对偶性。在非退化Clifford代数中，这可以简单地用单位伪标量来完成。即元素
+\begin_inset Formula $e_{12\cdots n}=e_{1}e_{2}\cdots e_{n}$
+\end_inset
+
+，具有最大级。在文献[10]中，Lounesto给出了公式，
+\begin_inset Formula 
+\[
+b\vee c=\left(\left(be_{12\cdots n}^{-1}\right)\wedge\left(ce_{12\cdots n}^{-1}\right)\right)e_{12\cdots n}
+\]
+
+\end_inset
+
+我们所使用的代数是退化的，
+\begin_inset Formula $e_{12\cdots n}^{-1}$
+\end_inset
+
+不存在，因此这个shuffle运算必须明确地引入。
+\end_layout
+
+\begin_layout Standard
+构造直接借用了Grassmann-Cayley代数理论，参见文献[18]和[12, Chap.
+ 10]。该shuffle乘积
+\begin_inset Formula $\vee$
+\end_inset
+
+, 定义如下。在
+\begin_inset Formula $n$
+\end_inset
+
+维一般Clifford代数中，设
+\begin_inset Formula $b=b_{1}\wedge b_{2}\wedge\cdots\wedge b_{j}$
+\end_inset
+
+和
+\begin_inset Formula $c=c_{1}\wedge c_{2}\wedge\cdots\wedge c_{k}$
+\end_inset
+
+，假设
+\begin_inset Formula $j+k\geq n$
+\end_inset
+
+我们定义
+\begin_inset Formula 
+\[
+b\vee c=\sum_{\sigma}\mathrm{sign}(\sigma)\mathrm{det}\left(b_{\sigma(1)},\ldots,b_{\sigma(n-k)},c_{1},\ldots,c_{k}\right)b_{\sigma(n-k+1)}\wedge\cdots\wedge b_{\sigma(j)}.
+\]
+
+\end_inset
+
+求和是在
+\begin_inset Formula $1,2,\ldots,j$
+\end_inset
+
+的所有排列组合
+\begin_inset Formula $\sigma$
+\end_inset
+
+上获取的，使得
+\begin_inset Formula $\sigma(1)<\sigma(2)<\cdots<\sigma(n-k)$
+\end_inset
+
+和
+\begin_inset Formula $\sigma(n-k+1)<\sigma(n-k+2)<\cdots<\sigma(j)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+每个
+\begin_inset Formula $b_{i}$
+\end_inset
+
+，可以写成基元素之和，
+\begin_inset Formula 
+\[
+b_{i}=b_{i1}e_{1}+b_{i2}e_{2}+\cdots+b_{in}e_{n}.
+\]
+
+\end_inset
+
+上述定义中的行列式是矩阵的行列式，其列为系数
+\begin_inset Formula $b_{\sigma(1)i},b_{\sigma(2)i},\ldots,c_{\sigma(k)i}$
+\end_inset
+
+。然后，通过要求它分布在加法上，将shuffle乘积推广到整个Clifford代数。当
+\begin_inset Formula $j+k<n$
+\end_inset
+
+时，shuffle乘积为零。
+\end_layout
+
+\begin_layout Standard
+例如，考虑
+\begin_inset Formula $C\ell(0,3,1)$
+\end_inset
+
+中的
+\begin_inset Formula $e_{1}e_{2}\vee e_{3}e$
+\end_inset
+
+。对于一个正交基，我们可以混淆基元的Clifford积和外积，因此，
+\begin_inset Formula 
+\[
+e_{1}e_{2}\vee e_{3}e=\mathrm{det}\left(e_{1},e_{2},e_{3},e\right)=1,
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $e$
+\end_inset
+
+被认为是第四个基元“
+\begin_inset Formula $e_{4}$
+\end_inset
+
+”。
+\end_layout
+
+\begin_layout Standard
+作为另一个例子，考虑代数
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+与生成元的正交集合，具有
+\begin_inset Formula $a_{1},a_{2},a_{3},a,e_{1},e_{2},e_{3},e$
+\end_inset
+
+这样的顺序。假设我们需要计算
+\begin_inset Formula $a_{1}a_{2}a_{3}a\vee a_{3}a_{1}e_{1}e_{2}e_{3}e$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\begin{array}{c}
+a_{1}a_{2}a_{3}a\vee a_{3}a_{1}e_{1}e_{2}e_{3}e=\mathrm{det}\left(a_{1}a_{2}a_{3}a_{1}e_{1}e_{2}e_{3}e\right)a_{3}a+\cdots\qquad\qquad\qquad\\
+\qquad\qquad\qquad-\mathrm{det}\left(a_{2}aa_{3}a_{1}e_{1}e_{2}e_{3}e\right)a_{1}a_{3}+\cdots+\mathrm{det}\left(a_{3}aa_{3}a_{1}e_{1}e_{2}e_{3}e\right)a_{1}a_{2}.
+\end{array}
+\]
+
+\end_inset
+
+显然，只有右侧的中间项不为零，所以我们得到结果，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+a_{1}a_{2}a_{3}a\vee a_{3}a_{1}e_{1}e_{2}e_{3}e=a_{3}a_{1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+动量与惯量
+\end_layout
+
+\begin_layout Standard
+为了包含动量和惯量，我们将代数“加倍”，并使用Clifford代数
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+。我们将标记生成元，
+\begin_inset Formula $e_{1},e_{2},e_{3},e$
+\end_inset
+
+和
+\begin_inset Formula $a_{1},a_{2},a_{3},a$
+\end_inset
+
+，并假设
+\begin_inset Formula $a_{i}^{2}=e_{j}^{2}=-1$
+\end_inset
+
+和
+\begin_inset Formula $a^{2}=e^{2}=0$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Standard
+在这个代数中，我们可以用形式为2级的元素来表示协旋量，
+\begin_inset Formula 
+\[
+\mathcal{P}=p_{x}a_{2}a_{3}+p_{y}a_{3}a_{1}+p_{z}a_{1}a_{2}+l_{x}a_{1}a+l_{y}a_{2}a+l_{z}a_{3}a.
+\]
+
+\end_inset
+
+不难看出，刚体运动群对这些元素的作用与对旋量的作用完全相同，但使用
+\begin_inset Formula $a$
+\end_inset
+
+类代替
+\begin_inset Formula $e$
+\end_inset
+
+类。
+\end_layout
+
+\begin_layout Standard
+因此，让我们引入一个新的运算，一个将
+\begin_inset Formula $a$
+\end_inset
+
+类交换为
+\begin_inset Formula $e$
+\end_inset
+
+类的对合。 如果我们用一个上划线写这个，则
+\begin_inset Formula $\bar{a}_{i}=e_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\bar{e}_{i}=a_{i}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+现在动量上的群作用可写为，
+\begin_inset Formula 
+\[
+\mathcal{P}\longrightarrow\bar{g}\mathcal{P}\bar{g}^{*},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $g$
+\end_inset
+
+将是作用于旋量的相应群元素。
+\end_layout
+
+\begin_layout Standard
+使用不变量元素
+\begin_inset Formula $Q_{0}$
+\end_inset
+
+，协旋量在旋量上的求值映射可写为，
+\begin_inset Formula 
+\[
+Q_{0}=a_{2}a_{3}e_{1}e+a_{3}a_{1}e_{2}e+a_{1}a_{2}e_{3}e+a_{1}ae_{2}e_{3}+a_{2}ae_{3}e_{1}+a_{3}ae_{1}e_{2}.
+\]
+
+\end_inset
+
+现在该求值可以用两种形式中的一种，
+\begin_inset Formula 
+\[
+\mathcal{P}(\mathbf{s})=\mathcal{P}\vee\left(Q_{0}\wedge\mathbf{s}\right)=\left(\mathcal{P}\wedge Q_{0}\right)\vee\mathbf{s}.
+\]
+
+\end_inset
+
+这里元素
+\begin_inset Formula $Q_{0}$
+\end_inset
+
+的不变性是相对于群作用的，
+\begin_inset Formula $\left(g\bar{g}\right)Q_{0}\left(g\bar{g}\right)^{*}$
+\end_inset
+
+ 。也就是说，
+\begin_inset Formula $Q_{0}=\left(g\bar{g}\right)Q_{0}\left(g\bar{g}\right)^{*}$
+\end_inset
+
+, 但是，此元素在单独的
+\begin_inset Formula $g$
+\end_inset
+
+或
+\begin_inset Formula $\bar{g}$
+\end_inset
+
+的作用下不是不变性的，
+\begin_inset Formula $Q_{0}\neq gQ_{0}g^{*}$
+\end_inset
+
+和
+\begin_inset Formula $Q_{0}\neq\bar{g}Q_{0}\bar{g}^{*}$
+\end_inset
+
+。注意，这里的求值与传统旋量理论中的互易积非常类似。 
+\end_layout
+
+\begin_layout Standard
+明确地说，与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+一样，我们有，
+\begin_inset Formula 
+\[
+Q_{0}\wedge\mathbf{s}=\left(\omega_{x}a_{2}a_{3}+\omega_{y}a_{3}a_{1}+\omega_{z}a_{1}a_{2}+v_{x}a_{1}a+v_{y}a_{2}a+v_{z}a_{3}a\right)e_{1}e_{2}e_{3}e,
+\]
+
+\end_inset
+
+因为在正交基上，除了包含基元的项两次消失之外，外积与Clifford积是相同的。用该项与
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+执行shuffle乘积，我们得到，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathcal{P}\vee\left(Q_{0}\wedge\mathbf{s}\right)=\omega_{x}l_{x}+\omega_{y}l_{y}+\omega_{z}l_{z}+v_{x}p_{x}+v_{y}p_{y}+v_{z}p_{z}.
+\]
+
+\end_inset
+
+这一次交叉项消失了，因为shuffle乘积中的行列式将包含重复的列。
+\end_layout
+
+\begin_layout Standard
+接下来我们看惯量矩阵。注意，由于任意惯量矩阵都可以通过适当的刚体运动转化为对角矩阵，如果我们得到了惯量的群作用是正确的，则我们只需要考虑对角惯量矩阵。也就是说，
+如果这些方程适用于对角惯量矩阵，它们将适用于一般惯量矩阵。这就节省了大量的验证我们的构造的工作。现在一个对角惯量矩阵可以表示为，
+\begin_inset Formula 
+\[
+N=d_{x}a_{1}ae_{1}e+d_{y}a_{2}ae_{2}e+d_{z}a_{3}ae_{3}e+ma_{2}a_{3}e_{2}e_{3}+ma_{3}a_{1}e_{3}e_{1}+ma_{1}a_{2}e_{1}e_{2},
+\]
+
+\end_inset
+
+其中，像往常一样，
+\begin_inset Formula $m$
+\end_inset
+
+表示机体的质量，
+\begin_inset Formula $d_{i}$
+\end_inset
+
+是质量乘以围绕主轴
+\begin_inset Formula $i$
+\end_inset
+
+的旋转半径的平方。
+\end_layout
+
+\begin_layout Standard
+为了构造从速度到动量的映射，我们需要另一个不变量，
+\begin_inset Formula $A=a_{1}a_{2}a_{3}a$
+\end_inset
+
+。这个元素显然与任意
+\begin_inset Formula $g$
+\end_inset
+
+交换，因此不同于前面的不变量
+\begin_inset Formula $A=gAg^{*}$
+\end_inset
+
+。也很容易看出
+\begin_inset Formula $A=\bar{g}A\bar{g}^{*}$
+\end_inset
+
+，所以很明显
+\begin_inset Formula $A=\left(g\bar{g}\right)A\left(g\bar{g}\right)^{*}$
+\end_inset
+
+。现在刚体的动量给出为，
+\begin_inset Formula 
+\[
+\mathcal{P}=A\vee\left(N\wedge\mathbf{s}\right).
+\]
+
+\end_inset
+
+显式地，利用上面的对角惯量和第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中的
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+，我们得到，
+\begin_inset Formula 
+\[
+\mathcal{P}=mv_{x}a_{2}a_{3}+mv_{y}a_{3}a_{1}+mv_{z}a_{1}a_{2}+d_{x}\omega_{x}a_{1}a+d_{y}\omega_{y}a_{2}a+d_{z}\omega_{z}a_{3}a,
+\]
+
+\end_inset
+
+正如从初等力学中所期望的那样。
+\end_layout
+
+\begin_layout Standard
+接下来我们介绍两个小结果，首先我们有：
+\begin_inset Formula $h\left(a\wedge b\right)h^{*}=\left(hah^{*}\right)\wedge\left(hbh^{*}\right)$
+\end_inset
+
+，对于Clifford代数的任意元素
+\begin_inset Formula $a,b$
+\end_inset
+
+以及
+\begin_inset Formula $h$
+\end_inset
+
+做为一个元素满足
+\begin_inset Formula $hh^{*}=1$
+\end_inset
+
+，并且对于任何向量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+，
+\begin_inset Formula $h\mathbf{x}h^{*}$
+\end_inset
+
+是一个向量。 对于任意两个向量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+我们有，
+\begin_inset Formula 
+\[
+h\left(\mathbf{x}\wedge\mathbf{y}\right)h^{*}=h\frac{1}{2}\left(\mathbf{xy}-\mathbf{y}\mathbf{x}\right)h^{*}=\frac{1}{2}\left(h\mathbf{x}h^{*}h\mathbf{y}h^{*}-h\mathbf{y}h^{*}h\mathbf{x}h^{*}\right)=\left(h\mathbf{x}h^{*}\right)\wedge\left(h\mathbf{y}h^{*}\right).
+\]
+
+\end_inset
+
+正如外积的定义可以通过线性和结合性扩展到整个代数一样，由于
+\begin_inset Formula $h$
+\end_inset
+
+的共轭是线性运算，所以这个结果也可以扩展到整个代数。
+\end_layout
+
+\begin_layout Standard
+第二个结果实际上是第一个结果的对偶，即：对于上述Clifford代数的任意元素
+\begin_inset Formula $a,b$
+\end_inset
+
+以及
+\begin_inset Formula $h$
+\end_inset
+
+，
+\begin_inset Formula $h\left(a\vee b\right)h^{*}=\left(hah^{*}\right)\vee\left(hbh^{*}\right)$
+\end_inset
+
+。但是请注意，除非
+\begin_inset Formula $a$
+\end_inset
+
+和
+\begin_inset Formula $b$
+\end_inset
+
+中最低等级项的等级总和大于或等于Clifford代数的维数，否则shuffle乘积将为零。
+\end_layout
+
+\begin_layout Standard
+在非退化的Clifford代数中，这个结果不需要任何额外的证明，因为上面第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节使用伪标量定义了shuffle乘积。对于退化Clifford代数，如本文所考虑的代数，这个结果可以很简单地证明。首先观察一下，对于向量
+\begin_inset Formula $\mathbf{x}_{1},\mathbf{x}_{2},\cdots\mathbf{x}_{n}$
+\end_inset
+
+我们有，
+\begin_inset Formula 
+\[
+\mathrm{det}\left(\left(h\mathbf{x}_{1}h^{*}\right),\left(h\mathbf{x}_{2}h^{*}\right),\cdots\left(h\mathbf{x}_{n}h^{*}\right)\right)=\mathrm{det}\left(\mathbf{x}_{1},\mathbf{x}_{2},\cdots\mathbf{x}_{n}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这可以通过考虑
+\begin_inset Formula $h$
+\end_inset
+
+和
+\begin_inset Formula $h^{*}$
+\end_inset
+
+对向量的作用来体现，即用矩阵乘法表示。表示
+\begin_inset Formula $h$
+\end_inset
+
+和
+\begin_inset Formula $h^{*}$
+\end_inset
+
+的
+\begin_inset Formula $n\times n$
+\end_inset
+
+矩阵，其行列式是彼此互易的，因为
+\begin_inset Formula $hh^{*}=1$
+\end_inset
+
+。组合这个与第一个结果和上面第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出的shuffle乘积的定义，得到第二个结果。最后，我们注意到
+\begin_inset Formula $g\bar{g}$
+\end_inset
+
+明显满足条件
+\begin_inset Formula $\left(g\bar{g}\right)\left(g\bar{g}\right)^{*}=1$
+\end_inset
+
+，并且对于所有的向量
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+，
+\begin_inset Formula $\left(g\bar{g}\right)\mathbf{x}\left(g\bar{g}\right)^{*}$
+\end_inset
+
+是一个向量。
+\end_layout
+
+\begin_layout Standard
+现在我们用上面的两个结果来找到
+\begin_inset Formula $SE(3)$
+\end_inset
+
+对惯量的作用。通过
+\begin_inset Formula $g\bar{g}$
+\end_inset
+
+的共轭对动量协旋量的变换方程，给出为，
+\begin_inset Formula 
+\[
+\left(g\bar{g}\right)\mathcal{P}\left(g\bar{g}\right)^{*}=\left(g\bar{g}\right)\left(A\vee\left(N\wedge\mathbf{s}\right)\right)\left(g\bar{g}\right)^{*}=\left(g\bar{g}\right)A\left(g\bar{g}\right)^{*}\vee\left(\left(g\bar{g}\right)N\left(g\bar{g}\right)^{*}\wedge\left(g\bar{g}\right)\mathbf{s}\left(g\bar{g}\right)^{*}\right)
+\]
+
+\end_inset
+
+这里使用了上述结果。由于
+\begin_inset Formula $A$
+\end_inset
+
+是不变量，
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+与
+\begin_inset Formula $g$
+\end_inset
+
+可交换，
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+与
+\begin_inset Formula $\bar{g}$
+\end_inset
+
+可交换，我们有，
+\begin_inset Formula 
+\[
+\bar{g}\mathcal{P}\bar{g}^{*}=A\vee\left(g\bar{g}N\bar{g}^{*}g^{*}\wedge g\mathbf{s}g^{*}\right).
+\]
+
+\end_inset
+
+因此，我们可以推断出，惯量必须根据以下方式变换，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+N\longrightarrow\left(g\bar{g}\right)N\left(g\bar{g}\right)^{*}.
+\]
+
+\end_inset
+
+注意，事实上，同样的变换规律可用于旋量和协旋量，
+\begin_inset Formula $\mathbf{s}\rightarrow\left(g\bar{g}\right)\mathbf{s}\left(g\bar{g}\right)^{*}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{P}\rightarrow\left(g\bar{g}\right)\mathcal{P}\left(g\bar{g}\right)^{*}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+作为一个例子，考虑上面的对角线惯量在
+\begin_inset Formula $x$
+\end_inset
+
+方向的
+\begin_inset Formula $t_{x}$
+\end_inset
+
+平移下如何变换。对于这种变换我们有，
+\begin_inset Formula 
+\[
+g=1+\frac{1}{2}t_{x}e_{1}e,
+\]
+
+\end_inset
+
+并因此，
+\begin_inset Formula 
+\[
+g\bar{g}=\left(1+\frac{1}{2}t_{x}e_{1}e\right)\left(1+\frac{1}{2}t_{x}a_{1}a\right)=1+\frac{1}{2}t_{x}a_{1}a+\frac{1}{2}t_{x}e_{1}e+\frac{1}{4}t_{x}^{2}a_{1}ae_{1}e.
+\]
+
+\end_inset
+
+对于手工计算，可能最好分别执行
+\begin_inset Formula $g$
+\end_inset
+
+和
+\begin_inset Formula $\bar{g}$
+\end_inset
+
+的乘法。其结果是，
+\begin_inset Formula 
+\[
+\begin{gathered}g\bar{g}N\bar{g}^{*}g^{*}=\quad d_{x}a_{1}ae_{1}e+\left(d_{y}+mt_{x}^{2}\right)a_{2}ae_{2}e+\left(d_{z}+mt_{x}^{2}\right)a_{3}ae_{3}e+\\
+mt_{x}a_{3}ae_{3}e_{1}-mt_{x}a_{2}ae_{1}e_{2}+\\
+mt_{x}a_{3}a_{1}e_{3}e-mt_{x}a_{1}a_{2}e_{2}e+\\
+ma_{2}a_{3}e_{2}e_{3}+ma_{3}a_{1}e_{3}e_{1}+ma_{1}a_{2}e_{1}e_{2}.
+\end{gathered}
+\]
+
+\end_inset
+
+将其与相应的
+\begin_inset Formula $6\times6$
+\end_inset
+
+惯量矩阵进行比较，
+\begin_inset Formula 
+\[
+\left(\begin{array}{cccccc}
+d_{x} & 0 & 0 & 0 & 0 & 0\\
+0 & d_{y}+mt_{x}^{2} & 0 & 0 & 0 & -mt_{x}\\
+0 & 0 & d_{z}+mt_{x}^{2} & 0 & mt_{x} & 0\\
+0 & 0 & 0 & m & 0 & 0\\
+0 & 0 & mt_{x} & 0 & m & 0\\
+0 & -mt_{x} & 0 & 0 & 0 & m
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后在这里，刚体的动能可以写为，
+\begin_inset Formula 
+\[
+E_{k}=\frac{1}{2}\mathcal{P}\vee\left(Q_{0}\wedge\mathbf{s}\right)=\frac{1}{2}A\vee\left(Q_{0}\wedge\mathbf{s}\right)\vee\left(N\wedge\mathbf{s}\right).
+\]
+
+\end_inset
+
+注意，组合
+\begin_inset Formula $A\vee\left(Q_{0}\wedge\mathbf{s}\right)$
+\end_inset
+
+产生，
+\begin_inset Formula 
+\[
+A\vee\left(Q_{0}\wedge\mathbf{s}\right)=\omega_{x}a_{2}a_{3}+\omega_{y}a_{3}a_{1}+\omega_{z}a_{1}a_{2}+v_{x}a_{1}a+v_{y}a_{2}a+v_{z}a_{3}a.
+\]
+
+\end_inset
+
+当然，这与
+\begin_inset Formula $\bar{\mathbf{s}}$
+\end_inset
+
+相同。所以，动能可以被整齐地写为，
+\begin_inset Formula 
+\[
+E_{k}=\frac{1}{2}\bar{\mathbf{s}}\vee\left(N\wedge\mathbf{s}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+运动方程
+\end_layout
+
+\begin_layout Standard
+在我们写下刚体的运动方程之前，我们还需要最后一个运算；协伴随作用。这可以从上一节中给出的对协旋量的群作用中找到。让我们假设一个协旋量受支配于关于一个旋量的匀速运
+动。相关的群元素可以写为指数，
+\begin_inset Formula $g=e^{\frac{t}{2}\mathbf{s}}$
+\end_inset
+
+，其中
+\begin_inset Formula $t$
+\end_inset
+
+是时间。因此，作为时间的函数，协旋量给出为，
+\begin_inset Formula 
+\[
+\mathcal{P}\left(t\right)=e^{\frac{t}{2}\bar{\mathbf{s}}}\mathcal{P}e^{-\frac{t}{2}\bar{\mathbf{s}}}.
+\]
+
+\end_inset
+
+现在，如果我们将它相对于
+\begin_inset Formula $t$
+\end_inset
+
+进行微分，然后设
+\begin_inset Formula $t=0$
+\end_inset
+
+，我们得到旋量
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+对协旋量
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+的协伴随作用，
+\begin_inset Formula 
+\[
+\left\{ \mathbf{s},\mathcal{P}\right\} =\frac{1}{2}\left(\bar{\mathbf{s}}\mathcal{P}-\mathcal{P}\bar{\mathbf{s}}\right).
+\]
+
+\end_inset
+
+计算表明，这与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节给出的公式一致。
+\end_layout
+
+\begin_layout Standard
+现在可以很简单地推导出运动方程。根据牛顿第二定律，施加在机体上的力等于动量的变化率，在我们的符号中，它变成，
+\begin_inset Formula 
+\[
+\frac{d}{dt}\mathcal{P}=\mathcal{W}.
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathcal{W}$
+\end_inset
+
+是施加的动力旋量。动量给出为，
+\begin_inset Formula $\mathcal{P}=A\vee\left(N\wedge\mathbf{s}\right)$
+\end_inset
+
+，如上所示。这里各因子的导数很容易找到，
+\begin_inset Formula $A$
+\end_inset
+
+是一个不变量，所以其导数为零，旋量
+\begin_inset Formula $\mathbf{s}$
+\end_inset
+
+在这里是未知的，所以我们简单写为
+\begin_inset Formula $\frac{d}{dt}\mathbf{s}=\dot{\mathbf{s}}$
+\end_inset
+
+。通过微分群作用，可以找出惯量矩阵的导数，
+\begin_inset Formula 
+\[
+\frac{d}{dt}N=\frac{1}{2}\left(\mathbf{s}N-N\mathbf{s}\right)+\frac{1}{2}\left(\bar{\mathbf{s}}N-N\bar{\mathbf{s}}\right).
+\]
+
+\end_inset
+
+现在
+\begin_inset Formula $(\mathbf{s}N-N\mathbf{s})\wedge\mathbf{s}=0$
+\end_inset
+
+，所以当我们把这些结果组合起来形成动量的导数时，我们得到，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d}{dt}\mathcal{P}=A\vee\left(N\wedge\dot{\mathbf{s}}\right)+\frac{1}{2}A\vee\left(\left(\bar{\mathbf{s}}N-N\bar{\mathbf{s}}\right)\wedge\mathbf{s}\right).
+\]
+
+\end_inset
+
+这与第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中给出的结果一致，因为这里的右侧的第二项是，
+\begin_inset Formula 
+\[
+\frac{1}{2}\left(\bar{\mathbf{s}}\left(A\vee\left(N\wedge\mathbf{s}\right)\right)-\left(A\vee\left(N\wedge\mathbf{s}\right)\right)\bar{\mathbf{s}}\right)=\left\{ \mathbf{s},A\vee\left(N\wedge\mathbf{s}\right)\right\} =\left\{ \mathbf{s},\mathcal{P}\right\} .
+\]
+
+\end_inset
+
+也可以使用拉格朗日力学从动能表达式推导出该方程。
+\end_layout
+
+\begin_layout Standard
+注意，我们可以通过引入不变量元素
+\begin_inset Formula $E=\bar{A}=e_{1}e_{2}e_{3}e$
+\end_inset
+
+来稍微整理我们的Clifford运动方程。显然，对于代数中的任意元素
+\begin_inset Formula $c$
+\end_inset
+
+，我们都有
+\begin_inset Formula $AE\vee c=c$
+\end_inset
+
+，所以将我们的方程乘以
+\begin_inset Formula $E$
+\end_inset
+
+得到，
+\begin_inset Formula 
+\[
+N\wedge\dot{\mathbf{s}}+\frac{1}{2}\left(\left(\bar{\mathbf{s}}N-N\bar{\mathbf{s}}\right)\wedge\mathbf{s}\right)=\mathcal{W}E.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+结论
+\end_layout
+
+\begin_layout Standard
+正如引言中提到的，本项工作的主要动机之一是将机器人的动力学铸造为Clifford代数形式。现在可以非常简单地完成这项工作，至少对于串联机器人臂，我们可以模拟文献
+[12]中给出的分析，事实上，这已经在文献[13]中完成。
+\end_layout
+
+\begin_layout Standard
+本项工作的一个更重要的成就是，我们已经能够找到一个Clifford代数，它包含刚体运动群
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的伴随表示的对称张量方阵。Clifford代数通常和反对称表示联系在一起。这里使用的方法与Sobczyk [15]的工作有一些相似之处，那里的一般线性代数使用C
+lifford代数表示。
+\end_layout
+
+\begin_layout Standard
+实际上，惯量矩阵位于伴随表示的对称方阵子空间中。然而，很明显，Clifford代数
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+包含了这个表示的所有内容。这意味着将一阶弹性和阻尼纳入力学的表述中相对容易。这是因为这类系统的阻尼矩阵和刚度矩阵也是对称的
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵，具有与惯量矩阵相同的变换性质。
+\end_layout
+
+\begin_layout Standard
+注意，这意味着惯量是Clifford代数的诚实元素，实际上是
+\begin_inset Formula $4$
+\end_inset
+
+级元素。此外，这些惯量对应于旋量理论的
+\begin_inset Formula $6\times6$
+\end_inset
+
+个惯量矩阵。这意味着我们不需要引入惯量的平行轴定理，它包含在惯量元素的变换性质中，并由其推广。
+\end_layout
+
+\begin_layout Standard
+当然这是使用Clifford代数的主要优点，一般来说，一切都在代数中。不仅有惯量、速度和动量，而且还有刚体运动群的元素。所有物理量之间的关系都由代数中的标准运算
+给出。这包括旋量的李括号和旋量在协旋量上的伴随作用。因此，为了进行计算，所有我们需要知道的就是如何在任意Clifford代数中进行计算。
+\end_layout
+
+\begin_layout Standard
+我们所使用的
+\begin_inset Formula $C\ell(0,6,2)$
+\end_inset
+
+的代数相当大，关键问题是，我们能否找到一个更小的代数来表示刚体的动力学？当然，我们所做的每件事都使用了代数的偶数阶元素，因此，根据Clifford代数的标准理论
+，我们所有的构造都可以归结为
+\begin_inset Formula $C\ell(0,5,2)$
+\end_inset
+
+。同样，如果大小是唯一的考虑因素，我们可以求助于Hestenes最初的
+\begin_inset Formula $C\ell(3)$
+\end_inset
+
+表达方法。问题是：什么是最小的Clifford代数，它包含
+\begin_inset Formula $SE(3)$
+\end_inset
+
+的伴随表示的对称方阵的副本？
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+E.T.
+ Abou El Dahab, 2000.
+ "A Formulation of Hamiltonian Mechanics using Geometric Algebra".
+ 
+\emph on
+Advances in Applied Clifford Algebras
+\emph default
+, 10(2):217-223.
+\end_layout
+
+\begin_layout Enumerate
+L.
+ Dorst, D.
+ Fontijne, S.
+ Mann, 2007 
+\emph on
+Geometric Algebra for Computer Science: An Object-Oriented approach to Geometry
+\emph default
+, Morgan Kaufmann, San Francisco.
+\end_layout
+
+\begin_layout Enumerate
+E.
+ Bayro-Corrochano and D.
+ Kähle, 2000.
+ "Motor Algebra Approach for Computing the Kinematics of Robot Manipulators".
+ 
+\emph on
+Journal of Robotic Systems
+\emph default
+, 17(9):495-516.
+\end_layout
+
+\begin_layout Enumerate
+F.
+ Hausdorff, 1906.
+ "Die Symbolische Exponential Formel in den Grupen Theorie".
+ 
+\emph on
+Berichte de Sächichen Akademie de Wissenschaften (Math Phys Klasse)
+\emph default
+ 58:19-48.
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Hestenes, 1999.
+ 
+\emph on
+New Foundations for Classical Mechanics
+\emph default
+ 2nd ed.
+ D.
+ Reidel, Dordrecht.
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Hestenes, 2001.
+ "Old Wine in New Bottles: A New Algebraic Framework for Computational Geometry"
+, chapter 1, pp.
+ 3-17.
+ in 
+\emph on
+Applied Clifford Algebra in Cybernetics, Robotics, Image Processing and
+ Engineering
+\emph default
+, eds.
+ E.
+ Bayro-Corrochano and G.
+ Sobczyk.
+ Birkhäuser, Boston.
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Hestenes and E.
+ Fasse, 2002 "Homogeneous Rigid Body Mechanics with Elastic Coupling".
+ in 
+\emph on
+Applications of geometric algebra in computer science and engineering
+\emph default
+, eds.
+ L.Dorst, C.
+ Doran and J.
+ Lasenby.
+ Birkhäuser, Boston, pp.
+ 197-212.
+\end_layout
+
+\begin_layout Enumerate
+I.
+ Millington, 2007 
+\emph on
+Game Physics Engine Development
+\emph default
+, Morgan Kaufmann, San Francisco.
+\end_layout
+
+\begin_layout Enumerate
+P.
+ Lounesto, 2001.
+ 
+\emph on
+Clifford Algebras and Spinors
+\emph default
+, 2nd edition.
+ LMS Lecture Note Series 286, Cambridge University Press, Cambridge.
+\end_layout
+
+\begin_layout Enumerate
+P.
+ Lounesto, 2004.
+ "Introduction to Clifford Algebras", Lecture 1, pp.
+ 1-29, in 
+\emph on
+Lectures on Clifford (geometric) algebras and applications
+\emph default
+.
+ eds.
+ R.
+ Abłamowicz and G.
+ Sobczyk, Birkhäuser, Boston.
+\end_layout
+
+\begin_layout Enumerate
+I.R.
+ Porteous, 1981.
+ 
+\emph on
+Topological Geometry
+\emph default
+.
+ Cambridge University Press, Cambridge, second edition.
+\end_layout
+
+\begin_layout Enumerate
+J.M.
+ Selig, 2005.
+ 
+\emph on
+Geometric Fundamentals of Robotics
+\emph default
+.
+ Springer Verlag, New York.
+\end_layout
+
+\begin_layout Enumerate
+J.M.
+ Selig, 2005.
+ "Clifford Algebra and Robot Dynamics", Chapter 19, pp.
+ 637-658, in 
+\emph on
+Handbook of Computational geometry for Pattern recognition, Vision, Neurocomputi
+ng and Robotics
+\emph default
+, editor E.
+ Bayro-Corrochano, Springer Verlag, New York.
+\end_layout
+
+\begin_layout Enumerate
+J.M.
+ Selig, 2001.
+ "Robot Kinematics and Flags".
+ chapter 11, pp.
+ 211-234, in 
+\emph on
+Applied Clifford Algebra in Cybernetics, Robotics, Image Processing and
+ Engineering
+\emph default
+, eds.
+ E.
+ Bayro-Corrochano and G.
+ Sobczyk.
+ Birkhäuser, Boston.
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Sobczyk, 2001.
+ "Universal Geometric Algebra".
+ chapter 2, pp.
+ 18-41, in 
+\emph on
+Applied Clifford Algebra in Cybernetics, Robotics, Image Processing and
+ Engineering
+\emph default
+, eds.
+ E.
+ Bayro-Corrochano and G.
+ Sobczyk.
+ Birkhäuser, Boston.
+\end_layout
+
+\begin_layout Enumerate
+J.C.
+ Trinkle, J.S.
+ Pang, S.
+ Sudarsky and G.
+ Lo, 1997.
+ "On Dynamic Multi-rigid-body Contact Problems with Coulomb friction".
+ 
+\emph on
+Zeitschrift für Angewandte Matematik und Mechanik
+\emph default
+, 77(4):267-279.
+\end_layout
+
+\begin_layout Enumerate
+J.
+ M.
+ Van Verth, L.
+ M.
+ Bishop, 2004.
+ 
+\emph on
+Essential Mathematics for Games and Interactive Applications: A Programmers
+ Guide
+\emph default
+, Morgan Kaufmann, San Francisco.
+\end_layout
+
+\begin_layout Enumerate
+N.
+ White, 1994.
+ "Grassmann-Cayley Algebra and Robotics".
+ 
+\emph on
+J.
+ Intell.
+ Robot Syst.
+\emph default
+, 11:97-107.
+\end_layout
+
+\end_body
+\end_document

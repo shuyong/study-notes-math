@@ -1,0 +1,2147 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "空间代数入门"
+\pdf_author "Jan Carius"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "空间代数入门"
+target "https://jan.carius.io/assets/spatial_velocities/spatial_velocities.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Jan Carius
+\end_layout
+
+\begin_layout Date
+March 2018
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Current revision: 20th April 2018
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本文档的目的是提供关于空间速度的概述，或者如Roy Featherstone所说的“刚体动力学的简单方法”。本教程主要基于研讨会幻灯片
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+target "http://royfeatherstone.org/spatial/slides.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+和Featherstone的《刚体动力学》[1]一书。在表 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中，我们总结了本文档中使用的符号。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:1"
+
+\end_inset
+
+Notation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="15" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+符号
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+维数
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+含义
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+坐标帧名称(始终为大写书法字母)。对应的原点用
+\begin_inset Formula $B$
+\end_inset
+
+标志
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+机体名称或帧
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+的中心
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $_{\mathcal{C}}\boldsymbol{r}_{AB}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+在
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+帧中表示的从点
+\begin_inset Formula $A$
+\end_inset
+
+到点
+\begin_inset Formula $B$
+\end_inset
+
+的位置向量
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+空间速度(抽象向量，还没有坐标表示)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{a}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+空间加速度(抽象向量，还没有坐标表示)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hat{\boldsymbol{I}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+空间惯量(从空间速度到空间动量的映射)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{v}}_{B}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6\times1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+机体
+\begin_inset Formula $B$
+\end_inset
+
+的空间速度，其相对于帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+的原点作为参考点，并为帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+的坐标表示
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{v}}_{B}^{\times}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6\times6$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+上述速度的叉积矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $_{\mathcal{O}}\boldsymbol{I}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3\times3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+惯量矩阵
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{I}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6\times6$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+空间惯量，为帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+的坐标表示
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+对于运动项的空间向量叉积或对于三维向量的“正常”叉积(从上下文中辨别)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\times^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+对于动力项的空间向量叉积
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+运动空间坐标的向量空间
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+动力空间坐标的向量空间
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们将经常使用三维向量的叉积矩阵(斜对称矩阵)，其定义为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{r}^{\times}=\left[\begin{array}{c}
+r_{x}\\
+r_{y}\\
+r_{z}
+\end{array}\right]^{\times}=\left[\begin{array}{ccc}
+0 & -r_{z} & r_{y}\\
+r_{z} & 0 & -r_{x}\\
+-r_{y} & r_{x} & 0
+\end{array}\right]\text{. }
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+空间向量
+\end_layout
+
+\begin_layout Standard
+空间向量是由长度为
+\begin_inset Formula $6$
+\end_inset
+
+的元组表示的对象，表示线性和角度的量，如动力和扭矩，或线性和角度速度。此文档中的所有空间向量顶部都有一个帽子。
+\end_layout
+
+\begin_layout Subsection
+空间速度与加速度
+\end_layout
+
+\begin_layout Standard
+空间速度描述了一个刚体作为一个整体的运动，而不是机体的一个个别点的运动。刚体的空间速度
+\begin_inset Formula $B$
+\end_inset
+
+标志为
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{v}}_{B}={}^{{\color{red}\mathcal{O}}}{}_{{\color{blue}\mathcal{O}}}\hat{\boldsymbol{v}}_{B}=\left[\begin{array}{cccccc}
+\omega_{x} & \omega_{y} & \omega_{z} & v_{{\color{blue}\mathcal{O}}x} & v_{{\color{blue}\mathcal{O}}y} & v_{{\color{blue}\mathcal{O}}z}\end{array}\right]^{\top}=\left[\begin{array}{c}
+^{{\color{red}\mathcal{O}}}\boldsymbol{\omega}\\
+^{{\color{red}\mathcal{O}}}{}_{{\color{blue}\mathcal{O}}}\boldsymbol{v}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+这个表示意味着：它是点
+\begin_inset Formula $B$
+\end_inset
+
+相对于参考点
+\begin_inset Formula ${\color{blue}\mathcal{O}}$
+\end_inset
+
+的空间速度
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+，并且坐标是根据帧轴
+\begin_inset Formula ${\color{red}\mathcal{O}}$
+\end_inset
+
+表示。后面，我们通过假设参考点始终是参考帧的原点，将其中一个索引放置在空间向量的左侧。
+\end_layout
+
+\begin_layout Standard
+换句话说，一个机体的空间速度相对于参考帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+由两部分组成：a) 机体的经典绝对角速度，以及 b) 在原点
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+处产生的机体的绝对线速度。对于后者，想象机体在空间中无限延伸，然后写出一个表达式，表示机体上与
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+瞬时重合的点的速度。
+\end_layout
+
+\begin_layout Standard
+如果机体相对于静止帧
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+的绝对线速度给出为
+\begin_inset Formula $\boldsymbol{v}_{IB}$
+\end_inset
+
+ (意味着在机体
+\begin_inset Formula $B$
+\end_inset
+
+上的参考点以该速度移动)，并且绝对角速度为
+\begin_inset Formula $\boldsymbol{\omega}_{IB}$
+\end_inset
+
+，则空间速度可以很容易地计算为
+\begin_inset Formula 
+\begin{align}
+_{\mathcal{I}}\hat{\boldsymbol{v}}_{B} & =\left[\begin{array}{c}
+_{\mathcal{I}}\boldsymbol{\omega}_{IB}\\
+_{\mathcal{I}}\boldsymbol{v}_{IB}+{}_{\mathcal{I}}\boldsymbol{r}_{IB}\times{}_{\mathcal{I}}\boldsymbol{\omega}_{IB}
+\end{array}\right],\\
+_{\mathcal{B}}\hat{\boldsymbol{v}}_{B} & =\left[\begin{array}{c}
+_{\mathcal{B}}\boldsymbol{\omega}_{IB}\\
+_{\mathcal{B}}\boldsymbol{v}_{IB}
+\end{array}\right].
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两个机体之间的相对速度为
+\begin_inset Formula $\hat{\boldsymbol{v}}_{\mathrm{rel}}=\hat{\boldsymbol{v}}_{12}=\hat{\boldsymbol{v}}_{2}-\hat{\boldsymbol{v}}_{1}$
+\end_inset
+
+。若要使该减法的分量正确，所有三个项的参考点和帧都必须相同。两个刚性连接的机体具有相同的空间速度，即零相对速度和零相对加速度。
+\end_layout
+
+\begin_layout Paragraph
+移动参考帧：
+\end_layout
+
+\begin_layout Standard
+如果参考坐标系统 
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+恰好是移动的(即，其方向随时间变化和/或原点具有非零线速度)，则空间速度
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{v}}_{B}$
+\end_inset
+
+
+\series bold
+仍然
+\series default
+是机体相对于一个瞬时与
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+重合的静止参考帧的一个绝对空间速度。这意味着
+\end_layout
+
+\begin_layout Itemize
+相对于其本身表达的移动帧的速度
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{v}}_{\mathcal{O}}$
+\end_inset
+
+不为零。它描述帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+相对于一个瞬时与
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+重合的静止帧的速度。
+\end_layout
+
+\begin_layout Itemize
+一个机体相对于一个移动帧的空间速度与该帧的移动不相关。这不应与相对空间速度相混淆，相对空间速度是两个绝对空间速度之间的差值。
+\end_layout
+
+\begin_layout Paragraph
+时间导数：
+\end_layout
+
+\begin_layout Standard
+空间向量
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{s}}$
+\end_inset
+
+的一般微分规则为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\left[\frac{\mathrm{d}}{\mathrm{dt}}\hat{\boldsymbol{s}}\right]=\underbrace{\frac{\mathrm{d}}{\mathrm{dt}}\left(_{\mathcal{O}}\hat{\boldsymbol{s}}\right)}_{\text{componentwise}}+\underbrace{_{\mathcal{O}}\hat{\boldsymbol{v}}_{\mathcal{O}}}_{\begin{array}{c}
+\text{vel of}\\
+\text{coord. frame}
+\end{array}}\times{}_{\mathcal{O}}\hat{\boldsymbol{s}}.\label{eq:5}
+\end{equation}
+
+\end_inset
+
+对于动力项(例如，空间动力)，必须使用动力的叉积 
+\begin_inset Formula $\left(\times^{*}\right)$
+\end_inset
+
+ (参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:2.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)。上述公式中的第一项说明了静止帧中向量的变化，而叉积增加了一个移动参考帧的效应。
+\end_layout
+
+\begin_layout Paragraph
+空间加速度：
+\end_layout
+
+\begin_layout Standard
+空间加速度是空间速度的变化率，即空间速度向量随时间变化的程度。
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{a}}={}_{\mathcal{O}}\left[\frac{\mathrm{d}}{\mathrm{dt}}\hat{\boldsymbol{v}}\right]=\left[\begin{array}{c}
+\dot{\boldsymbol{\omega}}\\
+_{\mathcal{O}}\dot{\boldsymbol{v}}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+请注意，线性分量不是机体上任何点的加速度，因为我们仍在考虑“流”通过点
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+如何变化(该点
+\series bold
+不是
+\series default
+固连在机体上，而是固连在空间中)。空间加速度是一个真向量。我们可以执行如下计算
+\begin_inset Formula 
+\begin{equation}
+\underbrace{\hat{\boldsymbol{a}}_{B}}_{\text{acc. body B}}=\underbrace{\hat{\boldsymbol{a}}_{A}}_{\text{acc. body A}}+\underbrace{\hat{\boldsymbol{a}}_{AB}}_{\text{acc. of B w.r.t. A}},
+\end{equation}
+
+\end_inset
+
+并避免任何的科里奥利项(Coriolis terms) ！要以数字方式执行加法，所有量的参考帧必须相同。空间加速度也是真向量，因此它满足
+\begin_inset Formula $\hat{\boldsymbol{a}}_{\mathrm{rel}}=\hat{\boldsymbol{a}}_{12}=\hat{\boldsymbol{a}}_{2}-\hat{\boldsymbol{a}}_{1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+相对速度：
+\end_layout
+
+\begin_layout Standard
+相对速度对于描述刚体系统(如机器人)特别重要，其中连杆通过关节连接。例如，由轴为
+\begin_inset Formula $\hat{\boldsymbol{s}}$
+\end_inset
+
+且关节速率为
+\begin_inset Formula $\dot{q}$
+\end_inset
+
+的旋转/平移关节连接的两个机体的相对速度称为关节速度
+\begin_inset Formula $\hat{\boldsymbol{v}}_{J}=\hat{\boldsymbol{s}}_{J}\dot{q}$
+\end_inset
+
+。由于表示
+\begin_inset Formula $_{\mathcal{C}}\hat{\boldsymbol{s}}_{J}$
+\end_inset
+
+或
+\begin_inset Formula $_{\mathcal{P}}\hat{\boldsymbol{s}}_{J}$
+\end_inset
+
+是常数，因此可以方便地在关节的父帧
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+或子帧
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+中表达该量。当微分这个量时，我们得到关节加速度。
+\end_layout
+
+\begin_layout Subsection
+空间动力
+\end_layout
+
+\begin_layout Standard
+空间动力
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{f}}={}^{{\color{red}\mathcal{O}}}{}_{{\color{blue}\mathcal{O}}}\hat{\boldsymbol{f}}=\left[\begin{array}{cccccc}
+n_{{\color{blue}\mathcal{O}}x} & n_{{\color{blue}\mathcal{O}}y} & n_{{\color{blue}\mathcal{O}}z} & f_{x} & f_{y} & f_{z}\end{array}\right]^{\top}=\left[\begin{array}{c}
+^{{\color{red}\mathcal{O}}}{}_{{\color{blue}\mathcal{O}}}\boldsymbol{n}\\
+^{{\color{red}\mathcal{O}}}\boldsymbol{f}
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+由沿穿过
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+的直线作用的线性力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和围绕
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+表示总力矩的力偶
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+German: Freies Moment
+\end_layout
+
+\end_inset
+
+组成。同样，我们通常会放弃其中一个表示处方。机体上总的空间动力是单个空间动力的总和
+\begin_inset Formula $\hat{\boldsymbol{f}}_{\mathrm{total}}=\sum\hat{\boldsymbol{f}}_{i}$
+\end_inset
+
+。如果所有动力都表示在同一参考帧中，则可按分量计算总和。相互作用的两个机体之间的作用力和反作用力为
+\begin_inset Formula $\hat{\boldsymbol{f}}_{\mathrm{action}}=-\hat{\boldsymbol{f}}_{\mathrm{reaction}}$
+\end_inset
+
+，就像牛顿第三定律一样。空间动力作用在机体上产生的功率为
+\begin_inset Formula $\hat{\boldsymbol{f}}\cdot\hat{\boldsymbol{v}}$
+\end_inset
+
+。如果两个量的参考点和帧相同，则通常的点积定义有效。在
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+或
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上没有定义内积，只在它们之间定义。
+\end_layout
+
+\begin_layout Subsection
+空间叉积
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:2.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+空间叉积的定义使得微分公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)类似于欧拉微分规则。对于运动和动力空间向量，它们的叉积有所不同：
+\end_layout
+
+\begin_layout Itemize
+运动叉积运动
+\begin_inset Formula 
+\begin{equation}
+_{\hat{\mathcal{O}}}\hat{\boldsymbol{v}}\times{}_{\mathcal{O}}\hat{\boldsymbol{m}}=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+_{\mathcal{O}}\boldsymbol{v}
+\end{array}\right]\times\left[\begin{array}{c}
+\boldsymbol{m}\\
+_{\mathcal{O}}\boldsymbol{m}
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{\omega}\times\boldsymbol{m}\\
+\boldsymbol{\omega}\times{}_{\mathcal{O}}\boldsymbol{m}+{}_{\mathcal{O}}\boldsymbol{v}\times\boldsymbol{m}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+运动叉积动力
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{v}}\times^{*}{}_{\mathcal{O}}\hat{\boldsymbol{f}}=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+_{\mathcal{O}}\boldsymbol{v}
+\end{array}\right]\times^{*}\left[\begin{array}{c}
+_{\mathcal{O}}\boldsymbol{\tau}\\
+\boldsymbol{f}
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{\omega}\times{}_{\mathcal{O}}\boldsymbol{\tau}+{}_{\mathcal{O}}\boldsymbol{v}\times\boldsymbol{f}\\
+\boldsymbol{\omega}\times\boldsymbol{f}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+叉积的许多性质可以在文献[1]中找到。
+\end_layout
+
+\begin_layout Subsection
+变换
+\end_layout
+
+\begin_layout Standard
+使用变换矩阵将空间运动向量(速度、加速度)变换到另一参考帧
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}=\left[\begin{array}{cc}
+\boldsymbol{R}_{\mathcal{B}\mathcal{A}} & \mathbf{0}\\
+\mathbf{0} & \boldsymbol{R}_{\mathcal{B}\mathcal{A}}
+\end{array}\right]\left[\begin{array}{cc}
+\mathbb{I} & \mathbf{0}\\
+-\,{}_{\mathcal{A}}\boldsymbol{r}_{\mathcal{AB}}^{\times} & \mathbb{I}
+\end{array}\right]=\left[\begin{array}{cc}
+\boldsymbol{R}_{\mathcal{B}\mathcal{A}} & \mathbf{0}\\
+-\boldsymbol{R}_{\mathcal{B}\mathcal{A}}\,{}_{\mathcal{A}}\boldsymbol{r}_{\mathcal{AB}}^{\times} & \boldsymbol{R}_{\mathcal{B}\mathcal{A}}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+根据这个定义，它满足
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{B}}\hat{\boldsymbol{m}}={}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}\,{}_{\mathcal{A}}\hat{\boldsymbol{m}}.
+\end{equation}
+
+\end_inset
+
+我们的符号将旋转矩阵写为
+\begin_inset Formula $\boldsymbol{R}_{\mathcal{AB}}$
+\end_inset
+
+，这意味着该旋转矩阵将在
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+帧中表示的向量转换到
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+帧中(被动旋转)。该变换的逆变换给出为
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}^{-1}={}^{\mathcal{A}}\boldsymbol{X}_{\mathcal{B}}=\left[\begin{array}{cc}
+\boldsymbol{R}_{\mathcal{B}\mathcal{A}}^{\top} & \mathbf{0}\\
+_{\mathcal{A}}\boldsymbol{r}_{\mathcal{A}\mathcal{B}}^{\times}\boldsymbol{R}_{\mathcal{B}\mathcal{A}}^{\top} & \boldsymbol{R}_{\mathcal{B}\mathcal{A}}^{\top}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+对于动力向量，必须使用星形版本
+\begin_inset Formula 
+\begin{align}
+^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}^{*} & =\left(^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}\right)^{-\top},\\
+_{\mathcal{B}}\hat{\boldsymbol{f}} & =\,{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}^{*}\,{}_{\mathcal{A}}\hat{\boldsymbol{f}}.
+\end{align}
+
+\end_inset
+
+该变换的时间导数给出为
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{dt}}{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}={}_{\mathcal{B}}\left(\hat{\boldsymbol{v}}_{\mathcal{A}}-\hat{\boldsymbol{v}}_{\mathcal{B}}\right)\times{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+空间惯量
+\end_layout
+
+\begin_layout Standard
+刚体空间惯量张量相对于帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+形成为
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{I}}=\left[\begin{array}{cc}
+_{\mathcal{O}}\boldsymbol{I}_{\mathcal{O}} & m\,{}_{\mathcal{O}}\boldsymbol{r}_{\mathcal{OC}}^{\times}\\
+m\,{_{\mathcal{O}}\boldsymbol{r}_{\mathcal{OC}}^{\times}}^{\top} & m\mathbb{I}
+\end{array}\right],
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\boldsymbol{I}_{\mathcal{O}}={}_{\mathcal{O}}\boldsymbol{I}_{\mathcal{C}}+m\,{}_{\mathcal{O}}\boldsymbol{r}_{\mathcal{OC}}^{\times}\,{_{\mathcal{O}}\boldsymbol{r}_{\mathcal{OC}}^{\times}}^{\top},
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+标志机体的质心，而
+\begin_inset Formula $_{\mathcal{O}}\boldsymbol{I}_{\mathcal{C}}$
+\end_inset
+
+是在帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+中表达的质心处的经典
+\begin_inset Formula $3\times3$
+\end_inset
+
+惯量矩阵。通常，帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+刚性地附着到机体上，使得张量的表示保持恒定。
+\end_layout
+
+\begin_layout Standard
+刚性连接在一起的两个物体具有新的惯量
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{O}}\hat{\boldsymbol{I}}_{\mathrm{combined}}={}_{\mathcal{O}}\hat{\boldsymbol{I}}_{1}+{}_{\mathcal{O}}\hat{\boldsymbol{I}}_{2}.
+\end{equation}
+
+\end_inset
+
+这里没有Steiner项，并且不需要计算新的质心。两个惯量必须是相对于相同的帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+表达。
+\end_layout
+
+\begin_layout Standard
+要更改坐标帧(即参考帧与原点两者)，公式为
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{A}}\hat{\boldsymbol{I}}={}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}^{\top}\,{}_{\mathcal{B}}\hat{\boldsymbol{I}}\,{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{A}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+表示在机体附着坐标帧
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+中的机体
+\begin_inset Formula $B$
+\end_inset
+
+的空间惯量的时间导数为
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{B}}\left[\frac{\mathrm{d}}{\mathrm{dt}}\hat{\boldsymbol{I}}_{B}\right]={}_{\mathcal{B}}\hat{\boldsymbol{v}}_{B}\times^{*}{}_{\mathcal{B}}\hat{\boldsymbol{I}}_{B}-{}_{\mathcal{B}}\hat{\boldsymbol{I}}_{B}\,{}_{\mathcal{B}}\hat{\boldsymbol{v}}_{B}^{\times}.
+\end{equation}
+
+\end_inset
+
+由于帧
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+的运动，该量通常不为零。
+\end_layout
+
+\begin_layout Section
+单个刚体的运动
+\end_layout
+
+\begin_layout Standard
+一个机体的空间动量为
+\begin_inset Formula $\hat{\boldsymbol{h}}=\hat{\boldsymbol{I}}\hat{\boldsymbol{v}}$
+\end_inset
+
+。单个机体
+\begin_inset Formula $B$
+\end_inset
+
+在三维空间中的运动方程可用空间符号相对于一个机体固定坐标帧
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+写为
+\begin_inset Formula 
+\begin{align}
+_{\mathcal{B}}\hat{\boldsymbol{f}} & =\frac{\mathrm{d}}{\mathrm{dt}}\left(_{\mathcal{B}}\hat{\boldsymbol{I}}_{B}\,{}_{\mathcal{B}}\hat{\boldsymbol{\boldsymbol{v}}}_{B}\right)\nonumber \\
+ & =\,{}_{\mathcal{B}}\hat{\boldsymbol{I}}_{B}\,{}_{\mathcal{B}}\hat{\boldsymbol{a}}_{B}+{}_{\mathcal{B}}\hat{\boldsymbol{v}}_{B}\times^{*}{}_{\mathcal{B}}\hat{\boldsymbol{I}}_{B}\,{}_{\mathcal{B}}\hat{\boldsymbol{v}}_{B},\label{eq:22}
+\end{align}
+
+\end_inset
+
+换句话说：净空间动力等于空间动量的变化率。
+\end_layout
+
+\begin_layout Paragraph
+示例
+\end_layout
+
+\begin_layout Standard
+通过对这些方程进行详细的计算，可以恢复熟悉的经典三维向量符号中的单个机体运动的公式。我们假定机体固定帧的原点在质心处。
+\begin_inset Formula 
+\begin{align}
+_{\mathcal{B}}\hat{\boldsymbol{I}}_{B} & =\left[\begin{array}{cc}
+_{\mathcal{B}}\boldsymbol{I}_{B} & \mathbf{0}\\
+\mathbf{0} & m\mathbb{I}
+\end{array}\right]\\
+_{\mathcal{B}}\hat{\boldsymbol{v}}_{B} & =\left[\begin{array}{c}
+_{\mathcal{B}}\boldsymbol{\omega}_{IB}\\
+_{\mathcal{B}}\boldsymbol{v}_{B}
+\end{array}\right]\\
+_{\mathcal{B}}\hat{\boldsymbol{a}}_{B} & =\left[\begin{array}{c}
+_{\mathcal{B}}\dot{\boldsymbol{\omega}}_{IB}\\
+_{\mathcal{B}}\boldsymbol{a}_{B}
+\end{array}\right]\\
+_{\mathcal{B}}\hat{\boldsymbol{f}} & =\sum_{i}\left(^{\mathcal{B}}\boldsymbol{X}_{i}^{*}\,{}_{i}\hat{\boldsymbol{f}}_{i}\right)+{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{I}}\left[\begin{array}{c}
+\mathbf{0}\\
+m\,{}_{\mathcal{I}}\boldsymbol{g}
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+现在用外力
+\begin_inset Formula $\hat{\boldsymbol{f}}_{i}$
+\end_inset
+
+组装运动方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)： 
+\begin_inset Formula 
+\begin{equation}
+\sum_{i}\left(^{\mathcal{B}}\boldsymbol{X}_{i}^{*}\,{}_{i}\hat{\boldsymbol{f}}_{i}\right)+{}^{\mathcal{B}}\boldsymbol{X}_{\mathcal{I}}\left[\begin{array}{c}
+\mathbf{0}\\
+m\,{}_{\mathcal{I}}\boldsymbol{g}
+\end{array}\right]=\left[\begin{array}{c}
+\boldsymbol{I}_{B}\,{}_{\mathcal{B}}\dot{\boldsymbol{\omega}}_{IB}+{}_{\mathcal{B}}\boldsymbol{\omega}_{IB}\times\boldsymbol{I}_{B}\,{}_{\mathcal{B}}\boldsymbol{\omega}_{IB}\\
+m\,{}_{\mathcal{B}}\boldsymbol{a}_{B}+{}_{\mathcal{B}}\boldsymbol{\omega}_{IB}\times m\,{}_{\mathcal{B}}\boldsymbol{v}_{B}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+这与文献[4]一致。
+\end_layout
+
+\begin_layout Section
+递归牛顿-欧拉算法
+\end_layout
+
+\begin_layout Standard
+为了计算运动方程(特别是逆向动力学)，可以使用递归牛顿-欧拉算法。它由沿机器人分支的两个过程组成：首先，速度和加速度从机器人基座传播到末端执行器。其次，通过方程
+(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)求出每个机体的计算加速度所需的总空间动力，并将其投影到关节轴上。当所有的空间量都用机体固连帧表示时，该方法最为方便。
+\end_layout
+
+\begin_layout Standard
+通过向根连杆添加虚拟加速度来模拟重力。或者，可以将重力作为外力引入所有机体中。
+\end_layout
+
+\begin_layout Standard
+浮动基座机器人的建模方法多种多样。从概念上讲，最简单的方法(通常在RBDL
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+target "https://bitbucket.org/rbdl/rbdl"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 之类的库中实现)是将第
+\begin_inset Formula $0$
+\end_inset
+
+个机体定义为世界连杆，并在世界连杆和机器人基座之间引入
+\begin_inset Formula $6$
+\end_inset
+
+自由度关节。
+\end_layout
+
+\begin_layout Standard
+关于符号与约定的几点备注：
+\end_layout
+
+\begin_layout Enumerate
+机体
+\begin_inset Formula $i$
+\end_inset
+
+的父节点标志为
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+机体
+\begin_inset Formula $i$
+\end_inset
+
+的子节点标志为
+\begin_inset Formula $\mu(i)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+关节
+\begin_inset Formula $i$
+\end_inset
+
+连接机体
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+和连杆
+\begin_inset Formula $i$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+穿过关节的关节速度是子节点相对于父节点的相对速度，即：
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}_{Ji}=\hat{\boldsymbol{v}}_{i}-\hat{\boldsymbol{v}}_{\lambda(i)}.
+\end{equation}
+
+\end_inset
+
+同样的规则也适用于关节加速度。
+\end_layout
+
+\begin_layout Enumerate
+关节速度可表示为与该关节相关的广义速度的子集的线性函数：
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}_{Ji}=\hat{\boldsymbol{S}}_{Ji}\dot{\boldsymbol{q}}_{Ji}
+\end{equation}
+
+\end_inset
+
+对于单轴关节，
+\begin_inset Formula $\boldsymbol{q}_{Ji}$
+\end_inset
+
+是标量，而
+\begin_inset Formula $\hat{\boldsymbol{S}}_{Ji}$
+\end_inset
+
+是列向量。对于
+\begin_inset Formula $6$
+\end_inset
+
+自由度关节模拟的浮动基座，
+\begin_inset Formula $\hat{\boldsymbol{S}}$
+\end_inset
+
+通常是单位矩阵，而
+\begin_inset Formula $\boldsymbol{q}_{Ji}$
+\end_inset
+
+是在基座帧中浮动基座的空间速度。
+\end_layout
+
+\begin_layout Enumerate
+关节动力
+\begin_inset Formula $\hat{\boldsymbol{f}}_{Ji}$
+\end_inset
+
+作用于机体
+\begin_inset Formula $i$
+\end_inset
+
+，而负动力(反作用力)由机体
+\begin_inset Formula $\lambda(i)$
+\end_inset
+
+感受。
+\end_layout
+
+\begin_layout Standard
+我们将算法总结如下，与文献[1, Table 5.1]非常类似，但包括完全的帧索引：
+\end_layout
+
+\begin_layout Enumerate
+使用虚拟重力加速度初始化第零个连杆(世界连杆或固定基座连杆)。如果
+\begin_inset Formula $z$
+\end_inset
+
+轴在帧
+\begin_inset Formula $\mathcal{O}$
+\end_inset
+
+中指向上，则
+\begin_inset Formula $_{\mathcal{O}}\hat{\boldsymbol{a}}_{g}=\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & g\end{array}\right]^{\top}$
+\end_inset
+
+，其中
+\begin_inset Formula $g=9.81\mathrm{~m}/\mathrm{s}^{2}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+_{0}\hat{\boldsymbol{v}}_{0} & =\hat{\mathbf{0}}\\
+_{0}\hat{\boldsymbol{a}}_{0} & =-\hat{\boldsymbol{a}}_{g}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+对于每个连续的连杆，速度和加速度分别通过将关节速度和加速度添加到父连杆来计算。定义几个辅助量，使方程更简单。
+\begin_inset Formula 
+\begin{align}
+_{i}\hat{\boldsymbol{v}}_{Ji} & =\,{}_{i}\hat{\boldsymbol{S}}_{Ji}\dot{\boldsymbol{q}}_{Ji} & \text{(joint velocity)}\\
+_{i}\hat{\boldsymbol{a}}_{Ji} & =\,{}_{i}\hat{\boldsymbol{S}}_{Ji}\ddot{\boldsymbol{q}}_{Ji}+\frac{\mathrm{d}}{\mathrm{dt}}\left(_{i}\hat{\boldsymbol{S}}_{Ji}\right)\dot{\boldsymbol{q}}_{Ji}+{}_{i}\hat{\boldsymbol{v}}_{i}\times{}_{i}\hat{\boldsymbol{v}}_{Ji} & \text{(joint acceleration)}\\
+_{i}\hat{\boldsymbol{v}}_{i} & =\,{}^{i}\boldsymbol{X}_{\lambda(i)}\,{}_{\lambda(i)}\hat{\boldsymbol{v}}_{\lambda(i)}+{}_{i}\hat{\boldsymbol{v}}_{Ji} & \text{(link velocity)}\\
+_{i}\hat{\boldsymbol{a}}_{i} & =\,{}^{i}\boldsymbol{X}_{\lambda(i)}\,{}_{\lambda(i)}\hat{\boldsymbol{a}}_{\lambda(i)}+{}_{i}\hat{\boldsymbol{a}}_{Ji} & \text{(link acceleration)}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+现在已知每个连杆的绝对加速度，可以采用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来计算必须作用在每个连杆上以实现该加速度的净力：
+\begin_inset Formula 
+\begin{equation}
+_{i}\hat{\boldsymbol{f}}_{i}^{\mathrm{net}}={}_{i}\hat{\boldsymbol{I}}_{i}\,{}_{i}\hat{\boldsymbol{a}}_{i}+{}_{i}\hat{\boldsymbol{v}}_{i}\times{}_{i}\hat{\boldsymbol{I}}_{i}\,{}_{i}\hat{\boldsymbol{v}}_{i}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+净力是作用在机体上的外力和通过连接到机体的关节所传递的所有动力的总和。因此，通过父关节传递的动力必须为 
+\begin_inset Formula 
+\begin{equation}
+_{i}\hat{\boldsymbol{f}}_{Ji}={}_{i}\hat{\boldsymbol{f}}_{i}^{\mathrm{net}}-{}^{i}\boldsymbol{X}_{0}^{*}\,{}_{0}\hat{\boldsymbol{f}}_{i}^{\mathrm{ext}}+\sum_{j\in\mu(i)}{}^{i}\boldsymbol{X}_{j}^{*}\,{}_{j}\hat{\boldsymbol{f}}_{Jj}.
+\end{equation}
+
+\end_inset
+
+这可以从末端效应器向内递归计算到每个机体。
+\end_layout
+
+\begin_layout Enumerate
+最后，每个关节轴传递的扭矩/动力可计算为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\tau}_{Ji}={}_{i}\hat{\boldsymbol{S}}_{Ji}^{\top}\,{}_{i}\hat{\boldsymbol{f}}_{Ji}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+示例
+\end_layout
+
+\begin_layout Subsection
+在平面上滚动球
+\end_layout
+
+\begin_layout Standard
+我们考虑一个半径为
+\begin_inset Formula $r$
+\end_inset
+
+的平面球
+\begin_inset Formula $B$
+\end_inset
+
+，它以
+\begin_inset Formula $v$
+\end_inset
+
+的速度在平坦的地面上滚动而不打滑。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 显示了一个带有相关建模量的示意图。我们假设运动开始于零位形，即：
+\begin_inset Formula 
+\begin{align}
+d & =vt,\\
+\theta & =\omega t.
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename spatial_velocities_Figure1.jpg
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+二维球在平面上以
+\begin_inset Formula $v$
+\end_inset
+
+速度滚动而不打滑。惯量坐标帧
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+是固定的，而
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{Q}$
+\end_inset
+
+与球的中心一起平移。另外，机体固连帧
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+随球旋转。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一些基本量定义如下：
+\begin_inset Formula 
+\begin{align}
+_{\mathcal{I}}\boldsymbol{r}_{IP} & =\left[\begin{array}{ccc}
+0 & vt & 0\end{array}\right]^{\top},\\
+_{\mathcal{P}}\boldsymbol{r}_{PQ} & =\left[\begin{array}{ccc}
+0 & 0 & r\end{array}\right]^{\top},\\
+\boldsymbol{R}_{\mathcal{QB}} & =\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos\theta & \sin\theta\\
+0 & -\sin\theta & \cos\theta
+\end{array}\right].
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+空间变换：
+\end_layout
+
+\begin_layout Standard
+空间变换通常依赖于位形。对于这个例子，我们有
+\begin_inset Formula 
+\begin{equation}
+^{\mathcal{P}}\boldsymbol{X}_{\mathcal{I}}=\left[\begin{array}{cc}
+\mathbb{I} & \mathbf{0}\\
+-_{\mathcal{I}}\boldsymbol{r}_{IP}^{\times} & \mathbb{I}
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+空间速度：
+\end_layout
+
+\begin_layout Standard
+通过检查，球相对于坐标系统
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+的空间速度为
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{P}}\hat{\boldsymbol{v}}_{B}=\left[\begin{array}{cccccc}
+-\frac{v}{r} & 0 & 0 & 0 & 0 & 0\end{array}\right]^{\top},
+\end{equation}
+
+\end_inset
+
+因为滚动运动导致围绕点
+\begin_inset Formula $P$
+\end_inset
+
+的瞬时旋转。另一方面，在帧
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+中的空间速度在线性
+\begin_inset Formula $z$
+\end_inset
+
+轴方向上额外具有非零分量，因为滚动运动在点
+\begin_inset Formula $I$
+\end_inset
+
+处诱导向上速度，因此
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{I}}\hat{\boldsymbol{v}}_{B}=\left[\begin{array}{cccccc}
+-\frac{v}{r} & 0 & 0 & 0 & 0 & \frac{v}{r}vt\end{array}\right]^{\top}={}^{\mathcal{I}}\boldsymbol{X}_{\mathcal{P}}\,{}_{\mathcal{P}}\hat{\boldsymbol{v}}_{B}.
+\end{equation}
+
+\end_inset
+
+关于坐标系统
+\begin_inset Formula $\mathcal{Q}$
+\end_inset
+
+，我们得到
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{Q}}\hat{\boldsymbol{v}}_{B}=\left[\begin{array}{cccccc}
+-\frac{v}{r} & 0 & 0 & v & 0 & 0\end{array}\right]^{\top}.
+\end{equation}
+
+\end_inset
+
+如果我们考虑系统
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+，就必须小心，因为点
+\begin_inset Formula $B$
+\end_inset
+
+处的前进速度必须投影到瞬时坐标轴上，即：
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{B}}\hat{\boldsymbol{v}}_{B}=\left[\begin{array}{c}
+-\frac{v}{r}\\
+0\\
+0\\
+\boldsymbol{R}_{\mathcal{B}\mathcal{Q}}\left[\begin{array}{c}
+0\\
+v\\
+0
+\end{array}\right]
+\end{array}\right]=\left[\begin{array}{c}
+-\frac{v}{r}\\
+0\\
+0\\
+0\\
+v\cos\theta\\
+v\sin\theta
+\end{array}\right].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+空间加速度：
+\end_layout
+
+\begin_layout Standard
+我们展示如何用两种方法计算空间加速度
+\end_layout
+
+\begin_layout Enumerate
+直接微分 
+\begin_inset Formula $_{\mathcal{I}}\hat{\boldsymbol{v}}_{B}$
+\end_inset
+
+ (因为它在静止帧中表示)。
+\begin_inset Formula 
+\begin{equation}
+_{\mathcal{I}}\hat{\boldsymbol{a}}_{B}=\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & \frac{v^{2}}{r}\end{array}\right]^{\top}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+在
+\begin_inset Formula $_{\mathcal{P}}\hat{\boldsymbol{v}}_{B}$
+\end_inset
+
+上使用微分规则，然后将其转换到
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+帧进行比较。
+\begin_inset Formula 
+\begin{align}
+_{\mathcal{P}}\hat{\boldsymbol{a}}_{B} & =0+\left[\begin{array}{l}
+0\\
+0\\
+0\\
+0\\
+v\\
+0
+\end{array}\right]\times\left[\begin{array}{c}
+-\frac{v}{r}\\
+0\\
+0\\
+0\\
+0\\
+0
+\end{array}\right]=\left[\begin{array}{c}
+0\\
+0\\
+0\\
+0\\
+0\\
+\frac{v^{2}}{r}
+\end{array}\right]\\
+_{\mathcal{I}}\hat{\boldsymbol{a}}_{B} & =\,{}^{\mathcal{I}}\boldsymbol{X}_{\mathcal{P}}\,{}_{\mathcal{P}}\hat{\boldsymbol{a}}_{B}=\left[\begin{array}{cc}
+\mathbb{I} & \mathbf{0}\\
+-\,{}_{\mathcal{P}}\boldsymbol{r}_{PI}^{\times} & \mathbb{I}
+\end{array}\right]{}_{\mathcal{P}}\hat{\boldsymbol{a}}_{B}=\left[\begin{array}{c}
+0\\
+0\\
+0\\
+0\\
+0\\
+\frac{v^{2}}{r}
+\end{array}\right]
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两种方法产生一致的结果。请注意，滚动球体的空间加速度是向上的。这不是机体上任何一点的加速度，一开始看起来似乎不直观。
+\end_layout
+
+\begin_layout Subsection
+Floating base robot with a single link attached
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+coming soon ...
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, Rigid body dynamics algorithms.
+ Springer, 2014.
+\end_layout
+
+\begin_layout Enumerate
+—, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+A beginner's guide to 6-d vectors (part 1),
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ IEEE Robotics Automation Magazine, vol.
+ 17, no.
+ 3, pp.
+ 83-94, Sept 2010.
+\end_layout
+
+\begin_layout Enumerate
+—, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+A beginner's guide to 6-d vectors (part 2) [tutorial],
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ IEEE Robotics Automation Magazine, vol.
+ 17, no.
+ 4, pp.
+ 88-99, Dec 2010.
+\end_layout
+
+\begin_layout Enumerate
+S.
+ R.
+ Ploen, F.
+ Y.
+ Hadaegh, and D.
+ P.
+ Scharf, 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Rigid body equations of motion for modeling and control of spacecraft formations.
+ part 1: Absolute equations of motion,
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ in Proceedings of the 2004 American Control Conference, vol.
+ 4, June 2004, pp.
+ 3646-3653 vol.4.
+\end_layout
+
+\end_body
+\end_document

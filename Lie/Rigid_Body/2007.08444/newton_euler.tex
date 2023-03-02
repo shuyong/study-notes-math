@@ -1,0 +1,228 @@
+\selectlanguage{american}%
+
+\section{\normalfont\bfseries 对偶四元数牛顿-欧拉模型 \label{sec:Newton-Euler-Model}}
+
+本节对于具有任意关节的移动机械臂，介绍使用对偶四元数代数的牛顿-欧拉模型的递归关系，假设使用对偶四元数表示的完整运动学模型是可用的 \cite{Adorno2011}。
+
+为了说明目的，在不丧失一般性的情况下，考虑图~\ref{fig:mobile_nDOF_robot} 所示的移动机械臂，其由一个 $n_{\ell}$ 自由度的串联机械臂组成，附着到一个$3$自由度的移动基座。目标是在给定相应的机器人位形、广义速度和广义加速度的情况下，找到作用于机器人移动基座和 $n_{\ell}$ 连杆的 $n=n_{\ell}+1$ 质心(centers of mass, CoM)上的动力旋量 $\dq{\Gamma}\in\mathcal{H}_{p}^{n}$。这可以看作是一个函数 $\mathcal{N}\,:\,\mathbb{R}^{n_{\ell}+3}\times\mathbb{R}^{n_{\ell}+3}\times\mathbb{R}^{n_{\ell}+3}\rightarrow\mathcal{H}_{p}^{n}$，其中 $n_{\ell}+3$ 是位形空间的维度，并且 $n$ 是运动链中刚体的数量(例如，移动基座和连杆)，使得
+\begin{equation}
+\dq{\Gamma}=\mathcal{N}\left(\myvec q,\dot{\myvec q},\ddot{\myvec q}\right).\label{eq:dq_NE_as_a_function}
+\end{equation}
+\begin{figure}[t]
+\def\svgwidth{2.5\columnwidth}
+\noindent \begin{centering}
+{\Huge{}\resizebox{0.8\columnwidth}{!}{\input{Images/mobile_nDOF_robot.pdf_tex}}}{\Huge\par}
+\par\end{centering}
+\caption{一个 $n_{\ell}$ 自由度的串联机械臂的移动机械臂组合，附着到一个$3$自由度的移动基座上。\label{fig:mobile_nDOF_robot}}
+\end{figure}
+
+
+\subsection{\normalfont\bfseries 正向递归\label{subsec:Forward-Recursion}}
+
+该算法的第一个过程包括机器人运动学结构的串行扫描，以计算每个质心的运动旋量。
+\footnote{此后，我们将使用“质心的运动旋量”这一表达作为“附着到质心的帧的运动旋量”的简写。} 其目标是找到正向递归关系，然后使用该关系迭代地获得作用于机器人移动基座和关节的动力旋量。
+
+\subsubsection{\normalfont\bfseries 运动旋量 \label{subsec:Twists}}
+
+移动基座的质心(即，串联运动链中的第一个质心)相对于惯性帧 $\frame 0$ 的运动旋量，在帧 $\frame{c_{1}}$ 中表达，由纯对偶四元数给出为
+\begin{align}
+\dq{\xi}_{0,c_{1}}^{c_{1}} & =\quat{\omega}_{0,c_{1}}^{c_{1}}+\dual\quat v_{0,c_{1}}^{c_{1}},\label{eq:twist_c1_0}
+\end{align}
+其中 $\quat{\omega}_{0,c_{1}}^{c_{1}}=\omega_{x}\imi+\omega_{y}\imj+\omega_{z}\imk$
+和 $\quat v_{0,c_{1}}^{c_{1}}=v_{x}\imi+v_{y}\imj+v_{z}\imk$ 分别是
+角速度和线速度。一个完整移动基座的运动旋量在运动学上等效于一个平面关节的运动旋量，如表~\ref{tab:joint_twists-2} 所示。
+
+第一个连杆质心(即串联运动链中的第二个刚体的质心)相对于惯性帧的运动旋量不仅取决于其关节产生的运动旋量，还取决于移动基座的运动旋量，因为它们是物理附着的。因此，
+\begin{align}
+\dq{\xi}_{0,c_{2}}^{c_{2}} & =\dq{\xi}_{0,j_{1}}^{c_{2}}+\dq{\xi}_{j_{1},c_{2}}^{c_{2}},\nonumber \\
+ & =\ad{\dq x_{c_{1}}^{c_{2}}}{\dq{\xi}_{0,j_{1}}^{c_{1}}}+\ad{\dq x_{j_{1}}^{c_{2}}}{\dq{\xi}_{j_{1},c_{2}}^{j_{1}}},\nonumber \\
+ & =\ad{\dq x_{c_{1}}^{c_{2}}}{\left(\dq{\xi}_{0,c_{1}}^{c_{1}}+\dq{\xi}_{c_{1},j_{1}}^{c_{1}}\right)}+\ad{\dq x_{j_{1}}^{c_{2}}}{\dq{\xi}_{j_{1},c_{2}}^{j_{1}}},\label{eq:twist_c2_0}
+\end{align}
+其中 $\dq{\xi}_{j_{1},c_{2}}^{j_{1}}=\quat{\omega}_{j_{1},c_{2}}^{j_{1}}+\dual\quat v_{j_{1},c_{2}}^{j_{1}}$
+是在 $\frame{c_{2}}$ 上由第一个关节产生的运动旋量，并且 $\dq{\xi}_{0,j_{1}}^{c_{2}}$ 是在 $\frame{j_{1}}$ 上由移动基座产生的运动旋量，但使用合适的变换，如方程 \eqref{eq:adj_transf}，在 $\frame{c_{2}}$ 中表达。表~\ref{tab:joint_twists-2} 对于不同类型的关节列出了它们的运动旋量，其中 $\quat l\in\mathbb{H}_{p}\cap\mathbb{S}^{3}$ 是一个常量(\emph{constant})单位范数纯四元数，其等价于R3中的一个向量，用于定义一个任意轴。例如，当使用 Denavit-Hartenberg (DH) 约定时，$\quat l=\imk$，这等价于 $z$ 轴。此外，$\omega,\omega_{x},\omega_{y},\omega_{z}\in\mathbb{R}$ 和 $v,v_{x},v_{y},v_{z}\in\mathbb{R}$ 分别是角速度和线速度的标量分量。同样，当使用DH约定时，对于旋转关节 $\omega=\dot{\theta}$，并且对于棱柱状关节 $v=\dot{d}$。对于螺旋关节，常量 $h\in\mathbb{R}$ 被称为旋距(\emph{pitch})。
+
+\begin{table*}[t]
+\begin{centering}
+\caption{在机器人中一些最常用的关节的扭曲，其中
+$\protect\quat l\in\mathbb{H}_{p}\cap\mathbb{S}^{3}$ 并且 $\omega,\omega_{x},\omega_{y},\omega_{z},v,v_{x},v_{y},v_{z},h\in\mathbb{R}$。\label{tab:joint_twists-2}}
+\par\end{centering}
+\centering{}%
+\begin{tabular}{>{\centering}p{3.3cm}>{\centering}m{2.2cm}>{\centering}p{2.5cm}>{\centering}p{3cm}>{\centering}p{2.5cm}>{\centering}p{2.5cm}c}
+\hline 
+\noindent \centering{}$6$自由度关节 & \noindent \centering{}旋转关节 & \noindent \centering{}球面关节 & \noindent \centering{}圆柱关节 & \noindent \centering{}平面关节 & \noindent \centering{}棱柱关节 & 螺旋关节\tabularnewline
+\hline 
+\noindent \centering{}\resizebox{0.22\columnwidth}{!}{\input{Images/joints/6DOF.pdf_tex}} & \noindent \centering{}\resizebox{0.15\columnwidth}{!}{\input{Images/joints/rotational.pdf_tex}} & \noindent \centering{}\resizebox{0.18\columnwidth}{!}{\input{Images/joints/spherical.pdf_tex}} & \noindent \centering{}\resizebox{0.15\columnwidth}{!}{\input{Images/joints/cylindrical.pdf_tex}} & \noindent \centering{}\resizebox{0.18\columnwidth}{!}{\input{Images/joints/planar.pdf_tex}} & \noindent \centering{}\resizebox{0.13\columnwidth}{!}{\input{Images/joints/prismatic.pdf_tex}} & \resizebox{0.2\columnwidth}{!}{\input{Images/joints/screw.pdf_tex}}\tabularnewline
+\hline 
+\multirow{2}{3.3cm}{\noindent \centering{}$\dq{\xi}=\omega_{x}\imi+\omega_{y}\imj+\omega_{z}\imk+\dual\left(v_{x}\imi+v_{y}\imj+v_{z}\imk\right)$} & \multirow{2}{2.2cm}{\noindent \centering{}$\dq{\xi}=\omega\quat l$} & \multirow{2}{2.5cm}{\noindent \centering{}$\dq{\xi}=\omega_{x}\imi+\omega_{y}\imj\allowbreak+\omega_{z}\imk$} & \multirow{2}{3cm}{\noindent \centering{}$\dq{\xi}=\left(\omega+\dual v\right)\quat l$} & \multirow{2}{2.5cm}{\noindent \centering{}$\dq{\xi}=\omega\quat l+\allowbreak\dual\left(v_{x}\imi+v_{y}\imj\right)$} & \multirow{2}{2.5cm}{\noindent \centering{}$\dq{\xi}=\dual v\quat l$} & \multirow{2}{*}{$\dq{\xi}=\left(\omega+\dual h\omega\right)\quat l$}\tabularnewline
+ &  &  &  &  &  & \tabularnewline
+\hline 
+\end{tabular}
+\end{table*}
+
+此外，$\dq{\xi}_{c_{1},j_{1}}^{c_{1}}=0$，因为 $\dot{\dq x}_{j_{1}}^{c_{1}}=0$。因此，
+\begin{align*}
+\dq{\xi}_{0,c_{2}}^{c_{2}} & =\ad{\dq x_{c_{1}}^{c_{2}}}{\dq{\xi}_{0,c_{1}}^{c_{1}}}+\ad{\dq x_{j_{1}}^{c_{2}}}{\dq{\xi}_{j_{1},c_{2}}^{j_{1}}}.
+\end{align*}
+而且，展开 $\ad{\dq x_{j_{1}}^{c_{2}}}{\dq{\xi}_{j_{1},c_{2}}^{j_{1}}}$，我们获得
+\[
+\ad{\dq x_{j_{1}}^{c_{2}}}{\dq{\xi}_{j_{1},c_{2}}^{j_{1}}}=\quat{\omega}_{j_{1},c_{2}}^{c_{2}}+\dual\left(\quat v_{j_{1},c_{2}}^{c_{2}}+\quat{\omega}_{j_{1},c_{2}}^{c_{2}}\times\quat p_{j_{1},c_{2}}^{c_{2}}\right),
+\]
+其中因为在从质心处(即从 $\frame{j_{1}}$ 处)移位的一个点中应用角速度而产生的线速度以代数方式产生。图~\ref{fig:intuition_twist_transf} 说明了使用纯旋转关节时的这种现象(即 $\dq{\xi}_{j_{i},c_{i+1}}^{j_{i}}=\quat{\omega}_{j_{i},c_{i+1}}^{j_{i}}=\omega_{i}\myvec n_{j_{i},c_{i+1}}^{j_{i}}$，其中 $\myvec n_{j_{i},c_{i+1}}^{j_{i}}\in\mathbb{H}_{p}\cap\mathbb{S}^{3}$ 是一个任意的单位范数旋转轴)。
+
+\begin{figure*}[t]
+\def\svgwidth{2.0\columnwidth}
+\begin{centering}
+{\huge{}\scalebox{0.5}[0.5]{\input{Images/intuition_twist_transf.pdf_tex}}}{\huge\par}
+\par\end{centering}
+\caption{运动旋量 $\protect\dq{\xi}_{j_{i},c_{i+1}}^{c_{i+1}}$ 由于围绕参考帧 $\protect\frame{j_{i}}$ 的一个任意轴施加角速度 $\omega_{i}$ 而产生。$\protect\frame{c_{i+1}}$ 所遵循的圆形轨迹由灰色虚线表示。$\omega_{i}$ 的应用导致的线速度通过伴随变换以代数方式出现。因此，参考帧 $\protect\frame{c_{i+1}}$ 的切向速度，以黑色实线箭头表示，由运动旋量 $\protect\dq{\xi}_{j_{i},c_{i+1}}^{c_{i+1}}$ 的对偶部分给出。 \label{fig:intuition_twist_transf}}
+\end{figure*}
+
+更一般地，在 $\frame{c_{i}}$ 中的运动旋量，其提供 $\frame{c_{i}}$ 相对于 $\frame 0$ 的运动，产生于运动链中的前 $i$ 个刚体的运动，给出为
+\begin{align}
+\dq{\xi}_{0,c_{i}}^{c_{i}} & =\dq{\xi}_{0,j_{i-1}}^{c_{i}}+\dq{\xi}_{j_{i-1},c_{i}}^{c_{i}}\label{eq:twist_ci_0}
+\end{align}
+其中 $\dq{\xi}_{0,j_{i-1}}^{c_{i}}$ 是与前 $i-1$ 个刚体的运动相关的运动旋量，并且 $\dq{\xi}_{j_{i-1},c_{i}}^{c_{i}}$ 是与第 $i$ 个刚体的运动相关的运动旋量。另外，对于任意 $a$，$\dq{\xi}_{0,0}^{a}=0$。
+
+分析方程 \eqref{eq:twist_c1_0}，\eqref{eq:twist_c2_0} 和 \eqref{eq:twist_ci_0}，通过归纳，我们发现，第 $i$ 个质心总的运动旋量的递归关系，其具有直到第 $i$ 个刚体的所有刚体的贡献，在 $\frame{c_{i}}$ 中表达，为
+\begin{multline*}
+\dq{\xi}_{0,c_{i}}^{c_{i}}=\ad{\dq x_{c_{i-1}}^{c_{i}}}{\left(\dq{\xi}_{0,c_{i-1}}^{c_{i-1}}+\dq{\xi}_{c_{i-1},j_{i-1}}^{c_{i-1}}\right)}\\
++\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}},
+\end{multline*}
+其中 $c_{0}=j_{0}=0$，并且 $\dq{\xi}_{c_{i-1},j_{i-1}}^{c_{i-1}}=0$，因为对于所有的 $i$，$\dot{\dq x}_{j_{i-1}}^{c_{i-1}}=0$ 。因此，
+
+\begin{equation}
+\dq{\xi}_{0,c_{i}}^{c_{i}}=\ad{\dq x_{c_{i-1}}^{c_{i}}}{\dq{\xi}_{0,c_{i-1}}^{c_{i-1}}}+\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}.}\label{eq:twist_rec}
+\end{equation}
+由于运动旋量 $\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}$ 是由第 $i$ 个关节产生的，其表达方式取决于第 $i$ 个关节是哪种类型(\emph{参见}表~\ref{tab:joint_twists-2})。类似地，运动旋量 $\dq{\xi}_{0,c_{1}}^{c_{1}}$ 取决于移动基座是哪种类型(例如，对于完整移动基座，它等效于平面关节给出的运动旋量)。变换 $\dq x_{c_{i-1}}^{c_{i}}$ 被计算为 $\dq x_{c_{i-1}}^{c_{i}}=\left(\dq x_{c_{i}}^{0}\right)^{*}\dq x_{c_{i-1}}^{0}$，其中当 $\dq x_{0}^{0}=1$ 时，$\dq x_{c_{i}}^{0}=\dq x_{c_{i-1}}^{0}\dq x_{j_{i-1}}^{c_{i-1}}\dq x_{c_{i}}^{j_{i-1}}$，变换 $\dq x_{j_{i-1}}^{c_{i-1}}$ 为常量，并且 $\dq x_{c_{i}}^{j_{i-1}}$ 是第 $\left(i-1\right)$ 个关节(或 $i=1$ 时的移动基座)的参数的函数。
+
+\subsubsection{\normalfont\bfseries 运动旋量的时间导数 \label{subsec:time_derivative_twists}}
+
+方程 \eqref{eq:twist_rec} 的时间导数，我们使用方程 \eqref{eq:derivative_of_adjoint_transformation} 来获得
+\begin{multline*}
+\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}=\ad{\dq x_{c_{i-1}}^{c_{i}}}{\dot{\dq{\xi}}_{0,c_{i-1}}^{c_{i-1}}}\\
++\dq{\xi}_{c_{i},c_{i-1}}^{c_{i}}\times\left(\ad{\dq x_{c_{i-1}}^{c_{i}}}{\dq{\xi}_{0,c_{i-1}}^{c_{i-1}}}\right)+\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}}\\
++\dq{\xi}_{c_{i},j_{i-1}}^{c_{i}}\times\left(\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}}\right).
+\end{multline*}
+由于 $\dq{\xi}_{j_{i-1},c_{i}}^{c_{i}}=-\dq{\xi}_{c_{i},j_{i-1}}^{c_{i}}$
+则
+\[
+\dq{\xi}_{c_{i},j_{i-1}}^{c_{i}}\times\left(\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}}\right)=-\dq{\xi}_{c_{i},j_{i-1}}^{c_{i}}\times\dq{\xi}_{c_{i},j_{i-1}}^{c_{i}}=0.
+\]
+因此，
+
+\begin{multline}
+\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}=\ad{\dq x_{c_{i-1}}^{c_{i}}}{\dot{\dq{\xi}}_{0,c_{i-1}}^{c_{i-1}}}+\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}}\\
++\dq{\xi}_{c_{i},c_{i-1}}^{c_{i}}\times\left[\ad{\dq x_{c_{i-1}}^{c_{i}}}{\dq{\xi}_{0,c_{i-1}}^{c_{i-1}}}\right],\label{eq:twist_dot_rec}
+\end{multline}
+其中 $\dot{\dq{\xi}}_{0,c_{0}}^{c_{0}}\triangleq0$。另外，由于
+$\dq{\xi}_{c_{i},c_{i-1}}^{j_{i-1}}=\dq{\xi}_{c_{i},j_{i-1}}^{j_{i-1}}+\dq{\xi}_{j_{i-1},c_{i-1}}^{j_{i-1}}$
+并且 $\dq{\xi}_{j_{i-1},c_{i-1}}^{j_{i-1}}=0$，则
+\begin{align}
+\dq{\xi}_{c_{i},c_{i-1}}^{c_{i}} & =\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{c_{i},j_{i-1}}^{j_{i-1}}}=-\ad{\dq x_{j_{i-1}}^{c_{i}}}{\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}}.\label{eq:twists_between_adjacent_CoM}
+\end{align}
+
+如第~\ref{subsec:Twists} 节所示，运动旋量 $\dq{\xi}_{j_{i-1},c_{i}}^{j_{i-1}}$ 取决于第 $i$ 个关节的类型，并因此，这个项 $\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}$ 也是如此。例如，如果第 $i$ 个关节是旋转的，则 $\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}=\dot{\omega}_{i}\quat l_{j_{i}}^{j_{i}}$。如果它是棱形的，则 $\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}=\dual\dot{v}_{i}\quat l_{j_{i}}^{j_{i}}$。类似地，如果它是螺旋形的，则 $\dot{\dq{\xi}}_{j_{i-1},c_{i}}^{j_{i-1}}=\left(\dot{\omega}_{i}+\dual h\dot{\omega}_{i}\right)\quat l_{j_{i}}^{j_{i}}$，如此等等。同样的推理适用于移动基座的运动旋量 $\dot{\dq{\xi}}_{0,c_{1}}^{c_{1}}$。
+
+\selectlanguage{english}%
+
+\selectlanguage{american}%
+\begin{remark}
+
+尽管方程 \eqref{eq:twist_dot_rec} 是以递归形式编写的，但我们始终可以如在方程 \eqref{eq:twist-inertial-frame} 和 \eqref{eq:twist-body-frame} 中的那样将运动旋量写出来。因此，由于 $\dq{\xi}_{0,c_{i}}^{c_{i}}=\ad{\dq x_{0}^{c_{i}}}{\dq{\xi}_{0,c_{i}}^{0}}$，其中 $\dq{\xi}_{0,c_{i}}^{0}=\quat{\omega}_{0,c_{i}}^{0}+\dual(\dot{\quat p}_{0,c_{i}}^{0}+\quat p_{0,c_{i}}^{0}\times\quat{\omega}_{0,c_{i}}^{0})$，我们使用方程 \eqref{eq:derivative_of_adjoint_transformation} 以获得
+\begin{align}
+\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}} & {=}\ad{\dq x_{0}^{c_{i}}}{\dot{\dq{\xi}}_{0,c_{i}}^{0}{=}\dot{\quat{\omega}}_{0,c_{i}}^{c_{i}}{+}\dual\left(\ddot{\quat p}_{0,c_{i}}^{c_{i}}{+}\dot{\quat p}_{0,c_{i}}^{c_{i}}{\times}\quat{\omega}_{0,c_{i}}^{c_{i}}\right)}\label{eq:twist_derivative_explicit_form}
+\end{align}
+ 因为 $\dq{\xi}_{c_{i},0}^{c_{i}}\times\ad{\dq x_{0}^{c_{i}}}{\dq{\xi}_{0,c_{i}}^{0}}=-\dq{\xi}_{0,c_{i}}^{c_{i}}\times\dq{\xi}_{0,c_{i}}^{c_{i}}=0$。
+由于 $\getd{\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}}=\ddot{\quat p}_{0,c_{i}}^{c_{i}}+\dot{\quat p}_{0,c_{i}}^{c_{i}}\times\quat{\omega}_{0,c_{i}}^{c_{i}}$
+则
+\begin{gather}
+\ddot{\quat p}_{0,c_{i}}^{c_{i}}=\getd{\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}}-\getd{\dq{\xi}_{0,c_{i}}^{c_{i}}}\times\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}.\label{eq:linear-acceleration}
+\end{gather}
+
+\end{remark}
+
+\subsection{\normalfont\bfseries 逆向递归\label{subsec:dqNE_backward_recursion}}
+
+迭代算法的第二个过程是将串联机器人从最后一个刚体扫描到第一个刚体，以计算施加在每个刚体上的动力旋量。对于机器人手臂，我们对每个关节的动力旋量感兴趣，而对于移动基座，我们想找到其质心处的动力旋量。为了这个目的，我们使用在第~\ref{subsec:Forward-Recursion} 节中获得的运动旋量及其时间导数。
+
+在获得逆向递归的一般表达式之前，让我们考虑图~\ref{fig:mobile_nDOF_robot} 中所示的移动机械臂。在第 $n_{\ell}$ 个连杆的质心处的动力旋量(即，在运动链中的第 $n$ 个质心，其中 $n=n_{\ell}+1$)，在 $\frame{c_{n}}$ 中表达，由纯对偶四元数给出为
+
+\begin{equation}
+\dq{\zeta}_{0,c_{n}}^{c_{n}}=\dq{\varsigma}_{0,c_{n}}^{c_{n}}-m_{n}\quat g^{c_{n}},\label{eq:wrench_cn_in_cn}
+\end{equation}
+其中 $m_{n}\quat g^{c_{n}}$ 是重力分量，其中
+$\quat g^{c_{n}}\in\mathbb{H}_{p}$ 是在 $\frame{c_{n}}$ 中表达的重力向量，并且 $\dq{\varsigma}_{0,c_{n}}^{c_{n}}=\quat f_{0,c_{n}}^{c_{n}}+\dual\quat{\tau}_{0,c_{n}}^{c_{n}}$,
+其中 $\quat f_{0,c_{n}}^{c_{n}}=f_{x}\imi+f_{y}\imj+f_{z}\imk$
+是在第 $n$ 个刚体(即第 $n_{\ell}$ 个连杆)的质心处的力，由牛顿第二定律 $\quat f_{0,c_{n}}^{c_{n}}=m_{n}\ddot{\quat p}_{0,c_{n}}^{c_{n}}$ 给出。
+
+
+因此，我们使用方程 \eqref{eq:linear-acceleration} 以获得
+
+\begin{align}
+\quat f_{0,c_{n}}^{c_{n}} & =m_{n}\left(\getd{\dot{\dq{\xi}}_{0,c_{n}}^{c_{n}}}+\getp{\dq{\xi}_{0,c_{n}}^{c_{n}}}\times\getd{\dq{\xi}_{0,c_{n}}^{c_{n}}}\right).\label{eq:newton_sec_law}
+\end{align}
+此外，由于其角动量的变化，$\quat{\tau}_{0,c_{n}}^{c_{n}}$ 是围绕第 $n$ 个刚体的质心的扭矩，由欧拉旋转方程给出为
+
+\begin{multline}
+\quat{\tau}_{0,c_{n}}^{c_{n}}=\mathcal{L}_{3}\left(\quat{\mathbb{I}}_{n}^{c_{n}}\right)\getp{\dot{\dq{\xi}}_{0,c_{n}}^{c_{n}}}\\
++\getp{\dq{\xi}_{0,c_{n}}^{c_{n}}}\times\left(\mathcal{L}_{3}\left(\quat{\mathbb{I}}_{n}^{c_{n}}\right)\getp{\dq{\xi}_{0,c_{n}}^{c_{n}}}\right),\label{eq:euler_eq}
+\end{multline}
+其中 $\mathcal{L}_{3}$ 由方程 \eqref{eq:operator_l} 给出，并且 $\quat{\mathbb{I}}_{n}^{c_{n}}$
+是第 $n$ 个刚体的四元数惯性张量，在其质心处表达，由方程 \eqref{eq:quat_inertia_tensor} 给出。因为方程 \eqref{eq:euler_eq} 是相对于质心计算的，所以重力加速度对扭矩没有
+贡献。
+
+在方程 \eqref{eq:wrench_cn_in_cn} 中如在方程 \eqref{eq:adj_transf} 中那样使用的伴随变换，在第 $n_{\ell}$ 个关节处的动力旋量，其由第 $n$ 个刚体的质心处的动力旋量产生，给出为：
+\begin{align}
+\dq{\zeta}_{0,j_{n}}^{j_{n-1}} & =\ad{\dq x_{c_{n}}^{j_{n-1}}}{\dq{\zeta}_{0,c_{n}}^{c_{n}}}.\label{eq:wrench_cn_in_jnMinus1}
+\end{align}
+
+在第 $\left(n-1\right)$ 个刚体(即，在 $\frame{c_{n-1}}$ 处)的合成动力旋量还包括来自第 $n$ 个刚体的动力旋量的影响，因为它们彼此刚性附着。因此，在第 $\left(n_{\ell}-1\right)$ 关节处(即，在 $\frame{c_{n-2}}$ 处)的合成动力旋量给出为
+\begin{alignat}{1}
+\dq{\zeta}_{0,j_{n-1}}^{j_{n-2}} & =\ad{\dq x_{c_{n-1}}^{j_{n-2}}}{\dq{\zeta}_{0,c_{n-1}}^{c_{n-1}}}+\ad{\dq x_{j_{n-1}}^{j_{n-2}}}{\dq{\zeta}_{0,j_{n}}^{j_{n-1}}},\label{eq:wrench_cnMinus1_in_jnMinus2}
+\end{alignat}
+其中 $\dq{\zeta}_{0,c_{n-1}}^{c_{n-1}}=\dq{\varsigma}_{0,c_{n-1}}^{c_{n-1}}-m_{n-1}\quat g^{c_{n-1}}$，
+在其中 $\dq{\varsigma}_{0,c_{n-1}}^{c_{n-1}}=\quat f_{0,c_{n-1}}^{c_{n-1}}+\dual\quat{\tau}_{0,c_{n-1}}^{c_{n-1}}$，
+是在第 $\left(n-1\right)$ 个刚体的质心处的动力旋量，在 $\frame{c_{n-1}}$ 中表达。
+
+因此，分析方程 \eqref{eq:wrench_cn_in_cn}、\eqref{eq:wrench_cn_in_jnMinus1} 以及 \eqref{eq:wrench_cnMinus1_in_jnMinus2}，我们可以发现，逆向递归关系，对于在第 $i$ 个刚体处总的动力旋量，其包括从第 $i$ 个刚体的质心的动力旋量开始，直到最后一个的质心的动力旋量，它们所有的贡献，在 $\frame{j_{i-1}}$ 中表达，为
+\begin{align}
+\dq{\zeta}_{0,j_{i}}^{j_{i-1}} & =\ad{\dq x_{c_{i}}^{j_{i-1}}}{\dq{\zeta}_{0,c_{i}}^{c_{i}}}+\ad{\dq x_{j_{i}}^{j_{i-1}}}{\dq{\zeta}_{0,j_{i+1}}^{j_{i}}},\label{eq:wrench_rec}
+\end{align}
+其中 $i\in\{1,\ldots,n\}$ 并且 $c_{0}=j_{0}=0$，这里 $\dq{\zeta}_{0,j_{n_{\ell}+2}}^{j_{n_{\ell}+1}}=\dq{\zeta}_{0,j_{n+1}}^{j_{n}}=0$
+(回想这个 $n=n_{\ell}+1$) 并且 $\dq{\zeta}_{0,c_{i}}^{c_{i}}=\dq{\varsigma}_{0,c_{i}}^{c_{i}}-m_{i}\quat g^{c_{i}}$,
+其中 $\dq{\varsigma}_{0,c_{i}}^{c_{i}}=\quat f_{0,c_{i}}^{c_{i}}+\dual\quat{\tau}_{0,c_{i}}^{c_{i}}$，
+是在第 $i$ 个质心处的动力旋量，\footnote{如果一个\textbf{外部的}动力旋量被应用于末端操纵器，则 $\dq{\zeta}_{0,j_{n+1}}^{j_{n}}\neq0$。} $\quat f_{0,c_{i}}^{c_{i}}=m_{i}\ddot{\quat p}_{0,c_{i}}^{c_{i}}$，
+并且 $\quat{\tau}_{0,c_{i}}^{c_{i}}=\mathcal{L}_{3}\left(\quat{\mathbb{I}}_{i}^{c_{i}}\right)\getp{\dot{\dq{\xi}}_{0,c_{i}}^{c_{i}}}+\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}\times\left(\mathcal{L}_{3}\left(\quat{\mathbb{I}}_{i}^{c_{i}}\right)\getp{\dq{\xi}_{0,c_{i}}^{c_{i}}}\right)$。
+对于移动基座(即，在串联运动学链中的第一个质心；因此，$i=1$)，注意方程 \eqref{eq:wrench_rec} 的结果为 $\dq{\zeta}_{0,j_{1}}^{j_{0}}=\ad{\dq x_{c_{1}}^{j_{0}}}{\dq{\zeta}_{0,c_{1}}^{c_{1}}}+\ad{\dq x_{j_{1}}^{j_{0}}}{\dq{\zeta}_{0,j_{2}}^{j_{1}}}$，
+这意味着 $\dq{\zeta}_{0,j_{1}}^{0}=\ad{\dq x_{c_{1}}^{0}}{\dq{\zeta}_{0,c_{1}}^{c_{1}}}+\ad{\dq x_{j_{1}}^{0}}{\dq{\zeta}_{0,j_{2}}^{j_{1}}}$。
+
+此外，变换 $\dq x_{c_{i}}^{j_{i-1}}$ 是关节或移动基座的坐标的函数。例如，移动基座的变换，$\dq x_{c_{1}}^{j_{0}}=\dq x_{c_{1}}^{0}$，取决于其坐标和旋转角度，即 $(x_{\mathrel{\mathrm{base}}},y_{\mathrel{\mathrm{base}}},\phi_{\mathrel{\mathrm{base}}})$，因此 $\dq x_{c_{1}}^{0}\triangleq\dq x_{c_{1}}^{0}(x_{\mathrel{\mathrm{base}}},y_{\mathrel{\mathrm{base}}},\phi_{\mathrel{\mathrm{base}}})$ 并且 $q_{1}=x_{\mathrel{\mathrm{base}}},q_{2}=y_{\mathrm{\mathrel{base}}},q_{3}=\phi_{\mathrm{\mathrel{base}}}$。对于具有旋转关节、棱柱关节或螺旋关节的机械臂，变换 $\dq x_{c_{i}}^{j_{i-1}}$，其中$i\geq2$，是一个仅有一个参数的函数，即 $\dq x_{c_{i}}^{j_{i-1}}\triangleq\dq x_{c_{i}}^{j_{i-1}}(q_{j_{i-1}})$。在这种情况下，$q_{j_{i-1}}=q_{i+2}$。类似地，球面和平面关节取决于三个参数，而螺旋关节取决于六个参数。因此，对于在位形向量 $\myvec q$中的每一个参数，当定义索引时必须小心。
+
+\subsubsection{\normalfont\bfseries 特殊情况：棱柱关节与旋转关节}
+
+在具有旋转和/或棱柱关节的机械臂的机器人中，这是最常见的情况，由方程 \eqref{eq:wrench_rec} 给出的动力旋量必须投影到关节运动轴上，通过
+\begin{equation}
+\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}=f_{\quat l_{i}}+\dual\tau_{\quat l_{i}},\label{eq:wrench_projection_to_motion_axis}
+\end{equation}
+其中 $f_{\quat l_{i}},\tau_{\quat l_{i}}\in\mathbb{R}$，并且 $\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}$
+是运动旋量 $\dq{\zeta}_{0,j_{i}}^{j_{i-1}}=\quat f_{0,j_{i}}^{j_{i-1}}+\dual\quat{\tau}_{0,j_{i}}^{j_{i-1}}$ 与第 $i$ 个关节的运动轴 $\quat l_{j_{i-1}}\in\mathbb{H}_{p}\cap\mathbb{S}^{3}$ 之间的内积，给出为 \cite{Adorno2017}
+\begin{align*}
+\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}} & =-\frac{\left(\dq{\zeta}_{0,j_{i}}^{j_{i-1}}\quat l_{j_{i-1}}+\quat l_{j_{i-1}}\dq{\zeta}_{0,j_{i}}^{j_{i-1}}\right)}{2}\\
+ & =\dotproduct{\quat f_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}+\dual\dotproduct{\quat{\tau}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}=f_{\quat l_{i}}+\dual\tau_{\quat l_{i}}.
+\end{align*}
+因此，如果第 $i$ 个关节是旋转关节，则相应的扭矩给出为 $\tau_{\quat l_{i}}=\getd{\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}}$。如果它是棱形关节，则沿着轴线 $\quat l_{j_{i-1}}$ 的相应的力给出为 $f_{\quat l_{i}}=\getp{\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\quat l_{j_{i-1}}}}$。
+
+\subsubsection{\normalfont\bfseries 特殊情况：平面关节/完整基座}
+
+对于具有完整移动基座和/或平面关节(运动学等效)的机器人，我们必须将动力旋量投射到关节/移动基座的所有三个运动轴上。\footnote{注意，本过程适用于所有具有一个以上运动轴的关节(例如球面关节、平面关节等等)。}也就是说，沿着关节/移动基座的 $x$ 轴和 $y$ 轴的相应的力给出为
+\begin{align*}
+f_{\quat l_{i_{x}}} & =\getp{\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\ad{\quat r_{0}^{j_{i-1}}}{\imi}}},\\
+f_{\quat l_{i_{y}}} & =\getp{\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\ad{\quat r_{0}^{j_{i-1}}}{\imj}}},
+\end{align*}
+而围绕关节/移动基座的 $z$ 轴的相应扭矩给出为
+\begin{align*}
+\tau_{\quat l_{z}} & =\getd{\dotproduct{\dq{\zeta}_{0,j_{i}}^{j_{i-1}},\ad{\quat r_{0}^{j_{i-1}}}{\imk}}}.
+\end{align*}
+
+\selectlanguage{english}%
+

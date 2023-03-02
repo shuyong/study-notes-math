@@ -1,0 +1,29 @@
+\makeatletter
+\newcommand{\thickhline}{%
+    \noalign {\ifnum 0=`}\fi \hrule height 1pt
+    \futurelet \reserved@a \@xhline
+}
+\makeatother
+
+ \begin{table*}[h]
+ %\fontsize{18}{13}\selectfont
+   %\normalsize
+   \centering
+  % \resizebox{\textwidth}{!}{
+   \def\arraystretch{1.5}%  1 is the default, change whatever you need
+%    \begin{tabular}{|l | l | l |}
+    \begin{tabular}{p{2cm}  p{3cm}  p{9cm} }
+    \thickhline
+   \thead{数学量} & \thead{缩略词} & \thead{算法} \\ \hline \thickhline
+   \multirow{3}{*}{$\frac{\partial ID}{\partial \q}$, $\frac{\partial ID}{\partial \qd}$ } & \centering RNEACR  & 在RNEA上链式规则的前向累积 \cite[Algo.~2 \&3]{car}\\ \cline{2-3}
+   & \centering Pinocchio ID Derivs & Pinocchio 原始算法 \cite{car_code}  \\ \cline{2-3}
+   & \centering {\bf IDSVA} & 使用SVA的拟议算法 (Algorithm 1) \\ \thickhline
+   \multirow{4}{*}{$\frac{\partial FD}{\partial \q}$, $\frac{\partial FD}{\partial \qd}$} & \centering ABACR & 在ABA上的前向链式规则 \\ \cline{2-3}
+   & \centering FDCR & RNEACR，计算 $\M^{-1}$ \cite{InverseMassMatrix}，应用方程(\ref{car_FO_eqn}) \\ \cline{2-3}
+   & \centering Pinocchio FD Derivs & Pinocchio ID Derivs，计算 $\M^{-1}$ \cite{InverseMassMatrix}，应用方程(\ref{car_FO_eqn}) \\ \cline{2-3}
+   & \centering {\bf FDSVA} & IDSVA，计算 $\M^{-1}$ \cite{InverseMassMatrix}，使用 DMM/AZA，对于方程(\ref{car_FO_eqn}) 依赖于 $N$ \\ \thickhline
+   $ABA(\q,0,\b,0)$ & \centering \bf{AZA} & 简化ABA，对于方程(\ref{car_FO_eqn}) 选择零输入 \\ \thickhline
+    \end{tabular}
+    \caption{所使用的各种算法/方法的缩写。粗体首字母缩略词是本论文的贡献。}
+    \label{table2}
+\end{table*}

@@ -1,0 +1,5977 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=adobe
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "6-D向量初学者指南(第1部分)"
+\pdf_author "Roy Featherstone"
+\pdf_keywords "Tutorials, Motion control, Vectors, Kinematics, Robot kinematics"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+6-D向量初学者指南(第1部分)
+\begin_inset Newline newline
+\end_inset
+
+它们是什么、它们如何工作，以及如何使用它们
+\end_layout
+
+\begin_layout Author
+\begin_inset CommandInset href
+LatexCommand href
+name "Roy Featherstone"
+target "http://royfeatherstone.org/abstracts.html#RAM-tutorial-1"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+09 September 2010
+\end_layout
+
+\begin_layout Abstract
+本教程的目的是提供一个6-D向量初学者指南，其内容足够详细，以便读者可以立即开始将其用作解决实际问题的工具。本教程覆盖基础知识，并且第2部分将覆盖6-D向量在各
+种机器人运动学和动力学计算中的应用。本教程的其余部分主要是解释什么是空间向量以及如何使用它们。它强调了使用3-D向量解决刚体问题与使用空间向量解决同一问题之间的
+区别，以便读者能够了解在6-D范式中思考意味着什么。
+\end_layout
+
+\begin_layout Standard
+刚体有六个运动自由度，那么为什么不使用六维(6-D)向量来描述其运动和作用在其上的力呢？事实上，一些机器人专家已经做到了这一点，而且这种做法正在变得越来越普遍。
+本教程的目的是介绍6-D向量的初学者指南，其内容足够详细，读者可以立即开始使用它们作为实际解决问题的工具。本教程覆盖基础知识，第2部分将覆盖6-D向量在各种机器
+人运动学和动力学计算中的应用。
+\end_layout
+
+\begin_layout Standard
+6-D向量有多种形式。这里介绍的特殊类型称为
+\series bold
+空间向量
+\series default
+(
+\emph on
+spatial vectors
+\emph default
+)。它们是作者近30年来一直使用的工具，用于发明动力学算法和编写动力学计算软件。其它类型的6-D向量包括旋量(screws)、矩量(motors)和李代数(Li
+e algebras)。在本教程的最后，我们将介绍更多关于它们的内容。各种6-D向量之间的差异相对较小。你对其中任何一种了解得越多，就越容易理解其它的。
+\end_layout
+
+\begin_layout Standard
+6-D向量的明显优势在于它们可以减少代数的数量。不必定义两个三维(3-D)向量来描述动力，再定义另外两个3-D向量来描述加速度，并为每个物体编写两个运动方程，使
+用6-D向量符号让你将相应的3-D向量和方程配对。直接的结果是一个更整洁、更紧凑的符号，涉及更少的数量以及更少的方程。然而，如果有人认为6-D向量只是组织3-D
+向量的一种便利的符号，那就忽略了另一半的意义。6-D向量是思考的工具。它们有自己的物理意义和数学特性。它们让你更直接地解决一个问题，而且是在更高的抽象水平上，让
+你在6-D范式中思考，这比听起来更容易。
+\end_layout
+
+\begin_layout Standard
+使用空间向量(以及其它类型的6-D向量)可以让你更简洁地描述问题，更快地解决问题，用更少的步骤解决问题，更清晰地向其他人展示解决方案，用更少的代码行实现它，并更
+轻松地调试软件。此外，这没有效率损失：尽管抽象级别更高，但空间-向量软件可以与3-D向量软件一样高效。
+\end_layout
+
+\begin_layout Standard
+本教程的其余部分主要介绍什么是空间向量以及如何使用它们。它强调了使用3-D向量解决刚体问题与使用空间向量解决同一问题之间的区别，以便读者了解在6-D范式中思考意
+味着什么。
+\end_layout
+
+\begin_layout Section
+关于符号的说明
+\end_layout
+
+\begin_layout Standard
+使用空间向量时，使用
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+ (或
+\begin_inset Formula $\dot{\boldsymbol{v}}$
+\end_inset
+
+)等符号来标志如动力、速度和加速度等量是很方便的。然而，这些相同的符号对于3-D向量同样有用。因此，无论何时把空间向量和3-D向量放在一起讨论，就有可能出现名称
+上的冲突。为了解决这些冲突，我们应使用以下规则：在任何需要区分空间符号与3-D符号的情况下，空间符号都会被赋予一个帽子符号(例如，
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+)。当不再需要这些帽子符号时，就会把它们摘下来。另一种同样有效的策略是，通过使用箭头符号(例如，
+\begin_inset Formula $\vec{\boldsymbol{f}}$
+\end_inset
+
+和
+\begin_inset Formula $\vec{\boldsymbol{v}}$
+\end_inset
+
+)将3-D符号与空间符号区分开来。像这样的规则为用户提供了一定程度的灵活性，比“所有空间符号都有帽子符号”这样的简单规则更可取，后者只会导致不必要的帽子海洋
+ — 读和写都很麻烦。
+\end_layout
+
+\begin_layout Standard
+有时，区分坐标向量和它所代表的量是有用的。这将通过在坐标向量下加下划线来完成。因此，你偶尔会看到像这样的符号，
+\begin_inset Formula $\underline{\boldsymbol{v}}$
+\end_inset
+
+或
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}$
+\end_inset
+
+，用于标志表示
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+或
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+的坐标向量。该符号方法仅在需要时使用。
+\end_layout
+
+\begin_layout Section
+一个工程示例
+\end_layout
+
+\begin_layout Standard
+本教程的主要信息是，空间向量不仅是3-D向量配对的一种方便方法，而且其本身也是一种解决问题的工具。空间向量有它们自己的物理解释、有它们自己的方程和公式，并且有它
+们自己的使用规则；使用它们的最好方法是直接用6-D范式思考。
+\end_layout
+
+\begin_layout Standard
+也许最好的解释方法是通过一个工作示例，比较3-D和6-D的方法来解决一个刚体问题。附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:AA"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+“使用3-D向量求解一个两体动力学问题”展示了如何使用3-D向量求解一个简单的两体动力学问题的详细工作示例，附录 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:AB"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+“使用空间向量求解一个两体动力学问题”展示了如何使用空间向量求解相同问题。我们将它们分别称为3-D示例和空间示例。3-D示例采用3-D向量动力学方法，而空间示例
+采用空间向量代数方法。即使是最简单的一瞥，也会发现空间示例在各个方面都更简单：问题陈述更短，图表更简单，并且解决方案更短。现在让我们更详细地检查这些示例。
+\end_layout
+
+\begin_layout Standard
+从3-D示例开始，需要
+\begin_inset Formula $8$
+\end_inset
+
+个量来描述刚体系统：每个物体的质量、质心和转动惯量，加上定义关节轴的量，
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+。需要另外
+\begin_inset Formula $2$
+\end_inset
+
+个量来描述作用在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上的动力，以及另外
+\begin_inset Formula $2$
+\end_inset
+
+个量来描述其产生的加速度。此外，仅仅说明
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+描述动力和加速度是不够的 — 完整的描述还要求我们确定
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的作用线和
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+所指向的在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+中的特定点。在介绍这
+\begin_inset Formula $3$
+\end_inset
+
+个点
+\begin_inset Formula $C_{1}$
+\end_inset
+
+、
+\begin_inset Formula $C_{2}$
+\end_inset
+
+和
+\begin_inset Formula $P$
+\end_inset
+
+作为描述问题的必要部分之后，在图表上显示这些点变得十分必要，因为它们将在求解过程中发挥重要作用。
+\end_layout
+
+\begin_layout Standard
+在3-D向量方法的术语中，
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+ 被称为参考于(或表达于) 
+\begin_inset Formula $C_{1}$
+\end_inset
+
+点，这意味着
+\begin_inset Formula $C_{1}$
+\end_inset
+
+作为这些量的参考点。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)同样参考于(表达于) 
+\begin_inset Formula $C_{1}$
+\end_inset
+
+点。这需要定义空间中的各种点，并将各种向量和方程引用到这些点，这是解决刚体问题的3-D向量方法的一个特征。它占了代数复杂性的很大一部分，它迫使分析者明确地考虑哪
+一个点将被用来表达哪一个方程，哪些量将不得不从一个参考点变换到另一个参考点。参考点选择不当会使复杂的求解过程更加复杂。
+\end_layout
+
+\begin_layout Standard
+在3-D示例中，我们可以看到每个物体的运动方程已在其各自的质心处表达，并且约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)–(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)已在
+\begin_inset Formula $P$
+\end_inset
+
+处表达。这些都是很好的选择，但它们要求我们定义额外的
+\begin_inset Formula $8$
+\end_inset
+
+个量(从
+\begin_inset Formula $^{P}\boldsymbol{a}_{1}$
+\end_inset
+
+到
+\begin_inset Formula $^{1}\boldsymbol{n}_{2}$
+\end_inset
+
+)和额外的
+\begin_inset Formula $7$
+\end_inset
+
+个方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)–(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以管理从一个参考点到另一个参考点的所有必要的向量变换。
+\end_layout
+
+\begin_layout Standard
+在最高层次上，求解策略是这样的：用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+表达
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的加速度，然后使用力的约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)以获得对于
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+依据
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+的表达式。在这点上，系统中的每个动力和加速度都可以用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+表达；因此，通过将
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+表达为
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+的项，然后将方程倒置，用动力来表达加速度，就可以得到解。
+\end_layout
+
+\begin_layout Standard
+现在让我们检查一下空间-向量示例。在这种情况下，只需要
+\begin_inset Formula $3$
+\end_inset
+
+个量(
+\begin_inset Formula $\boldsymbol{I}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{I}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+)来描述刚体系统；仅需要
+\begin_inset Formula $1$
+\end_inset
+
+个量(
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+)来描述作用在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上的力；并且只需要
+\begin_inset Formula $1$
+\end_inset
+
+个量(
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+)来描述其加速度。此外，求解过程只引入了另外
+\begin_inset Formula $3$
+\end_inset
+
+个量(
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+)。所以，整个问题现在只涉及
+\begin_inset Formula $8$
+\end_inset
+
+个量。
+\end_layout
+
+\begin_layout Standard
+注意，在这个示例中没有提到任意3-D点。这个问题的陈述和解决没有涉及到空间中的任意一点。这种不存在参考点的情况是空间向量方法(以及其它一些6-D形式)的一个特有
+的特征，也是6-D思维的一个关键方面。
+\end_layout
+
+\begin_layout Standard
+回到3-D示例，很明显可以将相应的3-D向量(
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+与
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+与
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+，如此等等)配对以生成6-D向量，这将导致代数的数量有所减少。然而，
+\begin_inset Formula $C_{1}$
+\end_inset
+
+、
+\begin_inset Formula $C_{2}$
+\end_inset
+
+和
+\begin_inset Formula $P$
+\end_inset
+
+点仍然是问题陈述和解决过程的重要部分。因此，3-D向量对的叠加纯粹是一种符号化手段：得到的向量是6-D，但概念、方法和思维过程都仍然是3-D的。
+\end_layout
+
+\begin_layout Standard
+回到空间-向量示例，图表显然更简单，但箭头现在有不同的含义。与
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+相关的箭头，从空的空间指向
+\begin_inset Formula $B_{1}$
+\end_inset
+
+，仅表明
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+是作用在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上的外力。它不传递任何几何信息(例如力的作用线)。同样，与
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+相关的箭头(从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+指向
+\begin_inset Formula $B_{2}$
+\end_inset
+
+)仅表明
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+是从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+传递到
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的力，而与
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+相关的箭头，从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+指出来，仅表明
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+是
+\begin_inset Formula $B_{1}$
+\end_inset
+
+的加速度。根据箭头的方向(以及空间向量的知识)，我们可以立即推断
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上的净力为
+\begin_inset Formula $\boldsymbol{f}-\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+，
+\begin_inset Formula $B_{2}$
+\end_inset
+
+上的净力为
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+。与
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+关联的箭头与关节的旋转轴对齐，是唯一具有几何意义的箭头。
+\end_layout
+
+\begin_layout Standard
+为什么空间向量示例中没有3-D点，以及为什么大多数箭头没有几何意义的原因是，所有必要的位置信息都是相关空间量所固有的。惯量
+\begin_inset Formula $\boldsymbol{I}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{I}_{2}$
+\end_inset
+
+隐含地定位了两个物体的质心；
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的作用线(如果它有的话)可以从其值中推导出来；并且
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+定义了3-D空间中旋转轴的方向和位置。加速度有点复杂，将在后面的章节中讨论。尽管如此，
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+确实提供了对一个物体的加速度的完整描述，并且不需要参考任何点。
+\end_layout
+
+\begin_layout Standard
+空间-向量示例中的高级求解策略与3-D示例中的相同：用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+ 的项表达
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+；然后，代入力约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以获得用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+的项表达的
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+；然后，用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+的项表达的
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+，并将其倒置为用
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的项表达的
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+。使用空间向量，分析者能够直接遵循这一高级策略，而不必考虑与3-D向量方法相关的混乱细节。观察一下，
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+的表达式是如何仅仅在两次简单替换之后立即获得的，并且
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+ 所期望的表达式是如何仅仅在三次简单替换之后获得的。
+\end_layout
+
+\begin_layout Standard
+空间向量的另一个好处是很容易证明方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S39"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中括号中的表达式是对称正定矩阵，因此是可逆的，这在本例中并不明显。3-D示例在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $6\times6$
+\end_inset
+
+矩阵也是如此，但(使用3-D向量)证明相对复杂。空间向量的另一个优点是，对示例问题不熟悉的人可能会使用空间向量快速获得正确答案，但在尝试使用3-D向量求解该问题
+时，可能会迷失方向并走错路。
+\end_layout
+
+\begin_layout Section
+一些程式
+\end_layout
+
+\begin_layout Standard
+为了理解空间向量，回顾一下关于向量的几个基本事实是有帮助的。首先，有许多不同类型的向量，每个都有不同的数学特性。事实上，只有两种运算是定义在所有向量上的：两个向
+量的加法和一个向量与一个标量(即实数)的乘法。还有几个算子是在特定类型的向量上定义的，并赋予它们特殊的属性。一个重要的例子是欧几里德内积，它仅定义在欧几里德向量
+上，并赋予它们幅值和方向的特殊性质。
+\end_layout
+
+\begin_layout Standard
+有两种类型的向量特别有趣：欧几里德向量和坐标向量。欧几里德向量具有幅值和方向的特殊性质，它们是欧几里德向量空间的元素，我们将用符号
+\begin_inset Formula $\mathsf{E}^{n}$
+\end_inset
+
+标志。(上标表明维度。)坐标向量是实数的
+\begin_inset Formula $n$
+\end_inset
+
+元组，它们是向量空间
+\begin_inset Formula $\mathsf{R}^{n}$
+\end_inset
+
+的元素。坐标向量的特殊特性是它们有第一个坐标、第二个坐标，如此等等。
+\end_layout
+
+\begin_layout Standard
+坐标向量用于通过一个基来表示其它类型的向量。例如，如果
+\begin_inset Formula $V$
+\end_inset
+
+是一个一般的向量空间，并且
+\begin_inset Formula $\mathcal{E}=\left\{ \boldsymbol{e}_{1},\boldsymbol{e}_{2},\ldots,\boldsymbol{e}_{n}\right\} \subset V$
+\end_inset
+
+是在
+\begin_inset Formula $V$
+\end_inset
+
+中的一个基，则任意向量
+\begin_inset Formula $\boldsymbol{v}\in V$
+\end_inset
+
+都可以用
+\begin_inset Formula $\boldsymbol{v}=\sum_{i=1}^{n}v_{i}\boldsymbol{e}_{i}$
+\end_inset
+
+的形式表达，其中
+\begin_inset Formula $v_{i}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+中的坐标。如果我们将它们组合成一个坐标向量
+\begin_inset Formula $\underline{\boldsymbol{v}}=\left[\begin{array}{llcc}
+v_{1} & v_{2} & \cdots & v_{n}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+，则我们可以说
+\begin_inset Formula $\underline{\boldsymbol{v}}\in\mathsf{R}^{n}$
+\end_inset
+
+在基
+\begin_inset Formula $\mathcal{E}\subset V$
+\end_inset
+
+中表示
+\begin_inset Formula $\boldsymbol{v}\in V$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+有些基比其它基更有用。对于欧几里德向量，最有用的是正交基，它产生了笛卡尔坐标系统。笛卡尔坐标的特殊性质是：如果
+\begin_inset Formula $\underline{\boldsymbol{v}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{v}}_{2}$
+\end_inset
+
+是坐标向量，表示笛卡尔坐标系统中的欧几里德向量
+\begin_inset Formula $\boldsymbol{v}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{2}$
+\end_inset
+
+，则
+\begin_inset Formula $\boldsymbol{v}_{1}\cdot\boldsymbol{v}_{2}=\underline{\boldsymbol{v}}_{1}^{\mathrm{T}}\underline{\boldsymbol{v}}_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+空间向量不是欧几里德向量。它们是两个密切相关的向量空间的元素，称为
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+。前者包含运动向量，描述刚体运动，后者包含动力向量，描述作用在刚体上的力。形式上，
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+是
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的对偶向量空间，反之亦然。这种表示法可以扩展到包括其它类型的运动和动力向量。例如，广义动力向量可以被描述为
+\begin_inset Formula $\mathsf{F}^{n}$
+\end_inset
+
+的元素，而描述一组
+\begin_inset Formula $N$
+\end_inset
+
+个刚体运动的向量可以说是
+\begin_inset Formula $\mathsf{M}^{6N}$
+\end_inset
+
+的元素。
+\end_layout
+
+\begin_layout Standard
+在空间向量上没有定义内积。相反，有一个标量积，它从每个空间中获取一个参数。如果
+\begin_inset Formula $\boldsymbol{m}\in\mathsf{M}^{6}$
+\end_inset
+
+以及
+\begin_inset Formula $\boldsymbol{f}\in\mathsf{F}^{6}$
+\end_inset
+
+，则定义了表达式
+\begin_inset Formula $\boldsymbol{m}\cdot\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}\cdot\boldsymbol{m}$
+\end_inset
+
+ (并且两者是相等的)，但没有定义表达式
+\begin_inset Formula $\boldsymbol{m}\cdot\boldsymbol{m}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}\cdot\boldsymbol{f}$
+\end_inset
+
+。正如我们稍后将看到的，如果
+\begin_inset Formula $\boldsymbol{m}$
+\end_inset
+
+是刚体的速度，并且
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+是作用在其上的动力，则
+\begin_inset Formula $\boldsymbol{f}\cdot\boldsymbol{m}$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+传递的功率。
+\end_layout
+
+\begin_layout Standard
+空间向量的坐标系统必须同时张成
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+。因此，总共需要
+\begin_inset Formula $12$
+\end_inset
+
+个基向量：
+\begin_inset Formula $\left\{ \boldsymbol{d}_{1},\boldsymbol{d}_{2},\ldots,\boldsymbol{d}_{6}\right\} \subset\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\left\{ \boldsymbol{e}_{1},\boldsymbol{e}_{2},\ldots,\boldsymbol{e}_{6}\right\} \subset\mathsf{F}^{6}$
+\end_inset
+
+。同样，有些基比其它基更有用。对于空间向量，最有用的是对偶基，它在
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上定义了一个对偶坐标系统。要符合对偶基的条件，向量
+\begin_inset Formula $\boldsymbol{d}_{i}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{e}_{i}$
+\end_inset
+
+必须满足以下条件：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{d}_{i}\cdot\boldsymbol{e}_{j}=\begin{cases}
+1 & \mathrm{if}\ i=j\\
+0 & \mathrm{otherwise}.
+\end{cases}\label{eq:1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对偶坐标系统的特殊性质是：如果
+\begin_inset Formula $\underline{\boldsymbol{m}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\boldsymbol{f}}$
+\end_inset
+
+是坐标向量，在对偶坐标系统中表示
+\begin_inset Formula $\boldsymbol{m}\in\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}\in\mathsf{F}^{6}$
+\end_inset
+
+，则
+\begin_inset Formula $\boldsymbol{m}\cdot\boldsymbol{f}=\underline{\boldsymbol{m}}^{\mathrm{T}}\underline{\boldsymbol{f}}$
+\end_inset
+
+。因此，对偶坐标是欧几里德向量空间上的笛卡尔坐标系统的空间-向量等价物。我们稍后将遇到的Plücker坐标是一种特殊类型的对偶坐标系统，具有额外的特性，使其使用
+起来特别方便。
+\end_layout
+
+\begin_layout Standard
+对偶坐标系统的一个一般特性是运动向量和动力向量遵循不同的坐标变换规则。如果
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+是运动向量的坐标变换，则动力向量的对应变换称为
+\begin_inset Formula $\boldsymbol{X}^{*}$
+\end_inset
+
+，并且两者之间的关系为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{X}^{*}=\left(\boldsymbol{X}^{-1}\right)^{\mathrm{T}}=\boldsymbol{X}^{-\mathrm{T}}.\label{eq:2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这种关系确保标量积对于任意坐标变换都是不变量，这一点可以从以下方程看出
+\begin_inset Formula 
+\begin{equation}
+\left(\boldsymbol{X}^{*}\boldsymbol{f}\right)^{\mathrm{T}}\left(\boldsymbol{X}\boldsymbol{m}\right)=\boldsymbol{f}^{\mathrm{T}}\boldsymbol{X}^{-1}\boldsymbol{X}\boldsymbol{m}=\boldsymbol{f}^{\mathrm{T}}\boldsymbol{m}.\label{eq:3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+什么是空间向量？
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $P$
+\end_inset
+
+为3-D空间中的一个粒子。如果我们说
+\begin_inset Formula $P$
+\end_inset
+
+的速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，则我们的意思是
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+是一个欧几里德向量(
+\begin_inset Formula $\boldsymbol{v}\in\mathsf{E}^{3}$
+\end_inset
+
+)，其幅值和方向与
+\begin_inset Formula $P$
+\end_inset
+
+的行进速度和方向匹配。现在假设
+\begin_inset Formula $B$
+\end_inset
+
+是一个刚体。如果我们被告知
+\begin_inset Formula $B$
+\end_inset
+
+的速度为
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+，则我们可以立即推断
+\begin_inset Formula $\hat{\boldsymbol{v}}\in\mathsf{M}^{6}$
+\end_inset
+
+；但是
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+如何准确地描述
+\begin_inset Formula $B$
+\end_inset
+
+的运动，并且
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+如何可能在不使用参考点的情况下描述运动？旋量理论为这些问题提供了直观的答案。
+\end_layout
+
+\begin_layout Standard
+刚体的最一般运动，在任意给定时刻，是沿有向线的螺旋运动。(物体的行为就像固定在空间某处的螺纹上的螺母。)在旋量理论中，这种运动称为
+\series bold
+运动旋量
+\series default
+(
+\emph on
+twist
+\emph default
+)。运动旋量可以用一个角度幅值、一个线性幅值和一个有向线来表征。(这两个幅值的比率称为
+\series bold
+旋距
+\series default
+(
+\emph on
+pitch
+\emph default
+)。)这三个量一起定义一个运动旋量，就像幅值和方向一起定义粒子速度一样。这两个幅值描述了物体沿有向线旋转和平移的速率，并且直线本身描述了运动的瞬时旋量轴(ins
+tantaneous screw axis, ISA)。(顾名思义，一般来说，一个刚体会在两个不同的瞬间绕两个不同的轴旋转。在一个有限的时间间隔内，刚体会绕无限
+多个轴旋转，每个轴固定在空间中，并且每个轴在一个瞬间有效。)如果线性幅值为零，则运动是纯旋转。如果角度幅值为零，则运动是纯平移，在这种情况下，直线的位置无关紧要
+，而只有它的方向才重要。
+\end_layout
+
+\begin_layout Standard
+我们现在可以回答前面提出的问题。
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的元素是运动旋量，并以两个幅值和一条有向线为表征。如果我们说
+\begin_inset Formula $\hat{\boldsymbol{v}}\in\mathsf{M}^{6}$
+\end_inset
+
+是
+\begin_inset Formula $B$
+\end_inset
+
+的速度，则我们的意思是
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+的有向线与线性和角度幅值，与物体运动的瞬时旋量轴及其沿该轴和围绕该轴的线性和角度速率相匹配。
+\end_layout
+
+\begin_layout Standard
+空间动力向量可以用类似的方式进行解释。作用在刚体上的最一般动力包括沿有向线作用的螺旋力：沿直线作用的线性动力，以及围绕直线作用的转动动力(一对力偶)。在旋量理论
+中，这样的量称为
+\series bold
+动力旋量
+\series default
+(
+\emph on
+wrench
+\emph default
+)。动力旋量可以用一个线性幅值、一个角度幅值和一个有向线来表征 — 与运动旋量相同。这两个幅值描述动力旋量的线性和角度分量的强度，有向线是瞬时旋量轴。如果角度幅
+值为零，则动力旋量是纯动力。如果线性幅值为零，则动力旋量是一个纯力偶，在这种情况下，直线的位置无关紧要，而只有它的方向才重要。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+的元素是作用在刚体上的动力，则它们就是动力旋量，并且它们是以两个幅值和一条有向线为表征。如果我们说一个动力
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+作用在物体
+\begin_inset Formula $B$
+\end_inset
+
+上，则我们的意思是，有向线与
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的线性和角度幅值，与瞬时旋量轴以及作用在物体
+\begin_inset Formula $B$
+\end_inset
+
+上的动力旋量的线性和角度强度相匹配。
+\end_layout
+
+\begin_layout Standard
+如果我们引入一个参考点
+\begin_inset Formula $O$
+\end_inset
+
+，则可以通过一对3-D向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+来表示空间速度
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+，并通过一对3-D向量
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+来表示空间动力
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+。在用运动旋量和动力旋量的意义解释刚体运动和动力的本质之后，现在应该清楚的是，参考点不是内在的必要条件，而仅仅是3-D向量表示的一个假象。换句话说，如果你在使用
+3-D向量，你才需要参考点。选择一个参考点就像选择一个坐标系统，在其中的空间向量由一对向量-值坐标表示。(这一想法在文献[6]中已有探讨。)
+\end_layout
+
+\begin_layout Standard
+在获得
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+之后，有两种方法来看待它们所描述的速度。根据一种观点，物体以
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的角速度围绕通过
+\begin_inset Formula $O$
+\end_inset
+
+的轴旋转，同时以
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+的线速度平移。根据另一种观点，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+定义了运动旋量速度的角度幅值和瞬时旋量轴的方向，而
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+ (与
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+结合)定义了运动旋量速度的线性幅值和瞬时旋量轴相对于
+\begin_inset Formula $O$
+\end_inset
+
+的位置。这两种观点都是正确的和有用的。类似的注释也适用于动力。
+\end_layout
+
+\begin_layout Section
+使用空间向量
+\end_layout
+
+\begin_layout Standard
+空间向量是表达和分析刚体系统物理特性和行为的工具。向量描述物理量，方程描述物理量之间的关系。那么，在空间-向量形式下，经典力学的规则是什么样的呢？下面是一些基本
+事实和公式的简短列表。它提到了一些我们尚未遇到的量，但将在下一节中描述。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+相对速度
+\series default
+(
+\emph on
+Relative velocity
+\emph default
+)：如果物体
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的速度分别为
+\begin_inset Formula $\boldsymbol{v}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{2}$
+\end_inset
+
+，则
+\begin_inset Formula $B_{2}$
+\end_inset
+
+相对于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+的相对速度为
+\begin_inset Formula $\boldsymbol{v}_{\mathrm{rel}}=\boldsymbol{v}_{2}-\boldsymbol{v}_{1}$
+\end_inset
+
+。显然，这也意味着
+\begin_inset Formula $\boldsymbol{v}_{2}=\boldsymbol{v}_{1}+\boldsymbol{v}_{\mathrm{rel}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+动力总和
+\series default
+(
+\emph on
+Summation of forces
+\emph default
+)：如果动力
+\begin_inset Formula $\boldsymbol{f}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}_{2}$
+\end_inset
+
+作用在同一刚体上，则它们等效于一个单一动力
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{tot}}$
+\end_inset
+
+，给出为
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{tot}}=\boldsymbol{f}_{1}+\boldsymbol{f}_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+作用与反作用
+\series default
+(
+\emph on
+Action and reaction
+\emph default
+)：如果物体
+\begin_inset Formula $B_{1}$
+\end_inset
+
+对物体
+\begin_inset Formula $B_{2}$
+\end_inset
+
+施加一个动力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+，则
+\begin_inset Formula $B_{2}$
+\end_inset
+
+对
+\begin_inset Formula $B_{1}$
+\end_inset
+
+施加一个反作用力
+\begin_inset Formula $-\boldsymbol{f}$
+\end_inset
+
+。这是牛顿第三定律的空间形式。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+标量积
+\series default
+(
+\emph on
+Scalar product
+\emph default
+)：如果一个动力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+作用在一个速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+的物体上，则该动力所传递的功率为
+\begin_inset Formula $\boldsymbol{f}\cdot\boldsymbol{v}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+标量乘法
+\series default
+(
+\emph on
+Scalar multiplication
+\emph default
+)：这种运算会影响空间向量的幅值，但不会影响其有向线。如果空间向量
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+以幅值
+\begin_inset Formula $m_{1}$
+\end_inset
+
+和
+\begin_inset Formula $m_{2}$
+\end_inset
+
+以及直线
+\begin_inset Formula $\boldsymbol{l}$
+\end_inset
+
+为表征，则
+\begin_inset Formula $\alpha\boldsymbol{s}$
+\end_inset
+
+以
+\begin_inset Formula $\alpha m_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\alpha m_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{l}$
+\end_inset
+
+为表征。一个速度为
+\begin_inset Formula $\alpha\boldsymbol{v}$
+\end_inset
+
+的物体在
+\begin_inset Formula $\delta t$
+\end_inset
+
+周期内所做的无穷小运动与一个速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+的物体在
+\begin_inset Formula $\alpha\delta t$
+\end_inset
+
+周期内所做的相同；而动力
+\begin_inset Formula $\beta\boldsymbol{f}$
+\end_inset
+
+所传递的能量是作用在同一物体上的动力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的
+\begin_inset Formula $\beta$
+\end_inset
+
+倍。所以，
+\begin_inset Formula $\left(\alpha\boldsymbol{v}\right)\cdot\left(\beta\boldsymbol{f}\right)=\alpha\beta\left(\boldsymbol{v}\cdot\boldsymbol{f}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+微分
+\series default
+(
+\emph on
+Differentiation
+\emph default
+)：空间向量就像其它向量一样是可微分的。运动向量的导数是运动向量，并且动力向量的导数是动力向量。如果
+\begin_inset Formula $\boldsymbol{m}\in\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}\in\mathsf{F}^{6}$
+\end_inset
+
+被固连在速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+的物体中，则
+\begin_inset Formula $\dot{\boldsymbol{m}}=\boldsymbol{v}\times\boldsymbol{m}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{f}}=\boldsymbol{v}\times^{*}\boldsymbol{f}$
+\end_inset
+
+。[算子
+\begin_inset Formula $\times^{*}$
+\end_inset
+
+在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中定义。]
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+加速度
+\series default
+(
+\emph on
+Acceleration
+\emph default
+)：空间加速度是空间速度的时间导数(
+\begin_inset Formula $\boldsymbol{a}=\dot{\boldsymbol{v}}$
+\end_inset
+
+)。例如，如果
+\begin_inset Formula $\boldsymbol{v}_{2}=\boldsymbol{v}_{1}+\boldsymbol{v}_{\mathrm{rel}}$
+\end_inset
+
+，则
+\begin_inset Formula $\boldsymbol{a}_{2}=\boldsymbol{a}_{1}+\boldsymbol{a}_{\mathrm{rel}}$
+\end_inset
+
+。空间加速度是
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+的元素，因此遵循与速度相同的坐标变换规则。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+惯量总和
+\series default
+(
+\emph on
+Summation of inertias
+\emph default
+)：如果物体
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+，分别具有
+\begin_inset Formula $\boldsymbol{I}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{I}_{2}$
+\end_inset
+
+的惯量，被刚性连接以形成一个单一的复合刚体，则复合刚体的惯量是
+\begin_inset Formula $\boldsymbol{I}_{\mathrm{tot}}=\boldsymbol{I}_{1}+\boldsymbol{I}_{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+动量
+\series default
+(
+\emph on
+Momentum
+\emph default
+)：如果一个刚体的速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+，则其动量为
+\begin_inset Formula $\boldsymbol{I}\boldsymbol{v}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+运动方程
+\series default
+(
+\emph on
+Equation of motion
+\emph default
+)：作用在刚体上的总动力等于其动量的变化率。
+\begin_inset Formula $\boldsymbol{f}=\mathrm{d}\left(\boldsymbol{I}\boldsymbol{v}\right)/\mathrm{d}t=\boldsymbol{I}\boldsymbol{a}+\boldsymbol{v}\times^{*}\boldsymbol{I}\boldsymbol{v}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+运动约束
+\series default
+(
+\emph on
+Motion constraints
+\emph default
+)：如果将两个刚体的相对速度被约束在位于子空间
+\begin_inset Formula $S\subseteq\mathsf{M}^{6}$
+\end_inset
+
+中，则运动约束由位于子空间
+\begin_inset Formula $T=\left\{ \boldsymbol{f}\in\mathsf{F}^{6}\mid\boldsymbol{f}\cdot\boldsymbol{v}=0\;\forall\boldsymbol{v}\in S\right\} $
+\end_inset
+
+中的约束力实现。这是用空间向量表达的达朗贝尔虚功原理(或若丹虚功率原理)的陈述。
+\end_layout
+
+\begin_layout Section
+细节
+\end_layout
+
+\begin_layout Standard
+本节覆盖坐标系统、微分、惯量、运动方程和运动约束的实际细节。在本节结束时，你应该能够足够清楚地理解空间-向量示例，以便能够将其推广到
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+具有非零速度的情况。
+\end_layout
+
+\begin_layout Subsection
+Plücker坐标
+\end_layout
+
+\begin_layout Standard
+Plücker坐标(发音为plooker)是6-D向量的首选坐标系统。要建立Plücker坐标系统，只需在任意位置放置笛卡尔坐标帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+即可。该帧的位置和方向定义了Plücker坐标系统。事实上，笛卡尔坐标帧的所有位置和方向的集合与所有可能的Plücker坐标系统的集合之间存在
+\begin_inset Formula $1:1$
+\end_inset
+
+的对应关系。
+\end_layout
+
+\begin_layout Standard
+帧
+\begin_inset Formula $Oxyz$
+\end_inset
+
+定义以下各项：一个点
+\begin_inset Formula $O$
+\end_inset
+
+、三个相互正交的方向
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+，以及三条有向线
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+。(它们在
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上通过
+\begin_inset Formula $O$
+\end_inset
+
+。)有了这些数据，我们可以定义以下三个基：
+\begin_inset Formula 
+\begin{align}
+\mathcal{C} & =\left\{ \boldsymbol{i},\boldsymbol{j},\boldsymbol{k}\right\} \subset\mathsf{E}^{3},\label{eq:4}\\
+\mathcal{D} & =\left\{ \boldsymbol{d}_{Ox},\boldsymbol{d}_{Oy},\boldsymbol{d}_{Oz},\boldsymbol{d}_{x},\boldsymbol{d}_{y},\boldsymbol{d}_{z}\right\} \subset\mathsf{M}^{6},\label{eq:5}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\mathcal{E}=\left\{ \boldsymbol{e}_{x},\boldsymbol{e}_{y},\boldsymbol{e}_{z},\boldsymbol{e}_{Ox},\boldsymbol{e}_{Oy},\boldsymbol{e}_{Oz}\right\} \subset\mathsf{F}^{6}.\label{eq:6}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+的元素是
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的单位欧几里德向量，并且该基在
+\begin_inset Formula $\mathsf{E}^{3}$
+\end_inset
+
+上定义了的一个笛卡尔坐标系统。
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+的元素如下：
+\begin_inset Formula $\boldsymbol{d}_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{d}_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{d}_{Oz}$
+\end_inset
+
+分别是围绕线
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+的单位纯旋转；
+\begin_inset Formula $\boldsymbol{d}_{x}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{d}_{y}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{d}_{z}$
+\end_inset
+
+分别是
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的单位纯平移；
+\begin_inset Formula $\boldsymbol{e}_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{e}_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{e}_{Oz}$
+\end_inset
+
+分别是沿
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+线作用的单位纯动力；而
+\begin_inset Formula $\boldsymbol{e}_{x}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{e}_{y}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{e}_{z}$
+\end_inset
+
+是
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的单位纯力偶。这些向量如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 所示。基
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+共同定义了
+\begin_inset Formula $\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\mathsf{F}^{6}$
+\end_inset
+
+上的Plücker坐标系统。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 6-D向量初学者指南1-fig1.jpg
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1"
+
+\end_inset
+
+Plücker基向量。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们有了这些基，让我们计算出空间速度
+\begin_inset Formula $\hat{\boldsymbol{v}}\in\mathsf{M}^{6}$
+\end_inset
+
+和空间动力
+\begin_inset Formula $\hat{\boldsymbol{f}}\in\mathsf{F}^{6}$
+\end_inset
+
+的Plücker坐标。从
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+开始，第一步是识别两个3-D向量，
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+，它们表示在参考点
+\begin_inset Formula $O$
+\end_inset
+
+处的
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+。一旦做完后，物体的运动可以被视为
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+围绕
+\begin_inset Formula $O$
+\end_inset
+
+的纯旋转(即旋转轴通过
+\begin_inset Formula $O$
+\end_inset
+
+)与
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+的纯平移之和。下一步是用基
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+表达这些向量：
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\omega_{x}\boldsymbol{i}+\omega_{y}\boldsymbol{j}+\omega_{z}\boldsymbol{k},
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{O}=v_{Ox}\boldsymbol{i}+v_{Oy}\boldsymbol{j}+v_{Oz}\boldsymbol{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们现在可以将空间速度
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+描述为
+\begin_inset Formula $6$
+\end_inset
+
+个分量的总和：分别是围绕直线
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+的
+\begin_inset Formula $3$
+\end_inset
+
+个旋转幅值
+\begin_inset Formula $\omega_{x}$
+\end_inset
+
+、
+\begin_inset Formula $\omega_{y}$
+\end_inset
+
+和
+\begin_inset Formula $\omega_{z}$
+\end_inset
+
+，再加上
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的
+\begin_inset Formula $3$
+\end_inset
+
+个平移幅值
+\begin_inset Formula $v_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $v_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $v_{Oz}$
+\end_inset
+
+。将该描述与在
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+中的基向量的定义进行比较后，立即得出
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}=\omega_{x}\boldsymbol{d}_{Ox}+\omega_{y}\boldsymbol{d}_{Oy}+\omega_{z}\boldsymbol{d}_{Oz}+v_{Ox}\boldsymbol{d}_{x}+v_{Oy}\boldsymbol{d}_{y}+v_{Oz}\boldsymbol{d}_{z}.\label{eq:7}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将相同的过程应用于
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+，我们将
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+识别为在
+\begin_inset Formula $O$
+\end_inset
+
+处表示
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的3-D向量，并在基
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+中将其表达为：
+\begin_inset Formula 
+\[
+\boldsymbol{f}=f_{x}\boldsymbol{i}+f_{y}\boldsymbol{j}+f_{z}\boldsymbol{k},
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+\boldsymbol{n}_{O}=n_{Ox}\boldsymbol{i}+n_{Oy}\boldsymbol{j}+n_{Oz}\boldsymbol{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+空间动力
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+则可以描述为
+\begin_inset Formula $6$
+\end_inset
+
+个分量的总和：分别是沿直线
+\begin_inset Formula $Ox$
+\end_inset
+
+、
+\begin_inset Formula $Oy$
+\end_inset
+
+和
+\begin_inset Formula $Oz$
+\end_inset
+
+作用的纯动力幅值
+\begin_inset Formula $f_{x}$
+\end_inset
+
+、
+\begin_inset Formula $f_{y}$
+\end_inset
+
+和
+\begin_inset Formula $f_{z}$
+\end_inset
+
+，以及在
+\begin_inset Formula $x$
+\end_inset
+
+、
+\begin_inset Formula $y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+方向上的纯力偶幅值
+\begin_inset Formula $n_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $n_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $n_{Oz}$
+\end_inset
+
+。将该描述与在
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+中的基向量的定义进行比较后，立即得出
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{f}}=n_{Ox}\boldsymbol{e}_{x}+n_{Oy}\boldsymbol{e}_{y}+n_{Oz}\boldsymbol{e}_{z}+f_{x}\boldsymbol{e}_{Ox}+f_{y}\boldsymbol{e}_{Oy}+f_{z}\boldsymbol{e}_{Oz}.\label{eq:8}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的Plücker坐标就是向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{O}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{C}$
+\end_inset
+
+中的笛卡尔坐标。如果
+\begin_inset Formula $\underline{\hat{\boldsymbol{v}}}$
+\end_inset
+
+和
+\begin_inset Formula $\underline{\hat{\boldsymbol{f}}}$
+\end_inset
+
+是表示
+\begin_inset Formula $\hat{\boldsymbol{v}}$
+\end_inset
+
+和
+\begin_inset Formula $\hat{\boldsymbol{f}}$
+\end_inset
+
+的坐标向量，则我们可以将它们完整地写为
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{v}}}=\left[\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}\\
+v_{Ox}\\
+v_{Oy}\\
+v_{Oz}
+\end{array}\right],\quad\underline{\hat{\boldsymbol{f}}}=\left[\begin{array}{c}
+n_{Ox}\\
+n_{Oy}\\
+n_{Oz}\\
+f_{x}\\
+f_{y}\\
+f_{z}
+\end{array}\right],\label{eq:9}
+\end{equation}
+
+\end_inset
+
+或我们可以将它们简写为
+\begin_inset Formula 
+\begin{equation}
+\underline{\hat{\boldsymbol{v}}}=\left[\begin{array}{c}
+\underline{\boldsymbol{\omega}}\\
+\underline{\boldsymbol{v}}_{O}
+\end{array}\right],\quad\underline{\hat{\boldsymbol{f}}}=\left[\begin{array}{c}
+\underline{\boldsymbol{n}}_{O}\\
+\underline{\boldsymbol{f}}
+\end{array}\right],\label{eq:10}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\underline{\boldsymbol{\omega}}=\left[\begin{array}{ccc}
+\omega_{x} & \omega_{y} & \omega_{z}\end{array}\right]^{\mathrm{T}}$
+\end_inset
+
+，如此等等。这种简短格式非常方便和流行，但它确实有一个小缺点：它看起来像一对3-D向量的堆叠，因此能够误导读者认为空间向量是一对3-D向量的堆叠；但实际上，只有
+坐标被堆叠。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)只不过是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的简写形式。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)将角度坐标列在线性坐标之上。这个顺序并不是必需的，并且你将在文献中找到线性坐标在角度坐标之前的示例。从数学的角度看，这种差别纯粹是表面上的：它只是我们选择在
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+中列出基向量的顺序的结果。然而，如果你想使用空间算术软件，则你必须遵守软件所期望的顺序。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中出现的坐标名称模式不是一般情况，因为我们使用了一些特殊符号。特别是，我们使用标准符号
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+表示角速度，并使用(不完全是)标准符号
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+表示力矩。在一般情况下，坐标的名称从它们所描述的向量的名称派生出来。对于一般运动向量
+\begin_inset Formula $\hat{\boldsymbol{m}}$
+\end_inset
+
+，坐标将被称为
+\begin_inset Formula $m_{x}$
+\end_inset
+
+、
+\begin_inset Formula $m_{y}$
+\end_inset
+
+、
+\begin_inset Formula $m_{z}$
+\end_inset
+
+、
+\begin_inset Formula $m_{Ox}$
+\end_inset
+
+、
+\begin_inset Formula $m_{Oy}$
+\end_inset
+
+和
+\begin_inset Formula $m_{Oz}$
+\end_inset
+
+。当然，如果你愿意，也可以对坐标(和基向量)进行编号。
+\end_layout
+
+\begin_layout Subsection
+Plücker变换
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+是两个笛卡尔坐标帧，定义两个Plücker坐标系统，我们也将其称为
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+。设
+\begin_inset Formula $^{A}\boldsymbol{m},{}^{B}\boldsymbol{m},{}^{A}\boldsymbol{f},{}^{B}\boldsymbol{f}\in\mathsf{R}^{6}$
+\end_inset
+
+是坐标向量，分别表示在
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+坐标中的
+\begin_inset Formula $\boldsymbol{m}\in\mathsf{M}^{6}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}\in\mathsf{F}^{6}$
+\end_inset
+
+。这些向量的坐标变换规则如下：
+\begin_inset Formula 
+\[
+^{B}\boldsymbol{m}=\,{}^{B}\boldsymbol{X}_{A}\,{}^{A}\boldsymbol{m},
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+^{B}\boldsymbol{f}=\,{}^{B}\boldsymbol{X}_{A}^{*}\,{}^{A}\boldsymbol{f},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}$
+\end_inset
+
+是运动向量从
+\begin_inset Formula $A$
+\end_inset
+
+坐标到
+\begin_inset Formula $B$
+\end_inset
+
+坐标的坐标变换矩阵，并且
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}^{*}$
+\end_inset
+
+是动力向量的对应矩阵。这两者之间的关系是
+\begin_inset Formula 
+\[
+^{B}\boldsymbol{X}_{A}^{*}=\left(^{B}\boldsymbol{X}_{A}\right)^{-\mathrm{T}},
+\]
+
+\end_inset
+
+[参见方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)]。对于
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}$
+\end_inset
+
+和
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}^{*}$
+\end_inset
+
+的公式仅取决于
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的位置，并给出为
+\begin_inset Formula 
+\begin{equation}
+^{B}\boldsymbol{X}_{A}=\left[\begin{array}{cc}
+\boldsymbol{E} & \boldsymbol{0}\\
+\boldsymbol{0} & \boldsymbol{E}
+\end{array}\right]\left[\begin{array}{cc}
+\boldsymbol{1} & \boldsymbol{0}\\
+-\boldsymbol{r}\times & \boldsymbol{1}
+\end{array}\right],\label{eq:11}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+^{B}\boldsymbol{X}_{A}^{*}=\left[\begin{array}{cc}
+\boldsymbol{E} & \boldsymbol{0}\\
+\boldsymbol{0} & \boldsymbol{E}
+\end{array}\right]\left[\begin{array}{cc}
+\boldsymbol{1} & -\boldsymbol{r}\times\\
+\boldsymbol{0} & \boldsymbol{1}
+\end{array}\right].\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这些方程中，
+\begin_inset Formula $\boldsymbol{E}$
+\end_inset
+
+是从
+\begin_inset Formula $\mathcal{C}_{A}$
+\end_inset
+
+到
+\begin_inset Formula $\mathcal{C}_{B}$
+\end_inset
+
+ (由帧
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+定义的笛卡尔坐标系统)的坐标变换，并且
+\begin_inset Formula $\boldsymbol{r}$
+\end_inset
+
+在
+\begin_inset Formula $\mathcal{C}_{A}$
+\end_inset
+
+坐标中定位帧
+\begin_inset Formula $B$
+\end_inset
+
+的原点(参见图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 6-D向量初学者指南1-fig2.jpg
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2"
+
+\end_inset
+
+帧
+\begin_inset Formula $B$
+\end_inset
+
+相对于
+\begin_inset Formula $A$
+\end_inset
+
+的位置。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+符号
+\begin_inset Formula $\boldsymbol{0}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{1}$
+\end_inset
+
+标志适当维数的零矩阵和单位矩阵，表达式
+\begin_inset Formula $\boldsymbol{r}\times$
+\end_inset
+
+是斜对称矩阵
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{r}\times=\left[\begin{array}{c}
+r_{x}\\
+r_{y}\\
+r_{z}
+\end{array}\right]\times=\left[\begin{array}{ccc}
+0 & -r_{z} & r_{y}\\
+r_{z} & 0 & -r_{x}\\
+-r_{y} & r_{x} & 0
+\end{array}\right],\label{eq:13}
+\end{equation}
+
+\end_inset
+
+其将任意欧几里德向量
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+映射到向量积
+\begin_inset Formula $\boldsymbol{r}\times\boldsymbol{v}$
+\end_inset
+
+。(这与我们在3-D示例中遇到的矩阵
+\begin_inset Formula $\tilde{\boldsymbol{u}}$
+\end_inset
+
+是同一个概念。)
+\end_layout
+
+\begin_layout Subsection
+微分
+\end_layout
+
+\begin_layout Standard
+空间向量的微分方式与任意其它向量的相同，即
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{d}x}\boldsymbol{s}(x)=\lim_{\delta x\rightarrow0}\frac{s(x+\delta x)-\boldsymbol{s}(x)}{\delta x}.\label{eq:14}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+运动向量的导数是运动向量，动力向量的导数是动力向量。不幸的是，当我们谈到坐标向量时，情况变得有点复杂，因为需要区分坐标向量的导数和表示导数的坐标向量。
+\end_layout
+
+\begin_layout Standard
+为了澄清这一区别，设
+\begin_inset Formula $\boldsymbol{m}\in\mathsf{M}^{6}$
+\end_inset
+
+是一个运动向量，设
+\begin_inset Formula $^{A}\boldsymbol{m}\in\mathsf{R}^{6}$
+\end_inset
+
+是一个在
+\begin_inset Formula $A$
+\end_inset
+
+坐标中表示
+\begin_inset Formula $\boldsymbol{m}$
+\end_inset
+
+的坐标向量。我们现在可以识别以下量：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathrm{d}\boldsymbol{m}/\mathrm{d}x$
+\end_inset
+
+：
+\begin_inset Formula $\boldsymbol{m}$
+\end_inset
+
+的导数，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $^{A}\left(\mathrm{d}\boldsymbol{m}/\mathrm{d}x\right)$
+\end_inset
+
+：在
+\begin_inset Formula $A$
+\end_inset
+
+坐标中表示
+\begin_inset Formula $\mathrm{d}\boldsymbol{m}/\mathrm{d}x$
+\end_inset
+
+的向量，
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathrm{d}\,{}^{A}\boldsymbol{m}/\mathrm{d}x$
+\end_inset
+
+：坐标向量
+\begin_inset Formula $^{A}\boldsymbol{m}$
+\end_inset
+
+的导数。
+\end_layout
+
+\begin_layout Standard
+坐标向量的导数总是其分量的导数。如果基向量不随
+\begin_inset Formula $x$
+\end_inset
+
+变化，则我们有
+\begin_inset Formula $^{A}\left(\mathrm{d}\boldsymbol{m}/\mathrm{d}x\right)=\mathrm{d}\,{}^{A}\boldsymbol{m}/\mathrm{d}x$
+\end_inset
+
+ (对于动力也是如此)；否则，这些量将依据基向量的导数而有一项不同。
+\end_layout
+
+\begin_layout Standard
+对于移动Plücker坐标系中时间导数的特殊情况，我们有以下公式：
+\begin_inset Formula 
+\begin{equation}
+^{A}\left(\frac{\mathrm{d}\boldsymbol{m}}{\mathrm{d}t}\right)=\frac{\mathrm{d}}{\mathrm{d}t}\,{}^{A}\boldsymbol{m}+\,{}^{A}\boldsymbol{v}_{A}\times\,{}^{A}\boldsymbol{m},\label{eq:15}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+^{A}\left(\frac{\mathrm{d}\boldsymbol{f}}{\mathrm{d}t}\right)=\frac{\mathrm{d}}{\mathrm{d}t}\,{}^{A}\boldsymbol{f}+\,{}^{A}\boldsymbol{v}_{A}\times^{*}\,{}^{A}\boldsymbol{f}.\label{eq:16}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在这些方程中，
+\begin_inset Formula $A$
+\end_inset
+
+既是Plücker坐标系统的名称，又是定义它的帧的名称，而
+\begin_inset Formula $^{A}\boldsymbol{v}_{A}$
+\end_inset
+
+是以
+\begin_inset Formula $A$
+\end_inset
+
+坐标表达的帧
+\begin_inset Formula $A$
+\end_inset
+
+的速度。这些方程引入了两个新的算子
+\begin_inset Formula $\times$
+\end_inset
+
+和
+\begin_inset Formula $\times^{*}$
+\end_inset
+
+，它们是在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中出现的3-D欧几里德向量的叉积算子的空间-向量等价物。它们(在Plücker坐标中)的定义如下：
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}\times=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\boldsymbol{v}_{O}
+\end{array}\right]\times=\left[\begin{array}{cc}
+\boldsymbol{\omega}\times & \boldsymbol{0}\\
+\boldsymbol{v}_{O}\times & \boldsymbol{\omega}\times
+\end{array}\right],\label{eq:17}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{v}}\times^{*}=\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\boldsymbol{v}_{O}
+\end{array}\right]\times^{*}=\left[\begin{array}{cc}
+\boldsymbol{\omega}\times & \boldsymbol{v}_{O}\times\\
+\boldsymbol{0} & \boldsymbol{\omega}\times
+\end{array}\right]=-\hat{\boldsymbol{v}}\times{}^{\mathrm{T}}.\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这些算子与3-D对应算子共享许多性质，这可以从它们的定义中推断出来；例如，
+\begin_inset Formula $\hat{\boldsymbol{v}}\times\hat{\boldsymbol{v}}=\boldsymbol{0}$
+\end_inset
+
+。这里之所以有两个算子，是因为一个
+\begin_inset Formula $\left(\hat{\boldsymbol{v}}\times\right)$
+\end_inset
+
+来自运动基向量的运动，而另一个
+\begin_inset Formula $\left(\hat{\boldsymbol{v}}\times^{*}\right)$
+\end_inset
+
+来自动力基向量的运动。算子
+\begin_inset Formula $\hat{\boldsymbol{v}}\times$
+\end_inset
+
+作用于运动向量，产生运动-向量结果，而算子
+\begin_inset Formula $\hat{\boldsymbol{v}}\times^{*}$
+\end_inset
+
+作用于动力向量，产生动力-向量结果。
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的一个有用推论是，如果
+\begin_inset Formula $\boldsymbol{m}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+固连在物体
+\begin_inset Formula $B$
+\end_inset
+
+中，并且仅仅因为
+\begin_inset Formula $B$
+\end_inset
+
+在运动而变化，则
+\begin_inset Formula 
+\begin{equation}
+\dot{\boldsymbol{m}}=\boldsymbol{v}\times\boldsymbol{m},\label{eq:19}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\dot{\boldsymbol{f}}=\boldsymbol{v}\times^{*}\boldsymbol{f},\label{eq:20}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+是
+\begin_inset Formula $B$
+\end_inset
+
+的速度。刚体惯量的类似公式见方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。如果
+\begin_inset Formula $\boldsymbol{s}\in\mathsf{M}^{6}$
+\end_inset
+
+标志固连在物体
+\begin_inset Formula $B$
+\end_inset
+
+中的旋转或移动关节轴，则
+\begin_inset Formula $\dot{\boldsymbol{s}}=\boldsymbol{v}\times\boldsymbol{s}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+加速度
+\end_layout
+
+\begin_layout Standard
+空间加速度就是空间速度的时间导数。然而，正如我们现在将要发现的那样，这个看似无害的定义包含了一个惊喜。设
+\begin_inset Formula $O$
+\end_inset
+
+是空间中的一个固连点，并设
+\begin_inset Formula $B$
+\end_inset
+
+是一个刚体，其空间速度在
+\begin_inset Formula $O$
+\end_inset
+
+处由
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+给出。设
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+是一个刚体固连点，恰好在当前瞬间(时间
+\begin_inset Formula $t$
+\end_inset
+
+)与
+\begin_inset Formula $O$
+\end_inset
+
+重合，并设
+\begin_inset Formula $\boldsymbol{r}=\overrightarrow{OO^{\prime}}$
+\end_inset
+
+。因此，在时间
+\begin_inset Formula $t$
+\end_inset
+
+时
+\begin_inset Formula $\boldsymbol{r}=\boldsymbol{0}$
+\end_inset
+
+，但在一般情况下
+\begin_inset Formula $\boldsymbol{r}\neq\boldsymbol{0}$
+\end_inset
+
+。由于
+\begin_inset Formula $O$
+\end_inset
+
+是静止的，
+\begin_inset Formula $O^{\prime}$
+\end_inset
+
+的速度和加速度给出为
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{O^{\prime}}=\dot{\boldsymbol{r}},
+\]
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{v}}_{O^{\prime}}=\ddot{\boldsymbol{r}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}_{O^{\prime}}$
+\end_inset
+
+之间的关系是
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{O}=\boldsymbol{v}_{O^{\prime}}-\boldsymbol{\omega}\times\boldsymbol{r},
+\]
+
+\end_inset
+
+所以，
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{v}}_{O}=\dot{\boldsymbol{v}}_{O^{\prime}}-\dot{\boldsymbol{\omega}}\times\boldsymbol{r}-\boldsymbol{\omega}\times\dot{\boldsymbol{r}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，在当前瞬间(
+\begin_inset Formula $\boldsymbol{r}=\boldsymbol{0}$
+\end_inset
+
+)，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\begin{array}{ll}
+\boldsymbol{v}_{O^{\prime}}=\dot{\boldsymbol{r}}, & \boldsymbol{v}_{O}=\dot{\boldsymbol{r}},\\
+\dot{\boldsymbol{v}}_{O^{\prime}}=\ddot{\boldsymbol{r}}, & \dot{\boldsymbol{v}}_{O}=\ddot{\boldsymbol{r}}-\boldsymbol{\omega}\times\dot{\boldsymbol{r}}.
+\end{array}\label{eq:21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，空间加速度公式为
+\begin_inset Formula 
+\begin{equation}
+\hat{\boldsymbol{a}}=\frac{\mathrm{d}}{\mathrm{d}t}\hat{\boldsymbol{v}}=\frac{\mathrm{d}}{\mathrm{d}t}\left[\begin{array}{c}
+\boldsymbol{\omega}\\
+\boldsymbol{v}_{O}
+\end{array}\right]=\left[\begin{array}{c}
+\dot{\boldsymbol{\omega}}\\
+\ddot{\boldsymbol{r}}-\boldsymbol{\omega}\times\dot{\boldsymbol{r}}
+\end{array}\right].\label{eq:22}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以用以下文字来解释这一点。
+\begin_inset Formula $\dot{\boldsymbol{r}}$
+\end_inset
+
+是特定的物体固连的粒子的速度，但
+\begin_inset Formula $\boldsymbol{v}_{O}$
+\end_inset
+
+是在
+\begin_inset Formula $O$
+\end_inset
+
+处测量的通过
+\begin_inset Formula $O$
+\end_inset
+
+的物体固连的粒子流的速度。同样，
+\begin_inset Formula $\ddot{\boldsymbol{r}}$
+\end_inset
+
+是特定的物体固连的粒子的加速度，但
+\begin_inset Formula $\dot{\boldsymbol{v}}_{O}$
+\end_inset
+
+是连续的物体固连的粒子流通过
+\begin_inset Formula $O$
+\end_inset
+
+时的速度变化率。
+\end_layout
+
+\begin_layout Standard
+尽管与使用
+\begin_inset Formula $\dot{\boldsymbol{\omega}}$
+\end_inset
+
+和
+\begin_inset Formula $\ddot{\boldsymbol{r}}$
+\end_inset
+
+的刚体加速度的经典描述相比，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)稍微复杂一些，但空间加速度更容易使用。例如，空间加速度可以像速度一样求和，并且它们遵循相同的坐标变换规则。再举一个例子，如果两个物体
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+通过一个关节连接，这样两个速度遵循于
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{2}=\boldsymbol{v}_{1}+\boldsymbol{s}\dot{q},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+描述关节轴，并且
+\begin_inset Formula $\dot{q}$
+\end_inset
+
+是关节速度变量，则通过微分速度方程，立即获得其加速度之间的关系：
+\begin_inset Formula 
+\[
+\boldsymbol{a}_{2}=\boldsymbol{a}_{1}+\dot{\boldsymbol{s}}\dot{q}+\boldsymbol{s}\ddot{q}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+描述固连在
+\begin_inset Formula $B_{2}$
+\end_inset
+
+中的关节轴，则
+\begin_inset Formula $\dot{\boldsymbol{s}}=\boldsymbol{v}_{2}\times\boldsymbol{s}$
+\end_inset
+
+，这意味着
+\begin_inset Formula $\dot{\boldsymbol{s}}\dot{q}=\boldsymbol{v}_{1}\times\boldsymbol{v}_{2}$
+\end_inset
+
+。(你能证明这一点吗？)等效的3-D向量方程要复杂得多。有关空间加速度主题的更多信息，参见文献[5]和[7]。
+\end_layout
+
+\begin_layout Subsection
+惯量
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+
+\size larger
+\emph on
+如果刚体的速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+，则其动量为
+\begin_inset Formula $\boldsymbol{I}\boldsymbol{v}$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+刚体的空间惯量是一个张量，将其速度映射到其动量(这是一个动力向量)。如果一个物体的惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+，速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，则它的动量
+\begin_inset Formula $\boldsymbol{h}\in\mathsf{F}^{6}$
+\end_inset
+
+，为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{h}=\boldsymbol{I}\boldsymbol{v}.\label{eq:23}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果刚体
+\begin_inset Formula $B_{1}\cdots B_{N}$
+\end_inset
+
+刚性连接在一起，形成单个复合刚体，则复合刚体的惯量为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{I}_{\mathrm{tot}}=\sum_{i=1}^{N}\boldsymbol{I}_{i},\label{eq:24}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{I}_{i}$
+\end_inset
+
+是
+\begin_inset Formula $B_{i}$
+\end_inset
+
+的惯量。
+\end_layout
+
+\begin_layout Standard
+在任意对偶坐标系统中表达，空间惯量是一个对称的正定矩阵(或在特殊情况下为半正定矩阵)。用Plücker坐标表达，刚体的空间惯量为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{I}=\left[\begin{array}{cc}
+\bar{\boldsymbol{I}}_{c}+m\boldsymbol{c}\times\boldsymbol{c}\times{}^{\mathrm{T}} & m\boldsymbol{c}\times\\
+m\boldsymbol{c}\times{}^{\mathrm{T}} & m\boldsymbol{1}
+\end{array}\right],\label{eq:25}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $m$
+\end_inset
+
+是物体的质量，
+\begin_inset Formula $\boldsymbol{c}$
+\end_inset
+
+是定位物体质心的3-D向量，并且
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\bar{\boldsymbol{I}}_{c}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是物体围绕其质心的转动惯量。观测刚体惯量是
+\begin_inset Formula $10$
+\end_inset
+
+个参数的函数：
+\begin_inset Formula $1$
+\end_inset
+
+个在
+\begin_inset Formula $m$
+\end_inset
+
+中，
+\begin_inset Formula $3$
+\end_inset
+
+个在
+\begin_inset Formula $\boldsymbol{c}$
+\end_inset
+
+中，
+\begin_inset Formula $6$
+\end_inset
+
+个在
+\begin_inset Formula $\bar{\boldsymbol{I}}_{c}$
+\end_inset
+
+中。更一般的空间惯量类型，如铰接体和操作-空间惯量，没有方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所示的特殊形式，它们可以是多达
+\begin_inset Formula $21$
+\end_inset
+
+个独立参数的函数。
+\end_layout
+
+\begin_layout Standard
+所有空间惯量，无论是否为刚性，都遵循以下坐标变换规则：
+\begin_inset Formula 
+\begin{equation}
+^{B}\boldsymbol{I}=\,{}^{B}\boldsymbol{X}_{A}^{*}\,{}^{A}\boldsymbol{I}\,{}^{A}\boldsymbol{X}_{B}.\label{eq:26}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该公式适用于任意对偶坐标系统，而不仅适用于Plücker坐标系。如果刚体的速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+，则其惯量的时间导数为
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{d}t}\boldsymbol{I}=\boldsymbol{v}\times^{*}\boldsymbol{I}-\boldsymbol{I}\boldsymbol{v}\times.\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一个有用的方程为
+\begin_inset Formula 
+\begin{equation}
+E=\frac{1}{2}\boldsymbol{v}\cdot\boldsymbol{I}\boldsymbol{v},\label{eq:28}
+\end{equation}
+
+\end_inset
+
+其给出了刚体的动能。
+\end_layout
+
+\begin_layout Subsection
+运动方程
+\end_layout
+
+\begin_layout Standard
+以空间形式表达，速度为
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+、惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+的刚体的运动方程为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}=\frac{\mathrm{d}}{\mathrm{d}t}\left(\boldsymbol{I}\boldsymbol{v}\right)=\boldsymbol{I}\boldsymbol{a}+\boldsymbol{v}\times^{*}\boldsymbol{I}\boldsymbol{v},\label{eq:29}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+是作用在物体上的总动力，
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+是产生的加速度。[你能用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)来验证这个方程吗？] 换句话说，它说明作用在刚体上的总动力等于其动量变化率。该方程包含了应用于质心的牛顿方程和物体围绕质心旋转的欧拉方程。
+\end_layout
+
+\begin_layout Standard
+将运动方程写成以下简化形式通常很有用：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}=\boldsymbol{I}\boldsymbol{a}+\boldsymbol{p},\label{eq:30}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{p}\in\mathsf{F}^{6}$
+\end_inset
+
+被称为
+\series bold
+导向力
+\series default
+(
+\emph on
+bias force
+\emph default
+)。你可能希望这样做的主要原因有两个。首先，该方程的代数形式与其它几个重要的运动方程的代数形式相同，例如铰接体运动方程和用广义坐标表示的刚体运动方程。其次，它提
+供了一个机会，将
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+分解为已知部分和未知部分，并将前者合并到
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+中。例如，如果作用在物体上的动力由未知力和重力组成，可以将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:30"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+定义为未知力，并将
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+定义为：
+\begin_inset Formula 
+\[
+\boldsymbol{p}=\boldsymbol{v}\times^{*}\boldsymbol{I}\boldsymbol{v}-\boldsymbol{f}_{\mathrm{g}},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{g}}$
+\end_inset
+
+是重力。顺便说一句，如果
+\begin_inset Formula $\boldsymbol{a}_{\mathrm{g}}$
+\end_inset
+
+是重力引起的加速度(在均匀的重力场中)，则作用在惯量为
+\begin_inset Formula $\boldsymbol{I}$
+\end_inset
+
+的刚体上的重力为
+\begin_inset Formula 
+\[
+\boldsymbol{f}_{\mathrm{g}}=\boldsymbol{I}\boldsymbol{a}_{\mathrm{g}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+运动约束
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+
+\size larger
+\emph on
+约束力在约束所允许的任意运动方向上都不做功。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在最简单的情况下，两个刚体
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+之间的运动约束将它们的相对速度限制在向量子空间
+\begin_inset Formula $S\subseteq\mathsf{M}^{6}$
+\end_inset
+
+中，该向量子空间可以随时间变化。如果
+\begin_inset Formula $r$
+\end_inset
+
+是
+\begin_inset Formula $S$
+\end_inset
+
+的维度，则该约束允许两个实体之间的相对运动自由度为
+\begin_inset Formula $r$
+\end_inset
+
+，并因此施加
+\begin_inset Formula $6-r$
+\end_inset
+
+个约束。如果
+\begin_inset Formula $s_{1}\cdots s_{r}$
+\end_inset
+
+是张成
+\begin_inset Formula $S$
+\end_inset
+
+的任意一组向量(即，它们在
+\begin_inset Formula $S$
+\end_inset
+
+上形成一个基)，则相对速度可以用以下形式表达：
+\begin_inset Formula 
+\[
+\boldsymbol{v}_{\mathrm{rel}}=\boldsymbol{v}_{2}-\boldsymbol{v}_{1}=\sum_{i=1}^{r}\boldsymbol{s}_{i}\dot{q}_{i},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{q}_{i}$
+\end_inset
+
+是一组速度变量。然而，我们通常将向量收集到一个单一的
+\begin_inset Formula $6\times r$
+\end_inset
+
+矩阵
+\begin_inset Formula $\boldsymbol{S}$
+\end_inset
+
+中，并将相对速度表达为：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{v}_{2}-\boldsymbol{v}_{1}=\boldsymbol{S}\dot{\boldsymbol{q}},\label{eq:31}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\dot{\boldsymbol{q}}$
+\end_inset
+
+是包含速度变量的
+\begin_inset Formula $r$
+\end_inset
+
+维坐标向量。为了获得相对加速度的约束，我们只需简单地微分该方程，给出为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{a}_{2}-\boldsymbol{a}_{1}=\dot{\boldsymbol{S}}\dot{\boldsymbol{q}}+\boldsymbol{S}\ddot{\boldsymbol{q}}.\label{eq:32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在一个典型的动力学问题中，量
+\begin_inset Formula $\dot{\boldsymbol{S}}$
+\end_inset
+
+、
+\begin_inset Formula $\dot{\boldsymbol{q}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{S}$
+\end_inset
+
+都是已知的，而
+\begin_inset Formula $\ddot{\boldsymbol{q}}$
+\end_inset
+
+是未知的。
+\begin_inset Formula $\boldsymbol{S}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{S}}$
+\end_inset
+
+的表达式将取决于约束的类型。如果
+\begin_inset Formula $\boldsymbol{S}$
+\end_inset
+
+的分量向量固连在物体
+\begin_inset Formula $i$
+\end_inset
+
+中(
+\begin_inset Formula $i=1$
+\end_inset
+
+或
+\begin_inset Formula $2$
+\end_inset
+
+)，则
+\begin_inset Formula $\dot{\boldsymbol{S}}=\boldsymbol{v}_{i}\times\boldsymbol{S}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+运动约束由约束力实现，并且约束力都具有以下特殊特性：约束力在约束允许的任意运动方向上都不做功。
+\end_layout
+
+\begin_layout Standard
+这只是对达朗贝尔虚功原理或若丹虚功率原理的陈述，这取决于你对运动的解释是指无穷小的位移还是速度。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\boldsymbol{f}_{c}$
+\end_inset
+
+为实现上述运动约束的约束力。由于相对运动被定义为
+\begin_inset Formula $B_{2}$
+\end_inset
+
+相对于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+的运动，所以我们必须将
+\begin_inset Formula $\boldsymbol{f}_{c}$
+\end_inset
+
+定义为从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+传递到
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的力(即，
+\begin_inset Formula $\boldsymbol{f}_{c}$
+\end_inset
+
+作用于
+\begin_inset Formula $B_{2}$
+\end_inset
+
+，
+\begin_inset Formula $-\boldsymbol{f}_{c}$
+\end_inset
+
+作用于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+)。为了符合达朗贝尔原理，对于所有的
+\begin_inset Formula $i$
+\end_inset
+
+，
+\begin_inset Formula $\boldsymbol{f}_{c}$
+\end_inset
+
+必须满足
+\begin_inset Formula $\boldsymbol{f}_{c}\cdot\boldsymbol{s}_{i}=0$
+\end_inset
+
+。因此，
+\begin_inset Formula $\boldsymbol{f}_{c}$
+\end_inset
+
+必须满足
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{S}^{\mathrm{T}}\boldsymbol{f}_{c}=\boldsymbol{0}.\label{eq:33}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:32"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)共同定义了
+\begin_inset Formula $B_{2}$
+\end_inset
+
+和
+\begin_inset Formula $B_{1}$
+\end_inset
+
+之间的运动约束。为了建立一个动力关节的模型，我们将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)替换为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{S}^{\mathrm{T}}\boldsymbol{f}_{\mathrm{J}}=\boldsymbol{\tau},\label{eq:34}
+\end{equation}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+是通过关节传递的总和力 — 主动力和约束力的总和 — 并且
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+是广义动力变量的向量。
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的元素必须被定义为：
+\begin_inset Formula $\boldsymbol{\tau}^{\mathrm{T}}\dot{\boldsymbol{q}}$
+\end_inset
+
+是关节传递给系统的瞬时功率。
+\end_layout
+
+\begin_layout Section
+拓展阅读
+\end_layout
+
+\begin_layout Standard
+空间向量在文献[7]中有详细描述，而在文献[8]中则稍微不详细。在文献[4]中描述了较旧版本的空间向量。可从文献[9]中获得基于网络的材料，包括幻灯片、一组带答
+案的练习、本教程开头的两个示例，以及用于实现空间向量算法和机器人学最重要的动力学算法的MATLAB和Octave软件。类似的材料，加上其他作者关于旋量理论(sc
+rew theory)的大量材料，可在文献[17]中找到。
+\end_layout
+
+\begin_layout Standard
+空间向量与旋量理论、矩量代数和李代数se(3)密切相关。关于这些主题的材料可以在文献[1]–[3]、[10]–[12]和[15]、[16]中找到。旋量理论强调6
+-D向量的几何方面，用直线、(旋量的)旋距和幅值表达。李代数采用了一种更为形式化的方法：se(3)是李群SE(3)在幺元处的切空间；所以你可以期待群论、流形和切
+空间的概念出现。矩量代数有两种形式：一种基于实数[2]、[10]、[11]，而另一种基于对偶数[3]。后者不适用于动力学，因为对偶数不适用于惯量。
+\end_layout
+
+\begin_layout Standard
+值得一提的另一个符号是在文献[13]、[14]中的空间算子代数。该符号显示了3-D向量思维的明显迹象，但其最重要的特征是作者将6-D向量叠加在一起，生成
+\begin_inset Formula $6N$
+\end_inset
+
+维向量和
+\begin_inset Formula $6N\times6N$
+\end_inset
+
+矩阵，这些矩阵描述了由
+\begin_inset Formula $N$
+\end_inset
+
+个刚体组成的整个刚体系统的特性。
+\end_layout
+
+\begin_layout Standard
+本教程的第1部分到此结束。第2部分将展示如何将空间向量应用于机器人运动学和动力学中的几个标准问题。特别是，它将展示如何使用空间向量以代数方式解决问题，并将得到的
+解决方案直接转换为简短、简单的计算机代码，以执行所期望的计算。
+\end_layout
+
+\begin_layout Section
+Keywords
+\end_layout
+
+\begin_layout Standard
+Robot dynamics, spatial vectors, rigid body dynamics, Plücker coordinates,
+ screw theory.
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Enumerate
+R.
+ S.
+ Ball, A Treatise on the Theory of Screws., Cambridge Univ.
+ Press, 1900.
+ 
+\end_layout
+
+\begin_layout Enumerate
+E.
+ J.
+ Baker and K.
+ Wohlhart, Motor Calculus: A New Theoretical Device for Mechanics (Transl.
+ of [10] and [11]), Institute for Mechanics, TU Graz, 1996.
+ 
+\end_layout
+
+\begin_layout Enumerate
+L.
+ Brand, Vector and Tensor Analysis, Wiley, 1953.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, Robot Dynamics Algorithms., Kluwer, 1987.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, "The acceleration vector of a rigid body", Int.
+ J.
+ Robot.
+ Res., vol.
+ 20, no.
+ 11, pp.
+ 841-846, 2001.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, "Plücker basis vectors", Proc.
+ IEEE Int.
+ Conf Robotics and Automation, pp.
+ 1892-1897, 2006-May-15–19.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, Rigid Body Dynamics Algorithms., Springer-Verlag, 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, D.
+ E.
+ Orin, and , "Dynamics" in Springer Handbook if Robotics, Springer-Verlag,
+ pp.
+ 35-65, 2008.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ Featherstone, Spatial vector algebra, 2010, 
+\begin_inset Newline newline
+\end_inset
+
+[online] Available: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://users.cecs.anu.edu.au/~roy/spatial/"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ von Mises, "Motorrechnung ein neues Hilfsmittel der Mechanik [Motor Calculus:
+ a new Theoretical Device for Mechanics]", Zeitschrift fùr Angewandte Mathematik
+ und Mechanik, vol.
+ 4, no.
+ 2, pp.
+ 155-181, 1924.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ von Mises, "Anwendungen der Motorrechnung [Applications of Motor Calculus]",
+ Zeitschrift fùr Angewandte Mathematik und Mechanik, vol.
+ 4, no.
+ 3, pp.
+ 193-213, 1924.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R.
+ M.
+ Murray, Z.
+ Li and S.
+ S.
+ Sastry, A Mathematical Introduction to Robotic Manipulation., CRC, 1994.
+ 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Rodriguez, A.
+ Jain and K.
+ Kreutz-Delgado, "A spatial operator algebra for manipulator modelling and
+ control", Int.
+ J.
+ Robot.
+ Res., vol.
+ 10, no.
+ 4, pp.
+ 371-381, 1991.
+ 
+\end_layout
+
+\begin_layout Enumerate
+G.
+ Rodriguez, A.
+ Jain and K.
+ Kreutz-Delgado, "Spatial operator algebra for multibody system dynamics",
+ J.
+ Astronaut.
+ Sci., vol.
+ 40, no.
+ 1, pp.
+ 27-50, 1992.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ M.
+ Selig, Geometrical Methods in Robotics., Springer-Verlag, 1996.
+ 
+\end_layout
+
+\begin_layout Enumerate
+J.
+ M.
+ Selig, Geometric Fundamentals of Robotics., Springer-Verlag, 2009.
+ 
+\end_layout
+
+\begin_layout Enumerate
+D.
+ Zlatanov, Screw-theory based methods in robotics, 2009, [online] Available:
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://www.dimec.unige.it/PMAR/summer_screws/SS09/PMAR_SuSc09_academic.htm"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\start_of_appendix
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{equation}{0}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+theequation}{S
+\backslash
+arabic{equation}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+使用3-D向量求解一个两体动力学问题
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:AA"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们给定一个由两个物体组成的刚体系统，
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+，由一个旋转关节连接[S1]。两个物体的质量为
+\begin_inset Formula $m_{1}$
+\end_inset
+
+和
+\begin_inset Formula $m_{2}$
+\end_inset
+
+，质心位于
+\begin_inset Formula $C_{1}$
+\end_inset
+
+和
+\begin_inset Formula $C_{2}$
+\end_inset
+
+点，并且围绕各自的质心的转动惯量为
+\begin_inset Formula $\boldsymbol{I}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{I}_{2}$
+\end_inset
+
+。两个物体最初都处于静止状态。关节的旋转轴通过点
+\begin_inset Formula $P$
+\end_inset
+
+，其方向由
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+给出。一个动力系统作用在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上，导致两个物体加速。该系统相当于作用在通过
+\begin_inset Formula $C_{1}$
+\end_inset
+
+的直线上的单个动力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和力偶
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+。这些动力给
+\begin_inset Formula $B_{1}$
+\end_inset
+
+带来的角加速度为
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+，给其质心带来的线加速度为
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+。问题是用
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+的项表达
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+ (图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:S1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 6-D向量初学者指南1-figS1.jpg
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:S1"
+
+\end_inset
+
+使用3-D向量的问题图。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+求解
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+求解此类问题的关键在于认识到关节在两个物体之间引入了一个运动自由度，但也对可通过关节传递的力施加了一个约束。后者可用于消除前者，此时可以将系统中的每个动力和加速
+度表达为
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+的函数。然后，通过将
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+表达为
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+的函数来求解该问题，然后倒置方程，以动力的形式表达加速度。
+\end_layout
+
+\begin_layout Standard
+让我们引入如下的量。设
+\begin_inset Formula $\boldsymbol{f}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{n}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\boldsymbol{f}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}_{2}$
+\end_inset
+
+分别为作用于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的净力和力偶，其中
+\begin_inset Formula $\boldsymbol{f}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}_{2}$
+\end_inset
+
+的作用线分别通过
+\begin_inset Formula $C_{1}$
+\end_inset
+
+和
+\begin_inset Formula $C_{2}$
+\end_inset
+
+；设
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+为
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的角加速度及其质心的线加速度；设
+\begin_inset Formula $^{P}\boldsymbol{a}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $^{P}\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $^{P}\boldsymbol{a}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $^{P}\dot{\boldsymbol{\omega}}_{2}$
+\end_inset
+
+为
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+在
+\begin_inset Formula $P$
+\end_inset
+
+处的线加速度和角加速度；并设
+\begin_inset Formula $^{P}\boldsymbol{f}_{2}$
+\end_inset
+
+、
+\begin_inset Formula $^{P}\boldsymbol{n}_{2}$
+\end_inset
+
+、
+\begin_inset Formula $^{1}\boldsymbol{f}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $^{1}\boldsymbol{n}_{2}$
+\end_inset
+
+分别为在
+\begin_inset Formula $P$
+\end_inset
+
+和
+\begin_inset Formula $C_{1}$
+\end_inset
+
+处作用于
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的净力和力偶。由于作用力系统仅作用于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+，作用于
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的净力和力偶也是通过关节传递的净力和力偶。让我们也定义
+\begin_inset Formula $\boldsymbol{r}_{1}=\overrightarrow{C_{1}P}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{r}_{2}=\overrightarrow{C_{2}P}$
+\end_inset
+
+，并设
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+为关节加速度变量。
+\end_layout
+
+\begin_layout Standard
+两个物体的运动方程，在它们的质心处表达，为
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{f}_{1} & =m_{1}\boldsymbol{a}_{1},\label{eq:S1}\\
+\boldsymbol{n}_{1} & =\boldsymbol{I}_{1}\dot{\boldsymbol{\omega}}_{1},\label{eq:S2}\\
+\boldsymbol{f}_{2} & =m_{2}\boldsymbol{a}_{2},\label{eq:S3}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{n}_{2}=\boldsymbol{I}_{2}\dot{\boldsymbol{\omega}}_{2}.\label{eq:S4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里没有速度项，因为物体处于静止状态。将(静止物体的)动力和加速度从一点转移到另一点的规则为我们提供了
+\begin_inset Formula $C_{1}$
+\end_inset
+
+、
+\begin_inset Formula $C_{2}$
+\end_inset
+
+和
+\begin_inset Formula $P$
+\end_inset
+
+所指的量之间的以下关系：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+^{P}\boldsymbol{a}_{1} & =\boldsymbol{a}_{1}-\boldsymbol{r}_{1}\times\dot{\boldsymbol{\omega}}_{1},\label{eq:S5}\\
+^{P}\boldsymbol{a}_{2} & =\boldsymbol{a}_{2}-\boldsymbol{r}_{2}\times\dot{\boldsymbol{\omega}}_{2},\label{eq:S6}\\
+^{P}\dot{\boldsymbol{\omega}}_{1} & =\dot{\boldsymbol{\omega}}_{1},\label{eq:S7}\\
+^{P}\dot{\boldsymbol{\omega}}_{2} & =\dot{\boldsymbol{\omega}}_{2},\label{eq:S8}\\
+^{1}\boldsymbol{f}_{2} & =\,{}^{P}\boldsymbol{f}_{2}=\boldsymbol{f}_{2},\label{eq:S9}\\
+^{P}\boldsymbol{n}_{2} & =\boldsymbol{n}_{2}-\boldsymbol{r}_{2}\times\boldsymbol{f}_{2},\label{eq:S10}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+^{1}\boldsymbol{n}_{2}=\boldsymbol{n}_{2}+\left(\boldsymbol{r}_{1}-\boldsymbol{r}_{2}\right)\times\boldsymbol{f}_{2}.\label{eq:S11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $B_{1}$
+\end_inset
+
+对
+\begin_inset Formula $B_{2}$
+\end_inset
+
+施加
+\begin_inset Formula $^{1}\boldsymbol{f}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $^{1}\boldsymbol{n}_{2}$
+\end_inset
+
+，则
+\begin_inset Formula $B_{2}$
+\end_inset
+
+对
+\begin_inset Formula $B_{1}$
+\end_inset
+
+施加
+\begin_inset Formula $-\,{}^{1}\boldsymbol{f}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $-\,{}^{1}\boldsymbol{n}_{2}$
+\end_inset
+
+ (牛顿第三定律在
+\begin_inset Formula $C_{1}$
+\end_inset
+
+ 处的表达)；因此，作用在
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上的净力和力偶为
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{f}_{1} & =\boldsymbol{f}-\,{}^{1}\boldsymbol{f}_{2},\\
+\boldsymbol{n}_{1} & =\boldsymbol{n}-\,{}^{1}\boldsymbol{n}_{2},
+\end{aligned}
+\]
+
+\end_inset
+
+从中[通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)]我们得到
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}=\boldsymbol{f}_{1}+\boldsymbol{f}_{2},\label{eq:S12}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{n}=\boldsymbol{n}_{1}+\boldsymbol{n}_{2}+\left(\boldsymbol{r}_{1}-\boldsymbol{r}_{2}\right)\times\boldsymbol{f}_{2}.\label{eq:S13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该关节允许
+\begin_inset Formula $B_{2}$
+\end_inset
+
+相对于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+有一个运动自由度，并对从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+传递到
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的力偶施加一个约束。在
+\begin_inset Formula $P$
+\end_inset
+
+处表达，约束方程为
+\begin_inset Formula 
+\begin{align}
+^{P}\boldsymbol{a}_{2} & =\,{}^{P}\boldsymbol{a}_{1},\label{eq:S14}\\
+^{P}\dot{\boldsymbol{\omega}}_{2} & =\,{}^{P}\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha},\label{eq:S15}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{s}^{\top}\,{}^{P}\boldsymbol{n}_{2}=0,\label{eq:S16}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+是未知的关节加速度变量。在
+\begin_inset Formula $^{P}\boldsymbol{f}_{2}$
+\end_inset
+
+上没有约束：方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)足以确保关节传递的力和力偶在关节允许的相对运动方向上不做功。
+\end_layout
+
+\begin_layout Standard
+我们现在已准备好求解这个问题。让我们首先根据
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+的项计算
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{2}$
+\end_inset
+
+。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，我们有
+\begin_inset Formula 
+\begin{align}
+\dot{\boldsymbol{\omega}}_{2} & =\,{}^{P}\dot{\boldsymbol{\omega}}_{2}\nonumber \\
+ & =\,{}^{P}\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\nonumber \\
+ & =\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha},\label{eq:S17}
+\end{align}
+
+\end_inset
+
+并且从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们有
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{a}_{2} & =\,{}^{P}\boldsymbol{a}_{2}+\boldsymbol{r}_{2}\times\dot{\boldsymbol{\omega}}_{2}\nonumber \\
+ & =\,{}^{P}\boldsymbol{a}_{1}+\boldsymbol{r}_{2}\times\left(\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right)\nonumber \\
+ & =\boldsymbol{a}_{1}-\boldsymbol{r}_{1}\times\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{r}_{2}\times\left(\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right)\nonumber \\
+ & =\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{\alpha}.\label{eq:S18}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在让我们计算
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们得到
+\begin_inset Formula 
+\[
+\begin{aligned}0= & \boldsymbol{s}^{\top}\,{}^{P}\boldsymbol{n}_{2}\\
+= & \boldsymbol{s}^{\top}\left(\boldsymbol{n}_{2}-\boldsymbol{r}_{2}\times\boldsymbol{f}_{2}\right)\\
+= & \boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\dot{\boldsymbol{\omega}}_{2}-m_{2}\boldsymbol{r}_{2}\times\boldsymbol{a}_{2}\right)\\
+= & \boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\left(\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right)-m_{2}\boldsymbol{r}_{2}\times\right.\\
+ & \left.\left(\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{\alpha}\right)\right).
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+收集
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+中的项给出
+\begin_inset Formula 
+\[
+\begin{array}{c}
+\boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\boldsymbol{s}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{r}_{2}\times\boldsymbol{s}\right)\right)\boldsymbol{\alpha}\qquad\qquad\qquad\qquad\qquad\\
++\boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\dot{\boldsymbol{\omega}}_{1}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}\right)\right)=0,
+\end{array}
+\]
+
+\end_inset
+
+因此
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\alpha}=-\frac{\boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\dot{\boldsymbol{\omega}}_{1}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}\right)\right)}{\boldsymbol{s}^{\top}\left(\boldsymbol{I}_{2}\boldsymbol{s}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{r}_{2}\times\boldsymbol{s}\right)\right)}.\label{eq:S19}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+该方程只有分母不等于零时才有效，所以我们必须研究它非零的必要条件。这个问题可以使用以下技巧来求解。对于任意两个向量
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+，叉积
+\begin_inset Formula $\boldsymbol{u}\times\boldsymbol{v}$
+\end_inset
+
+可以用
+\begin_inset Formula $\boldsymbol{u}\times\boldsymbol{v}=\tilde{\boldsymbol{u}}\boldsymbol{v}$
+\end_inset
+
+的形式表达，其中
+\begin_inset Formula $\tilde{\boldsymbol{u}}$
+\end_inset
+
+是斜对称矩阵：
+\begin_inset Formula 
+\[
+\tilde{\boldsymbol{u}}=\left[\begin{array}{ccc}
+0 & -u_{z} & u_{y}\\
+u_{z} & 0 & -u_{x}\\
+-u_{y} & u_{x} & 0
+\end{array}\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用这个技巧，我们可以将分母表达为
+\begin_inset Formula $\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}$
+\end_inset
+
+的形式，其中
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{J} & =\boldsymbol{I}_{2}-m_{2}\tilde{\boldsymbol{r}}_{2}\tilde{\boldsymbol{r}}_{2}\nonumber \\
+ & =\boldsymbol{I}_{2}+m_{2}\tilde{\boldsymbol{r}}_{2}^{\top}\tilde{\boldsymbol{r}}_{2}.\label{eq:S20}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，矩阵
+\begin_inset Formula $\boldsymbol{J}$
+\end_inset
+
+是对称正定(symmetric positive deﬁnite, SPD)矩阵和对称半正定(symmetric positive semi-definite,
+ SPSD)矩阵的和，因此其本身也是SPD，因此方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的分母保证严格大于零。将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)对
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+获得以下简化表达式：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\alpha}=-\frac{\boldsymbol{s}^{\top}\left(\boldsymbol{J}\dot{\boldsymbol{\omega}}_{1}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{a}_{1}-\boldsymbol{r}_{1}\times\dot{\boldsymbol{\omega}}_{1}\right)\right)}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}.\label{eq:S21}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+下一步是用
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+、
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+的项表达
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+，并且然后使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)消除
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+。让我们从
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+开始。从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S12"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们得到
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{f} & =\boldsymbol{f}_{1}+\boldsymbol{f}_{2}\\
+ & =m_{1}\boldsymbol{a}_{1}+m_{2}\boldsymbol{a}_{2}\\
+ & =m_{1}\boldsymbol{a}_{1}+m_{2}\left(\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{\alpha}\right)\\
+ & =\left(m_{1}+m_{2}\right)\boldsymbol{a}_{1}+m_{2}\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}+m_{2}\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{\alpha}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)消除
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+，给出
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{f}= & \left(m_{1}+m_{2}\right)\boldsymbol{a}_{1}+m_{2}\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}\\
+ & -m_{2}\frac{\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{s}^{\top}\left(\boldsymbol{J}\dot{\boldsymbol{\omega}}_{1}-m_{2}\boldsymbol{r}_{2}\times\left(\boldsymbol{a}_{1}-\boldsymbol{r}_{1}\times\dot{\boldsymbol{\omega}}_{1}\right)\right)}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}};
+\end{aligned}
+\]
+
+\end_inset
+
+并收集
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+中的项，给出
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{f}= & \left(m_{1}+m_{2}+m_{2}^{2}\frac{\tilde{\boldsymbol{r}}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\tilde{\boldsymbol{r}}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}\right)\boldsymbol{a}_{1}\nonumber \\
+ & +\left(m_{2}\left(\tilde{\boldsymbol{r}}_{2}-\tilde{\boldsymbol{r}}_{1}\right)-m_{2}\frac{\tilde{\boldsymbol{r}}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\left(\boldsymbol{J}+m_{2}\tilde{\boldsymbol{r}}_{2}\tilde{\boldsymbol{r}}_{1}\right)}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}\right)\dot{\boldsymbol{\omega}}_{1}.\label{eq:S22}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{n}$
+\end_inset
+
+，使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S13"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)、(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)重复上述过程，给出
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{n}= & \boldsymbol{n}_{1}+\boldsymbol{n}_{2}+\left(\boldsymbol{r}_{1}-\boldsymbol{r}_{2}\right)\times\boldsymbol{f}_{2}\nonumber \\
+= & \boldsymbol{I}_{1}\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{I}_{2}\dot{\boldsymbol{\omega}}_{2}+m_{2}\left(\boldsymbol{r}_{1}-\boldsymbol{r}_{2}\right)\times\boldsymbol{a}_{2}\nonumber \\
+= & \boldsymbol{I}_{1}\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{I}_{2}\left(\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right)+m_{2}\left(\boldsymbol{r}_{1}-\boldsymbol{r}_{2}\right)\times\nonumber \\
+ & \left(\boldsymbol{a}_{1}+\left(\boldsymbol{r}_{2}-\boldsymbol{r}_{1}\right)\times\dot{\boldsymbol{\omega}}_{1}+\boldsymbol{r}_{2}\times\boldsymbol{s}\boldsymbol{\alpha}\right)\nonumber \\
+= & \left(\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)^{2}\right)\dot{\boldsymbol{\omega}}_{1}\nonumber \\
+ & +m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)\boldsymbol{a}_{1}+\boldsymbol{K}\boldsymbol{s}\boldsymbol{\alpha},\label{eq:S23}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{K} & =\boldsymbol{I}_{2}+m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)\tilde{\boldsymbol{r}}_{2}\nonumber \\
+ & =\boldsymbol{J}+m_{2}\tilde{\boldsymbol{r}}_{1}\tilde{\boldsymbol{r}}_{2}.\label{eq:S24}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)现在可以简化为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\alpha}=-\frac{\boldsymbol{s}^{\top}\left(\boldsymbol{K}^{\top}\dot{\boldsymbol{\omega}}_{1}-m_{2}\tilde{\boldsymbol{r}}_{2}\boldsymbol{a}_{1}\right)}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}.\label{eq:S25}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)从方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中消除
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+，给出
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{n}= & \left(\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)^{2}\right)\dot{\boldsymbol{\omega}}_{1}\\
+ & +m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)\boldsymbol{a}_{1}-\frac{\boldsymbol{K}\boldsymbol{s}\boldsymbol{s}^{\top}\left(\boldsymbol{K}^{\top}\dot{\boldsymbol{\omega}}_{1}-m_{2}\tilde{\boldsymbol{r}}_{2}\boldsymbol{a}_{1}\right)}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}},
+\end{aligned}
+\]
+
+\end_inset
+
+并收集
+\begin_inset Formula $\dot{\boldsymbol{\omega}}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+中的项，给出
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{n}= & \left(\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)^{2}-\frac{\boldsymbol{K}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{K}^{\top}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}\right)\dot{\boldsymbol{\omega}}_{1}\nonumber \\
+ & +\left(m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)+m_{2}\frac{\boldsymbol{K}\boldsymbol{s}\boldsymbol{s}^{\top}\tilde{\boldsymbol{r}}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}\right)\boldsymbol{a}_{1}.\label{eq:S26}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后一步是将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)结合成一个单一方程：
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{l}
+\boldsymbol{f}\\
+\boldsymbol{n}
+\end{array}\right]=\left[\begin{array}{ll}
+\boldsymbol{A} & \boldsymbol{B}\\
+\boldsymbol{C} & \boldsymbol{D}
+\end{array}\right]\left[\begin{array}{l}
+\boldsymbol{a}_{1}\\
+\dot{\boldsymbol{\omega}}_{1}
+\end{array}\right],\label{eq:S27}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{A} & =\left(m_{1}+m_{2}\right)\boldsymbol{1}_{3\times3}+m_{2}^{2}\frac{\tilde{\boldsymbol{r}}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\tilde{\boldsymbol{r}}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}},\label{eq:S28}\\
+\boldsymbol{B} & =m_{2}\left(\tilde{\boldsymbol{r}}_{2}-\tilde{\boldsymbol{r}}_{1}\right)-m_{2}\frac{\tilde{\boldsymbol{r}}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{K}^{\top}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}},\label{eq:S29}\\
+\boldsymbol{C} & =m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)+m_{2}\frac{\boldsymbol{K}\boldsymbol{s}\boldsymbol{s}^{\top}\tilde{\boldsymbol{r}}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}},\label{eq:S30}
+\end{align}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\boldsymbol{D}=\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-m_{2}\left(\tilde{\boldsymbol{r}}_{1}-\tilde{\boldsymbol{r}}_{2}\right)^{2}-\frac{\boldsymbol{K}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{K}^{\top}}{\boldsymbol{s}^{\top}\boldsymbol{J}\boldsymbol{s}}\end{aligned}
+.\label{eq:S31}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{1}_{3\times3}$
+\end_inset
+
+是一个单位矩阵。注意，
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{D}$
+\end_inset
+
+是对称矩阵，并且
+\begin_inset Formula $\boldsymbol{B}=\boldsymbol{C}^{\mathrm{T}}$
+\end_inset
+
+。则原问题的求解方案为
+\begin_inset Formula 
+\begin{equation}
+\left[\begin{array}{c}
+\boldsymbol{a}_{1}\\
+\dot{\boldsymbol{\omega}}_{1}
+\end{array}\right]=\left[\begin{array}{cc}
+\boldsymbol{A} & \boldsymbol{B}\\
+\boldsymbol{C} & \boldsymbol{D}
+\end{array}\right]^{-1}\left[\begin{array}{l}
+\boldsymbol{f}\\
+\boldsymbol{n}
+\end{array}\right].\label{eq:S32}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+此时，我们应该证明
+\begin_inset Formula $6\times6$
+\end_inset
+
+系数矩阵是非奇异的。它实际上是一个SPD矩阵，但证明它的最简单方法是证明它与使用6-D向量方法获得的解相同，这很容易被证明是一个SPD矩阵。
+\end_layout
+
+\begin_layout Paragraph
+Reference
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+[S1] R.
+ Featherstone.
+ (2010).
+ Spatial vector algebra [Online].
+ 
+\begin_inset Newline newline
+\end_inset
+
+Available: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://users.cecs.anu.edu.au/roy/spatial/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+使用空间向量求解一个两体动力学问题
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:AB"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们给定一个由两个物体组成的刚体系统，
+\begin_inset Formula $B_{1}$
+\end_inset
+
+和
+\begin_inset Formula $B_{2}$
+\end_inset
+
+，由一个旋转关节连接[S2]。这两个物体分别具有的惯量为
+\begin_inset Formula $\boldsymbol{I}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{I}_{2}$
+\end_inset
+
+，并且它们最初处于静止状态。关节的旋转轴为
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+。一个动力
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+被施加到
+\begin_inset Formula $B_{1}$
+\end_inset
+
+上，导致两个物体加速。问题是计算
+\begin_inset Formula $B_{1}$
+\end_inset
+
+ 的加速度作为
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的函数(图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:S2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename 6-D向量初学者指南1-figS2.jpg
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:S2"
+
+\end_inset
+
+使用空间向量的问题图。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+求解
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+为两个物体的加速度，并设
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+为通过关节从
+\begin_inset Formula $B_{1}$
+\end_inset
+
+传递到
+\begin_inset Formula $B_{2}$
+\end_inset
+
+的动力。因此，作用在这两个物体上的净力分别为
+\begin_inset Formula $\boldsymbol{f}-\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+，并且其运动方程为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}-\boldsymbol{f}_{\mathrm{J}}=\boldsymbol{I}_{1}\boldsymbol{a}_{1}\label{eq:S33}
+\end{equation}
+
+\end_inset
+
+并且
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}_{\mathrm{J}}=\boldsymbol{I}_{2}\boldsymbol{a}_{2}.\label{eq:S34}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里没有速度项，因为物体处于静止状态。该关节允许
+\begin_inset Formula $B_{2}$
+\end_inset
+
+相对于
+\begin_inset Formula $B_{1}$
+\end_inset
+
+围绕
+\begin_inset Formula $\boldsymbol{s}$
+\end_inset
+
+规定的轴加速；因此，
+\begin_inset Formula $\boldsymbol{a}_{2}$
+\end_inset
+
+可以用以下形式表达为
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{a}_{2}=\boldsymbol{a}_{1}+\boldsymbol{s}\boldsymbol{\alpha},\label{eq:S35}
+\end{equation}
+
+\end_inset
+
+其中
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+是关节加速度变量。同样，这里没有速度项，因为物体处于静止状态。该运动约束由关节约束力
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+实现，因此
+\begin_inset Formula $\boldsymbol{f}_{\mathrm{J}}$
+\end_inset
+
+必须满足
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{s}^{\top}\boldsymbol{f}_{\mathrm{J}}=0,\label{eq:S36}
+\end{equation}
+
+\end_inset
+
+即，约束力在关节允许的运动方向上不做功。
+\end_layout
+
+\begin_layout Standard
+已给定方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)–(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，问题求解如下。首先，将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，给出
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{f}_{\mathrm{J}}=\boldsymbol{I}_{2}\left(\boldsymbol{a}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right).\label{eq:S37}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代入方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出
+\begin_inset Formula 
+\[
+\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\left(\boldsymbol{a}_{1}+\boldsymbol{s}\boldsymbol{\alpha}\right)=0,
+\]
+
+\end_inset
+
+从中我们得到
+\begin_inset Formula $\boldsymbol{\alpha}$
+\end_inset
+
+的以下表达式：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\alpha}=-\frac{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{a}_{1}}{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{s}}.\label{eq:S38}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代回方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出
+\begin_inset Formula 
+\[
+\boldsymbol{f}_{\mathrm{J}}=\boldsymbol{I}_{2}\left(\boldsymbol{a}_{1}-\frac{\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{I}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{s}}\boldsymbol{a}_{1}\right),
+\]
+
+\end_inset
+
+并且将该方程代回方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:S33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出
+\begin_inset Formula 
+\[
+\begin{aligned}\boldsymbol{f} & =\boldsymbol{I}_{1}\boldsymbol{a}_{1}+\boldsymbol{I}_{2}\boldsymbol{a}_{1}-\frac{\boldsymbol{I}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{I}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{s}}\boldsymbol{a}_{1}\\
+ & =\left(\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-\frac{\boldsymbol{I}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{I}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{s}}\right)\boldsymbol{a}_{1}.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+括号中的表达式是非奇异的，并因此可以将其倒置，用
+\begin_inset Formula $\boldsymbol{f}$
+\end_inset
+
+的项表达
+\begin_inset Formula $\boldsymbol{a}_{1}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{a}_{1}=\left(\boldsymbol{I}_{1}+\boldsymbol{I}_{2}-\frac{\boldsymbol{I}_{2}\boldsymbol{s}\boldsymbol{s}^{\top}\boldsymbol{I}_{2}}{\boldsymbol{s}^{\top}\boldsymbol{I}_{2}\boldsymbol{s}}\right)^{-1}\boldsymbol{f}.\label{eq:S39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Reference
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+[S2] R.
+ Featherstone.
+ (2010).
+ Spatial vector algebra [Online].
+\begin_inset Newline newline
+\end_inset
+
+Available: 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://users.cecs.anu.edu.au/roy/spatial/"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
