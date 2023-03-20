@@ -10,7 +10,7 @@
 01. [Lie Group Formulation of Articulated Rigid Body Dynamics - 2012](http://www.cs.cmu.edu/~junggon/tools/liegroupdynamics.pdf)
     + 铰接刚体动力学的李群公式
     + [GEAR (Geometric Engine for Articulated Rigid-body simulation)](http://www.cs.cmu.edu/~junggon/tools/gear.html)
-    + 虽然文中采用右手坐标系，但推导过程中使用了左手坐标系，导致伴随矩阵和别人不一样。
+    + 文中在推导过程中使用的是局部坐标系，导致伴随矩阵和使用全局坐标系的不一样。
 01. [Lie Groups for 2D and 3D Transformations - 2017](http://ethaneade.com/lie.pdf)
     + 二维和三维变换的李群
 01. [A micro Lie theory for state estimation in robotics - 2018](https://arxiv.org/abs/1812.01537)
