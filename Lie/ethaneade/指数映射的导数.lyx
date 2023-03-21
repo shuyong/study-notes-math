@@ -1,0 +1,1290 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "指数映射的导数"
+\pdf_author "Ethan Eade"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "指数映射的导数"
+target "https://ethaneade.com/exp_diff.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Ethan Eade
+\end_layout
+
+\begin_layout Date
+November 12, 2018
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本文档计算
+\begin_inset Formula 
+\begin{equation}
+\left[\left.\frac{\partial}{\partial\epsilon}\right|_{\epsilon=0}\right]\log\left(\exp(x+\epsilon)\cdot\exp(x)^{-1}\right)\label{eq:1}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\exp$
+\end_inset
+
+ 和 
+\begin_inset Formula $\log$
+\end_inset
+
+ 是李群中的指数映射及其逆映射，并且 
+\begin_inset Formula $x$
+\end_inset
+
+ 和 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ 是相关李代数的元素。
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $\mathcal{G}$
+\end_inset
+
+ 是一个李群，具有相关的李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+。则指数映射将代数元素转化为群元素：
+\begin_inset Formula 
+\begin{align}
+\exp:\mathfrak{g} & \rightarrow\mathcal{G}\label{eq:2}\\
+\exp(x) & =\mathbf{I}+x+\frac{1}{2!}x^{2}+\frac{1}{3!}x^{3}+\ldots\label{eq:3}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+群的伴随表示 
+\begin_inset Formula $\mathrm{Adj}$
+\end_inset
+
+ 通过与群元素左乘，线性地变换一个代数元素的指数映射：
+\begin_inset Formula 
+\begin{align}
+x & \in\mathfrak{g}\label{eq:4}\\
+Y & \in\mathcal{G}\label{eq:5}\\
+Y\cdot\exp(x) & =\exp\left(\mathrm{Adj}_{Y}\cdot x\right)\cdot Y\label{eq:6}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在代数中的伴随算子是表示李括号的线性算子：
+\begin_inset Formula 
+\begin{align}
+x,y & \in\mathfrak{g}\label{eq:7}\\
+\mathrm{ad}_{x}\cdot y & =x\cdot y-y\cdot x\label{eq:8}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+伴随算子与指数映射进行交换：
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Adj}_{\exp(y)}=\exp\left(\mathrm{ad}_{y}\right)\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们定义一个函数
+\begin_inset Formula $f$
+\end_inset
+
+从代数到群的微分如下：
+\begin_inset Formula 
+\begin{align}
+f:\mathfrak{g} & \rightarrow\mathcal{G}\label{eq:10}\\
+\frac{\partial f(x)}{\partial x}:\mathfrak{g} & \rightarrow\mathfrak{g}\label{eq:11}\\
+\frac{\partial f(x)}{\partial x} & \equiv\left[\left.\frac{\partial}{\partial\epsilon}\right|_{\epsilon=0}\right]\log\left(f(x+\epsilon)\cdot f(x)^{-1}\right)\label{eq:12}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在本文档中，我们对
+\begin_inset Formula $\exp$
+\end_inset
+
+的导数
+\begin_inset Formula $D_{\exp}$
+\end_inset
+
+感兴趣：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}:\mathfrak{g} & \rightarrow\mathfrak{g}\label{eq:13}\\
+D_{\exp}(x) & =\frac{\partial\exp(x)}{\partial x}\label{eq:14}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $D_{\exp}(x)$
+\end_inset
+
+公式的推导
+\end_layout
+
+\begin_layout Standard
+这里不是一个严格的推导(省略了两个近似步骤所需的 epsilon-delta 证明)，但我觉得它直观地令人满意。更严格的方法是使用关于连续向量场上积分流的定理。
+\end_layout
+
+\begin_layout Standard
+定义 
+\begin_inset Formula $F$
+\end_inset
+
+ 为 
+\begin_inset Formula $x$
+\end_inset
+
+ 的 
+\begin_inset Formula $\exp$
+\end_inset
+
+ ，由一个代数元素 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ 修改：
+\begin_inset Formula 
+\begin{align}
+\epsilon & \in\mathfrak{g}\label{eq:15}\\
+F(x,\epsilon) & =\exp(x+\epsilon)\label{eq:16}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们也可以取同一测地线上多个较小群元素的乘积：
+\begin_inset Formula 
+\begin{equation}
+F(x,\epsilon)=\prod_{i=1}^{N}\exp\left(\frac{1}{N}\cdot(x+\epsilon)\right)\label{eq:17}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让步数 
+\begin_inset Formula $N$
+\end_inset
+
+ 任意大，我们可以发送 
+\begin_inset Formula $\frac{1}{N^{2}}\rightarrow0$
+\end_inset
+
+。则对于任意精确度，我们有
+\begin_inset Formula 
+\begin{equation}
+F(x,\epsilon)\approx\prod_{i=1}^{N}\exp\left(\frac{x}{N}\right)\cdot\exp\left(\frac{\epsilon}{N}\right)\label{eq:18}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\exp\left(\frac{\epsilon}{N}\right)$
+\end_inset
+
+ 的每一个因子都可以通过乘以伴随值适当的次数转移到乘积的左侧：
+\begin_inset Formula 
+\begin{align}
+A_{N} & \equiv\mathrm{Adj}_{\exp\left(\frac{x}{N}\right)}\label{eq:19}\\
+F(x,\epsilon) & \approx\left[\exp\left(\frac{1}{N}\cdot A_{N}\cdot\epsilon\right)\cdot\exp\left(\frac{1}{N}\cdot A_{N}^{2}\cdot\epsilon\right)\cdot\ldots\cdot\exp\left(\frac{1}{N}\cdot A_{N}^{N}\cdot\epsilon\right)\right]\cdot\left[\prod_{i=1}^{N}\exp\left(\frac{x}{N}\right)\right]\label{eq:20}\\
+ & =\left[\prod_{i=1}^{N}\exp\left(\frac{1}{N}\cdot A_{N}^{i}\cdot\epsilon\right)\right]\cdot\left[\prod_{i=1}^{N}\exp\left(\frac{x}{N}\right)\right]\label{eq:21}\\
+ & =\left[\prod_{i=1}^{N}\exp\left(\frac{1}{N}\cdot A_{N}^{i}\cdot\epsilon\right)\right]\cdot\exp(x)\label{eq:22}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过选择足够小的 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+，指数的乘积可以任意地很好地近似于一个总和的指数：
+\begin_inset Formula 
+\begin{equation}
+F(x,\epsilon)=\exp\left(\frac{1}{N}\cdot\sum_{i=1}^{N}A_{N}^{i}\cdot\epsilon+O\left(\|\epsilon\|^{2}\right)\right)\cdot\exp(x)\label{eq:23}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于一个李群，我们可以使用伴随的性质重写 
+\begin_inset Formula $A_{N}$
+\end_inset
+
+ ：
+\begin_inset Formula 
+\begin{align}
+A_{N} & \equiv\mathrm{Adj}_{\exp\left(\frac{x}{N}\right)}\label{eq:24}\\
+ & =\exp\left(\mathrm{ad}_{\frac{x}{N}}\right)\label{eq:25}\\
+ & =\exp\left(\frac{1}{N}\cdot\mathrm{ad}_{x}\right)\label{eq:26}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+取第 
+\begin_inset Formula $i$
+\end_inset
+
+ 次方为：
+\begin_inset Formula 
+\begin{equation}
+A_{N}^{i}=\exp\left(\frac{i}{N}\cdot\mathrm{ad}_{x}\right)\label{eq:27}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此当 
+\begin_inset Formula $N\rightarrow\infty$
+\end_inset
+
+，总和变为积分：
+\begin_inset Formula 
+\begin{align}
+\frac{1}{N}\cdot\sum_{i=1}^{N}A_{N}^{i} & =\frac{1}{N}\cdot\sum_{i=1}^{N}\exp\left(\frac{i}{N}\cdot\mathrm{ad}_{x}\right)\label{eq:28}\\
+ & \rightarrow\int_{0}^{1}\exp\left(t\cdot\mathrm{ad}_{x}\right)\cdot\mathrm{d}t\label{eq:29}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+积分可以在矩阵指数的幂级数上进行。
+\begin_inset Formula 
+\begin{align}
+\frac{1}{N}\cdot\sum_{i=1}^{N}A_{N}^{i} & =\int_{0}^{1}\left(\sum_{i=0}^{\infty}\frac{t^{i}\cdot\mathrm{ad}_{x}^{i}}{i!}\right)\cdot\mathrm{d}t\label{eq:30}\\
+ & =\left.\left(\sum_{i=0}^{\infty}\frac{t^{i+1}\mathrm{ad}_{x}^{i}}{(i+1)!}\right)\right|_{0}^{1}\label{eq:31}\\
+ & =\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{x}^{i}}{(i+1)!}\label{eq:32}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+代入等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)：
+\begin_inset Formula 
+\[
+F(x,\epsilon)=\exp\left(\left(\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{x}^{i}}{(i+1)!}\right)\cdot\epsilon+O\left(\|\epsilon\|^{2}\right)\right)\cdot\exp(x)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用来自等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的定义，
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(x) & =\left[\left.\frac{\partial}{\partial\epsilon}\right|_{\epsilon=0}\right]\log\left(F(x,\epsilon)\cdot\exp(x)^{-1}\right)\label{eq:33}\\
+ & =\left[\left.\frac{\partial}{\partial\epsilon}\right|_{\epsilon=0}\right]\left(\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{x}^{i}}{(i+1)!}\right)\cdot\epsilon+O\left(\|\epsilon\|^{2}\right)\label{eq:34}\\
+ & =\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{x}^{i}}{(i+1)!}\label{eq:35}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\log$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $x=\log(\exp(x))$
+\end_inset
+
+ 时，在等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:14"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，我们可以倒置已微分的函数：
+\begin_inset Formula 
+\begin{align}
+\delta\equiv f(\epsilon) & =\log\left(\exp(x+\epsilon)\cdot\exp(x)^{-1}\right)\label{eq:36}\\
+\epsilon & =\log(\exp(\delta)\cdot\exp(x))-x\label{eq:37}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当按 
+\begin_inset Formula $\delta$
+\end_inset
+
+ 微分时，第二项消失：
+\begin_inset Formula 
+\begin{equation}
+D_{\log}(x)\equiv\left[\left.\frac{\partial}{\partial\delta}\right|_{\delta=0}\right]\log(\exp(\delta)\cdot\exp(x))\label{eq:38}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在函数的双射区域中，逆映射的导数是导数的逆映射：
+\begin_inset Formula 
+\begin{align}
+\frac{\partial\epsilon}{\partial\delta} & =\left[\frac{\partial\delta}{\partial\epsilon}\right]^{-1}\label{eq:39}\\
+D_{\log}(x) & =D_{\exp}^{-1}(x)\label{eq:40}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+特殊情况
+\end_layout
+
+\begin_layout Standard
+等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的无穷级数可以在某些李群中可用封闭形式表达。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\exp$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+代数 
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+ 的元素为 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 斜对称矩阵，且伴随表示相同：
+\begin_inset Formula 
+\begin{align}
+\omega & \in\Re^{3}\label{eq:41}\\
+\omega_{\times} & =\left(\begin{array}{ccc}
+0 & -\omega_{3} & \omega_{2}\\
+\omega_{3} & 0 & -\omega_{1}\\
+-\omega_{2} & \omega_{1} & 0
+\end{array}\right)\in\mathfrak{so}(3)\label{eq:42}\\
+\mathrm{ad}_{\omega} & =\omega_{\times}\label{eq:43}\\
+\mathrm{ad}_{\omega}^{3} & =-\|\omega\|^{2}\cdot\mathrm{ad}_{\omega}\label{eq:44}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于 
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+ 的高阶次幂折回到低阶次幂，因此我们可以收集系列中的项：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(\omega) & =\mathbf{I}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\omega\|^{2i}}{(2i+2)!}\right)\cdot\mathrm{ad}_{\omega}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\omega\|^{2i}}{(2i+3)!}\right)\cdot\mathrm{ad}_{\omega}^{2}\label{eq:45}\\
+ & =\mathbf{I}+\left(\frac{1-\cos\|\omega\|}{\|\omega\|^{2}}\right)\cdot\omega_{\times}+\left(\frac{1-\frac{\sin\|\omega\|}{\|\omega\|}}{\|\omega\|^{2}}\right)\cdot\omega_{\times}^{2}\label{eq:46}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意这个
+\begin_inset Formula 
+\begin{equation}
+\omega_{\times}^{2}=\omega\omega^{T}-\|\omega\|^{2}\mathbf{I}\label{eq:47}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+所以 
+\begin_inset Formula $D_{\exp}(\omega)$
+\end_inset
+
+ 可被重写为：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(\omega) & =\mathbf{I}+\left(\frac{1-\cos\|\omega\|}{\|\omega\|^{2}}\right)\cdot\omega_{\times}+\left(\frac{1-\frac{\sin\|\omega\|}{\|\omega\|}}{\|\omega\|^{2}}\right)\cdot\left(\omega\omega^{T}-\|\omega\|^{2}\mathbf{I}\right)\label{eq:48}\\
+ & =\frac{\sin\|\omega\|}{\|\omega\|}\cdot\mathbf{I}+\left(\frac{1-\cos\|\omega\|}{\|\omega\|^{2}}\right)\cdot\omega_{\times}+\left(\frac{1-\frac{\sin\|\omega\|}{\|\omega\|}}{\|\omega\|^{2}}\right)\cdot\omega\omega^{T}\label{eq:49}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为方便起见，我们标记系数：
+\begin_inset Formula 
+\begin{align}
+a_{\theta} & =\frac{\sin\theta}{\theta}\label{eq:50}\\
+b_{\theta} & =\frac{1-\cos\theta}{\theta^{2}}\label{eq:51}\\
+c_{\theta} & =\frac{1-a_{\theta}}{\theta^{2}}\label{eq:52}\\
+D_{\exp}(\omega) & =a_{\|\omega\|}\cdot\mathbf{I}+b_{\|\omega\|}\cdot\omega_{\times}+c_{\|\omega\|}\cdot\omega\omega^{T}\label{eq:53}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\log$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+回想一下，在 
+\begin_inset Formula $\exp$
+\end_inset
+
+ 和 
+\begin_inset Formula $\log$
+\end_inset
+
+ 的双射区域中，
+\begin_inset Formula 
+\begin{equation}
+D_{\log}(\omega)=D_{\exp}^{-1}(\omega)\label{eq:54}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\|\omega\|<2\pi$
+\end_inset
+
+，
+\begin_inset Formula $D_{\exp}(\omega)$
+\end_inset
+
+ 存在一个封闭形式的逆映射：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}^{-1}(\omega) & =\mathbf{I}-\frac{1}{2}\omega_{\times}+e_{\|\omega\|}\omega_{\times}^{2}\label{eq:55}\\
+e_{\theta} & =\frac{b_{\theta}-2c_{\theta}}{2a_{\theta}}\label{eq:56}\\
+ & =\frac{b_{\theta}-\frac{1}{2}a_{\theta}}{1-\cos\theta}\label{eq:57}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 的值，应在等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:56"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)或等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:57"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中使用一个更方便的等式来计算 
+\begin_inset Formula $e_{\theta}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\exp$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+同样的，
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+ 的高阶次幂可表达为低阶次幂：
+\begin_inset Formula 
+\begin{align}
+u,\omega & \in\Re^{3}\label{eq:58}\\
+\theta & \equiv\|\omega\|\label{eq:59}\\
+x & =\left(\begin{array}{cc}
+\omega_{\times} & u\\
+0 & 0
+\end{array}\right)\in\mathfrak{se}(3)\label{eq:60}\\
+\mathrm{ad}_{x} & =\left(\begin{array}{cc}
+\omega_{\times} & u_{\times}\\
+0 & \omega_{\times}
+\end{array}\right)\label{eq:61}\\
+\mathrm{ad}_{x}^{2} & =\left(\begin{array}{cc}
+\omega_{\times}^{2} & \left(\omega_{\times}u_{\times}+u_{\times}\omega_{\times}\right)\\
+0 & \omega_{\times}^{2}
+\end{array}\right)\label{eq:62}\\
+\mathrm{ad}_{x}^{3} & =-\theta^{2}\cdot\mathrm{ad}_{x}-2\left(\omega^{T}u\right)\left(\begin{array}{cc}
+0 & \omega_{\times}\\
+0 & 0
+\end{array}\right)\label{eq:63}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+收集各项，我们有：
+\begin_inset Formula 
+\begin{align}
+Q(\omega) & \equiv\left(\frac{a_{\theta}-2b_{\theta}}{\theta^{2}}\right)\cdot\omega_{x}+\left(\frac{b_{\theta}-3c_{\theta}}{\theta^{2}}\right)\cdot\omega_{\times}^{2}\label{eq:64}\\
+D_{\exp}(x) & =\mathbf{I}+a_{\theta}\cdot\mathrm{ad}_{x}+c_{\theta}\cdot\mathrm{ad}_{x}^{2}+\left(\omega^{T}u\right)\cdot\left(\begin{array}{cc}
+0 & Q(\omega)\\
+0 & 0
+\end{array}\right)\label{eq:65}\\
+ & =\left(\begin{array}{cc}
+D_{\exp}(\omega) & \left(b_{\theta}\cdot u_{\times}+c_{\theta}\cdot\left(\omega_{\times}u_{\times}+u_{\times}\omega_{\times}\right)+\left(\omega^{T}u\right)\cdot Q(\omega)\right)\\
+0 & D_{\exp}(\omega)
+\end{array}\right)\label{eq:66}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+使用特征式
+\begin_inset Formula 
+\begin{equation}
+\omega_{\times}u_{\times}+u_{\times}\omega_{\times}=\omega u^{T}+u\omega^{T}-2\left(\omega^{T}u\right)\mathbf{I}\label{eq:67}
+\end{equation}
+
+\end_inset
+
+我们可以重写 
+\begin_inset Formula $D_{\exp}(x)$
+\end_inset
+
+ :
+\begin_inset Formula 
+\begin{align}
+W(\omega) & \equiv-2c_{\theta}\cdot\mathbf{I}+Q(\omega)\label{eq:68}\\
+ & =-2c_{\theta}\cdot\mathbf{I}+\left(\frac{a_{\theta}-2b_{\theta}}{\theta^{2}}\right)\cdot\omega_{\times}+\left(\frac{b_{\theta}-3c_{\theta}}{\theta^{2}}\right)\cdot\left(\omega\omega^{T}-\theta^{2}\mathbf{I}\right)\label{eq:69}\\
+ & =\left(c_{\theta}-b_{\theta}\right)\cdot\mathbf{I}+\left(\frac{a_{\theta}-2b_{\theta}}{\theta^{2}}\right)\cdot\omega_{\times}+\left(\frac{b_{\theta}-3c_{\theta}}{\theta^{2}}\right)\cdot\omega\omega^{T}\label{eq:70}\\
+D_{\exp}(x) & =\left(\begin{array}{cc}
+D_{\exp}(\omega) & \left(b_{\theta}\cdot u_{\times}+c_{\theta}\cdot\left(\omega u^{T}+u\omega^{T}\right)+\left(\omega^{T}u\right)\cdot W(\omega)\right)\\
+0 & D_{\exp}(\omega)
+\end{array}\right)\label{eq:71}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\log$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+一个平方分块矩阵 
+\begin_inset Formula $M$
+\end_inset
+
+ 具有形式 -
+\begin_inset Formula 
+\begin{equation}
+M=\left(\begin{array}{cc}
+A & B\\
+0 & A
+\end{array}\right)\label{eq:72}
+\end{equation}
+
+\end_inset
+
+并有逆矩阵
+\begin_inset Formula 
+\begin{equation}
+M^{-1}=\left(\begin{array}{cc}
+A^{-1} & -A^{-1}\cdot B\cdot A^{-1}\\
+0 & A^{-1}
+\end{array}\right)\label{eq:73}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，当 
+\begin_inset Formula $\|\omega\|<2\pi$
+\end_inset
+
+ 时，使用等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:55"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给定的 
+\begin_inset Formula $D_{\exp}^{-1}(\omega)$
+\end_inset
+
+，对于 
+\begin_inset Formula $D_{\exp}^{-1}(x)$
+\end_inset
+
+ 存在封闭形式：
+\begin_inset Formula 
+\begin{align}
+B & \equiv b_{\theta}\cdot u_{\times}+c_{\theta}\cdot\left(\omega u^{T}+u\omega^{T}\right)+\left(\omega^{T}u\right)\cdot W(\omega)\label{eq:74}\\
+D_{\exp}^{-1}(x) & =\left(\begin{array}{cc}
+D_{\exp}^{-1}(\omega) & -D_{\exp}^{-1}(\omega)\cdot B\cdot D_{\exp}^{-1}(\omega)\\
+0 & D_{\exp}^{-1}(\omega)
+\end{array}\right)\label{eq:75}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\exp$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\mathfrak{se}(2)$
+\end_inset
+
+ 中，
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+ 的高阶次幂折回到低阶次幂：
+\begin_inset Formula 
+\begin{align}
+\left(\begin{array}{l}
+x\\
+y\\
+\theta
+\end{array}\right) & \in\Re^{3}\label{eq:76}\\
+m & =\left(\begin{array}{ccc}
+0 & -\theta & x\\
+\theta & 0 & y\\
+0 & 0 & 0
+\end{array}\right)\in\mathfrak{se}(2)\label{eq:77}\\
+\mathrm{ad}_{m} & =\left(\begin{array}{ccc}
+0 & -\theta & y\\
+\theta & 0 & -x\\
+0 & 0 & 0
+\end{array}\right)\label{eq:78}\\
+\mathrm{ad}_{m}^{2} & =\left(\begin{array}{ccc}
+-\theta^{2} & 0 & \theta x\\
+0 & -\theta^{2} & \theta y\\
+0 & 0 & 0
+\end{array}\right)\label{eq:79}\\
+\mathrm{ad}_{m}^{3} & =-\theta^{3}\mathrm{ad}_{m}\label{eq:80}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+收集各项：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(m) & =\mathbf{I}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\theta^{2i}}{(2i+2)!}\right)\mathrm{ad}_{m}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\theta^{2i}}{(2i+3)!}\right)\mathrm{ad}_{m}^{2}\label{eq:81}\\
+ & =\mathbf{I}+\left(\frac{1-\cos\theta}{\theta^{2}}\right)\cdot\mathrm{ad}_{m}+\left(\frac{1-\frac{\sin\theta}{\theta}}{\theta^{2}}\right)\cdot\mathrm{ad}_{m}^{2}\label{eq:82}\\
+ & =\left(\begin{array}{ccc}
+a_{\theta} & -\theta b_{\theta} & \left(c_{\theta}x+b_{\theta}y\right)\\
+\theta b_{\theta} & a_{\theta} & \left(c_{\theta}y-b_{\theta}x\right)\\
+0 & 0 & 1
+\end{array}\right)\label{eq:83}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\log$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+将来自等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:83"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的 
+\begin_inset Formula $D_{\exp}$
+\end_inset
+
+ 写为块矩阵形式，给出为：
+\begin_inset Formula 
+\begin{equation}
+D_{\exp}=\left(\begin{array}{cc}
+A & v\\
+0 & 1
+\end{array}\right)\label{eq:84}
+\end{equation}
+
+\end_inset
+
+并具有逆矩阵
+\begin_inset Formula 
+\begin{equation}
+D_{\log}=\left(\begin{array}{cc}
+A^{-1} & -A^{-1}\cdot v\\
+0 & 1
+\end{array}\right)\label{eq:85}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Sim(2)
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\exp$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\mathfrak{sim}(2)$
+\end_inset
+
+ 中，
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+ 的高阶次幂不会折回到低阶次幂：
+\begin_inset Formula 
+\begin{align}
+\left(\begin{array}{l}
+x\\
+y\\
+\theta\\
+\lambda
+\end{array}\right) & \in\Re^{4}\label{eq:86}\\
+m & =\left(\begin{array}{ccc}
+0 & -\theta & x\\
+\theta & 0 & y\\
+0 & 0 & -\lambda
+\end{array}\right)\in\mathfrak{sim}(2)\label{eq:87}\\
+\mathrm{ad}_{m} & =\left(\begin{array}{cccc}
+\lambda & -\theta & y & -x\\
+\theta & \lambda & -x & -y\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\label{eq:88}\\
+ & =\left(\begin{array}{cc}
+Q & P\\
+0 & 0
+\end{array}\right)\label{eq:89}\\
+\mathrm{ad}_{m}^{n} & =\left(\begin{array}{cc}
+Q^{n} & Q^{n-1}\cdot P\\
+0 & 0
+\end{array}\right)\label{eq:90}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了计算 
+\begin_inset Formula $D_{\exp}$
+\end_inset
+
+，我们可以通过特征分解 
+\begin_inset Formula $(i\equiv\sqrt{-1})$
+\end_inset
+
+ 将 
+\begin_inset Formula $Q$
+\end_inset
+
+ 对角化：
+\begin_inset Formula 
+\begin{align}
+Q & =V\cdot D\cdot V^{*}\label{eq:91}\\
+V & \equiv\frac{1}{\sqrt{2}}\left(\begin{array}{cc}
+1 & 1\\
+i & -i
+\end{array}\right)\label{eq:92}\\
+E & \equiv\left(\begin{array}{cc}
+\lambda-\theta i\\
+ & \lambda+\theta i
+\end{array}\right)\label{eq:93}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们可以依据 
+\begin_inset Formula $E$
+\end_inset
+
+ 及其指数来表达 
+\begin_inset Formula $D_{\exp}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(m) & =\sum_{j=0}^{\infty}\frac{\mathrm{ad}_{m}^{j}}{(j+1)!}\label{eq:94}\\
+ & =\sum_{j=0}^{\infty}\frac{1}{(j+1)!}\left(\begin{array}{cc}
+Q^{j} & Q^{j-1}\cdot P\\
+0 & 0
+\end{array}\right)\label{eq:95}\\
+ & =\left(\left[\begin{array}{cc}
+\left[\sum_{j=0}^{\infty}\frac{Q^{j}}{(j+1)!}\right] & \left[\left(\sum_{j=0}^{\infty}\frac{Q^{j}}{(j+2)!}\right)\cdot P\right]\\
+0 & 0
+\end{array}\right]\right)\label{eq:96}\\
+ & =\left(\begin{array}{cc}
+\left[V\cdot\left(\sum_{j=0}^{\infty}\frac{E^{j}}{(j+1)!}\right)\cdot V^{*}\right] & \left[V\cdot\left(\sum_{j=0}^{\infty}\frac{E^{j}}{(j+2)!}\right)\cdot V^{*}\cdot P\right]\\
+0 & 0
+\end{array}\right)\label{eq:97}\\
+ & =\left(\begin{array}{cc}
+\left[V\cdot E^{-1}\cdot\left(\exp_{0}(E)-\mathbf{I}\right)\cdot V^{*}\right] & \left[V\cdot E^{-2}\cdot\left(\exp(E)-\mathbf{I}-E\right)\cdot V^{*}\cdot P\right]\\
+0 & 0
+\end{array}\right)\label{eq:98}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $E$
+\end_inset
+
+的逆矩阵存在时，
+\begin_inset Formula $E^{-1}$
+\end_inset
+
+ 有一个简单形式：
+\begin_inset Formula 
+\begin{equation}
+E^{-1}=\frac{1}{\lambda^{2}+\theta^{2}}\left(\begin{array}{cc}
+\lambda+\theta i\\
+ & \lambda-\theta i
+\end{array}\right)\label{eq:99}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+乘回等式仅产生实数元素。
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(m) & =\left(\begin{array}{cc}
+\left(\begin{array}{cc}
+p & -q\\
+q & p
+\end{array}\right) & \left(\begin{array}{cc}
+g & -h\\
+h & g
+\end{array}\right)\cdot P\\
+0 & \mathbf{I}
+\end{array}\right)\label{eq:100}\\
+p & \equiv\frac{1}{\lambda^{2}+\theta^{2}}\left[e^{\lambda}\cdot(\lambda\cos\theta+\theta\sin\theta)-\lambda\right]\label{eq:101}\\
+q & \equiv\frac{1}{\lambda^{2}+\theta^{2}}\left[e^{\lambda}\cdot(\lambda\sin\theta-\theta\cos\theta)+\theta\right]\label{eq:102}\\
+g & \equiv\frac{1}{\lambda^{2}+\theta^{2}}\left[\frac{1}{\lambda^{2}+\theta^{2}}\cdot(\lambda p+\theta q)-\lambda\right]\label{eq:103}\\
+h & \equiv\frac{1}{\lambda^{2}+\theta^{2}}\left[\frac{1}{\lambda^{2}+\theta^{2}}\cdot(\lambda q-\theta p)+\theta\right]\label{eq:104}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $\lambda^{2}+\theta^{2}\rightarrow0$
+\end_inset
+
+时，则应使用泰勒展开式替代：
+\begin_inset Formula 
+\begin{align}
+p & \equiv1+\frac{a}{2}\label{eq:105}\\
+q & \equiv\frac{b}{2}\label{eq:106}\\
+g & \equiv\frac{1}{2}+\frac{a}{6}\label{eq:107}\\
+h & \equiv\frac{b}{6}\label{eq:108}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\log$
+\end_inset
+
+的导数
+\end_layout
+
+\begin_layout Standard
+将来自等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:100"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的 
+\begin_inset Formula $D_{\exp}$
+\end_inset
+
+ 写为块矩阵形式，给出为：
+\begin_inset Formula 
+\begin{equation}
+D_{\exp}=\left(\begin{array}{cc}
+A & B\\
+0 & \mathbf{I}
+\end{array}\right)\label{eq:109}
+\end{equation}
+
+\end_inset
+
+并具有逆矩阵
+\begin_inset Formula 
+\begin{equation}
+D_{\log}=\left(\begin{array}{cc}
+A^{-1} & -A^{-1}\cdot B\\
+0 & \mathbf{I}
+\end{array}\right)\label{eq:110}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

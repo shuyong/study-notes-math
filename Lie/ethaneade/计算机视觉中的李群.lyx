@@ -1,0 +1,2169 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use polyglossia instead of babel
+%\usepackage{polyglossia}
+%\setdefaultlanguage[variant=american]{english}
+%\setotherlanguage{french}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "计算机视觉中的李群"
+\pdf_author "Ethan Eade"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "计算机视觉中的李群"
+target "https://ethaneade.com/lie_groups.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Ethan Eade
+\end_layout
+
+\begin_layout Date
+2014-12-25
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本文档描述对计算机视觉有用的变换群的性质，主要用作实现的参考。省略冗长的推导。
+\end_layout
+
+\begin_layout Section
+一般性质
+\end_layout
+
+\begin_layout Subsection
+矩阵群
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $G$
+\end_inset
+
+ 同时是光滑可微流形和群。本文所讨论的李群都是实矩阵群：群元素用 
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+ 表示。群的乘法和求逆运算是相同的矩阵乘法和求逆运算。由于每个群都由一个特定的非奇异 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 矩阵子类表示，所以自由度小于 
+\begin_inset Formula $n^{2}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+考虑一个李群 
+\begin_inset Formula $G$
+\end_inset
+
+，用 
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+ 表示，具有 
+\begin_inset Formula $k$
+\end_inset
+
+ 个自由度。李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 是围绕 
+\begin_inset Formula $G$
+\end_inset
+
+的幺元的微分变换空间
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+切空间(
+\emph on
+tangent space
+\emph default
+)。该切空间是具有基元素 
+\begin_inset Formula $\left\{ G_{1},\ldots,G_{k}\right\} $
+\end_inset
+
+ 的
+\begin_inset Formula $k$
+\end_inset
+
+维向量空间：生成元(
+\emph on
+generator
+\emph default
+)。
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 的元素用
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+表示为矩阵，但是在加法和标量乘法下表示，而不是矩阵乘法。
+\end_layout
+
+\begin_layout Standard
+对于这样的李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+，我们将由系数 
+\begin_inset Formula $\mathbf{c}$
+\end_inset
+
+ 的向量指定的生成元 
+\begin_inset Formula $\left\{ G_{i}\right\} $
+\end_inset
+
+ 的线性组合写为 
+\begin_inset Formula $\mathrm{alg}(\mathbf{c})$
+\end_inset
+
+ ：
+\begin_inset Formula 
+\begin{align}
+\mathrm{alg}:\mathbb{R}^{k} & \rightarrow\mathfrak{g}\subset\mathbb{R}^{n\times n}\label{eq:1}\\
+\mathrm{alg}(\mathbf{c}) & \equiv\sum_{i=1}^{k}\mathbf{c}_{i}G_{i}\label{eq:2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们用
+\begin_inset Formula $\mathrm{alg}^{-1}$
+\end_inset
+
+标志该线性组合的唯一逆。一个切向量(
+\emph on
+tangent vector
+\emph default
+)实际上是一个 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 矩阵，这似乎令人困惑，但它总是可以被认为是(且被表示为)生成元系数的向量。
+\end_layout
+
+\begin_layout Subsection
+指数映射与对数
+\end_layout
+
+\begin_layout Standard
+指数映射将代数中的元素带入到群中的元素。直观地说，它沿着代数中切向量指定的微分方向沿着群流形行走。对于矩阵群，指数映射仅为矩阵指数：
+\begin_inset Formula 
+\begin{align}
+\exp:\mathfrak{g} & \rightarrow\mathrm{G}\label{eq:3}\\
+\exp(x) & =\mathbf{I}+x+\frac{1}{2!}x^{2}+\frac{1}{3!}x^{3}+\cdots+\frac{1}{i!}x^{i}+\cdots\label{eq:4}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于下面描述的几个群，指数映射有一个封闭形式，它总是一个连续映射。
+\end_layout
+
+\begin_layout Standard
+指数映射的逆映射为对数：
+\begin_inset Formula 
+\begin{equation}
+\exp(\log(X))=X\label{eq:5}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对数通常不是处处连续的，但在幺元附近总是连续的。注意，对于大多数群，包括具有紧致子群(如旋转)的所有群，不论 
+\begin_inset Formula $\exp$
+\end_inset
+
+ 还是 
+\begin_inset Formula $\log$
+\end_inset
+
+ 都不是内射的。
+\end_layout
+
+\begin_layout Subsection
+流形上的插值
+\end_layout
+
+\begin_layout Standard
+指数映射和对数为插值或混合变换提供了直观的方法。考虑变换 
+\begin_inset Formula $X,Y\in\mathrm{G}$
+\end_inset
+
+和一个插值系数 
+\begin_inset Formula $t\in[0,1]\subset\mathbb{R}$
+\end_inset
+
+。函数 
+\begin_inset Formula $f$
+\end_inset
+
+ 通过沿两个变换之间的测地线稳定地移动来混合这两个变换：
+\begin_inset Formula 
+\begin{align}
+f:G\times G\times\mathbb{R} & \rightarrow G\label{eq:6}\\
+f(X,Y,t) & =\exp\left(t\cdot\log\left(Y\cdot X^{-1}\right)\right)\cdot X\label{eq:7}\\
+\Longrightarrow f(X,Y,0) & =X\label{eq:8}\\
+\Longrightarrow f(X,Y,1) & =Y\label{eq:9}\\
+\Longrightarrow f\left(X,Y,\frac{1}{2}\right)\cdot X^{-1} & =Y\cdot f\left(X,Y,\frac{1}{2}\right)^{-1}\label{eq:10}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+考虑切向量 
+\begin_inset Formula $a,b\in\mathfrak{g}$
+\end_inset
+
+ 和一个群元素 
+\begin_inset Formula $X\in G$
+\end_inset
+
+。我们怎样才能选择 
+\begin_inset Formula $b$
+\end_inset
+
+，使下列关系成立？
+\begin_inset Formula 
+\begin{equation}
+\exp(b)\cdot X=X\cdot\exp(a)\label{eq:11}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将两侧右乘 
+\begin_inset Formula $X^{-1}$
+\end_inset
+
+ 以产生 
+\begin_inset Formula $X$
+\end_inset
+
+的共轭：
+\begin_inset Formula 
+\begin{equation}
+\exp(b)=X\cdot\exp(a)\cdot X^{-1}\label{eq:12}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后我们可以通过取对数来计算 
+\begin_inset Formula $b$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{equation}
+b=\log\left(X\cdot\exp(a)\cdot X^{-1}\right)\label{eq:13}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+事实上，使用伴随表示可以得到相同的结果。具有
+\begin_inset Formula $k$
+\end_inset
+
+个自由度的一个群 
+\begin_inset Formula $G\subset\mathbb{R}^{n\times n}$
+\end_inset
+
+ 具有一个与在 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 上的线性变换群同构的表示，称为伴随：
+\begin_inset Formula 
+\begin{align}
+X & \in G\label{eq:14}\\
+a & \in\mathfrak{g}\label{eq:15}\\
+\mathrm{Adj}_{X}:\mathfrak{g} & \rightarrow\mathfrak{g}\label{eq:16}\\
+\mathrm{Adj}_{X}(a) & =X\cdot a\cdot X^{-1}\in\mathfrak{g}\label{eq:17}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+伴随表示的元素通常被写为 
+\begin_inset Formula $k\times k$
+\end_inset
+
+ 矩阵，通过乘法作用于 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 中元素的系数向量。
+\end_layout
+
+\begin_layout Standard
+伴随表示保留
+\begin_inset Formula $G$
+\end_inset
+
+的群结构：
+\begin_inset Formula 
+\begin{align}
+X,Y & \in G\label{eq:18}\\
+\mathrm{Adj}_{X\cdot Y} & =\mathrm{Adj}_{X}\cdot\mathrm{Adj}_{Y}\label{eq:19}\\
+\mathrm{Adj}_{X^{-1}} & =\mathrm{Adj}_{X}^{-1}\label{eq:20}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+回到我们的动机问题，我们使用伴随定义 
+\begin_inset Formula $b$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+b & \equiv\mathrm{Adj}_{X}(a)\label{eq:21}\\
+\Longrightarrow\exp(b) & =X\cdot\exp(a)\cdot X^{-1}\label{eq:22}\\
+\Longrightarrow\exp(b)\cdot X & =X\cdot\exp(a)\label{eq:23}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，伴随实际上是通过群元素的切向量变换的Jacobian矩阵：
+\begin_inset Formula 
+\begin{align}
+\mathbf{c} & \in\mathbb{R}^{k}\label{eq:24}\\
+X & \in G\label{eq:25}\\
+f:G\times\mathbb{R}^{k} & \rightarrow\mathbb{R}^{k}\label{eq:26}\\
+f(X,\mathbf{c}) & =\mathrm{alg}^{-1}\left(\log\left(X\cdot\exp(\mathrm{alg}(\mathbf{c}))\cdot X^{-1}\right)\right)\label{eq:27}\\
+\left.\frac{\partial f}{\partial\mathbf{c}}\right|_{\mathbf{c}=0} & =\mathrm{Adj}_{X}\label{eq:28}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的群作用
+\end_layout
+
+\begin_layout Standard
+给定 
+\begin_inset Formula $G$
+\end_inset
+
+ 在
+\begin_inset Formula $\mathbb{R}^{n\times n}$
+\end_inset
+
+中的矩阵表示，在向量空间 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ (相当于射影空间 
+\begin_inset Formula $\mathbb{P}^{n-1}$
+\end_inset
+
+)上有一个自然的作用：
+\begin_inset Formula 
+\begin{align}
+X & \in G\label{eq:29}\\
+X:\mathbb{R}^{n} & \rightarrow\mathbb{R}^{n}\label{eq:30}\\
+X(\mathbf{v}) & =X\cdot\mathbf{v}\label{eq:31}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于下面描述的群，通过矩阵乘法的该群作用产生在2D或3D欧几里得空间或射影空间中的点或线上的变换。例如，
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+元素在 
+\begin_inset Formula $\mathbb{P}^{2}$
+\end_inset
+
+ 上(在 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ 中作为齐次坐标的2D平面)的群作用是平面坐标的旋转和平移。
+\end_layout
+
+\begin_layout Standard
+通过使用代数的
+\begin_inset Formula $k$
+\end_inset
+
+个生成元，可以简单地计算围绕幺元的群微分所产生的该作用的Jacobian矩阵：
+\begin_inset Formula 
+\begin{align}
+\mathbf{p} & \in\mathbb{R}^{n}\label{eq:32}\\
+\mathbf{c} & \in\mathbb{R}^{k}\label{eq:33}\\
+f(\mathbf{c},\mathbf{p}) & \equiv\exp(\mathrm{alg}(\mathbf{c}))\cdot\mathbf{p}\label{eq:34}\\
+\left.\frac{\partial f}{\partial\mathbf{c}}\right|_{\mathbf{c}=0} & =\left(\begin{array}{c|c|c|c}
+G_{1}\cdot\mathbf{p} & G_{2}\cdot\mathbf{p} & \cdots & G_{k}\cdot\mathbf{p}\end{array}\right)\in\mathbb{R}^{n\times k}\label{eq:35}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+ 是2D平面中的旋转群。它有一个自由度：旋转角度。群是可交换的。求逆由转置给出：
+\begin_inset Formula 
+\begin{align}
+X & \in\mathrm{SO}(2)\subset\mathbb{R}^{2\times2}\label{eq:36}\\
+X^{-1} & =X^{T}\label{eq:37}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{so}(2)$
+\end_inset
+
+ 由一个反对称元素生成，对应于微分旋转：
+\begin_inset Formula 
+\begin{equation}
+G_{1}=\left(\begin{array}{cc}
+0 & -1\\
+1 & 0
+\end{array}\right)\label{eq:38}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{so}(2)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+ 的指数映射只是一个简单的2D旋转：
+\begin_inset Formula 
+\begin{equation}
+\exp(\mathrm{alg}(\theta))=\exp\left(\begin{array}{cc}
+0 & -\theta\\
+\theta & 0
+\end{array}\right)=\left(\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right)\label{eq:39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对数是由
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+的一个元素简单地计算出来的。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+ 的伴随表示是平凡的：
+\begin_inset Formula 
+\begin{align}
+X=\left(\begin{array}{cc}
+a & -b\\
+b & a
+\end{array}\right) & \in\mathrm{SO}(2),a^{2}+b^{2}=1\label{eq:40}\\
+\mathrm{Adj}_{X}(\mathrm{alg}(\theta)) & =X\cdot\mathrm{alg}(\theta)\cdot X^{-1}\label{eq:41}\\
+ & =\left(\begin{array}{cc}
+0 & -\theta\\
+\theta & 0
+\end{array}\right)\label{eq:42}\\
+ & =\mathrm{alg}(\theta)\label{eq:43}\\
+\Longrightarrow\mathrm{Adj}_{X} & =\mathbf{I}\label{eq:44}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+ 是2D平面上的刚性变换群，半直积
+\begin_inset Formula $\mathrm{SO}(2)\ltimes\mathbb{R}^{2}$
+\end_inset
+
+。它有三个自由度：两个用于平移，一个用于旋转。子群包括 
+\begin_inset Formula $\mathrm{SO}(2)$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & \in\mathrm{SO}(2)\label{eq:45}\\
+\mathbf{t} & \in\mathbb{R}^{2}\label{eq:46}\\
+X=\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right) & \in\mathrm{SE}(2)\subset\mathbb{R}^{3\times3}\label{eq:47}\\
+X^{-1} & =\left(\begin{array}{c|c}
+\mathbf{R}^{T} & -\mathbf{R}^{T}\mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\label{eq:48}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{se}(2)$
+\end_inset
+
+ 有三个生成元：
+\begin_inset Formula 
+\begin{equation}
+G_{1}=\left(\begin{array}{cc|c}
+0 & 0 & 1\\
+0 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right),\ G_{2}=\left(\begin{array}{cc|c}
+0 & 0 & 0\\
+0 & 0 & 1\\
+\hline 0 & 0 & 0
+\end{array}\right),\ G_{3}=\left(\begin{array}{cc|c}
+0 & -1 & 0\\
+1 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right)\label{eq:49}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{se}(2)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+ 的指数映射具有封闭形式：
+\begin_inset Formula 
+\begin{align}
+v=\left(\begin{array}{c}
+x\\
+y\\
+\theta
+\end{array}\right) & \in\mathbb{R}^{3}\label{eq:50}\\
+\mathbf{R} & \equiv\left(\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right)\label{eq:51}\\
+\mathbf{V} & =\left(\begin{array}{cc}
+\frac{\sin\theta}{\theta} & -\frac{1-\cos\theta}{\theta}\\
+\frac{1-\cos\theta}{\theta} & \frac{\sin\theta}{\theta}
+\end{array}\right)\label{eq:52}\\
+\exp(\mathrm{alg}(v))=\exp\left(\begin{array}{cc|c}
+0 & -\theta & x\\
+\theta & 0 & y\\
+\hline 0 & 0 & 0
+\end{array}\right) & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{V}\cdot\left(\begin{array}{c}
+x\\
+y
+\end{array}\right)\\
+\hline \mathbf{0} & 1
+\end{array}\right)\label{eq:53}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 较小时，应使用泰勒级数计算 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ 的元素(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节) 。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\in\mathrm{SE}(2)\label{eq:54}\\
+\mathrm{Adj}_{X} & =\left(\begin{array}{c|c}
+\mathbf{R} & \left(\begin{array}{c}
+\mathbf{t}_{1}\\
+-\mathbf{t}_{0}
+\end{array}\right)\\
+\hline 0 & 1
+\end{array}\right)\label{eq:55}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{Sim}(2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Sim}(2)$
+\end_inset
+
+ 是2D平面上的保向相似变换群，半直积
+\begin_inset Formula $\mathrm{SE}(2)\rtimes\mathbb{R}^{*}$
+\end_inset
+
+。它有四个自由度：两个用于平移，一个用于旋转，一个用于缩放。子群包括 
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbb{R}^{*}$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+X=\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right) & \in\mathrm{Sim}(2)\subset\mathbb{R}^{3\times3}\label{eq:56}\\
+X^{-1} & =\left(\begin{array}{c|c}
+\mathbf{R}^{T} & -s\mathbf{R}^{T}\mathbf{t}\\
+\hline \mathbf{0} & s
+\end{array}\right)\label{eq:57}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{sim}(2)$
+\end_inset
+
+ 有四个生成元：
+\begin_inset Formula 
+\begin{equation}
+G_{1}=\left(\begin{array}{cc|c}
+0 & 0 & 1\\
+0 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right),\ G_{2}=\left(\begin{array}{cc|c}
+0 & 0 & 0\\
+0 & 0 & 1\\
+\hline 0 & 0 & 0
+\end{array}\right),\ G_{3}=\left(\begin{array}{cc|c}
+0 & -1 & 0\\
+1 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right),\ G_{4}=\left(\begin{array}{cc|c}
+0 & 0 & 0\\
+0 & 0 & 0\\
+\hline 0 & 0 & -1
+\end{array}\right)\label{eq:58}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathrm{sim}(2)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{Sim}(2)$
+\end_inset
+
+ 的指数映射具有封闭形式：
+\begin_inset Formula 
+\begin{align}
+v & =\left(\begin{array}{c}
+x\\
+y\\
+\theta\\
+\lambda
+\end{array}\right)\in\mathbb{R}^{4}\label{eq:59}\\
+\mathbf{R} & \equiv\left(\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right)\label{eq:60}\\
+A & \equiv\frac{\sin\theta}{\theta}\label{eq:61}\\
+B & \equiv\frac{1-\cos\theta}{\theta^{2}}\label{eq:62}\\
+C & \equiv\frac{\theta-\sin\theta}{\theta^{3}}\label{eq:63}\\
+\alpha & \equiv\frac{\lambda^{2}}{\lambda^{2}+\theta^{2}}\label{eq:64}\\
+s & \equiv e^{\lambda}\nonumber \\
+X & \equiv\alpha\left(\frac{1-s^{-1}}{\lambda}\right)+(1-\alpha)(A-\lambda B)\label{eq:65}\\
+Y & \equiv\alpha\left(\frac{s^{-1}-1+\lambda}{\lambda^{2}}\right)+(1-\alpha)(B-\lambda C)\label{eq:66}\\
+\mathbf{V} & =\left(\begin{array}{cc}
+X & -\theta Y\\
+\theta Y & X
+\end{array}\right)\label{eq:67}\\
+\exp(\mathrm{alg}(v)) & =\exp\left(\begin{array}{cc|c}
+0 & -\theta & x\\
+\theta & 0 & y\\
+\hline 0 & 0 & -\lambda
+\end{array}\right)=\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{V}\cdot\left(\begin{array}{c}
+x\\
+y
+\end{array}\right)\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)\label{eq:68}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 或 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ 较小时，应使用泰勒级数计算 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ 的元素(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节) 。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)\in\mathrm{Sim}(2)\label{eq:69}\\
+\mathrm{Adj}_{X} & =\left(\begin{array}{c|c}
+s\mathbf{R} & s\cdot\left(\begin{array}{cc}
+\mathbf{t}_{1} & -\mathbf{t}_{0}\\
+-\mathbf{t}_{0} & -\mathbf{t}_{1}
+\end{array}\right)\\
+\hline \begin{array}{cc}
+0 & 0\\
+0 & 0
+\end{array} & \begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}
+\end{array}\right)\label{eq:70}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{Aff}(2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Aff}(2)$
+\end_inset
+
+ 是2D平面上的仿射变换群。它有六个自由度：两个用于平移，一个用于旋转，一个用于缩放，一个用于拉伸，一个用于剪切。子群包括 
+\begin_inset Formula $\mathrm{Sim}(2)$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+X=\left(\begin{array}{c|c}
+\mathbf{A} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right) & \in\quad\mathrm{Aff}(2)\subset\mathbb{R}^{3\times3}\label{eq:71}\\
+X^{-1} & =\left(\begin{array}{c|c}
+\mathbf{A}^{-1} & -\mathbf{A}^{-1}\mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\label{eq:72}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数
+\begin_inset Formula $\mathfrak{aff}(2)$
+\end_inset
+
+有六个生成元：
+\begin_inset Formula 
+\begin{align}
+G_{1}=\left(\begin{array}{cc|c}
+0 & 0 & 1\\
+0 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right), & \qquad G_{2}=\left(\begin{array}{cc|c}
+0 & 0 & 0\\
+0 & 0 & 1\\
+\hline 0 & 0 & 0
+\end{array}\right), & G_{3}=\left(\begin{array}{cc|c}
+0 & -1 & 0\\
+1 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right),\label{eq:73}\\
+G_{4}=\left(\begin{array}{cc|c}
+1 & 0 & 0\\
+0 & 1 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right), & \qquad G_{5}=\left(\begin{array}{cc|c}
+1 & 0 & 0\\
+0 & -1 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right), & G_{6}=\left(\begin{array}{cc|c}
+0 & 1 & 0\\
+1 & 0 & 0\\
+\hline 0 & 0 & 0
+\end{array}\right)\label{eq:74}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{aff}(2)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{Aff}(2)$
+\end_inset
+
+ 的指数映射没有封闭形式，它可以用任何一般的矩阵指数例程来计算。对数也是如此。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula 
+\begin{align}
+X=\left(\begin{array}{c|c}
+\mathbf{A} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)=\left(\begin{array}{cc|c}
+a & b & x\\
+c & d & y\\
+\hline 0 & 0 & 1
+\end{array}\right) & \in\mathrm{Aff}(2)\\
+\mathbf{E} & \equiv\left(\begin{array}{cc|cccc}
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} & 0\\
+0 & 0 & -\frac{1}{\sqrt{2}} & 0 & 0 & \frac{1}{\sqrt{2}}\\
+0 & 0 & \frac{1}{\sqrt{2}} & 0 & 0 & \frac{1}{\sqrt{2}}\\
+0 & 0 & 0 & \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}} & 0
+\end{array}\right)\in\mathbb{R}^{6\times6}\\
+f & \equiv\frac{1}{ad-bc}\\
+\mathbf{C} & \equiv\left(\begin{array}{c|c}
+a\cdot\mathbf{A}^{-T} & b\cdot\mathbf{A}^{-T}\\
+\hline c\cdot\mathbf{A}^{-T} & d\cdot\mathbf{A}^{-T}
+\end{array}\right)\in\mathbb{R}^{4\times4}\\
+ & =f\left(\begin{array}{cccc}
+ad & -ac & bd & -bc\\
+-ab & a^{2} & -b^{2} & ab\\
+cd & -c^{2} & d^{2} & -cd\\
+-bc & ac & -bd & ad
+\end{array}\right)\\
+\mathbf{T} & \equiv\left(\begin{array}{cccc}
+x & y & 0 & 0\\
+0 & 0 & x & y
+\end{array}\right)\in\mathbb{R}^{2\times4}
+\end{align}
+
+\end_inset
+
+则
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Adj}_{X}=\mathbf{E}^{T}\left(\begin{array}{c|c}
+\mathbf{A} & -\mathbf{T}\cdot\mathbf{C}\\
+\hline \mathbf{0} & \mathbf{C}
+\end{array}\right)\mathbf{E}\label{eq:81}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+明确写出乘积：
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Adj}_{X}={\footnotesize\left(\begin{array}{cc|cccc}
+a & b & fy\left(a^{2}+b^{2}\right)-fx(ac+bd) & -x & fy(2ab)-fx(ad+bc) & fx(ac-bd)-fy\left(a^{2}-b^{2}\right)\\
+c & d & fy(ac+bd)-fx\left(c^{2}+d^{2}\right) & -y & fy(ad+bc)-fx(2cd) & fx\left(c^{2}-d^{2}\right)-fy(ac-bd)\\
+\hline 0 & 0 & \frac{f}{2}\left(a^{2}+b^{2}+c^{2}+d^{2}\right) & 0 & f(ab+cd) & \frac{f}{2}\left(-a^{2}+b^{2}-c^{2}+d^{2}\right)\\
+0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & f(ac+bd) & 0 & f(ad+bc) & f(bd-ac)\\
+0 & 0 & \frac{f}{2}\left(-a^{2}-b^{2}+c^{2}+d^{2}\right) & 0 & f(cd-ab) & \frac{f}{2}\left(a^{2}-b^{2}-c^{2}+d^{2}\right)
+\end{array}\right)}\label{eq:82}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SL}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SL}(3)$
+\end_inset
+
+ 是单位行列式线性变换群，尤其表示2D投影平面上的单应变换(homographies)。它有八个自由度：两个用于平移，一个用于旋转，一个用于缩放，一个用于拉伸，
+一个用于剪切，两个用于透视变换。子群包括 
+\begin_inset Formula $\mathrm{Aff}(2)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+\mathbf{H} & \in\mathrm{SL}(3)\subset\mathbb{R}^{3\times3}\\
+\mathrm{det}(\mathbf{H}) & =1
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{sl}(3)$
+\end_inset
+
+ 有八个生成元，所有生成元都具有零矩阵迹(trace)：
+\begin_inset Formula 
+\begin{align}
+G_{1}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right), & \qquad G_{2}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & 0 & 0
+\end{array}\right), & G_{3}=\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right),\\
+G_{4}=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & -2
+\end{array}\right), & \qquad G_{5}=\left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & 0
+\end{array}\right), & G_{6}=\left(\begin{array}{ccc}
+0 & 1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right),\\
+G_{7}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+1 & 0 & 0
+\end{array}\right), & \qquad G_{8}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 1 & 0
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{sl}(3)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{SL}(3)$
+\end_inset
+
+ 的指数映射不存在封闭形式，它可以用任何一般的矩阵指数例程计算。对数也是如此。注意任何无迹方阵的指数都是单位行列式矩阵。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+首先，我们将 
+\begin_inset Formula $\mathfrak{sl}(3)$
+\end_inset
+
+的元素(为 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 矩阵)作为
+\begin_inset Formula $9$
+\end_inset
+
+参数向量，按行优先顺序写入。然后，对于 
+\begin_inset Formula $h\in\mathfrak{sl}(3)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{H}\in\mathrm{SL}(3)$
+\end_inset
+
+，共轭 
+\begin_inset Formula $\mathbf{H}\cdot h\cdot\mathbf{H}^{-1}$
+\end_inset
+
+ 可以表达为在
+\begin_inset Formula $h$
+\end_inset
+
+的元素上的线性映射 
+\begin_inset Formula $\mathbf{C}_{\mathbf{H}}$
+\end_inset
+
+。
+\begin_inset Formula $\mathrm{alg}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathrm{alg}^{-1}$
+\end_inset
+
+ 分别表示前应用和后应用矩阵，然后给出伴随表示。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula 
+\begin{align}
+[\mathrm{alg}] & \equiv{\footnotesize\left(\begin{array}{cccccccc}
+0 & 0 & 0 & 1 & 1 & 0 & 0 & 0\\
+0 & 0 & -1 & 0 & 0 & 1 & 0 & 0\\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1 & -1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\\
+0 & 0 & 0 & -2 & 0 & 0 & 0 & 0
+\end{array}\right)}\in\mathbb{R}^{9\times8}\\
+\left[\mathrm{alg}^{-1}\right] & \equiv{\footnotesize\left(\begin{array}{ccccccccc}
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0\\
+0 & -\frac{1}{2} & 0 & \frac{1}{2} & 0 & 0 & 0 & 0 & 0\\
+\frac{1}{2} & 0 & 0 & 0 & \frac{1}{2} & 0 & 0 & 0 & 0\\
+\frac{1}{2} & 0 & 0 & 0 & -\frac{1}{2} & 0 & 0 & 0 & 0\\
+0 & \frac{1}{2} & 0 & \frac{1}{2} & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{array}\right)}\in\mathbb{R}^{8\times9}\\
+\mathbf{C}_{\mathbf{H}} & \equiv\left(\begin{array}{c|c|c}
+\mathbf{H}_{11}\mathbf{H}^{-T} & \mathbf{H}_{12}\mathbf{H}^{-T} & \mathbf{H}_{13}\mathbf{H}^{-T}\\
+\hline \mathbf{H}_{21}\mathbf{H}^{-T} & \mathbf{H}_{22}\mathbf{H}^{-T} & \mathbf{H}_{23}\mathbf{H}^{-T}\\
+\hline \mathbf{H}_{31}\mathbf{H}^{-T} & \mathbf{H}_{32}\mathbf{H}^{-T} & \mathbf{H}_{33}\mathbf{H}^{-T}
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+则
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Adj}_{\mathbf{H}}=\left[\mathrm{alg}^{-1}\right]\cdot\mathrm{C}_{\mathbf{H}}\cdot[\mathrm{alg}]\label{eq:91}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+ 是在3D空间中的旋转群，由 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 单位行列式正交矩阵表示。它有三个自由度：每个微分旋转轴对应一个。逆映射由转置给出：
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & \in\mathrm{SO}(3)\subset\mathbb{R}^{3\times3}\\
+\mathbf{R}^{-1} & =\mathbf{R}^{T}\\
+\mathrm{det}(\mathbf{R}) & =1
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+ 是反对称 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 矩阵的集合，由围绕每个轴的微分旋转产生：
+\begin_inset Formula 
+\begin{equation}
+G_{1}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right),\ G_{2}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right),\ G_{3}=\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)\label{eq:95}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+映射 
+\begin_inset Formula $\mathrm{alg}:\mathbb{R}^{3}\rightarrow\mathfrak{so}(3)$
+\end_inset
+
+ 将
+\begin_inset Formula $3$
+\end_inset
+
+参数向量发送到其斜对称矩阵：
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\omega} & \equiv\left(\begin{array}{c}
+a\\
+b\\
+c
+\end{array}\right)\in\mathbb{R}^{3}\\
+\mathrm{alg}(\boldsymbol{\omega}) & =\boldsymbol{\omega}_{\times}\\
+ & =\left(\begin{array}{ccc}
+0 & -c & b\\
+c & 0 & -a\\
+-b & a & 0
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+ 的指数映射具有封闭形式(也称Rodrigues公式)。切向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+可以解释为旋转的一个轴-角表示：其指数是围绕轴
+\begin_inset Formula $\boldsymbol{\omega}/\|\boldsymbol{\omega}\|$
+\end_inset
+
+旋转
+\begin_inset Formula $\|\boldsymbol{\omega}\|$
+\end_inset
+
+弧度：
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\omega} & \in\mathbb{R}^{3}\\
+\theta & \equiv\sqrt{\boldsymbol{\omega}^{T}\boldsymbol{\omega}}\\
+\exp(\mathrm{alg}\boldsymbol{\omega}) & =\exp\left(\boldsymbol{\omega}_{\times}\right)\\
+ & =\mathbf{I}+\boldsymbol{\omega}_{\times}+\frac{1}{2!}\boldsymbol{\omega}_{\times}^{2}+\frac{1}{3!}\boldsymbol{\omega}_{\times}^{3}+\ldots\label{eq:102}\\
+ & =\mathbf{I}+\left(\frac{\sin\theta}{\theta}\right)\boldsymbol{\omega}_{\times}+\left(\frac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\omega}_{\times}^{2}\label{eq:103}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由于 
+\begin_inset Formula $\boldsymbol{\omega}_{\times}^{3}=-\theta^{2}\boldsymbol{\omega}_{\times}$
+\end_inset
+
+，等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:102"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的高阶项折回。当 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 较小时，
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+ 的系数应采用泰勒级数计算(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)。
+\end_layout
+
+\begin_layout Standard
+给定一个旋转矩阵 
+\begin_inset Formula $\mathbf{R}\in\mathrm{SO}(3)$
+\end_inset
+
+，可以先确定 
+\begin_inset Formula $\cos\theta=$
+\end_inset
+
+ 
+\begin_inset Formula $\frac{1}{2}(\mathrm{tr}(\mathbf{R})-1)$
+\end_inset
+
+来计算对数，然后根据对称微分计算 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+ (参见等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:103"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的第二项)。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+ 的伴随表示实际上与旋转矩阵表示相同，这是由于叉积的性质：
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & \in\mathrm{SO}(3)\\
+\mathbf{a},\mathbf{b} & \in\mathbb{R}^{3}\\
+\left(\mathbf{R}\cdot\mathbf{a}_{\times}\cdot\mathbf{R}^{T}\right)\cdot\mathbf{b} & =\mathbf{R}\cdot\left(\mathbf{a}\times\mathbf{R}^{T}\cdot\mathbf{b}\right)\\
+ & =(\mathbf{R}\cdot\mathbf{a})\times\mathbf{b}\\
+ & =(\mathbf{R}\cdot\mathbf{a})_{\times}\cdot\mathbf{b}\\
+\Longrightarrow\mathbf{R}\cdot\mathbf{a}_{\times}\cdot\mathbf{R}^{T} & =(\mathbf{R}\cdot\mathbf{a})_{\times}\\
+\Longrightarrow\mathrm{Adj}_{\mathbf{R}} & =\mathbf{R}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+ 是3D空间中的刚性变换群，半直积 
+\begin_inset Formula $\mathrm{SO}(3)\ltimes\mathbb{R}^{3}$
+\end_inset
+
+。它有六个自由度：三个用于平移，三个用于旋转。子群包括 
+\begin_inset Formula $\mathrm{SE}(2)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & \in\mathrm{SO}(3)\\
+\mathbf{t} & \in\mathbb{R}^{3}\\
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\in\mathrm{SE}(3)\subset\mathbb{R}^{4\times4}\\
+X^{-1} & =\left(\begin{array}{c|c}
+\mathbf{R}^{T} & -\mathbf{R}^{T}\mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+ 有六个生成元：
+\begin_inset Formula 
+\begin{align}
+G_{1}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{2}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{3}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right)\\
+G_{4}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & -1 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{5}=\left(\begin{array}{ccc|c}
+0 & 0 & -1 & 0\\
+0 & 0 & 0 & 0\\
+1 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{6}=\left(\begin{array}{ccc|c}
+0 & 1 & 0 & 0\\
+-1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此映射 
+\begin_inset Formula $\mathrm{alg}:\mathbb{R}^{3}\rightarrow\mathfrak{se}(3)$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+\mathbf{u},\boldsymbol{\omega} & \in\mathbb{R}^{3}\\
+\mathrm{alg}\left(\begin{array}{c}
+\mathbf{u}\\
+\boldsymbol{\omega}
+\end{array}\right) & =\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times} & \mathbf{u}\\
+\hline 0 & 0
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{se}(3)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+ 的指数映射具有封闭形式：
+\begin_inset Formula 
+\begin{align}
+\mathbf{u},\boldsymbol{\omega} & \in\mathbb{R}^{3}\\
+\theta & \equiv\sqrt{\boldsymbol{\omega}^{T}\boldsymbol{\omega}}\\
+\exp\left(\mathrm{alg}\left(\begin{array}{c}
+\mathbf{u}\\
+\boldsymbol{\omega}
+\end{array}\right)\right) & =\exp\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times} & \mathbf{u}\\
+\hline 0 & 0
+\end{array}\right)\\
+ & =\mathbf{I}+\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times} & \mathbf{u}\\
+\hline 0 & 0
+\end{array}\right)+\frac{1}{2!}\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times}^{2} & \boldsymbol{\omega}_{\times}\mathbf{u}\\
+\hline 0 & 0
+\end{array}\right)+\frac{1}{3!}\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times}^{2} & \boldsymbol{\omega}_{\times}^{2}\mathbf{u}\\
+\hline 0 & 0
+\end{array}\right)+\ldots\\
+ & =\left(\begin{array}{c|c}
+\exp\left(\boldsymbol{\omega}_{\times}\right) & \mathbf{V}\cdot\mathbf{u}\\
+\hline 0 & 1
+\end{array}\right)\\
+\mathbf{V} & \equiv\mathbf{I}+\left(\frac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\omega}_{\times}+\left(\frac{\theta-\sin\theta}{\theta^{3}}\right)\boldsymbol{\omega}_{\times}^{2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，旋转块根据等式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:103"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算。当 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 较小时，应使用泰勒级数计算 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ 的系数(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节) 。 V的逆矩阵也可以用封闭形式表示：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ 的逆矩阵也可以写为封闭形式：
+\begin_inset Formula 
+\begin{equation}
+\mathbf{V}^{-1}=\mathbf{I}-\frac{1}{2}\boldsymbol{\omega}_{\times}+\frac{1}{\theta^{2}}\left(1-\frac{\theta\sin\theta}{2(1-\cos\theta)}\right)\boldsymbol{\omega}_{\times}^{2}\label{eq:125}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\in\mathrm{SE}(3)$
+\end_inset
+
+的对数可以通过首先计算 
+\begin_inset Formula $\boldsymbol{\omega}=\mathrm{alg}^{-1}(\log(\mathbf{R}))$
+\end_inset
+
+来确定，然后计算
+\begin_inset Formula $\mathbf{u}=\mathbf{V}^{-1}\cdot\mathbf{t}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & 1
+\end{array}\right)\in\mathrm{SE}(3)\\
+\mathrm{Adj}_{X} & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}_{\times}\mathbf{R}\\
+\hline \mathbf{0} & \mathbf{R}
+\end{array}\right)\in\mathbb{R}^{6\times6}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+说明
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+ 是3D空间中的相似变换群，半直积 
+\begin_inset Formula $\mathrm{SE}(3)\rtimes\mathbb{R}^{*}$
+\end_inset
+
+。它有七个自由度：三个用于平移，三个用于旋转，一个用于缩放。子群包括 
+\begin_inset Formula $\mathrm{Sim}(2)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathrm{SE}(3)$
+\end_inset
+
+。
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & \in\mathrm{SO}(3)\\
+\mathbf{t} & \in\mathbb{R}^{3}\\
+s & \in\mathbb{R}^{+}\\
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)\in\mathrm{Sim}(3)\subset\mathbb{R}^{4\times4}\\
+X^{-1} & =\left(\begin{array}{c|c}
+\mathbf{R}^{T} & -s\mathbf{R}^{T}\mathbf{t}\\
+\hline \mathbf{0} & s
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\mathfrak{sim}(3)$
+\end_inset
+
+ 有七个生成元：
+\begin_inset Formula 
+\begin{align}
+G_{1}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & \qquad G_{2}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{3}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right),\\
+G_{4}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & -1 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & \qquad G_{5}=\left(\begin{array}{ccc|c}
+0 & 0 & -1 & 0\\
+0 & 0 & 0 & 0\\
+1 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right), & G_{6}=\left(\begin{array}{ccc|c}
+0 & 1 & 0 & 0\\
+-1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & 0
+\end{array}\right),\\
+ & \qquad G_{7}=\left(\begin{array}{ccc|c}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+\hline 0 & 0 & 0 & -1
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+从 
+\begin_inset Formula $\mathfrak{sim}(3)$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathrm{Sim}(3)$
+\end_inset
+
+ 的指数映射具有封闭形式：
+\begin_inset Formula 
+\begin{align}
+v & =\left(\begin{array}{c}
+\mathbf{u}\\
+\boldsymbol{\omega}\\
+\lambda
+\end{array}\right)\in\mathbb{R}^{7}\\
+\theta & \equiv\sqrt{\boldsymbol{\omega}^{T}\boldsymbol{\omega}}\\
+A & \equiv\frac{\sin\theta}{\theta}\\
+B & \equiv\frac{1-\cos\theta}{\theta^{2}}\\
+C & \equiv\frac{1-A}{\theta^{2}}\\
+D & \equiv\frac{\frac{1}{2}-B}{\theta^{2}}\\
+s^{-1} & \equiv e^{-\lambda}\\
+\alpha & \equiv\frac{\lambda^{2}}{\lambda^{2}+\theta^{2}}\\
+\beta & \equiv\frac{s^{-1}-1+\lambda}{\lambda^{2}}\\
+\gamma & \equiv\frac{\frac{1}{2}-\beta}{\lambda}\\
+X & \equiv\frac{1-s^{-1}}{\lambda}\\
+Y & \equiv\alpha\cdot\beta+(1-\alpha)\cdot(B-\lambda C)\\
+Z & \equiv\alpha\cdot\gamma+(1-\alpha)\cdot(C-\lambda D)\\
+\mathbf{R} & \equiv\mathbf{I}+A\boldsymbol{\omega}_{\times}+B\boldsymbol{\omega}_{\times}^{2}\\
+\mathbf{V} & \equiv X\mathbf{I}+Y\boldsymbol{\omega}_{\times}+Z\boldsymbol{\omega}_{\times}^{2}\\
+\exp(\mathrm{alg}(v))=\exp\left(\begin{array}{c|c}
+\boldsymbol{\omega}_{\times} & \mathbf{u}\\
+\hline 0 & -\lambda
+\end{array}\right) & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{V}\cdot\mathbf{u}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 或 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ 较小时，应使用泰勒级数计算 
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ 的系数(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节) 。
+\end_layout
+
+\begin_layout Subsection
+伴随表示法
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+X & =\left(\begin{array}{c|c}
+\mathbf{R} & \mathbf{t}\\
+\hline \mathbf{0} & s^{-1}
+\end{array}\right)\in\mathrm{Sim}(3)\\
+\mathrm{Adj}_{X} & =\left(\begin{array}{c|c|c}
+s\mathbf{R} & s\mathbf{t}_{\times}\mathbf{R} & -s\mathbf{t}\\
+\hline \mathbf{0} & \mathbf{R} & \mathbf{0}\\
+\hline \mathbf{0} & \mathbf{0} & 1
+\end{array}\right)\in\mathbb{R}^{7\times7}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+泰勒级数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:11"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这里是上述等式中系数的泰勒级数，对于当参数接近零时：
+\begin_inset Formula 
+\begin{align}
+\frac{\sin\theta}{\theta} & =1-\frac{\theta^{2}}{6}+\frac{\theta^{4}}{120}-\frac{\theta^{6}}{5040}+O\left(\theta^{8}\right)\\
+ & \approx1-\frac{\theta^{2}}{6}\left(1-\frac{\theta^{2}}{20}\left(1-\frac{\theta^{2}}{42}\right)\right)\\
+\frac{1-\cos\theta}{\theta^{2}} & =\frac{1}{2}-\frac{\theta^{2}}{24}+\frac{\theta^{4}}{720}-\frac{\theta^{6}}{40320}+O\left(\theta^{8}\right)\\
+ & \approx\frac{1}{2}\left(1-\frac{\theta^{2}}{12}\left(1-\frac{\theta^{2}}{30}\left(1-\frac{\theta^{2}}{56}\right)\right)\right)\\
+\frac{\theta-\sin\theta}{\theta^{3}} & =\frac{1}{6}-\frac{\theta^{2}}{120}+\frac{\theta^{4}}{5040}-\frac{\theta^{6}}{362880}+O\left(\theta^{8}\right)\\
+ & \approx\frac{1}{6}\left(1-\frac{\theta^{2}}{20}\left(1-\frac{\theta^{2}}{42}\left(1-\frac{\theta^{2}}{72}\right)\right)\right)\\
+\frac{\frac{1}{2}-\frac{1-\cos\theta}{\theta^{2}}}{\theta^{2}} & =\frac{1}{24}-\frac{\theta^{2}}{720}+\frac{\theta^{4}}{40320}-\frac{\theta^{6}}{3628800}+O\left(\theta^{8}\right)\\
+ & \approx\frac{1}{24}\left(1-\frac{\theta^{2}}{30}\left(1-\frac{\theta^{2}}{56}\left(1-\frac{\theta^{2}}{90}\right)\right)\right)\\
+\frac{1}{\theta^{2}}\left(1-\frac{\theta\sin\theta}{2(1-\cos\theta)}\right) & =\frac{1}{12}+\frac{\theta^{2}}{720}+\frac{\theta^{4}}{30240}+\frac{\theta^{6}}{1209600}+O\left(\theta^{8}\right)\\
+ & \approx\frac{1}{12}\left(1+\frac{\theta^{2}}{60}\left(1+\frac{\theta^{2}}{42}\left(1+\frac{\theta^{2}}{40}\right)\right)\right)\\
+\frac{1-e^{-\lambda}}{\lambda} & =1-\frac{\lambda}{2}+\frac{\lambda^{2}}{6}-\frac{\lambda^{3}}{24}+O\left(\lambda^{4}\right)\\
+ & \approx1-\frac{\lambda}{2}\left(1-\frac{\lambda}{3}\left(1-\frac{\lambda}{4}\right)\right)\\
+\frac{e^{-\lambda}-1+\lambda}{\lambda^{2}} & =\frac{1}{2}-\frac{\lambda}{6}+\frac{\lambda^{2}}{24}-\frac{\lambda^{3}}{120}+O\left(\lambda^{4}\right)\\
+ & \approx\frac{1}{2}\left(1-\frac{\lambda}{3}\left(1-\frac{\lambda}{4}\left(1-\frac{\lambda}{5}\right)\right)\right)\\
+\frac{\frac{1}{2}-\frac{e^{-\lambda}-1+\lambda}{\lambda^{2}}}{\lambda} & =\frac{1}{6}-\frac{\lambda}{24}+\frac{\lambda^{2}}{120}-\frac{\lambda^{3}}{720}+O\left(\lambda^{4}\right)\\
+ & \approx\frac{1}{6}\left(1-\frac{\lambda}{4}\left(1-\frac{\lambda}{5}\left(1-\frac{\lambda}{6}\right)\right)\right)
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
