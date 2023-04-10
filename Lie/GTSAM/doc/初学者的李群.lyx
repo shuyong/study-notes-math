@@ -1,0 +1,4126 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options false
+\begin_modules
+theorems-std
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "初学者的李群"
+\pdf_author "Frank Dellaert"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+初学者的李群
+\end_layout
+
+\begin_layout Author
+Frank Dellaert
+\end_layout
+
+\begin_layout Date
+February 7, 2021
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "macros-zh.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+动机：在平面中的刚性运动
+\end_layout
+
+\begin_layout Standard
+我们将从在平面中移动的机器人的一个小例子开始，它由一个2D位姿(
+\emph on
+pose
+\emph default
+) 
+\begin_inset Formula $(x,\,y,\,\theta)$
+\end_inset
+
+参数化。当我们给它一个小的前进速度 
+\begin_inset Formula $v_{x}$
+\end_inset
+
+ 时，我们知道，位置的变化为
+\begin_inset Formula 
+\[
+\dot{x}=v_{x}
+\]
+
+\end_inset
+
+这个平凡的微分方程的解是，其中 
+\begin_inset Formula $x_{0}$
+\end_inset
+
+ 是机器人
+\begin_inset Formula $x$
+\end_inset
+
+位置的初始位置，
+\begin_inset Formula 
+\[
+x_{t}=x_{0}+v_{x}t
+\]
+
+\end_inset
+
+类似的情况适用于 
+\begin_inset Formula $y$
+\end_inset
+
+ 方向的平移，实际上也适用于一般的平移：
+\begin_inset Formula 
+\[
+(x_{t},\,y_{t},\,\theta_{t})=(x_{0}+v_{x}t,\,y_{0}+v_{y}t,\,\theta_{0})
+\]
+
+\end_inset
+
+类似地，对于旋转，我们有
+\begin_inset Formula 
+\[
+(x_{t},\,y_{t},\,\theta_{t})=(x_{0},\,y_{0},\,\theta_{0}+\omega t)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 为角速度，在逆时针方向上以 
+\begin_inset Formula $rad/s$
+\end_inset
+
+ 为单位进行测量。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/circular.pdf
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+沿着圆形轨迹移动的机器人。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+但是，如果我们将平移和旋转组合起来，故事就会崩溃！我们不能写为
+\begin_inset Formula 
+\[
+(x_{t},\,y_{t},\,\theta_{t})=(x_{0}+v_{x}t,\,y_{0}+v_{y}t,\,\theta_{0}+\omega t)
+\]
+
+\end_inset
+
+原因是，如果我们根据速度向量 
+\begin_inset Formula $(v_{x},\,v_{y},\,\omega)$
+\end_inset
+
+ 一点点地移动机器人，我们有(到一阶)
+\begin_inset Formula 
+\[
+(x_{\delta},\,y_{\delta},\,\theta_{\delta})=(x_{0}+v_{x}\delta,\,y_{0}+v_{y}\delta,\,\theta_{0}+\omega\delta)
+\]
+
+\end_inset
+
+但是现在机器人已经旋转了，并且对于下一个增量变化，速度向量必须先旋转才能应用。事实上，机器人将沿着圆形(
+\emph on
+circular
+\emph default
+)轨道移动。
+\end_layout
+
+\begin_layout Standard
+原因是平移和旋转不可相互交换(
+\emph on
+commute
+\emph default
+)：如果我们先旋转，然后再移动，我们最终将到达与我们先移动，然后旋转不同的位置。事实上，有人曾经说过(我忘了是谁，谁能找到确切的引文，就给他点赞)：
+\end_layout
+
+\begin_layout Quote
+如果旋转和平移可以交换，我们可以在离开初始位置前做所有的旋转。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/n-steps.pdf
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:n-step-program"
+
+\end_inset
+
+用
+\begin_inset Formula $n$
+\end_inset
+
+个步长近似圆形轨迹。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+为了取得进展，我们必须更精确地了解机器人的行为。具体地说，让我们将两个位姿 
+\begin_inset Formula $T_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $T_{2}$
+\end_inset
+
+ 的组合定义为
+\begin_inset Formula 
+\[
+T_{1}T_{2}=(x_{1},\,y_{1},\,\theta_{1})(x_{2},\,y_{2},\,\theta_{2})=(x_{1}+\cos\theta_{1}x_{2}-\sin\theta y_{2},\,y_{1}+\sin\theta_{1}x_{2}+\cos\theta_{1}y_{2},\,\theta_{1}+\theta_{2})
+\]
+
+\end_inset
+
+这有点笨拙，所以我们采用了一个技巧：将2D位姿嵌入 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 矩阵的空间中，这样我们就可以将组合定义为矩阵乘法：
+\begin_inset Formula 
+\[
+T_{1}T_{2}=\left[\begin{array}{cc}
+R_{1} & t_{1}\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+R_{2} & t_{2}\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+R_{1}R_{2} & R_{1}t_{2}+t_{1}\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中矩阵 
+\begin_inset Formula $R$
+\end_inset
+
+ 是2D旋转矩阵，定义为
+\begin_inset Formula 
+\[
+R=\left[\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right]
+\]
+
+\end_inset
+
+现在机器人的一个“微小”运动可被写为
+\begin_inset Formula 
+\[
+T(\delta)=\left[\begin{array}{ccc}
+\cos\omega\delta & -\sin\omega\delta & v_{x}\delta\\
+\sin\omega\delta & \cos\omega\delta & v_{y}\delta\\
+0 & 0 & 1
+\end{array}\right]\approx\left[\begin{array}{ccc}
+1 & -\omega\delta & v_{x}\delta\\
+\omega\delta & 1 & v_{y}\delta\\
+0 & 0 & 1
+\end{array}\right]=I+\delta\left[\begin{array}{ccc}
+0 & -\omega & v_{x}\\
+\omega & 0 & v_{y}\\
+0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+让我们定义2D运动旋量(
+\emph on
+2D twist
+\emph default
+)向量 
+\begin_inset Formula $\xi=(v,\omega)$
+\end_inset
+
+，以及上面的矩阵为
+\begin_inset Formula 
+\[
+\xihat\define\left[\begin{array}{ccc}
+0 & -\omega & v_{x}\\
+\omega & 0 & v_{y}\\
+0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+如果我们想让
+\begin_inset Formula $t$
+\end_inset
+
+变大，我们可以将
+\begin_inset Formula $t$
+\end_inset
+
+分解成更小的时间步，例如
+\begin_inset Formula $n$
+\end_inset
+
+个时间步，然后按下式组合它们：
+\begin_inset Formula 
+\[
+T(t)\approx\left(I+\frac{t}{n}\xihat\right)\ldots\mbox{n times}\ldots\left(I+\frac{t}{n}\xihat\right)=\left(I+\frac{t}{n}\xihat\right)^{n}
+\]
+
+\end_inset
+
+其结果如图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:n-step-program"
+
+\end_inset
+
+ 所示。
+\end_layout
+
+\begin_layout Standard
+当然，如果取
+\begin_inset Formula $n$
+\end_inset
+
+到无穷小，则获得完美解：
+\begin_inset Formula 
+\[
+T(t)=\lim_{n\rightarrow\infty}\left(I+\frac{t}{n}\xihat\right)^{n}
+\]
+
+\end_inset
+
+对于实数，这个级数很常见，实际上是计算指数函数的一种方法：
+\begin_inset Formula 
+\[
+e^{x}=\lim_{n\rightarrow\infty}\left(1+\frac{x}{n}\right)^{n}=\sum_{k=0}^{\infty}\frac{x^{k}}{k!}
+\]
+
+\end_inset
+
+类似地，该级数可以定义为平方矩阵，并且最终结果是我们可以写出机器人沿圆形轨迹的运动，由2D运动旋量 
+\begin_inset Formula $\xi=(v,\omega)$
+\end_inset
+
+ 作为 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 的矩阵指数(
+\emph on
+matrix exponential
+\emph default
+)给出：
+\begin_inset Formula 
+\[
+T(t)=e^{t\xihat}\define\lim_{n\rightarrow\infty}\left(I+\frac{t}{n}\xihat\right)^{n}=\sum_{k=0}^{\infty}\frac{t^{k}}{k!}\xihat^{k}
+\]
+
+\end_inset
+
+我们称这种从2D运动旋量矩阵 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 到2D刚性变换的映射为指数映射(
+\emph on
+exponential map
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+以上是李群理论的全部内容。我们将2D刚性变换空间和组合运算称为特殊的欧几里得群(
+\emph on
+special Euclidean group
+\emph default
+) 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+。它被称为李群，因为它同时是拓扑群和流形，这意味着乘法和求逆运算是平滑的。2D运动旋量空间，连同下面要定义的一个特殊二元运算，称为与
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+相关联的李代数
+\begin_inset Formula $\setwo$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+基本李群概念
+\end_layout
+
+\begin_layout Standard
+现在，我们定义上面说明的概念，引入一些符号，然后看看我们一般可以说些什么。然后我们将介绍最常用的李群及其李代数。
+\end_layout
+
+\begin_layout Subsection
+流形与群
+\end_layout
+
+\begin_layout Standard
+李群(
+\series bold
+Lie group
+\series default
+) 
+\begin_inset Formula $G$
+\end_inset
+
+ 既是群又是具有平滑群运算的流形。与之相关联的是一个李代数(
+\series bold
+Lie Algebra
+\series default
+) 
+\begin_inset Formula $\gg$
+\end_inset
+
+，大致来说，它可以用在幺元处的切空间识别，并完全定义群在幺元周围的行为。这有一个从 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 返回到 
+\begin_inset Formula $G$
+\end_inset
+
+ 的映射，称为指数映射(
+\series bold
+exponential map
+\series default
+)
+\begin_inset Formula 
+\[
+\exp:\gg\rightarrow G
+\]
+
+\end_inset
+
+这通常是多对一映射。相应的逆可以在原点附近局部定义，并因此是一个“对数”映射：
+\begin_inset Formula 
+\[
+\log:G\rightarrow\gg
+\]
+
+\end_inset
+
+它将在 G 中 
+\begin_inset Formula $id$
+\end_inset
+
+ 的邻域中的元素映射到在 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 中的元素。
+\end_layout
+
+\begin_layout Standard
+一种重要的李群是矩阵李群，其元素是
+\begin_inset Formula $n\times n$
+\end_inset
+
+可逆矩阵。所有这些矩阵的集合，连同矩阵乘法，被称为维数为
+\begin_inset Formula $n$
+\end_inset
+
+的一般线性群 
+\begin_inset Formula $GL(n)$
+\end_inset
+
+，并且它的任意封闭子群都是矩阵李群(
+\series bold
+matrix Lie group
+\series default
+)。我们感兴趣的大多数李群(如果不是全部的话)都是矩阵李群。
+\end_layout
+
+\begin_layout Subsection
+李代数
+\end_layout
+
+\begin_layout Standard
+李代数 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 被称为代数，因为它被赋予了一个二元运算，即李括号(
+\series bold
+Lie bracket
+\series default
+) 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+，其性质与 
+\begin_inset Formula $G$
+\end_inset
+
+的群运算密切相关。例如，对于与矩阵李群相关联的代数，李括号给出为 
+\begin_inset Formula $[A,B]\define AB-BA$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+李括号与群运算的关系如下：对于交换李群，在 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 中的向量加法 
+\begin_inset Formula $X+Y$
+\end_inset
+
+ 模拟群运算。例如，如果在 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 中有 
+\begin_inset Formula $Z=X+Y$
+\end_inset
+
+，当通过指数映射将其映射回
+\begin_inset Formula $G$
+\end_inset
+
+时，我们获得
+\begin_inset Formula 
+\[
+e^{Z}=e^{X+Y}=e^{X}e^{Y}
+\]
+
+\end_inset
+
+但是，这
+\series bold
+不
+\series default
+适用于非交换李群：
+\begin_inset Formula 
+\[
+Z=\log(e^{X}e^{Y})\neq X+Y
+\]
+
+\end_inset
+
+相反，
+\begin_inset Formula $Z$
+\end_inset
+
+可以使用Baker-Campbell-Hausdorff (BCH) 公式
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hall00book"
+literal "true"
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Baker–Campbell–Hausdorff_formula
+\end_layout
+
+\end_inset
+
+计算：
+\begin_inset Formula 
+\[
+Z=X+Y+[X,Y]/2+[X-Y,[X,Y]]/12-[Y,[X,[X,Y]]]/24+\ldots
+\]
+
+\end_inset
+
+对于交换群，括号为零，我们恢复 
+\begin_inset Formula $Z=X+Y$
+\end_inset
+
+。对于非交换群，我们可以用BCH公式来近似。
+\end_layout
+
+\begin_layout Subsection
+指数坐标
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $n$
+\end_inset
+
+维矩阵李群，作为一个向量空间，李代数 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 同构于 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+，并且我们可以定义帽子
+\begin_inset Formula $\hat{}$
+\end_inset
+
+算子 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "page 41"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\hat{}:x\in\mathbb{R}^{n}\rightarrow\xhat\in\gg
+\]
+
+\end_inset
+
+它将
+\begin_inset Formula $n$
+\end_inset
+
+元向量 
+\begin_inset Formula $x\in\mathbb{R}^{n}$
+\end_inset
+
+ 映射到
+\begin_inset Formula $\gg$
+\end_inset
+
+的元素。在矩阵李群的情况下，
+\begin_inset Formula $\gg$
+\end_inset
+
+的元素 
+\begin_inset Formula $\xhat$
+\end_inset
+
+ 也是
+\begin_inset Formula $n\times n$
+\end_inset
+
+矩阵，并且映射给出为
+\begin_inset Formula 
+\begin{equation}
+\xhat=\sum_{i=1}^{n}x_{i}G^{i}\label{eq:generators}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $G^{i}$
+\end_inset
+
+ 是 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 矩阵，称为李群生成元。映射 
+\begin_inset Formula $x\rightarrow\xhat$
+\end_inset
+
+ 的意义取决于群 
+\begin_inset Formula $G$
+\end_inset
+
+，并且通常有一个直观的解释。
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+一个重要的概念是作用于流形
+\begin_inset Formula $M$
+\end_inset
+
+的元素上的群元素。例如，2D旋转作用于2D点，3D旋转作用于3D点，如此等等。特别地，
+\begin_inset Formula $G$
+\end_inset
+
+ 在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的左作用(
+\series bold
+left action
+\series default
+)被定义为一个平滑映射
+\begin_inset Formula $\Phi:G\times M\rightarrow M$
+\end_inset
+
+，以使得 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Appendix A"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+：
+\end_layout
+
+\begin_layout Enumerate
+幺元
+\begin_inset Formula $e$
+\end_inset
+
+没有影响，即
+\begin_inset Formula $\Phi(e,p)=p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+组合两个作用可以组合成一个作用： 
+\begin_inset Formula $\Phi(g,\Phi(h,p))=\Phi(gh,p)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一个
+\begin_inset Formula $n$
+\end_inset
+
+维矩阵群 
+\begin_inset Formula $G$
+\end_inset
+
+ 的(通常)作用是在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 上的矩阵-向量乘法，
+\begin_inset Formula 
+\[
+q=Ap
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $p,q\in\mathbb{R}^{n}$
+\end_inset
+
+ 以及 
+\begin_inset Formula $A\in G\subseteq GL(n)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+伴随映射与伴随表示
+\end_layout
+
+\begin_layout Standard
+假设一个点
+\begin_inset Formula $p$
+\end_inset
+
+被指定为在帧
+\begin_inset Formula $T$
+\end_inset
+
+中的 
+\begin_inset Formula $p'$
+\end_inset
+
+，即 
+\begin_inset Formula $p'=Tp$
+\end_inset
+
+，其中
+\begin_inset Formula $T$
+\end_inset
+
+从全局坐标
+\begin_inset Formula $p$
+\end_inset
+
+变换为局部帧
+\begin_inset Formula $p'$
+\end_inset
+
+。要应用一个作用 
+\begin_inset Formula $A$
+\end_inset
+
+，首先需要撤消
+\begin_inset Formula $T$
+\end_inset
+
+，然后应用 
+\begin_inset Formula $A$
+\end_inset
+
+，然后将结果变换回
+\begin_inset Formula $T$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+q'=TAT^{-1}p'
+\]
+
+\end_inset
+
+矩阵 
+\begin_inset Formula $TAT^{-1}$
+\end_inset
+
+ 被称为与
+\begin_inset Formula $A$
+\end_inset
+
+共轭，并且这是群论的中心元素。
+\end_layout
+
+\begin_layout Standard
+通常，伴随映射(
+\series bold
+adjoint map
+\series default
+) 
+\begin_inset Formula $\AAdd g$
+\end_inset
+
+ 将一个群元素 
+\begin_inset Formula $a\in G$
+\end_inset
+
+ 通过
+\begin_inset Formula $g$
+\end_inset
+
+映射到它的共轭(
+\series bold
+conjugate
+\series default
+) 
+\begin_inset Formula $gag^{-1}$
+\end_inset
+
+。该映射捕获在群 
+\begin_inset Formula $G$
+\end_inset
+
+ 中的共轭性，但在李代数 
+\begin_inset Formula $\mathfrak{\gg}$
+\end_inset
+
+ 中有一个等价的概念， 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Exponential_map
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\AAdd ge^{\xhat}=g\exp\left(\xhat\right)g^{-1}=\exp(\Ad g{\xhat})
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\Ad g:\gg\rightarrow\mathfrak{\gg}$
+\end_inset
+
+ 是由群元素
+\begin_inset Formula $g$
+\end_inset
+
+参数化的一个映射，并称为伴随表示(
+\emph on
+adjoint representation
+\emph default
+)。直观的解释是，有一个变化 
+\begin_inset Formula $\exp\left(\xhat\right)$
+\end_inset
+
+ 被定义在原点周围，但被应用于群元素 
+\begin_inset Formula $g$
+\end_inset
+
+，可以通过取
+\begin_inset Formula $\xhat$
+\end_inset
+
+的伴随 
+\begin_inset Formula $\Ad g{\xhat}$
+\end_inset
+
+ 一步写出。
+\end_layout
+
+\begin_layout Standard
+在矩阵李群的特殊情况下，伴随可被写为 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+http://en.wikipedia.org/wiki/Adjoint_representation_of_a_Lie_group
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\Ad T{\xhat}\define T\xhat T^{-1}
+\]
+
+\end_inset
+
+并因此我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Te^{\xhat}T^{-1}=e^{T\xhat T^{-1}}\label{eq:matrixAdjoint}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $T\in G$
+\end_inset
+
+ 和 
+\begin_inset Formula $\xhat\in\gg$
+\end_inset
+
+ 对于
+\begin_inset Formula $n$
+\end_inset
+
+维李群都是 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 矩阵。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 旋转
+\end_layout
+
+\begin_layout Standard
+我们先看一个非常简单的群，2D旋转。
+\end_layout
+
+\begin_layout Subsection
+基础知识
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 是一般线性群 
+\begin_inset Formula $GL(2)$
+\end_inset
+
+ 的子群，由 
+\begin_inset Formula $2\times2$
+\end_inset
+
+ 可逆矩阵组成。它的李代数
+\begin_inset Formula $\sotwo$
+\end_inset
+
+是 
+\begin_inset Formula $2\times2$
+\end_inset
+
+ 斜对称矩阵的向量空间。由于 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 是一维流形，
+\begin_inset Formula $\sotwo$
+\end_inset
+
+同构于 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+，并且我们定义
+\begin_inset Formula 
+\[
+\hat{}:\mathbb{R}\rightarrow\sotwo
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\hat{}:\omega\rightarrow\what=\skew{\omega}
+\]
+
+\end_inset
+
+其将角度 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 映射到 
+\begin_inset Formula $2\times2$
+\end_inset
+
+ 斜对称矩阵 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\skew{\omega}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+：
+\begin_inset Formula 
+\[
+\skew{\omega}=\left[\begin{array}{cc}
+0 & -\omega\\
+\omega & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+指数映射可以以封闭形式计算为
+\begin_inset Formula 
+\[
+e^{\skew{\omega}}=\left[\begin{array}{cc}
+\cos\omega & -\sin\omega\\
+\sin\omega & \cos\omega
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Diagonalized2D"
+
+\end_inset
+
+对角化形式
+\end_layout
+
+\begin_layout Standard
+矩阵 
+\begin_inset Formula $\skew 1$
+\end_inset
+
+ 可以用特征值 
+\begin_inset Formula $-i$
+\end_inset
+
+ 和 
+\begin_inset Formula $i$
+\end_inset
+
+ 以及特征向量 
+\begin_inset Formula $\left[\begin{array}{c}
+1\\
+i
+\end{array}\right]$
+\end_inset
+
+ 和
+\begin_inset Formula $\left[\begin{array}{c}
+i\\
+1
+\end{array}\right]$
+\end_inset
+
+对角化(参见 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hall00book"
+literal "true"
+
+\end_inset
+
+)。熟悉投影几何的读者在将这些点提升到齐次坐标时会将其识别为圆形点。特别是：
+\begin_inset Formula 
+\[
+\skew{\omega}=\left[\begin{array}{cc}
+0 & -\omega\\
+\omega & 0
+\end{array}\right]=\left[\begin{array}{cc}
+1 & i\\
+i & 1
+\end{array}\right]\left[\begin{array}{cc}
+-i\omega & 0\\
+0 & i\omega
+\end{array}\right]\left[\begin{array}{cc}
+1 & i\\
+i & 1
+\end{array}\right]^{-1}
+\]
+
+\end_inset
+
+并因此
+\begin_inset Formula 
+\[
+e^{\skew{\omega}}=\frac{1}{2}\left[\begin{array}{cc}
+1 & i\\
+i & 1
+\end{array}\right]\left[\begin{array}{cc}
+e^{-i\omega} & 0\\
+0 & e^{i\omega}
+\end{array}\right]\left[\begin{array}{cc}
+1 & -i\\
+-i & 1
+\end{array}\right]=\left[\begin{array}{cc}
+\cos\omega & -\sin\omega\\
+\sin\omega & \cos\omega
+\end{array}\right]
+\]
+
+\end_inset
+
+其中后者可用 
+\begin_inset Formula $e^{i\omega}=\cos\omega+i\sin\omega$
+\end_inset
+
+表示。
+\end_layout
+
+\begin_layout Subsection
+伴随
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sotwo$
+\end_inset
+
+ 的伴随显然等同于特征式，就像
+\series bold
+所有
+\series default
+交换群的情况一样：
+\begin_inset Formula 
+\begin{eqnarray*}
+\Ad R\what & = & \left[\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right]\left[\begin{array}{cc}
+0 & -\omega\\
+\omega & 0
+\end{array}\right]\left[\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right]^{T}\\
+ & = & \omega\left[\begin{array}{cc}
+-\sin\theta & -\cos\theta\\
+\cos\theta & -\sin\theta
+\end{array}\right]\left[\begin{array}{cc}
+\cos\theta & \sin\theta\\
+-\sin\theta & \cos\theta
+\end{array}\right]=\left[\begin{array}{cc}
+0 & -\omega\\
+\omega & 0
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+即，
+\begin_inset Formula 
+\[
+\Ad R\what=\what
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 的情况下，向量空间是 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+，并且群作用对应于旋转一个点
+\begin_inset Formula 
+\[
+q=Rp
+\]
+
+\end_inset
+
+现在我们想知道通过 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 参数化的一个增量旋转会做什么：
+\begin_inset Formula 
+\[
+q(\text{\omega})=Re^{\skew{\omega}}p
+\]
+
+\end_inset
+
+对于小角度 
+\begin_inset Formula $\omega$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+e^{\skew{\omega}}\approx I+\skew{\omega}=I+\omega\skew 1
+\]
+
+\end_inset
+
+其中[1]+类似于在平面上作用于点的受限制“叉积”：
+\begin_inset Formula 
+\begin{equation}
+\skew 1\left[\begin{array}{c}
+x\\
+y
+\end{array}\right]=R_{\pi/2}\left[\begin{array}{c}
+x\\
+y
+\end{array}\right]=\left[\begin{array}{c}
+-y\\
+x
+\end{array}\right]\label{eq:RestrictedCross}
+\end{equation}
+
+\end_inset
+
+因此，作用的导数给出为
+\begin_inset Formula 
+\[
+\deriv{q(\omega)}{\omega}=R\deriv{}{\omega}\left(e^{\skew{\omega}}p\right)=R\deriv{}{\omega}\left(\omega\skew 1p\right)=RH_{p}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $H_{p}$
+\end_inset
+
+ 是依赖于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的一个 
+\begin_inset Formula $2\times1$
+\end_inset
+
+ 矩阵：
+\begin_inset Formula 
+\[
+H_{p}\define\skew 1p=\left[\begin{array}{c}
+-p_{y}\\
+p_{x}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 刚性变换
+\end_layout
+
+\begin_layout Subsection
+基础知识
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 是一般线性群 
+\begin_inset Formula $GL(3)$
+\end_inset
+
+ 的一个子群，它由 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 可逆矩阵组成
+\begin_inset Formula 
+\[
+T\define\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $R\in\SOtwo$
+\end_inset
+
+ 是一个旋转矩阵，并且 
+\begin_inset Formula $t\in\Rtwo$
+\end_inset
+
+ 是一个平移向量。
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 是 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+ 与
+\begin_inset Formula $SO(2)$
+\end_inset
+
+的半直积(
+\emph on
+semi-direct product
+\emph default
+)，写为 
+\begin_inset Formula $\SEtwo=\Rtwo\rtimes\SOtwo$
+\end_inset
+
+。特别地，
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 的任意元素 
+\begin_inset Formula $T$
+\end_inset
+
+ 可被写为
+\begin_inset Formula 
+\[
+T=\left[\begin{array}{cc}
+0 & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+R & 0\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+并且它们组合为
+\begin_inset Formula 
+\[
+T_{1}T_{2}=\left[\begin{array}{cc}
+R_{1} & t_{1}\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+R_{2} & t_{2}\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+R_{1}R_{2} & R_{1}t_{2}+t_{1}\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+因此，写下
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+元素的替代方法是作为有序对 
+\begin_inset Formula $(R,\,t)$
+\end_inset
+
+，其组合定义为一个
+\begin_inset Formula 
+\[
+(R_{1},\,t_{1})(R_{2},\,t_{2})=(R_{1}R_{2},\,R{}_{1}t_{2}+t_{1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+相应的李代数 
+\begin_inset Formula $\setwo$
+\end_inset
+
+ 是由运动旋量坐标(
+\emph on
+twist coordinates
+\emph default
+) 
+\begin_inset Formula $\xi\in\Rthree$
+\end_inset
+
+ 参数化的 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 运动旋量 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 的向量空间，其映射为
+\begin_inset Formula 
+\[
+\xi\define\left[\begin{array}{c}
+v\\
+\omega
+\end{array}\right]\rightarrow\xihat\define\left[\begin{array}{cc}
+\skew{\omega} & v\\
+0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+注意，我们认为机器人有一个位姿
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $(x,y,\theta)$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+，并因此我保留前两个分量用于平移，以及最后一个分量用于旋转。相应的李群生成元是
+\begin_inset Formula 
+\[
+G^{x}=\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{y}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{\theta}=\left[\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+将指数映射应用于一个运动旋量(twist) 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 产生旋量运动(screw motion)，产生一个在 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 中的元素:
+\begin_inset Formula 
+\[
+T=e^{\xihat}=\left(e^{\skew{\omega}},(I-e^{\skew{\omega}})\frac{v^{\perp}}{\omega}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+伴随映射
+\end_layout
+
+\begin_layout Standard
+伴随是
+\begin_inset Formula 
+\begin{eqnarray}
+\Ad T{\xihat} & = & T\xihat T^{-1}\nonumber \\
+ & = & =\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+\skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{cc}
+R^{T} & -R^{T}t\\
+0 & 1
+\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{cc}
+\skew{\omega} & -\skew{\omega}t+Rv\\
+0 & 0
+\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{cc}
+\skew{\omega} & Rv-t^{\perp}\omega\\
+0 & 0
+\end{array}\right]\label{eq:adjointSE2}
+\end{eqnarray}
+
+\end_inset
+
+由此，我们可以依据平面运动旋量坐标表达伴随映射：
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+v'\\
+\omega'
+\end{array}\right]=\left[\begin{array}{cc}
+R & -t^{\perp}\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+v\\
+\omega
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 对2D点的作用是通过使用齐次坐标将点嵌入 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ 来完成的
+\begin_inset Formula 
+\[
+\hat{q}=\left[\begin{array}{c}
+q\\
+1
+\end{array}\right]=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T\hat{p}
+\]
+
+\end_inset
+
+类似于 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ (参见下文)，我们可以计算在局部 
+\begin_inset Formula $T$
+\end_inset
+
+ 帧中的一个速度 
+\begin_inset Formula $\xihat\hat{p}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\xihat\hat{p}=\left[\begin{array}{cc}
+\skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+\skew{\omega}p+v\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+通过只取最上面的两行，我们可以把它写成在 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+ 中的一个速度，作为一个 
+\begin_inset Formula $2\times3$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $H_{p}$
+\end_inset
+
+， 直接作用于指数坐标 
+\begin_inset Formula $\xi$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\skew{\omega}p+v=v+R_{\pi/2}p\omega=\left[\begin{array}{cc}
+I_{2} & R_{\pi/2}p\end{array}\right]\left[\begin{array}{c}
+v\\
+\omega
+\end{array}\right]=H_{p}\xi
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+3D 旋转
+\end_layout
+
+\begin_layout Subsection
+基础知识
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 是一般线性群 
+\begin_inset Formula $GL(3)$
+\end_inset
+
+ 的一个子群，由 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 可逆矩阵组成。它的李代数
+\begin_inset Formula $\sothree$
+\end_inset
+
+是 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 斜对称矩阵 
+\begin_inset Formula $\what$
+\end_inset
+
+ 的向量空间。由于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+是一个三维流形，因此
+\begin_inset Formula $\sothree$
+\end_inset
+
+ 同构于 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+，并且我们定义映射
+\begin_inset Formula 
+\[
+\hat{}:\Rthree\rightarrow\sothree
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\hat{}:\omega\rightarrow\what=\Skew{\omega}
+\]
+
+\end_inset
+
+它将
+\begin_inset Formula $3$
+\end_inset
+
+元向量 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 映射为斜对称矩阵 
+\begin_inset Formula $\Skew{\omega}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\Skew{\omega}=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]=\omega_{x}G^{x}+\omega_{y}G^{y}+\omega_{z}G^{z}
+\]
+
+\end_inset
+
+这里矩阵 
+\begin_inset Formula $G^{i}$
+\end_inset
+
+ 对于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 是生成元，
+\begin_inset Formula 
+\[
+G^{x}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right)\mbox{}G^{y}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right)\mbox{ }G^{z}=\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+分别对应于围绕
+\begin_inset Formula $X$
+\end_inset
+
+、
+\begin_inset Formula $Y$
+\end_inset
+
+和
+\begin_inset Formula $Z$
+\end_inset
+
+的旋转。在 
+\begin_inset Formula $\sothree$
+\end_inset
+
+ 中的李括号
+\begin_inset Formula $[x,y]$
+\end_inset
+
+对应于在 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+ 中的叉积 
+\begin_inset Formula $x\times y$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，对于每一个
+\begin_inset Formula $3$
+\end_inset
+
+元向量 
+\begin_inset Formula $\omega$
+\end_inset
+
+，有一个对应的旋转矩阵
+\begin_inset Formula 
+\[
+R=e^{\Skew{\omega}}
+\]
+
+\end_inset
+
+其定义 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 的正则参数化，其中 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 称为正则坐标或指数坐标。它对于旋转等价于轴-角表示，其中单位向量 
+\begin_inset Formula $\omega/\theta$
+\end_inset
+
+ 表示旋转轴，并且其幅值表示旋转量 
+\begin_inset Formula $\theta$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+指数映射可以使用罗德里格斯公式(
+\series bold
+Rodrigues' formula
+\series default
+) 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "page 28"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+ 以封闭形式计算：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+e^{\what}=I+\frac{\sin\theta}{\theta}\what+\frac{1\text{−}\cos\theta}{\theta^{2}}\what^{2}\label{eq:Rodrigues}
+\end{equation}
+
+\end_inset
+
+式中 
+\begin_inset Formula $\what^{2}=\omega\omega^{T}-I$
+\end_inset
+
+，其中 
+\begin_inset Formula $\omega\omega^{T}$
+\end_inset
+
+ 为 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 的外积。因此，一个稍微更有效的变体是 
+\begin_inset Formula 
+\begin{equation}
+e^{\what}=\left(\cos\theta\right)I+\frac{\sin\theta}{\theta}\what+\frac{1\text{−}cos\theta}{\theta^{2}}\omega\omega^{T}\label{eq:Rodrigues2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+对角化形式
+\end_layout
+
+\begin_layout Standard
+因为3D旋转 
+\begin_inset Formula $R$
+\end_inset
+
+ 保持轴 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 不变，所以 
+\begin_inset Formula $R$
+\end_inset
+
+ 可以对角化为
+\begin_inset Formula 
+\[
+R=C\left(\begin{array}{ccc}
+e^{-i\theta} & 0 & 0\\
+0 & e^{i\theta} & 0\\
+0 & 0 & 1
+\end{array}\right)C^{-1}
+\]
+
+\end_inset
+
+式中 
+\begin_inset Formula $C=\left(\begin{array}{ccc}
+c_{1} & c_{2} & \omega/\theta\end{array}\right)$
+\end_inset
+
+，其中 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $c_{2}$
+\end_inset
+
+ 是对应于围绕
+\begin_inset Formula $\omega$
+\end_inset
+
+的2D旋转的复特征向量。这也意味着，通过方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:matrixAdjoint"
+
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\hat{\omega}=C\left(\begin{array}{ccc}
+-i\theta & 0 & 0\\
+0 & i\theta & 0\\
+0 & 0 & 0
+\end{array}\right)C^{-1}
+\]
+
+\end_inset
+
+在这种情况下，
+\begin_inset Formula $C$
+\end_inset
+
+有复数的列，但我们也有
+\begin_inset Formula 
+\begin{equation}
+\hat{\omega}=B\left(\begin{array}{ccc}
+0 & -\theta & 0\\
+\theta & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)B^{T}\label{eq:OmegaDecomposed}
+\end{equation}
+
+\end_inset
+
+式中 
+\begin_inset Formula $B=\left(\begin{array}{ccc}
+b_{1} & b_{2} & \omega/\theta\end{array}\right)$
+\end_inset
+
+，其中 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $b_{2}$
+\end_inset
+
+ 构成通过原点并垂直于
+\begin_inset Formula $\omega$
+\end_inset
+
+的2D平面的基。显然，根据第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Diagonalized2D"
+
+\end_inset
+
+ 节，我们有
+\begin_inset Formula 
+\[
+c_{1}=B\left(\begin{array}{c}
+1\\
+i\\
+0
+\end{array}\right)\mbox{\,\,\,\ and\,\,\,\,\,}c_{2}=B\left(\begin{array}{c}
+i\\
+1\\
+0
+\end{array}\right)
+\]
+
+\end_inset
+
+并且当我们指数化方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:OmegaDecomposed"
+
+\end_inset
+
+ 时，我们得到围绕轴 
+\begin_inset Formula $\omega/\theta$
+\end_inset
+
+ 的2D旋转，其幅值为 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+R=B\left(\begin{array}{ccc}
+\cos\theta & -\sin\theta & 0\\
+\sin\theta & \cos\theta & 0\\
+0 & 0 & 1
+\end{array}\right)B^{T}
+\]
+
+\end_inset
+
+对于 
+\begin_inset Formula $R$
+\end_inset
+
+ 的后一种形式可以用来证明罗德里格斯公式。扩展上述内容，我们得到
+\begin_inset Formula 
+\[
+R=\left(\cos\theta\right)\left(b_{1}b_{1}^{T}+b_{2}b_{2}^{T}\right)+\left(\sin\theta\right)\left(b_{2}b_{1}^{T}-b_{1}b_{2}^{T}\right)+\omega\omega^{T}/\theta^{2}
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\begin{eqnarray*}
+R & = & \left(\begin{array}{ccc}
+b_{1} & b_{2} & \omega/\theta\end{array}\right)\left(\begin{array}{ccc}
+\cos\theta & -\sin\theta & 0\\
+\sin\theta & \cos\theta & 0\\
+0 & 0 & 1
+\end{array}\right)\left(\begin{array}{c}
+b_{1}^{T}\\
+b_{2}^{T}\\
+\omega^{T}/\theta
+\end{array}\right)\\
+ & = & \left(\begin{array}{ccc}
+b_{1} & b_{2} & \omega/\theta\end{array}\right)\left(\begin{array}{c}
+b_{1}^{T}\cos\theta-b_{2}^{T}\sin\theta\\
+b_{1}^{T}\sin\theta+b_{2}^{T}\cos\theta\\
+\omega^{T}/\theta
+\end{array}\right)\\
+ & = & b_{1}b_{1}^{T}\cos\theta-b_{1}b_{2}^{T}\sin\theta+b_{2}b_{1}^{T}\sin\theta+b_{2}b_{2}^{T}\cos\theta+\omega\omega^{T}/\theta^{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+由于
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $B$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+是一个旋转矩阵，我们有
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $BB^{T}=b_{1}b_{1}^{T}+b_{2}b_{2}^{T}+\omega\omega^{T}/\theta^{2}=I$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，并且使用方程
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:OmegaDecomposed"
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，它很容易证明，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $b_{2}b_{1}^{T}-b_{1}b_{2}^{T}=\hat{\omega}/\theta$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，因此
+\begin_inset Formula 
+\[
+R=\left(\cos\theta\right)(I-\omega\omega^{T}/\theta^{2})+\left(\sin\theta\right)\left(\hat{\omega}/\theta\right)+\omega\omega^{T}/\theta^{2}
+\]
+
+\end_inset
+
+这等同于方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Rodrigues2"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+伴随映射
+\end_layout
+
+\begin_layout Standard
+对于旋转矩阵 
+\begin_inset Formula $R$
+\end_inset
+
+，我们可以证明以下特征式(参见方程 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "proof1"
+
+\end_inset
+
+)：
+\begin_inset Formula 
+\begin{equation}
+R\Skew{\omega}R^{T}=\Skew{R\omega}\label{eq:property1}
+\end{equation}
+
+\end_inset
+
+因此，给定性质方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:property1"
+
+\end_inset
+
+，对于 
+\begin_inset Formula $\sothree$
+\end_inset
+
+ 伴随映射简化为
+\begin_inset Formula 
+\[
+\Ad R{\Skew{\omega}}=R\Skew{\omega}R^{T}=\Skew{R\omega}
+\]
+
+\end_inset
+
+并且这可以用指数坐标表达，只要把轴 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 旋转到 
+\begin_inset Formula $R\omega$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+作为一个例子，要将轴-角旋转 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 应用于在帧 
+\begin_inset Formula $R$
+\end_inset
+
+ 中的一个点 
+\begin_inset Formula $p$
+\end_inset
+
+，我们可以：
+\end_layout
+
+\begin_layout Enumerate
+首先将 
+\begin_inset Formula $p$
+\end_inset
+
+ 变换回世界帧，应用 
+\begin_inset Formula $\omega$
+\end_inset
+
+，然后再旋转回来：
+\begin_inset Formula 
+\[
+q=Re^{\Skew{\omega}}R^{T}p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+立即应用变换后的轴-角变换 
+\begin_inset Formula $\Ad R{\Skew{\omega}}=\Skew{R\omega}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+q=e^{\Skew{R\omega}}p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 的情况下，向量空间是 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+，并且群作用对应于旋转一个点
+\begin_inset Formula 
+\[
+q=Rp
+\]
+
+\end_inset
+
+现在我们想知道通过 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 参数化的一个增量旋转会做什么：
+\begin_inset Formula 
+\[
+q(\omega)=Re^{\Skew{\omega}}p
+\]
+
+\end_inset
+
+因此，导数为：
+\begin_inset Formula 
+\[
+\deriv{q(\omega)}{\omega}=R\deriv{}{\omega}\left(e^{\Skew{\omega}}p\right)=R\deriv{}{\omega}\left(\Skew{\omega}p\right)=R\Skew{-p}
+\]
+
+\end_inset
+
+要证明最后一个等式，请注意 
+\begin_inset Formula 
+\[
+\Skew{\omega}p=\omega\times p=-p\times\omega=\Skew{-p}\omega
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+3D 刚性变换
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 是一般线性群 
+\begin_inset Formula $GL(4)$
+\end_inset
+
+ 的一个子群，由 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ 可逆矩阵组成
+\begin_inset Formula 
+\[
+T\define\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+ 是一个旋转矩阵，并且 
+\begin_inset Formula $t\in\Rthree$
+\end_inset
+
+ 是一个平移向量。另一种写下 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 元素的方法是作为有序对 
+\begin_inset Formula $(R,\,t)$
+\end_inset
+
+，其分量定义为
+\begin_inset Formula 
+\[
+(R_{1},\,t_{1})(R_{2},\,t_{2})=(R_{1}R_{2},\,R{}_{1}t_{2}+t_{1})
+\]
+
+\end_inset
+
+ 它的李代数 
+\begin_inset Formula $\sethree$
+\end_inset
+
+ 是由运动旋量坐标(
+\emph on
+twist coordinates
+\emph default
+) 
+\begin_inset Formula $\xi\in\Rsix$
+\end_inset
+
+ 参数化的 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ 运动旋量 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 的向量空间，其映射为 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\xi\define\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]\rightarrow\xihat\define\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+注意：我们遵循Frank Park的惯例，并保留前三个分量用于旋转，后三个分量用于平移。因此，通过此参数化，对于 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 生成元为
+\begin_inset Formula 
+\[
+G^{1}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & -1 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{}G^{2}=\left(\begin{array}{cccc}
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0\\
+-1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{ }G^{3}=\left(\begin{array}{cccc}
+0 & -1 & 0 & 0\\
+1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G^{4}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{}G^{5}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{ }G^{6}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+应用指数映射到一个运动旋量 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 产生一个旋量运动，其产生一个在 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+中的元素:
+\begin_inset Formula 
+\[
+T=\exp\xihat
+\]
+
+\end_inset
+
+指数映射的闭式解在文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "page 42"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+ 中给出。
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula 
+\[
+\exp\left(\widehat{\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]}t\right)=\left[\begin{array}{cc}
+e^{\Skew{\omega}t} & (I-e^{\Skew{\omega}t})\left(\omega\times v\right)+\omega\omega^{T}vt\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+伴随映射
+\end_layout
+
+\begin_layout Standard
+伴随是
+\begin_inset Formula 
+\begin{eqnarray*}
+\Ad T{\xihat} & = & T\xihat T^{-1}\\
+ & = & \left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{cc}
+R^{T} & -R^{T}t\\
+0 & 1
+\end{array}\right]\\
+ & = & \left[\begin{array}{cc}
+\Skew{R\omega} & -\Skew{R\omega}t+Rv\\
+0 & 0
+\end{array}\right]\\
+ & = & \left[\begin{array}{cc}
+\Skew{R\omega} & t\times R\omega+Rv\\
+0 & 0
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+由此，我们可以依据运动旋量坐标表达伴随映射(参见文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+ 和FP)：
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\omega'\\
+v'
+\end{array}\right]=\left[\begin{array}{cc}
+R & 0\\
+\Skew tR & R
+\end{array}\right]\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 对3D点的作用是通过使用齐次坐标将点嵌入 
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+ 来完成的
+\begin_inset Formula 
+\[
+\hat{q}=\left[\begin{array}{c}
+q\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+Rp+t\\
+1
+\end{array}\right]=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T\hat{p}
+\]
+
+\end_inset
+
+现在我们想知道通过 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 参数化的一个增量位姿会做什么：
+\begin_inset Formula 
+\[
+\hat{q}(\xi)=Te^{\xihat}\hat{p}
+\]
+
+\end_inset
+
+因此，导数为
+\begin_inset Formula 
+\[
+\deriv{\hat{q}(\xi)}{\xi}=T\deriv{}{\xi}\left(\xihat\hat{p}\right)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\xihat\hat{p}$
+\end_inset
+
+ 对应于在 
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+中的速度(在局部
+\begin_inset Formula $T$
+\end_inset
+
+帧中)：
+\begin_inset Formula 
+\[
+\xihat\hat{p}=\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+\omega\times p+v\\
+0
+\end{array}\right]
+\]
+
+\end_inset
+
+注意速度是如何类似于射影几何中无穷远处的点的：它们对应于自由向量，指示变化的方向和幅值。
+\end_layout
+
+\begin_layout Standard
+通过只取最上三行，我们可以把它写为在 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+ 中的速度，作为直接作用于指数坐标 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 的 
+\begin_inset Formula $3\times6$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $H_{p}$
+\end_inset
+
+ 的乘积：
+\begin_inset Formula 
+\[
+\omega\times p+v=-p\times\omega+v=\left[\begin{array}{cc}
+-\Skew p & I_{3}\end{array}\right]\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]
+\]
+
+\end_inset
+
+产生导数
+\begin_inset Formula 
+\[
+\deriv{\hat{q}(\xi)}{\xi}=T\deriv{}{\xi}\left(\xihat\hat{p}\right)=T\left[\begin{array}{cc}
+-\Skew p & I_{3}\\
+0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+逆作用 
+\begin_inset Formula $T^{-1}p$
+\end_inset
+
+ 为
+\begin_inset Formula 
+\[
+\hat{q}=\left[\begin{array}{c}
+q\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+R^{T}(p-t)\\
+1
+\end{array}\right]=\left[\begin{array}{cc}
+R^{T} & -R^{T}t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T^{-1}\hat{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+3D 相似变换
+\end_layout
+
+\begin_layout Standard
+3D相似变换群 
+\begin_inset Formula $Sim(3)$
+\end_inset
+
+ 是 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ 可逆矩阵的集合，其形式为
+\begin_inset Formula 
+\[
+T\define\left[\begin{array}{cc}
+R & t\\
+0 & s^{-1}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $s$
+\end_inset
+
+ 是一个标量。对于李代数生成元有几种不同的约定，但是我们使用
+\begin_inset Formula 
+\[
+G^{1}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & -1 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{}G^{2}=\left(\begin{array}{cccc}
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0\\
+-1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{ }G^{3}=\left(\begin{array}{cccc}
+0 & -1 & 0 & 0\\
+1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G^{4}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{}G^{5}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{ }G^{6}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0
+\end{array}\right)\mbox{ }G^{7}=\left(\begin{array}{cccc}
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0\\
+0 & 0 & 0 & -1
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+作用
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 对3D点的作用是通过使用齐次坐标将点嵌入 
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+ 来完成的
+\begin_inset Formula 
+\[
+\hat{q}=\left[\begin{array}{c}
+q\\
+s^{-1}
+\end{array}\right]=\left[\begin{array}{c}
+Rp+t\\
+s^{-1}
+\end{array}\right]=\left[\begin{array}{cc}
+R & t\\
+0 & s^{-1}
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T\hat{p}
+\]
+
+\end_inset
+
+在对 
+\begin_inset Formula $T$
+\end_inset
+
+ 的一个增量变化 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 中，导数
+\begin_inset Formula $D_{1}f(\xi)$
+\end_inset
+
+由 
+\begin_inset Formula $TH(p)$
+\end_inset
+
+ 给出，其中
+\begin_inset Formula 
+\[
+H(p)=G_{jk}^{i}p^{j}=\left(\begin{array}{ccccccc}
+0 & z & -y & 1 & 0 & 0 & 0\\
+-z & 0 & x & 0 & 1 & 0 & 0\\
+y & -x & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & -1
+\end{array}\right)
+\]
+
+\end_inset
+
+换句话说
+\begin_inset Formula 
+\[
+D_{1}f(\xi)=\left[\begin{array}{cc}
+R & t\\
+0 & s^{-1}
+\end{array}\right]\left[\begin{array}{ccc}
+-\left[p\right]_{x} & I_{3} & 0\\
+0 & 0 & -1
+\end{array}\right]=\left[\begin{array}{ccc}
+-R\left[p\right]_{x} & R & -t\\
+0 & 0 & -s^{-1}
+\end{array}\right]
+\]
+
+\end_inset
+
+这是作用在齐次坐标上的导数。切换回非齐次坐标是通过下式完成
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+q\\
+a
+\end{array}\right]\rightarrow q/a
+\]
+
+\end_inset
+
+其中导数为
+\begin_inset Formula 
+\[
+\left[\begin{array}{cc}
+a^{-1}I_{3} & -qa^{-2}\end{array}\right]
+\]
+
+\end_inset
+
+对于 
+\begin_inset Formula $a=s^{-1}$
+\end_inset
+
+，我们获得
+\begin_inset Formula 
+\[
+D_{1}f(\xi)=\left[\begin{array}{cc}
+sI_{3} & -qs^{2}\end{array}\right]\left[\begin{array}{ccc}
+-R\left[p\right]_{x} & R & -t\\
+0 & 0 & -s^{-1}
+\end{array}\right]=\left[\begin{array}{ccc}
+-sR\left[p\right]_{x} & sR & -st+qs\end{array}\right]=\left[\begin{array}{ccc}
+-sR\left[p\right]_{x} & sR & sRp\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 仿射变换
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+李群
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $Aff(2)$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+是一般线性群
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $GL(3)$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+的一个子群，由
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+可逆矩阵组成，它将无穷远处的直线映射到自身，并因此保留平行性。仿射变换矩阵
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $A$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+可被写为
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Mei08tro"
+literal "true"
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ 
+\begin_inset Formula 
+\[
+\left[\begin{array}{ccc}
+m_{11} & m_{12} & t_{1}\\
+m_{21} & m_{22} & t_{2}\\
+0 & 0 & k
+\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $M\in GL(2)$
+\end_inset
+
+，
+\begin_inset Formula $t\in\Rtwo$
+\end_inset
+
+，并且 
+\begin_inset Formula $k$
+\end_inset
+
+ 是一个可选择的标量，以使得 
+\begin_inset Formula $det(A)=1$
+\end_inset
+
+。
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+注意，正如 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 是一个半直积一样，所以 
+\begin_inset Formula $Aff(2)=\Rtwo\rtimes GL(2)$
+\end_inset
+
+也是一个半直积。特别地，任意仿射转换 
+\begin_inset Formula $A$
+\end_inset
+
+ 都可以写为
+\begin_inset Formula 
+\[
+A=\left[\begin{array}{cc}
+0 & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+M & 0\\
+0 & k
+\end{array}\right]
+\]
+
+\end_inset
+
+并且它们组合为
+\begin_inset Formula 
+\[
+A_{1}A_{2}=\left[\begin{array}{cc}
+M_{1} & t_{1}\\
+0 & k_{1}
+\end{array}\right]\left[\begin{array}{cc}
+M_{2} & t_{2}\\
+0 & k_{2}
+\end{array}\right]=\left[\begin{array}{cc}
+M_{1}M_{2} & M_{2}t_{2}+k_{2}t_{1}\\
+0 & k_{1}k_{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+由此可以得出
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+和
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+都是子群，其中
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $\SOtwo\subset\SEtwo\subset\Afftwo$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+。通过仔细选择生成元，我们在相关的李代数中维持这个层级。特别是
+\begin_inset Formula $\setwo$
+\end_inset
+
+的生成元
+\begin_inset Formula 
+\[
+G^{1}=\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{2}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{3}=\left[\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+使用三个额外的生成元可推广到李代数 
+\begin_inset Formula $\afftwo$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G^{4}=\left[\begin{array}{ccc}
+0 & 1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{5}=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{6}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+因此，李代数 
+\begin_inset Formula $\afftwo$
+\end_inset
+
+ 是由
+\begin_inset Formula $6$
+\end_inset
+
+元参数 
+\begin_inset Formula $\aa\in\mathbb{R}^{6}$
+\end_inset
+
+ 参数化的 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 增量仿射变换
+\begin_inset Formula $\ahat$
+\end_inset
+
+的向量空间，其映射为
+\begin_inset Formula 
+\[
+\aa\rightarrow\ahat\define\left[\begin{array}{ccc}
+a_{5} & a_{4}-a_{3} & a_{1}\\
+a_{4}+a_{3} & -a_{5}-a_{6} & a_{2}\\
+0 & 0 & a_{6}
+\end{array}\right]
+\]
+
+\end_inset
+
+注意 
+\begin_inset Formula $G_{5}$
+\end_inset
+
+ 和 
+\begin_inset Formula $G_{6}$
+\end_inset
+
+ 改变
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+的相对比例，但不改变行列式：
+\begin_inset Formula 
+\[
+e^{xG_{5}}=\exp\left[\begin{array}{ccc}
+x & 0 & 0\\
+0 & -x & 0\\
+0 & 0 & 0
+\end{array}\right]=\left[\begin{array}{ccc}
+e^{x} & 0 & 0\\
+0 & 1/e^{x} & 0\\
+0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+e^{xG_{6}}=\exp\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -x & 0\\
+0 & 0 & x
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 1/e^{x} & 0\\
+0 & 0 & e^{x}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+如果通过选择以下生成元，能与缩放的
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+更直接地对应起来，它可能会更好，
+\begin_inset Formula 
+\[
+\mbox{ }G^{5}=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & -1
+\end{array}\right]\mbox{ }G^{6}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & -1
+\end{array}\right]
+\]
+
+\end_inset
+
+并因此
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+
+\begin_inset Formula 
+\[
+e^{xG_{5}}=\exp\left[\begin{array}{ccc}
+x & 0 & 0\\
+0 & 0 & 0\\
+0 & 0 & -x
+\end{array}\right]=\left[\begin{array}{ccc}
+e^{x} & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1/e^{x}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+e^{xG_{6}}=\exp\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & x & 0\\
+0 & 0 & -x
+\end{array}\right]=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & e^{x} & 0\\
+0 & 0 & 1/e^{x}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 单应变换
+\end_layout
+
+\begin_layout Standard
+当视为对图像的操作(由2D射影空间 
+\begin_inset Formula $\mathcal{P}^{3}$
+\end_inset
+
+ 表示)时，3D旋转是2D单应变换的特例。现在我们将根据在文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Mei06iros,Mei08tro"
+literal "true"
+
+\end_inset
+
+ 中的论述来粗略地处理这些问题。
+\end_layout
+
+\begin_layout Subsection
+基础知识
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\SLthree$
+\end_inset
+
+ 是一般线性群GL(3)的一个子群，由行列式为
+\begin_inset Formula $1$
+\end_inset
+
+的
+\begin_inset Formula $3\times3$
+\end_inset
+
+可逆矩阵组成。单应变换推广2D射影空间的变换，并且 
+\begin_inset Formula $\Afftwo\subset\SLthree$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+通过增加两个生成元，我们可以将 
+\begin_inset Formula $\afftwo$
+\end_inset
+
+ 推广到李代数 
+\begin_inset Formula $\slthree$
+\end_inset
+
+ 中
+\begin_inset Formula 
+\[
+G^{7}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+1 & 0 & 0
+\end{array}\right]\mbox{ }G^{8}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 1 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+以获得由
+\begin_inset Formula $8$
+\end_inset
+
+元参数 
+\begin_inset Formula $\hh\in\mathbb{R}^{8}$
+\end_inset
+
+ 参数化的 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 增量单应变换 
+\begin_inset Formula $\hhat$
+\end_inset
+
+ 的向量空间，其映射为
+\begin_inset Formula 
+\[
+h\rightarrow\hhat\define\left[\begin{array}{ccc}
+h_{5} & h_{4}-h_{3} & h_{1}\\
+h_{4}+h_{3} & -h_{5}-h_{6} & h_{2}\\
+h_{7} & h_{8} & h_{6}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+张量符号
+\end_layout
+
+\begin_layout Itemize
+2D射影空间
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+之间的一个单应性可用张量符号 
+\begin_inset Formula $H_{A}^{B}$
+\end_inset
+
+ 写出
+\end_layout
+
+\begin_layout Itemize
+应用一个单应性则是一个张量收回 
+\begin_inset Formula $x^{B}=H_{A}^{B}x^{A}$
+\end_inset
+
+，将在
+\begin_inset Formula $A$
+\end_inset
+
+中的点映射到在
+\begin_inset Formula $B$
+\end_inset
+
+中的点。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The inverse of a homography can be found by contracting with two permutation
+ tensors:
+\begin_inset Formula 
+\[
+H_{B}^{A}=H_{A_{1}}^{B_{1}}H_{A_{2}}^{B_{2}}\epsilon_{B_{1}B_{2}B}\epsilon^{A_{1}A_{2}A}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Subsection
+The Adjoint Map
+\end_layout
+
+\begin_layout Plain Layout
+The adjoint can be done using tensor notation.
+ Denoting an incremental homography in space 
+\begin_inset Formula $A$
+\end_inset
+
+ as 
+\begin_inset Formula $\hhat_{A_{1}}^{A_{2}}$
+\end_inset
+
+, we have, for example for 
+\begin_inset Formula $G_{1}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\hhat_{B_{1}}^{B_{2}}=\Ad{H_{A}^{B}}{\hhat_{A_{1}}^{A_{2}}} & = & H_{A_{2}}^{B_{2}}\hhat_{A_{1}}^{A_{2}}H_{B_{1}}^{A_{1}}\\
+ & = & H_{A_{2}}^{B_{2}}\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]H_{A_{2}}^{B_{2}}H_{A_{3}}^{B_{3}}\epsilon_{B_{1}B_{2}B_{3}}\epsilon^{A_{1}A_{2}A_{3}}\\
+ & = & H_{1}^{B_{2}}H_{A_{2}}^{B_{2}}H_{A_{3}}^{B_{3}}\epsilon_{B_{1}B_{2}B_{3}}\epsilon^{3A_{2}A_{3}}
+\end{eqnarray*}
+
+\end_inset
+
+This does not seem to help.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+附录：证明性质方程 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "proof1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于旋转矩阵
+\begin_inset Formula $R$
+\end_inset
+
+，我们可以证明如下特征式，
+\begin_inset Formula 
+\begin{eqnarray}
+R\Skew{\omega}R^{T} & = & R\Skew{\omega}\left[\begin{array}{ccc}
+a_{1} & a_{2} & a_{3}\end{array}\right]\nonumber \\
+ & = & R\left[\begin{array}{ccc}
+\omega\times a_{1} & \omega\times a_{2} & \omega\times a_{3}\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{ccc}
+a_{1}(\omega\times a_{1}) & a_{1}(\omega\times a_{2}) & a_{1}(\omega\times a_{3})\\
+a_{2}(\omega\times a_{1}) & a_{2}(\omega\times a_{2}) & a_{2}(\omega\times a_{3})\\
+a_{3}(\omega\times a_{1}) & a_{3}(\omega\times a_{2}) & a_{3}(\omega\times a_{3})
+\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{ccc}
+\omega(a_{1}\times a_{1}) & \omega(a_{2}\times a_{1}) & \omega(a_{3}\times a_{1})\\
+\omega(a_{1}\times a_{2}) & \omega(a_{2}\times a_{2}) & \omega(a_{3}\times a_{2})\\
+\omega(a_{1}\times a_{3}) & \omega(a_{2}\times a_{3}) & \omega(a_{3}\times a_{3})
+\end{array}\right]\nonumber \\
+ & = & \left[\begin{array}{ccc}
+0 & -\omega a_{3} & \omega a_{2}\\
+\omega a_{3} & 0 & -\omega a_{1}\\
+-\omega a_{2} & \omega a_{1} & 0
+\end{array}\right]\nonumber \\
+ & = & \Skew{R\omega}\label{proof1}
+\end{eqnarray}
+
+\end_inset
+
+其中
+\begin_inset Formula $a_{1}$
+\end_inset
+
+、
+\begin_inset Formula $a_{2}$
+\end_inset
+
+和 
+\begin_inset Formula $a_{3}$
+\end_inset
+
+ 是 
+\begin_inset Formula $R$
+\end_inset
+
+ 的
+\series bold
+行
+\series default
+。我们利用旋转矩阵的正交性和三重积规则：
+\begin_inset Formula 
+\[
+a(b\times c)=b(c\times a)=c(a\times b)
+\]
+
+\end_inset
+
+类似地，这里没有证明 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Lemma 2.3"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+R(a\times b)=Ra\times Rb
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+附录：对于 
+\begin_inset Formula $\slthree$
+\end_inset
+
+ 的替代生成元
+\end_layout
+
+\begin_layout Standard
+文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Mei06iros"
+literal "true"
+
+\end_inset
+
+ 对于 
+\begin_inset Formula $\slthree$
+\end_inset
+
+ 使用以下生成元：
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+G^{1}=\left[\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{2}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{3}=\left[\begin{array}{ccc}
+0 & 1 & 0\\
+0 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G^{4}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{5}=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & 0
+\end{array}\right]\mbox{ }G^{6}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -1 & 0\\
+0 & 0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G^{7}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+1 & 0 & 0
+\end{array}\right]\mbox{ }G^{8}=\left[\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 0\\
+0 & 1 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+我们选择使用不同的线性组合作为基。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "refs"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

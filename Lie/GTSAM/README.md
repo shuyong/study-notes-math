@@ -4,4 +4,8 @@
     + [Statics with Wrenches, Part A](https://www.youtube.com/watch?v=pPxmwnRPH_g)
     + [Statics with Wrenches, Part B - Hips or Ankles?](https://www.youtube.com/watch?v=P_LumxlydNM)
     + [Statics with Wrenches, Part C: A Half-quadruped](https://www.youtube.com/watch?v=PfZqx81ptiI)
+03. [Lie Groups for Beginners](https://github.com/borglab/gtsam/blob/develop/doc/LieGroups.pdf)
+    + 初学者的李群
+04. [Derivatives and Differentials](https://github.com/borglab/gtsam/blob/develop/doc/math.pdf)
+    + 数学：导数与微分
 

@@ -1,0 +1,7981 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options false
+\begin_modules
+eqs-within-sections
+figs-within-sections
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "数学：导数与微分"
+\pdf_author "Frank Dellaert"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+数学：导数与微分
+\end_layout
+
+\begin_layout Author
+Frank Dellaert
+\end_layout
+
+\begin_layout Date
+January 25, 2022
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\SqrMah}[3]{\Vert{#1}-{#2}\Vert_{#3}^{2}}
+{\Vert{#1}-{#2}\Vert_{#3}^{2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\SqrZMah}[2]{\Vert{#1}\Vert_{#2}^{2}}
+{\Vert{#1}\Vert_{#2}^{2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Rone}{\mathbb{R}}
+{\mathbb{R}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Reals}[1]{\mathbb{R}^{#1}}
+{\mathbb{R}^{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\OneD}[1]{\Reals{#1}\rightarrow\Rone}
+{\Reals{#1}\rightarrow\Rone}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Multi}[2]{\Reals{#1}\rightarrow\Reals{#2}}
+{\Reals{#1}\rightarrow\Reals{#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Man}{\mathcal{M}}
+{\mathcal{M}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Derivatives
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\deriv}[2]{\frac{\partial#1}{\partial#2}}
+{\frac{\partial#1}{\partial#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\at}[2]{#1\biggr\rvert_{#2}}
+{#1\biggr\rvert_{#2}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\Jac}[3]{ \at{\deriv{#1}{#2}} {#3} }
+{\at{\deriv{#1}{#2}}{#3}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Lie Groups
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\xhat}{\hat{x}}
+{\hat{x}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\yhat}{\hat{y}}
+{\hat{y}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Ad}[1]{Ad_{#1}}
+{Ad_{#1}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\define}{\stackrel{\Delta}{=}}
+{\stackrel{\Delta}{=}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\gg}{\mathfrak{g}}
+{\mathfrak{g}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Rn}{\mathbb{R}^{n}}
+{\mathbb{R}^{n}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+SO(2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Rtwo}{\mathbb{R}^{2}}
+{\mathbb{R}^{2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\SOtwo}{SO(2)}
+{SO(2)}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\sotwo}{\mathfrak{so(2)}}
+{\mathfrak{so(2)}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\that}{\hat{\theta}}
+{\hat{\theta}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\skew}[1]{\left[#1\right]_{+}}
+{\left[#1\right]_{+}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+SE(2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\SEtwo}{SE(2)}
+{SE(2)}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\setwo}{\mathfrak{se(2)}}
+{\mathfrak{se(2)}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+SO(3)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Rthree}{\mathbb{R}^{3}}
+{\mathbb{R}^{3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\SOthree}{SO(3)}
+{SO(3)}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\sothree}{\mathfrak{so(3)}}
+{\mathfrak{so(3)}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\what}{\hat{\omega}}
+{\hat{\omega}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Skew}[1]{\left[#1\right]_{\times}}
+{\left[#1\right]_{\times}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+SE(3)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset FormulaMacro
+\newcommand{\Rsix}{\mathbb{R}^{6}}
+{\mathbb{R}^{6}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\SEthree}{SE(3)}
+{SE(3)}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\sethree}{\mathfrak{se(3)}}
+{\mathfrak{se(3)}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\xihat}{\hat{\xi}}
+{\hat{\xi}}
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+理论
+\end_layout
+
+\begin_layout Section
+优化
+\end_layout
+
+\begin_layout Standard
+我们将关注最小化形式的非线性最小二乘目标，其形式为
+\begin_inset Formula 
+\begin{equation}
+x^{*}=\arg\min_{x}\SqrMah{h(x)}z{\Sigma}\label{eq:objective}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $x\in\Man$
+\end_inset
+
+ 是
+\begin_inset Formula $n$
+\end_inset
+
+维流形(可以是 
+\begin_inset Formula $\Reals n$
+\end_inset
+
+，一个
+\begin_inset Formula $n$
+\end_inset
+
+维李群 
+\begin_inset Formula $G$
+\end_inset
+
+，或是一个通用流形
+\begin_inset Formula $\Man$
+\end_inset
+
+)上的一个点，
+\begin_inset Formula $z\in\Reals m$
+\end_inset
+
+ 为观察到的一组测量值，
+\begin_inset Formula $h:\Man\rightarrow\Reals m$
+\end_inset
+
+ 是一个测量函数，它从
+\begin_inset Formula $x$
+\end_inset
+
+预测
+\begin_inset Formula $z$
+\end_inset
+
+，并且 
+\begin_inset Formula $\SqrZMah e{\Sigma}\define e^{T}\Sigma^{-1}e$
+\end_inset
+
+ 是用于协方差 
+\begin_inset Formula $\Sigma$
+\end_inset
+
+ 的 Mahalanobis 平方的距离。
+\end_layout
+
+\begin_layout Standard
+为最小化方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:objective"
+
+\end_inset
+
+， 我们需要一个概念，即非线性测量函数 
+\begin_inset Formula $h(x)$
+\end_inset
+
+ 在一个线性化点 
+\begin_inset Formula $a$
+\end_inset
+
+ 邻域的行为方式。粗略地说，我们想要定义一个 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ 雅可比矩阵
+\begin_inset Formula $H_{a}$
+\end_inset
+
+，以使得
+\begin_inset Formula 
+\begin{equation}
+h(a\oplus\xi)\approx h(a)+H_{a}\xi\label{eq:LocalBehavior}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\xi\in\Reals n$
+\end_inset
+
+，并且运算 
+\begin_inset Formula $\oplus$
+\end_inset
+
+“递增” 
+\begin_inset Formula $a\in\Man$
+\end_inset
+
+。下面我们更正式地扩展这个概念，首先是针对来自 
+\begin_inset Formula $\Multi nm$
+\end_inset
+
+的函数，然后是李群，且最后是流形。
+\end_layout
+
+\begin_layout Standard
+一旦配备近似值方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:LocalBehavior"
+
+\end_inset
+
+， 我们 就可以相对于 
+\begin_inset Formula $\delta x$
+\end_inset
+
+ 最小化目标函数方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:objective"
+
+\end_inset
+
+，它被替换为： 
+\begin_inset Formula 
+\begin{equation}
+\xi^{*}=\arg\min_{\xi}\SqrMah{h(a)+H_{a}\xi}z{\Sigma}\label{eq:ApproximateObjective}
+\end{equation}
+
+\end_inset
+
+这可以通过将方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:ApproximateObjective"
+
+\end_inset
+
+ 的导数设置为零来完成，
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\frac{1}{2}H_{a}^{T}(h(a)+H_{a}\xi-z)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+以产生
+\series bold
+正则方程组
+\series default
+(
+\series bold
+normal equations
+\series default
+)，
+\begin_inset Formula 
+\[
+H_{a}^{T}H_{a}\xi=H_{a}^{T}\left(z-h(a)\right)
+\]
+
+\end_inset
+
+这可以用Cholesky分解法求解。当然，我们可能需要多次迭代，并且当近似值方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:LocalBehavior"
+
+\end_inset
+
+ 不好时，使用信赖域方法来限制 
+\begin_inset Formula $\xi$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+多元微分
+\end_layout
+
+\begin_layout Subsection
+导数
+\end_layout
+
+\begin_layout Standard
+对于一个向量空间 
+\begin_inset Formula $\Reals n$
+\end_inset
+
+，增量的概念仅通过向量加法来完成
+\begin_inset Formula 
+\[
+a\oplus\xi\define a+\xi
+\]
+
+\end_inset
+
+并且对于近似值方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:LocalBehavior"
+
+\end_inset
+
+)，我们将使用多元微分的泰勒展开式。但是，不严格遵循文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Spivak65book"
+literal "true"
+
+\end_inset
+
+，我们使用一种可能不熟悉的方式来定义导数：
+\end_layout
+
+\begin_layout Definition
+\begin_inset CommandInset label
+LatexCommand label
+name "def:differentiable"
+
+\end_inset
+
+我们定义一个函数 
+\begin_inset Formula $f:\Multi nm$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处是
+\series bold
+可微的
+\series default
+(
+\series bold
+differentiable
+\series default
+)，若存在一个矩阵
+\begin_inset Formula $f'(a)\in\Reals{m\times n}$
+\end_inset
+
+，以使得
+\begin_inset Formula 
+\[
+\lim_{\delta x\rightarrow0}\frac{\left|f(a)+f'(a)\xi-f(a+\xi)\right|}{\left|\xi\right|}=0
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\left|e\right|\define\sqrt{e^{T}e}$
+\end_inset
+
+ 是通常的范数。如果 
+\begin_inset Formula $f$
+\end_inset
+
+ 是可微的，则矩阵 
+\begin_inset Formula $f'(a)$
+\end_inset
+
+ 被称为
+\begin_inset Formula $f$
+\end_inset
+
+在
+\begin_inset Formula $a$
+\end_inset
+
+处的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)，并且线性映射 
+\begin_inset Formula $Df_{a}:\xi\mapsto f'(a)\xi$
+\end_inset
+
+ 被称为
+\begin_inset Formula $f$
+\end_inset
+
+在
+\begin_inset Formula $a$
+\end_inset
+
+处的
+\series bold
+导数
+\series default
+(
+\series bold
+derivative
+\series default
+)。当不可能产生混淆时，我们使用符号 
+\begin_inset Formula $F_{a}\define f'(a)$
+\end_inset
+
+ 以强调
+\begin_inset Formula $f'(a)$
+\end_inset
+
+是一个矩阵。
+\end_layout
+
+\begin_layout Standard
+使用这种定义的好处是它将标量导数 
+\begin_inset Formula $f'(a):\Rone\rightarrow\Rone$
+\end_inset
+
+ 的概念从 
+\begin_inset Formula $\Multi nm$
+\end_inset
+
+ 推广到多元函数。特别地，导数 
+\begin_inset Formula $Df_{a}$
+\end_inset
+
+ 将在 
+\begin_inset Formula $a$
+\end_inset
+
+ 上的向量增量 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 映射到 
+\begin_inset Formula $f(a)$
+\end_inset
+
+ 上的增量
+\begin_inset Formula $f'(a)\xi$
+\end_inset
+
+，以使得该线性映射局部逼近 
+\begin_inset Formula $f$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+f(a+\xi)\approx f(a)+f'(a)\xi
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "ex:projection"
+
+\end_inset
+
+函数 
+\begin_inset Formula $\pi:(x,y,z)\mapsto(x/z,y/z)$
+\end_inset
+
+ 投影一个3D点 
+\begin_inset Formula $(x,y,z)$
+\end_inset
+
+ 到象平面，并有雅可比矩阵
+\begin_inset Formula 
+\[
+\pi'(x,y,z)=\frac{1}{z}\left[\begin{array}{ccc}
+1 & 0 & -x/z\\
+0 & 1 & -y/z
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+导数的性质
+\end_layout
+
+\begin_layout Standard
+多元导数的概念遵循通常的规则：
+\end_layout
+
+\begin_layout Theorem
+(链式规则)如果 
+\begin_inset Formula $f:\Multi np$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处可微，并且 
+\begin_inset Formula $g:\Multi pm$
+\end_inset
+
+ 在 
+\begin_inset Formula $f(a)$
+\end_inset
+
+ 处可微，
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+then 
+\begin_inset Formula $D(g\circ f)_{a}=Dg_{f(a)}\circ Df_{a}$
+\end_inset
+
+ and
+\end_layout
+
+\end_inset
+
+ 则 
+\begin_inset Formula $h=g\circ f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的雅可比矩阵 
+\begin_inset Formula $H_{a}$
+\end_inset
+
+ 是 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ 矩阵积
+\begin_inset Formula 
+\[
+H_{a}=G_{f(a)}F_{a}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $G_{f(a)}$
+\end_inset
+
+ 是 
+\begin_inset Formula $g$
+\end_inset
+
+ 在 
+\begin_inset Formula $f(a)$
+\end_inset
+
+ 处评估的 
+\begin_inset Formula $m\times p$
+\end_inset
+
+ 雅可比矩阵，并且 
+\begin_inset Formula $F_{a}$
+\end_inset
+
+ 是 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处评估的 
+\begin_inset Formula $p\times n$
+\end_inset
+
+ 雅可比矩阵。
+\end_layout
+
+\begin_layout Proof
+参见文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Spivak65book"
+literal "true"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "ex:chain-rule"
+
+\end_inset
+
+如果我们通过一个校准步骤 
+\begin_inset Formula $\gamma:(x,y)\mapsto(u_{0}+fx,u_{0}+fy)$
+\end_inset
+
+ 跟随投影 
+\begin_inset Formula $\pi$
+\end_inset
+
+，具有
+\begin_inset Formula 
+\[
+\gamma'(x,y)=\left[\begin{array}{cc}
+f & 0\\
+0 & f
+\end{array}\right]
+\]
+
+\end_inset
+
+则组合函数 
+\begin_inset Formula $\gamma\circ\pi$
+\end_inset
+
+ 具有雅可比矩阵
+\begin_inset Formula 
+\[
+(\gamma\circ\pi)'(x,y)=\frac{f}{z}\left[\begin{array}{ccc}
+1 & 0 & -x/z\\
+0 & 1 & -y/z
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+(求逆)如果
+\begin_inset Formula $f:\Multi nn$
+\end_inset
+
+是可微的，且有可微逆 
+\begin_inset Formula $g\define f^{-1}$
+\end_inset
+
+，则其在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的雅可比矩阵
+\begin_inset Formula $G_{a}$
+\end_inset
+
+就是
+\begin_inset Formula $f$
+\end_inset
+
+在
+\begin_inset Formula $g(a)$
+\end_inset
+
+处评估的逆矩阵：
+\begin_inset Formula 
+\[
+G_{a}=\left[F_{g(a)}\right]^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+参见文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Spivak65book"
+literal "true"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "ex:inverse"
+
+\end_inset
+
+函数 
+\begin_inset Formula $f:(x,y)\mapsto(x^{2},xy)$
+\end_inset
+
+ 具有雅可比矩阵
+\end_layout
+
+\begin_layout Example
+\begin_inset Formula 
+\[
+F_{(x,y)}=\left[\begin{array}{cc}
+2x & 0\\
+y & x
+\end{array}\right]
+\]
+
+\end_inset
+
+并且，对于 
+\begin_inset Formula $x\geq0$
+\end_inset
+
+，其逆函数为 
+\begin_inset Formula $g:(x,y)\mapsto(x^{1/2},x^{-1/2}y)$
+\end_inset
+
+，具有雅可比矩阵
+\begin_inset Formula 
+\[
+G_{(x,y)}=\frac{1}{2}\left[\begin{array}{cc}
+x^{-1/2} & 0\\
+-x^{-3/2}y & 2x^{-1/2}
+\end{array}\right]
+\]
+
+\end_inset
+
+它很容易验证
+\begin_inset Formula 
+\[
+g'(a,b)f'(a^{1/2},a^{-1/2}b)=\frac{1}{2}\left[\begin{array}{cc}
+a^{-1/2} & 0\\
+-a^{-3/2}b & 2a^{-1/2}
+\end{array}\right]\left[\begin{array}{cc}
+2a^{1/2} & 0\\
+a^{-1/2}b & a^{1/2}
+\end{array}\right]=\left[\begin{array}{cc}
+1 & 0\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+验证上述对于 
+\begin_inset Formula $(a,b)=(4,6)$
+\end_inset
+
+的情况。用图形画出这种情况以获得灵感。
+\end_layout
+
+\begin_layout Subsection
+多元导数的计算
+\end_layout
+
+\begin_layout Standard
+通过定义偏导数的概念，计算导数变得简单：
+\end_layout
+
+\begin_layout Definition
+对于 
+\begin_inset Formula $f:\OneD n$
+\end_inset
+
+，
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+偏导数
+\series default
+(
+\series bold
+partial derivative
+\series default
+)为，
+\begin_inset Formula 
+\[
+D_{j}f(a)\define\lim_{h\rightarrow0}\frac{f\left(a^{1},\ldots,a^{j}+h,\ldots,a^{n}\right)-f\left(a^{1},\ldots,a^{n}\right)}{h}
+\]
+
+\end_inset
+
+这是标量函数 
+\begin_inset Formula $g(x)\define f\left(a^{1},\ldots,x,\ldots,a^{n}\right)$
+\end_inset
+
+ 的普通导数。
+\end_layout
+
+\begin_layout Standard
+使用这个定义，我们可以证明，一个可微的多元(
+\emph on
+multivariate
+\emph default
+)函数
+\begin_inset Formula $f:\Multi nm$
+\end_inset
+
+的雅可比矩阵
+\begin_inset Formula $F_{a}$
+\end_inset
+
+简单地由 
+\begin_inset Formula $m\times n$
+\end_inset
+
+ 偏导数
+\begin_inset Formula $D_{j}f^{i}(a)$
+\end_inset
+
+组成，其在
+\begin_inset Formula $a\in\Reals n$
+\end_inset
+
+处评估：
+\begin_inset Formula 
+\[
+F_{a}=\left[\begin{array}{ccc}
+D_{1}f^{1}(a) & \cdots & D_{n}f^{1}(a)\\
+\vdots & \ddots & \vdots\\
+D_{1}f^{m}(a) & \ldots & D_{n}f^{m}(a)
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Problem
+验证示例 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:projection"
+
+\end_inset
+
+ 至 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:inverse"
+
+\end_inset
+
+ 的导数。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+在李群上的多元函数
+\end_layout
+
+\begin_layout Subsection
+李群
+\end_layout
+
+\begin_layout Standard
+李群不像向量空间 
+\begin_inset Formula $\Reals n$
+\end_inset
+
+ 那么容易处理，但仍然有很多结构可处理。为了推广上述所有导数的概念，我们只需要将在方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:ApproximateObjective"
+
+\end_inset
+
+ 中的 
+\begin_inset Formula $a\oplus\xi$
+\end_inset
+
+ 用在李群
+\begin_inset Formula $G$
+\end_inset
+
+中的一个合适的操作替换。特别地，指数映射的概念允许我们定义一个从
+\series bold
+局部坐标
+\series default
+(
+\series bold
+local coordinates
+\series default
+) 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 返回到在 
+\begin_inset Formula $G$
+\end_inset
+
+ 中 
+\begin_inset Formula $a$
+\end_inset
+
+ 周围的一个邻域的映射，
+\begin_inset Formula 
+\begin{equation}
+a\oplus\xi\define a\exp\left(\hat{\xi}\right)\label{eq:expmap}
+\end{equation}
+
+\end_inset
+
+其中对于一个
+\begin_inset Formula $n$
+\end_inset
+
+维李群，
+\begin_inset Formula $\xi\in\Reals n$
+\end_inset
+
+。以上，
+\begin_inset Formula $\hat{\xi}\in\mathfrak{g}$
+\end_inset
+
+ 是对应于向量
+\begin_inset Formula $\xi$
+\end_inset
+
+的李代数元素，并且 
+\begin_inset Formula $\exp\hat{\xi}$
+\end_inset
+
+ 是指数映射。注意，若 
+\begin_inset Formula $G$
+\end_inset
+
+ 等于 
+\begin_inset Formula $\Reals n$
+\end_inset
+
+，则与指数映射 
+\begin_inset Formula $ae^{\xihat}$
+\end_inset
+
+ 的组合就仅是向量加法 
+\begin_inset Formula $a+\xi$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Example
+对于3D旋转的李群 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+，向量 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 标志为 
+\begin_inset Formula $\omega t$
+\end_inset
+
+，并表示一个角位移。李代数元素 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 是一个斜对称矩阵，标志为 
+\begin_inset Formula $\Skew{\omega t}\in\sothree$
+\end_inset
+
+，并给出为
+\begin_inset Formula 
+\[
+\Skew{\omega t}=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]t
+\]
+
+\end_inset
+
+最后，增量 
+\begin_inset Formula $a\oplus\xi=ae^{\xihat}$
+\end_inset
+
+ 对应于一个增量旋转 
+\begin_inset Formula $R\oplus\omega t=Re^{\Skew{\omega t}}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+局部坐标与切向量
+\end_layout
+
+\begin_layout Standard
+在微分几何中，在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+切向量
+\series default
+(
+\series bold
+tangent vectors
+\series default
+) 
+\begin_inset Formula $v\in T_{a}G$
+\end_inset
+
+ 是李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的元素，并被定义为
+\begin_inset Formula 
+\[
+v\define\Jac{\gamma(t)}t{t=0}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ 是在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 时通过 
+\begin_inset Formula $a$
+\end_inset
+
+ 的一些曲线，即 
+\begin_inset Formula $\gamma(0)=a$
+\end_inset
+
+。特别是，对于任意固定的局部坐标 
+\begin_inset Formula $\xi$
+\end_inset
+
+，映射方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:expmap"
+
+\end_inset
+
+ 可用于定义在群流形上的一条
+\series bold
+测地线曲线
+\series default
+(
+\series bold
+geodesic curve
+\series default
+)，其定义为 
+\begin_inset Formula $\gamma:t\mapsto ae^{\widehat{t\xi}}$
+\end_inset
+
+，并且相应的切向量给出为
+\begin_inset Formula 
+\begin{equation}
+\Jac{ae^{\widehat{t\xi}}}t{t=0}=a\xihat\label{eq:tangent-vector}
+\end{equation}
+
+\end_inset
+
+这定义了局部坐标 
+\begin_inset Formula $\xi\in\Rn$
+\end_inset
+
+ 和实际切向量 
+\begin_inset Formula $a\xihat\in g$
+\end_inset
+
+ 之间的映射：向量 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 定义流形上的行进方向，但在局部坐标帧 
+\begin_inset Formula $a$
+\end_inset
+
+ 中完成。
+\end_layout
+
+\begin_layout Example
+假设一个刚体的姿态由 
+\begin_inset Formula $R_{b}^{n}(t)$
+\end_inset
+
+ 描述，其中，上下标分别标志导航帧 
+\begin_inset Formula $N$
+\end_inset
+
+ 和机体帧 
+\begin_inset Formula $B$
+\end_inset
+
+。一个经过外部校准的陀螺仪在机体帧中测量角速度 
+\begin_inset Formula $\omega^{b}$
+\end_inset
+
+，以及相应的切向量为
+\begin_inset Formula 
+\[
+\dot{R}_{b}^{n}(t)=R_{b}^{n}(t)\widehat{\omega^{b}}
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+导数
+\end_layout
+
+\begin_layout Standard
+我们可以推广定义 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "def:differentiable"
+
+\end_inset
+
+，将局部坐标 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 映射到 
+\begin_inset Formula $f(a)$
+\end_inset
+
+ 上的增量 
+\begin_inset Formula $f'(a)\xi$
+\end_inset
+
+，以使得线性映射 
+\begin_inset Formula $Df_{a}$
+\end_inset
+
+ 近似函数 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 周围的一个邻域中从 
+\begin_inset Formula $G$
+\end_inset
+
+ 到 
+\begin_inset Formula $\Reals m$
+\end_inset
+
+ 为：
+\begin_inset Formula 
+\[
+f(ae^{\xihat})\approx f(a)+f'(a)\xi
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Definition
+我们定义一个函数 
+\begin_inset Formula $f:G\rightarrow\Reals m$
+\end_inset
+
+ 在 
+\begin_inset Formula $a\in G$
+\end_inset
+
+ 处是
+\series bold
+可微的
+\series default
+(
+\series bold
+differentiable
+\series default
+)，如果存在一个矩阵 
+\begin_inset Formula $f'(a)\in\Reals{m\times n}$
+\end_inset
+
+，以使得
+\begin_inset Formula 
+\[
+\lim_{\xi\rightarrow0}\frac{\left|f(a)+f'(a)\xi-f(ae^{\hat{\xi}})\right|}{\left|\xi\right|}=0
+\]
+
+\end_inset
+
+如果 
+\begin_inset Formula $f$
+\end_inset
+
+ 是可微的，则矩阵 
+\begin_inset Formula $f'(a)$
+\end_inset
+
+ 被称为 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)，并且线性映射 
+\begin_inset Formula $Df_{a}:\xi\mapsto f'(a)\xi$
+\end_inset
+
+ 被称为 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+导数
+\series default
+(
+\series bold
+derivative
+\series default
+)。
+\end_layout
+
+\begin_layout Subsection
+作用的导数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Derivatives-of-Actions"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+矩阵群 
+\begin_inset Formula $G$
+\end_inset
+
+ 的(通常的)作用是在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的矩阵向量乘法，即 
+\begin_inset Formula $f:G\times\Reals n\rightarrow\Reals n$
+\end_inset
+
+，其中
+\begin_inset Formula 
+\[
+f(T,p)=Tp
+\]
+
+\end_inset
+
+由于这是一个定义在积 
+\begin_inset Formula $G\times\Reals n$
+\end_inset
+
+ 上的函数 ，所以导数是一个线性变换 
+\begin_inset Formula $Df:\Multi{m+n}n$
+\end_inset
+
+，其中
+\begin_inset Formula 
+\[
+Df_{(T,p)}\left(\xi,\delta p\right)=D_{1}f_{(T,p)}\left(\xi\right)+D_{2}f_{(T,p)}\left(\delta p\right)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $m$
+\end_inset
+
+ 是流形 
+\begin_inset Formula $G$
+\end_inset
+
+ 的维度。
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "th:Action"
+
+\end_inset
+
+群作用 
+\begin_inset Formula $f(T,p)=Tp$
+\end_inset
+
+ 在 
+\begin_inset Formula $(T,p)$
+\end_inset
+
+ 处的雅可比矩阵给出为
+\begin_inset Formula 
+\[
+F_{(T,p)}=\left[\begin{array}{cc}
+TH(p) & T\end{array}\right]=T\left[\begin{array}{cc}
+H(p) & I_{n}\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $H:\Reals m\rightarrow\Reals{n\times m}$
+\end_inset
+
+ 是一个依赖于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的线性映射，并且 
+\begin_inset Formula $I_{n}$
+\end_inset
+
+ 是 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 单位矩阵。
+\end_layout
+
+\begin_layout Proof
+首先，相对于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的导数 
+\begin_inset Formula $D_{2}f$
+\end_inset
+
+ 很容易，因为它的矩阵是简单的 
+\begin_inset Formula $T$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+f(T,p+\delta p)=T(p+\delta p)=Tp+T\delta p=f(T,p)+D_{2}f(\delta p)
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+对于导数
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $D_{1}f$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+，相对于第一个参数
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $T$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 的变化，我们想找到线性映射
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $D_{1}f$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+，以使得
+\begin_inset Formula 
+\[
+Tp+D_{1}f(\xi)\approx f(Te^{\hat{\xi}},p)=Te^{\hat{\xi}}p
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+由于矩阵指数由级数 
+\begin_inset Formula $e^{A}=I+A+\frac{A^{2}}{2!}+\frac{A^{3}}{3!}+\ldots$
+\end_inset
+
+ 给出。我们有，对于一阶
+\begin_inset Formula 
+\[
+Te^{\hat{\xi}}p\approx T(I+\hat{\xi})p=Tp+T\hat{\xi}p
+\]
+
+\end_inset
+
+并且 
+\begin_inset Formula $D_{1}f(\xi)=T\hat{\xi}p$
+\end_inset
+
+。
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Note also that
+\begin_inset Formula 
+\[
+T\hat{\xi}p=\left(T\hat{\xi}T^{-1}\right)Tp=\left(\Ad T\xihat\right)\left(Tp\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+因此，为了完成证明，我们需要证明
+\begin_inset Formula 
+\begin{equation}
+\xihat p=H(p)\xi\label{eq:Hp}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $H(p)$
+\end_inset
+
+ 是依赖于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的一个 
+\begin_inset Formula $n\times m$
+\end_inset
+
+ 矩阵，按照李代数生成元 
+\begin_inset Formula $G^{i}$
+\end_inset
+
+ 表达映射 
+\begin_inset Formula $\xi\rightarrow\hat{\xi}$
+\end_inset
+
+，使用张量和爱因斯坦求和，我们有 
+\begin_inset Formula $\hat{\xi}_{j}^{i}=G_{jk}^{i}\xi^{k}$
+\end_inset
+
+，以允许我们计算 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\hat{\xi}p$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 为
+\begin_inset Formula 
+\[
+\left(\hat{\xi}p\right)^{i}=\hat{\xi}_{j}^{i}p^{j}=G_{jk}^{i}\xi^{k}p^{j}=\left(G_{jk}^{i}p^{j}\right)\xi^{k}=H_{k}^{i}(p)\xi^{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+对于3D旋转 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+，我们有 
+\begin_inset Formula $\hat{\omega}=\Skew{\omega}$
+\end_inset
+
+ 以及 
+\begin_inset Formula 
+\[
+G_{k=1}:\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right)\mbox{}G_{k=2}:\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right)\mbox{ }G_{k=3}:\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+矩阵 
+\begin_inset Formula $\left(G_{k}^{i}\right)_{j}$
+\end_inset
+
+ 通过组装上述生成元的第 
+\begin_inset Formula $j^{th}$
+\end_inset
+
+ 列来获得，产生的 
+\begin_inset Formula $H(p)$
+\end_inset
+
+ 等于：
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & 1\\
+0 & -1 & 0
+\end{array}\right)p^{1}+\left(\begin{array}{ccc}
+0 & 0 & -1\\
+0 & 0 & 0\\
+1 & 0 & 0
+\end{array}\right)p^{2}+\left(\begin{array}{ccc}
+0 & 1 & 0\\
+-1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)p^{3}=\left(\begin{array}{ccc}
+0 & p^{3} & -p^{2}\\
+-p^{3} & 0 & p^{1}\\
+p^{2} & -p^{1} & 0
+\end{array}\right)=\Skew{-p}
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+因此，
+\begin_inset Formula $f(R,p)=Rp$
+\end_inset
+
+ 的雅可比矩阵给出为：
+\begin_inset Formula 
+\[
+F_{(R,p)}=R\left(\begin{array}{cc}
+\Skew{-p} & I_{3}\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+逆作用的导数
+\end_layout
+
+\begin_layout Standard
+通过应用 
+\begin_inset Formula $T\in G$
+\end_inset
+
+ 的逆作用，产生一个函数 
+\begin_inset Formula $g:G\times\Reals n\rightarrow\Reals n$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\[
+g(T,p)=T^{-1}p
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "Th:InverseAction"
+
+\end_inset
+
+逆群作用 
+\begin_inset Formula $g(T,p)=T^{-1}p$
+\end_inset
+
+ 的雅可比矩阵给出为
+\begin_inset Formula 
+\[
+G_{(T,p)}=\left[\begin{array}{cc}
+-H(T^{-1}p) & T^{-1}\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $H:\Reals n\rightarrow\Reals{n\times n}$
+\end_inset
+
+ 是与前面相同的映射。
+\end_layout
+
+\begin_layout Proof
+同样，相对于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的导数 
+\begin_inset Formula $D_{2}g$
+\end_inset
+
+ 很容易，其矩阵是简单的 
+\begin_inset Formula $T^{-1}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+g(T,p+\delta p)=T^{-1}(p+\delta p)=T^{-1}p+T^{-1}\delta p=g(T,p)+D_{2}g(\delta p)
+\]
+
+\end_inset
+
+反之，在 
+\begin_inset Formula $T$
+\end_inset
+
+ 中的一个变化产生
+\begin_inset Formula 
+\[
+g(Te^{\xihat},p)=\left(Te^{\xihat}\right)^{-1}p=e^{-\xihat}T^{-1}p
+\]
+
+\end_inset
+
+与之前类似，如果我们扩展矩阵指数化，我们得到
+\begin_inset Formula 
+\[
+e^{-A}=I-A+\frac{A^{2}}{2!}-\frac{A^{3}}{3!}+\ldots
+\]
+
+\end_inset
+
+所以
+\begin_inset Formula 
+\[
+e^{-\xihat}T^{-1}p\approx(I-\xihat)T^{-1}p=g(T,p)-\xihat\left(T^{-1}p\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+对于3D旋转 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+，我们有 
+\begin_inset Formula $R^{-1}=R^{T}$
+\end_inset
+
+，
+\begin_inset Formula $H(p)=-\Skew p$
+\end_inset
+
+，并因此
+\begin_inset Formula $g(R,p)=R^{T}p$
+\end_inset
+
+的雅可比矩阵给出为
+\begin_inset Formula 
+\[
+G_{(R,p)}=\left(\begin{array}{cc}
+\Skew{R^{T}p} & R^{T}\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+My earlier attempt: because the wedge operator is linear, we have
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+f(\xi+x) & = & \exp\widehat{\left(\xi+x\right)}\\
+ & = & \exp\left(\xihat+\hat{x}\right)
+\end{eqnarray*}
+
+\end_inset
+
+However, except for commutative Lie groups, it is not true that 
+\begin_inset Formula $\exp\left(\xihat+\hat{x}\right)=\exp\xihat\exp\hat{x}$
+\end_inset
+
+.
+ However, if we expand the matrix exponential to second order and assume
+ 
+\begin_inset Formula $x\rightarrow0$
+\end_inset
+
+ we do have
+\begin_inset Formula 
+\[
+\exp\left(\xihat+\hat{x}\right)\approx I+\xihat+\hat{x}+\frac{1}{2}\xihat^{2}+\xhat\xihat
+\]
+
+\end_inset
+
+Now, if we ask what 
+\begin_inset Formula $\hat{y}$
+\end_inset
+
+ would effect the same change:
+\begin_inset Formula 
+\begin{eqnarray*}
+\exp\xihat\exp\yhat & = & I+\xihat+\hat{x}+\frac{1}{2}\xihat^{2}+\xhat\xihat\\
+\exp\xihat(I+\yhat) & = & I+\xihat+\hat{x}+\frac{1}{2}\xihat^{2}+\xhat\xihat\\
+\left(\exp\xihat\right)\yhat & = & \xhat+\xhat\xihat
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+瞬时速度
+\end_layout
+
+\begin_layout Standard
+对于矩阵李群，如果我们有依赖于一个参数
+\begin_inset Formula $t$
+\end_inset
+
+的一个矩阵 
+\begin_inset Formula $T_{b}^{n}(t)$
+\end_inset
+
+，即 
+\begin_inset Formula $T_{b}^{n}(t)$
+\end_inset
+
+ 跟随流形上的一条曲线，则我们有兴趣找到一个点 
+\begin_inset Formula $q^{n}(t)=T_{b}^{n}(t)p^{b}$
+\end_inset
+
+ 的速度，其受 
+\begin_inset Formula $T_{b}^{n}(t)$
+\end_inset
+
+ 的作用。我们可以同时在
+\begin_inset Formula $n$
+\end_inset
+
+帧和
+\begin_inset Formula $b$
+\end_inset
+
+帧中表达 
+\begin_inset Formula $q(t)$
+\end_inset
+
+ 的速度：
+\begin_inset Formula 
+\[
+\dot{q}^{n}=\dot{T}_{b}^{n}p^{b}=\dot{T}_{b}^{n}\left(T_{b}^{n}\right)^{-1}p^{n}\mbox{\,\,\,\,\ and\,\,\,\,}\dot{q}^{b}=\left(T_{b}^{n}\right)^{-1}\dot{q}^{n}=\left(T_{b}^{n}\right)^{-1}\dot{T}_{b}^{n}p^{b}
+\]
+
+\end_inset
+
+两个矩阵 
+\begin_inset Formula $\xihat_{nb}^{n}\define\dot{T}_{b}^{n}\left(T_{b}^{n}\right)^{-1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\xihat_{nb}^{b}\define\left(T_{b}^{n}\right)^{-1}\dot{T}_{b}^{n}$
+\end_inset
+
+ 都为斜对称李代数元素，其描述
+\series bold
+瞬时速度
+\series default
+(
+\series bold
+instantaneous velocity
+\series default
+)
+\series bold
+ 
+\series default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+after "对于旋转参见第 51 页, 对于 SE(3) 参见第 419 页"
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+。对于旋转和刚性3D变换，我们将重新进行讨论。
+\end_layout
+
+\begin_layout Section
+微分：李群之间的平滑映射
+\end_layout
+
+\begin_layout Subsection
+动机与定义
+\end_layout
+
+\begin_layout Standard
+前面显示了如何计算一个函数 
+\begin_inset Formula $f:G\rightarrow\Reals m$
+\end_inset
+
+ 的导数。然而，如果 
+\begin_inset Formula $f$
+\end_inset
+
+ 的参数本身是李群之间映射的结果呢？换句话说，
+\begin_inset Formula $f=g\circ\varphi$
+\end_inset
+
+，其中 
+\begin_inset Formula $g:G\rightarrow\Reals m$
+\end_inset
+
+，并且这里
+\begin_inset Formula $\varphi:H\rightarrow G$
+\end_inset
+
+是一个从
+\begin_inset Formula $n$
+\end_inset
+
+维李群
+\begin_inset Formula $H$
+\end_inset
+
+到
+\begin_inset Formula $p$
+\end_inset
+
+维李群
+\begin_inset Formula $G$
+\end_inset
+
+的平滑映射。在这种情况下，我们可以期望通过组合线性映射得到 
+\begin_inset Formula $Df_{a}$
+\end_inset
+
+，如下所示：
+\begin_inset Formula 
+\[
+f'(a)=(g\circ\varphi)'(a)=G_{\varphi(a)}\varphi'(a)
+\]
+
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+其中
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $\varphi'(a)$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+是一个
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $n\times p$
+\end_inset
+
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+矩阵，其是映射
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\varphi:H\rightarrow G$
+\end_inset
+
+ 的最佳线性近似。相应的线性映射 
+\begin_inset Formula $D\varphi_{a}$
+\end_inset
+
+ 被称为映射 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+处是
+\family default
+\series bold
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+可微的
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+(
+\family default
+\series bold
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+differential
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+)或
+\family default
+\series bold
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+可前推的
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+(
+\family default
+\series bold
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+pushforward
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+)。
+\end_layout
+
+\begin_layout Standard
+因为一个严格的定义会让我们误入歧途，在这里我们只是非正式地定义
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+处
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的前推，作为线性映射
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $D\varphi_{a}:\Multi np$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，以使得
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $D\varphi_{a}\left(\xi\right)\define\varphi'(a)\xi$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+并且
+\begin_inset Formula 
+\begin{equation}
+\varphi\left(ae^{\xihat}\right)\approx\varphi\left(a\right)\exp\left(\widehat{\varphi'(a)\xi}\right)\label{eq:pushforward}
+\end{equation}
+
+\end_inset
+
+对于 
+\begin_inset Formula $\xi\rightarrow0$
+\end_inset
+
+ 是相等的。我们称 
+\begin_inset Formula $\varphi'(a)$
+\end_inset
+
+ 为映射
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+处
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)。下面我们显示，即使使用这个非正式的定义，我们也可以在一些有用的情况下推导出前推。
+\end_layout
+
+\begin_layout Subsection
+用常数左乘
+\end_layout
+
+\begin_layout Theorem
+假设 
+\begin_inset Formula $G$
+\end_inset
+
+ 是一个
+\begin_inset Formula $n$
+\end_inset
+
+维李群，并且 
+\begin_inset Formula $\varphi:G\rightarrow G$
+\end_inset
+
+ 被定义为 
+\begin_inset Formula $\varphi(g)=hg$
+\end_inset
+
+，其中 
+\begin_inset Formula $h\in G$
+\end_inset
+
+ 是一个常数。则 
+\begin_inset Formula $D\varphi_{a}$
+\end_inset
+
+ 是特征映射，并且
+\begin_inset Formula 
+\[
+\varphi'(a)=I_{n}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+如在方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pushforward"
+
+\end_inset
+
+ 中定义 
+\begin_inset Formula $y=D\varphi_{a}x$
+\end_inset
+
+， 我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+\varphi(a)e^{\yhat} & = & \varphi(ae^{\xhat})\\
+hae^{\yhat} & = & hae^{\xhat}\\
+y & = & x
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+逆映射的前推
+\end_layout
+
+\begin_layout Standard
+李群的一个众所周知的性质是，在不同帧 
+\begin_inset Formula $g$
+\end_inset
+
+ 中应用增量变化 
+\begin_inset Formula $\xihat$
+\end_inset
+
+，可以通过在原始帧中应用变化 
+\begin_inset Formula $Ad_{g}\xihat$
+\end_inset
+
+，以在单个步骤中完成应用，
+\begin_inset Formula 
+\begin{equation}
+ge^{\xihat}g^{-1}=\exp\left(Ad_{g}\xihat\right)\label{eq:Adjoint2}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $Ad_{g}:\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+ 是伴随表示(
+\series bold
+adjoint representation
+\series default
+)。这在以下方面很方便：
+\end_layout
+
+\begin_layout Theorem
+假设 
+\begin_inset Formula $\varphi:G\rightarrow G$
+\end_inset
+
+ 定义为从元素 
+\begin_inset Formula $g$
+\end_inset
+
+ 到其
+\series bold
+逆
+\series default
+(
+\series bold
+inverse
+\series default
+) 
+\begin_inset Formula $g^{-1}$
+\end_inset
+
+的映射，即 
+\begin_inset Formula $\varphi(g)=g^{-1}$
+\end_inset
+
+，则前推 
+\begin_inset Formula $D\varphi_{a}$
+\end_inset
+
+ 满足
+\begin_inset Formula 
+\begin{align}
+\left(D\varphi_{a}x\right)\hat{} & =-Ad_{a}\xhat\label{eq:Dinverse}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+noindent
+\end_layout
+
+\end_inset
+
+ 换句话说，并且事后来看，这是很直观的，近似逆映射是通过对 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 取反来完成的，同时还有一个伴随，以确保它被应用在正确的帧中。 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+noindent
+\end_layout
+
+\end_inset
+
+ 但是，请注意方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dinverse"
+
+\end_inset
+
+ 不会立即产生雅可比矩阵 
+\begin_inset Formula $\varphi'(a)$
+\end_inset
+
+ 的一个有用表达式，但是在许多重要情况下，这将变得很容易。
+\end_layout
+
+\begin_layout Proof
+如在方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pushforward"
+
+\end_inset
+
+ 中定义 
+\begin_inset Formula $y=D\varphi_{a}x$
+\end_inset
+
+， 我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+\varphi(a)e^{\yhat} & = & \varphi(ae^{\xhat})\\
+a^{-1}e^{\yhat} & = & \left(ae^{\xhat}\right)^{-1}\\
+e^{\yhat} & = & ae^{-\xhat}a^{-1}\\
+\yhat & = & -\Ad a\xhat
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+对于3D旋转 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+Ad_{g}(\hat{\omega})=R\hat{\omega}R^{T}=\Skew{R\omega}
+\]
+
+\end_inset
+
+并因此，对于逆映射 
+\begin_inset Formula $\varphi(R)=R^{T}$
+\end_inset
+
+ 的前推有矩阵 
+\begin_inset Formula $\varphi'(R)=-R$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+用常数右乘
+\end_layout
+
+\begin_layout Theorem
+假设 
+\begin_inset Formula $\varphi:G\rightarrow G$
+\end_inset
+
+ 被定义为 
+\begin_inset Formula $\varphi(g)=gh$
+\end_inset
+
+，其中 
+\begin_inset Formula $h\in G$
+\end_inset
+
+ 是一个常数。则 
+\begin_inset Formula $D\varphi_{a}$
+\end_inset
+
+ 满足
+\begin_inset Formula 
+\[
+\left(D\varphi_{a}x\right)\hat{}=\Ad{h^{-1}}\xhat
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+如在方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pushforward"
+
+\end_inset
+
+ 中定义 
+\begin_inset Formula $y=D\varphi_{a}x$
+\end_inset
+
+， 我们有
+\begin_inset Formula 
+\begin{align*}
+\varphi(a)e^{\yhat} & =\varphi(ae^{\xhat})\\
+ahe & =ae^{\xhat}h\\
+e^{\yhat} & =h^{-1}e^{\xhat}h=\exp\left(\Ad{h^{-1}}\xhat\right)\\
+\yhat & =\Ad{h^{-1}}\xhat
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+在3D旋转的情况下，通过映射
+\begin_inset Formula $\varphi(A)=AR$
+\end_inset
+
+来完成与一个恒定旋转 
+\begin_inset Formula $R$
+\end_inset
+
+ 的右乘，并满足
+\begin_inset Formula 
+\[
+\Skew{D\varphi_{A}x}=\Ad{R^{T}}\Skew x
+\]
+
+\end_inset
+
+对于3D旋转 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+ 我们有
+\begin_inset Formula 
+\[
+Ad_{R^{T}}(\hat{\omega})=R^{T}\hat{\omega}R=\Skew{R^{T}\omega}
+\]
+
+\end_inset
+
+并因此，
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 在 
+\begin_inset Formula $A$
+\end_inset
+
+ 处的雅可比矩阵为 
+\begin_inset Formula $\varphi'(A)=R^{T}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+组合的前推
+\end_layout
+
+\begin_layout Theorem
+如果我们定义映射 
+\begin_inset Formula $\varphi:G\times G\rightarrow G$
+\end_inset
+
+ 为两个群元素 
+\begin_inset Formula $g,h\in G$
+\end_inset
+
+的乘积，即
+\begin_inset Formula $\varphi(g,h)=gh$
+\end_inset
+
+，则前推将满足
+\begin_inset Formula 
+\[
+D\varphi_{(a,b)}(x,y)=D_{1}\varphi_{(a,b)}x+D_{2}\varphi_{(a,b)}y
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula 
+\[
+\left(D_{1}\varphi_{(a,b)}x\right)\hat{}=\Ad{b^{-1}}\xhat\mbox{\;\ and\;}D_{2}\varphi_{(a,b)}y=y
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+看第一个参数，证明非常类似于用常数
+\begin_inset Formula $b$
+\end_inset
+
+的右乘法。事实上，如在方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pushforward"
+
+\end_inset
+
+ 中定义 
+\begin_inset Formula $y=D\varphi_{a}x$
+\end_inset
+
+， 我们有
+\begin_inset Formula 
+\begin{align}
+\varphi(a,b)e^{\yhat} & =\varphi(ae^{\xhat},b)\nonumber \\
+abe^{\yhat} & =ae^{\xhat}b\nonumber \\
+e^{\yhat} & =b^{-1}e^{\xhat}b=\exp\left(\Ad{b^{-1}}\xhat\right)\nonumber \\
+\yhat & =\Ad{b^{-1}}\xhat\label{eq:Dcompose1}
+\end{align}
+
+\end_inset
+
+换句话说，要将一个增量更改 
+\begin_inset Formula $\xhat$
+\end_inset
+
+ 应用于 
+\begin_inset Formula $a$
+\end_inset
+
+，我们首先需要撤消 
+\begin_inset Formula $b$
+\end_inset
+
+，然后应用 
+\begin_inset Formula $\xhat$
+\end_inset
+
+，并然后再次应用 
+\begin_inset Formula $b$
+\end_inset
+
+。使用方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Adjoint2"
+
+\end_inset
+
+， 这可以通过简单地应用 
+\begin_inset Formula $\Ad{b^{-1}}\xhat$
+\end_inset
+
+ 来一步完成。
+\end_layout
+
+\begin_layout Proof
+第二个参数要简单得多，并简单产生特征映射：
+\begin_inset Formula 
+\begin{align}
+\varphi(a,b)e^{\yhat} & =\varphi(a,be^{\xhat})\nonumber \\
+abe^{\yhat} & =abe^{\xhat}\nonumber \\
+y & =x\label{eq:Dcompose2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+In summary, the Jacobian matrix of 
+\begin_inset Formula $\varphi(g,h)=gh$
+\end_inset
+
+ at 
+\begin_inset Formula $(a,b)\in G\times G$
+\end_inset
+
+ is given by
+\begin_inset Formula 
+\[
+\varphi'(a,b)=?
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+对于3D旋转 
+\begin_inset Formula $A,B\in\SOthree$
+\end_inset
+
+，我们有 
+\begin_inset Formula $\varphi(A,B)=AB$
+\end_inset
+
+，并且 
+\begin_inset Formula $\Ad{B^{T}}\Skew{\omega}=\Skew{B^{T}\omega}$
+\end_inset
+
+，因此组合两个旋转的雅可比矩阵 
+\begin_inset Formula $\varphi'(A,B)$
+\end_inset
+
+ 给出为
+\begin_inset Formula 
+\[
+\varphi'(A,B)=\left[\begin{array}{cc}
+B^{T} & I_{3}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Pushforward-of-Between"
+
+\end_inset
+
+相差(Between)的前推
+\end_layout
+
+\begin_layout Standard
+最后，让我们找到
+\series bold
+相差
+\series default
+(
+\series bold
+between
+\series default
+)的前推，定义为 
+\begin_inset Formula $\varphi(g,h)=g^{-1}h$
+\end_inset
+
+。对于第一个参数，我们的理由是：
+\begin_inset Formula 
+\begin{align}
+\varphi(g,h)e^{\yhat} & =\varphi(ge^{\xhat},h)\nonumber \\
+g^{-1}he^{\yhat} & =\left(ge^{\xhat}\right)^{-1}h=e^{-\xhat}g^{-1}h\nonumber \\
+e^{\yhat} & =\left(h^{-1}g\right)e^{-\xhat}\left(h^{-1}g\right)^{-1}=\exp\Ad{\left(h^{-1}g\right)}(-\xhat)\nonumber \\
+\yhat & =-\Ad{\left(h^{-1}g\right)}\xhat=-\Ad{\varphi\left(h,g\right)}\xhat\label{eq:Dbetween1}
+\end{align}
+
+\end_inset
+
+第二个参数产生特征映射。
+\end_layout
+
+\begin_layout Example
+对于3D旋转 
+\begin_inset Formula $A,B\in\SOthree$
+\end_inset
+
+，我们有 
+\begin_inset Formula $\varphi(A,B)=A^{T}B$
+\end_inset
+
+，并且 
+\begin_inset Formula $\Ad{B^{T}A}\Skew{-\omega}=\Skew{-B^{T}A\omega}$
+\end_inset
+
+，因此，相差(between)的雅可比矩阵 
+\begin_inset Formula $\varphi'(A,B)$
+\end_inset
+
+ 给出为
+\begin_inset Formula 
+\[
+\varphi'(A,B)=\left[\begin{array}{cc}
+\left(-B^{T}A\right) & I_{3}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+数值前推
+\end_layout
+
+\begin_layout Standard
+让我们检查
+\begin_inset Formula 
+\[
+f\left(g\right)e^{\yhat}=f\left(ge^{\xhat}\right)
+\]
+
+\end_inset
+
+并在两侧都用 
+\begin_inset Formula $f(g)^{-1}$
+\end_inset
+
+ 相乘：
+\begin_inset Formula 
+\[
+e^{\yhat}=f\left(g\right)^{-1}f\left(ge^{\xhat}\right)
+\]
+
+\end_inset
+
+然后我们取 
+\begin_inset Formula $\log$
+\end_inset
+
+ (在我们的案例中返回
+\begin_inset Formula $y$
+\end_inset
+
+，而不是 
+\begin_inset Formula $\yhat$
+\end_inset
+
+)：
+\begin_inset Formula 
+\[
+y(x)=\log\left[f\left(g\right)^{-1}f\left(ge^{\xhat}\right)\right]
+\]
+
+\end_inset
+
+让我们查看当 
+\begin_inset Formula $x=0$
+\end_inset
+
+，并在方向 
+\begin_inset Formula $i$
+\end_inset
+
+上进行扰动，
+\begin_inset Formula $e_{i}=[0,0,1,0,0]$
+\end_inset
+
+。然后取导数，
+\begin_inset Formula 
+\[
+\deriv{y(d)}d\define\lim_{d\rightarrow0}\frac{y(d)-y(0)}{d}=\lim_{d\rightarrow0}\frac{1}{d}\log\left[f\left(g\right)^{-1}f\left(ge^{\widehat{de_{i}}}\right)\right]
+\]
+
+\end_inset
+
+这是一个数值导数方案的基础。
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Not understood yet: Let us also look at a chain rule.
+ If we know the behavior at the origin 
+\begin_inset Formula $I$
+\end_inset
+
+, we can extrapolate
+\begin_inset Formula 
+\[
+f(ge^{\xhat})=f(ge^{\xhat}g^{-1}g)=f(e^{\Ad g\xhat}g)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射的导数
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "D-exp"
+
+\end_inset
+
+函数 
+\begin_inset Formula $f:\Reals n\rightarrow G$
+\end_inset
+
+ 应用楔形算子和指数映射，即 
+\begin_inset Formula $f(\xi)=\exp\xihat$
+\end_inset
+
+，对于 
+\begin_inset Formula $\xi=0$
+\end_inset
+
+，其导数是特征映射。
+\end_layout
+
+\begin_layout Proof
+对于 
+\begin_inset Formula $\xi=0$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+f(\xi)e^{\yhat} & = & f(\xi+x)\\
+f(0)e^{\yhat} & = & f(0+x)\\
+e^{\yhat} & = & e^{\xhat}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Corollary
+逆函数 
+\begin_inset Formula $f^{-1}$
+\end_inset
+
+ 的导数也是特征式，即对于 
+\begin_inset Formula $T=e$
+\end_inset
+
+，其为在 
+\begin_inset Formula $G$
+\end_inset
+
+ 中的特征元素。
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\xi\neq0$
+\end_inset
+
+，事情并不简单。与上面的前推一样，我们将寻找一个 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 雅可比矩阵
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $f'(\xi)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，以使得
+\begin_inset Formula 
+\begin{equation}
+f\left(\xi+\delta\right)\approx f\left(\xi\right)\exp\left(\widehat{f'(\xi)\delta}\right)\label{eq:push_exp}
+\end{equation}
+
+\end_inset
+
+微分几何告诉我们，对于任意李代数元素 
+\begin_inset Formula $\xihat\in\mathfrak{g}$
+\end_inset
+
+，存在一个线性映
+\begin_inset Formula $d\exp_{\xihat}:T_{\xihat}\mathfrak{g}\rightarrow T_{\exp(\xihat)}G$
+\end_inset
+
+，其被给出为
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+参见 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://deltaepsilons.wordpress.com/2009/11/06/
+\end_layout
+
+\end_inset
+
+ 或 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://en.wikipedia.org/wiki/Derivative_of_the_exponential_map
+\end_layout
+
+\end_inset
+
+ 。
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+d\exp_{\xihat}\hat{x}=\exp(\xihat)\frac{1-\exp(-ad_{\xihat})}{ad_{\xihat}}\hat{x}\label{eq:dexp}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\hat{x}\in T_{\xihat}\mathfrak{g}$
+\end_inset
+
+，并且 
+\begin_inset Formula $ad_{\xihat}$
+\end_inset
+
+ 它本身是一个线性映射，把 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ 带到 
+\begin_inset Formula $[\xihat,\hat{x}]$
+\end_inset
+
+，即李括号。上面的实际公式并没有线性映射存在的事实那么重要，尽管它直接根据切向量来表达 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 和 
+\begin_inset Formula $G$
+\end_inset
+
+。方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:dexp"
+
+\end_inset
+
+ 是一个切向量，并且与方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tangent-vector"
+
+\end_inset
+
+ 相比，我们看到它映射到局部坐标 
+\begin_inset Formula $y$
+\end_inset
+
+，如下所示：
+\begin_inset Formula 
+\[
+\yhat=\frac{1-\exp(-ad_{\xihat})}{ad_{\xihat}}\hat{x}
+\]
+
+\end_inset
+
+这可被用来构造雅可比矩阵 
+\begin_inset Formula $f'(\xi)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Example
+对于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+，当使用
+\begin_inset Formula $3$
+\end_inset
+
+元向量表示 
+\begin_inset Formula $\sothree$
+\end_inset
+
+ 时，算子 
+\begin_inset Formula $ad_{\xihat}$
+\end_inset
+
+ 简单地是一个矩阵乘法，即
+\begin_inset Formula $ad_{\xihat}x=\xihat x$
+\end_inset
+
+，并且对应于 
+\begin_inset Formula $d\exp$
+\end_inset
+
+ 的 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 雅可比矩阵为 
+\begin_inset Formula 
+\[
+f'(\xi)=\frac{I_{3\times3}-\exp(-\xihat)}{\xihat}=\sum_{k=0}^{\infty}\frac{(-1)^{k}}{(k+1)!}\xihat^{k}
+\]
+
+\end_inset
+
+其类似于指数映射，对于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 有一个简单的封闭形式的表达式。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+一般流形
+\end_layout
+
+\begin_layout Subsection
+收回
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\retract}{\mathcal{R}}
+{\mathcal{R}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+非李群的一般流形不具有指数映射，但仍然可以通过定义
+\series bold
+收回
+\series default
+(
+\series bold
+retraction
+\series default
+) 
+\begin_inset Formula $\retract:\Man\times\Reals n\rightarrow\Man$
+\end_inset
+
+来处理，以使得
+\begin_inset Formula 
+\[
+a\oplus\xi\define\retract_{a}\left(\xi\right)
+\]
+
+\end_inset
+
+一个收回 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Absil07book"
+literal "true"
+
+\end_inset
+
+ 需要在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处与在流形 
+\begin_inset Formula $\Man$
+\end_inset
+
+ 上的测地线相切。我们可以为流形 
+\begin_inset Formula $\Man$
+\end_inset
+
+ 定义许多种收回，甚至是对于那些具有更多结构的流形。对于向量空间 
+\begin_inset Formula $\Reals n$
+\end_inset
+
+，收回仅为向量加法，对于李群，明显的收回仅为指数收回，即
+\begin_inset Formula $\retract_{a}(\xi)=a\cdot\exp\xihat$
+\end_inset
+
+。然而，我们可以选择其它的，可能在计算上有吸引力的收回，只要在
+\begin_inset Formula $a$
+\end_inset
+
+周围，它们与指数映射诱导的测地线一致，即，
+\begin_inset Formula 
+\[
+\lim_{\xi\rightarrow0}\frac{\left|a\cdot\exp\xihat-\retract_{a}\left(\xi\right)\right|}{\left|\xi\right|}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+对于 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+，与其使用真正的指数映射，不如定义收回，它使用平移更新的一阶近似值，在计算上更有效率
+\begin_inset Formula 
+\[
+\retract_{T}\left(\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]\right)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+e^{\Skew{\omega}} & v\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+Re^{\Skew{\omega}} & t+Rv\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+导数
+\end_layout
+
+\begin_layout Standard
+通过配备一个收回，则我们可以将导数的概念推广到从一般的一个流形 
+\begin_inset Formula $\Man$
+\end_inset
+
+ 到 
+\begin_inset Formula $\Reals m$
+\end_inset
+
+的函数 
+\begin_inset Formula $f$
+\end_inset
+
+ 上：
+\end_layout
+
+\begin_layout Definition
+我们定义一个函数 
+\begin_inset Formula $f:\Man\rightarrow\Reals m$
+\end_inset
+
+ 在 
+\begin_inset Formula $a\in\Man$
+\end_inset
+
+ 处是
+\series bold
+可微的
+\series default
+(
+\series bold
+differentiable
+\series default
+)，如果存在一个矩阵 
+\begin_inset Formula $f'(a)$
+\end_inset
+
+，以使得
+\begin_inset Formula 
+\[
+\lim_{\xi\rightarrow0}\frac{\left|f(a)+f'(a)\xi-f\left(\retract_{a}(\xi)\right)\right|}{\left|\xi\right|}=0
+\]
+
+\end_inset
+
+其中，对于
+\begin_inset Formula $n$
+\end_inset
+
+维流形 
+\begin_inset Formula $\xi\in\Reals n$
+\end_inset
+
+，并且 
+\begin_inset Formula $\retract_{a}:\Reals n\rightarrow\Man$
+\end_inset
+
+ 是 
+\begin_inset Formula $\retract$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的一个收回。若 
+\begin_inset Formula $f$
+\end_inset
+
+ 是可微的，则 
+\begin_inset Formula $f'(a)$
+\end_inset
+
+ 被称为 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)，并且线性变换 
+\begin_inset Formula $Df_{a}:\xi\mapsto f'(a)\xi$
+\end_inset
+
+ 被称为 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处的
+\series bold
+导数
+\series default
+(
+\series bold
+derivative
+\series default
+)。
+\end_layout
+
+\begin_layout Definition
+对于同样是李群的流形，无论使用什么收回 
+\begin_inset Formula $\retract$
+\end_inset
+
+，任意函数 
+\begin_inset Formula $f:G\rightarrow\Reals m$
+\end_inset
+
+ 的导数都将同意。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+实践
+\end_layout
+
+\begin_layout Standard
+下面我们将理论部分推导出的结果应用于在GTSAM中使用的几何对象。在上面，对于偏导数我们倾向于使用现代符号 
+\begin_inset Formula $D_{1}f$
+\end_inset
+
+。下面(因为这是早些时候写的)我们使用更经典的符号
+\begin_inset Formula 
+\[
+\deriv{f(x,y)}x
+\]
+
+\end_inset
+
+此外，对于李群，我们将滥用符号，并取
+\begin_inset Formula 
+\[
+\at{\deriv{\varphi(g)}{\xi}}a
+\]
+
+\end_inset
+
+为映射 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ 在 
+\begin_inset Formula $a\in G$
+\end_inset
+
+ 处的雅可比矩阵 
+\begin_inset Formula $\varphi'($
+\end_inset
+
+a)，其与前推 
+\begin_inset Formula $D\varphi_{a}$
+\end_inset
+
+ 相关。
+\end_layout
+
+\begin_layout Section
+SLAM 示例
+\end_layout
+
+\begin_layout Standard
+让我们检查一个可视化SLAM示例。我们有2D测量值 
+\begin_inset Formula $z_{ij}$
+\end_inset
+
+，其中每个测量值由下式预测为
+\begin_inset Formula 
+\[
+z_{ij}=h(T_{i},p_{j})=\pi(T_{i}^{-1}p_{j})
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ 是第
+\begin_inset Formula $i$
+\end_inset
+
+个相机的3D位姿，
+\begin_inset Formula $p_{j}$
+\end_inset
+
+是第
+\begin_inset Formula $j$
+\end_inset
+
+个点的位置，并且
+\begin_inset Formula $\pi:(x,y,z)\mapsto(x/z,y/z)$
+\end_inset
+
+是来自示例 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:projection"
+
+\end_inset
+
+ 的相机投影函数。
+\end_layout
+
+\begin_layout Section
+BetweenFactor
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+BetweenFactor
+\series default
+\emph default
+ 是在GTSAM中的一个因子，广泛用于处理指示两个未知位姿 
+\begin_inset Formula $T_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $T_{2}$
+\end_inset
+
+ 之间的相对位姿的测量值。让我们假设测量的相对位姿为 
+\begin_inset Formula $Z$
+\end_inset
+
+，则计算在
+\series bold
+\emph on
+BetweenFactor
+\series default
+\emph default
+中的误差的代码首先计算预测的相对位姿 
+\begin_inset Formula $T_{12}$
+\end_inset
+
+，然后计算测量的相对位姿与预测的相对位姿之间的误差：
+\end_layout
+
+\begin_layout LyX-Code
+T12 = between(T1, T2);
+\end_layout
+
+\begin_layout LyX-Code
+return localCoordinates(Z, T12);
+\end_layout
+
+\begin_layout Standard
+在这里，我们回顾一下，函数 
+\series bold
+\emph on
+between
+\series default
+\emph default
+ 在群论的符号中给出为
+\begin_inset Formula 
+\[
+\varphi(g,h)=g^{-1}h
+\]
+
+\end_inset
+
+函数 
+\series bold
+\emph on
+localCoordinates
+\series default
+\emph default
+ 它本身也会调用 
+\series bold
+\emph on
+between
+\series default
+\emph default
+，并转换到规范坐标：
+\end_layout
+
+\begin_layout LyX-Code
+localCoordinates(Z,T12) = Logmap(between(Z, T12));
+\end_layout
+
+\begin_layout Standard
+因此，给定两个元素 
+\begin_inset Formula $T_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $T_{2}$
+\end_inset
+
+， 
+\series bold
+\emph on
+BetweenFactor
+\series default
+\emph default
+ 评估 
+\begin_inset Formula $g:G\times G\rightarrow\Reals n$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+g(T_{1},T_{2};Z)=f^{-1}\left(\varphi(Z,\varphi(T_{1},T_{2})\right)=f^{-1}\left(Z^{-1}\left(T_{1}^{-1}T_{2}\right)\right)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $f^{-1}$
+\end_inset
+
+ 是映射 
+\begin_inset Formula $f:\xi\mapsto\exp\xihat$
+\end_inset
+
+ 的逆。如果我们假设测量只有很小的误差，则
+\begin_inset Formula $Z\approx T_{1}^{-1}T_{2}$
+\end_inset
+
+，并因此我们有 
+\begin_inset Formula $Z^{-1}T_{1}^{-1}T_{2}\approx e$
+\end_inset
+
+，并且我们可以援引定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "D-exp"
+
+\end_inset
+
+，也就是说，指数映射 
+\begin_inset Formula $f:\xi\mapsto\exp\xihat$
+\end_inset
+
+ 的导数在 
+\begin_inset Formula $\xi=0$
+\end_inset
+
+ 时是特征式，同时也是它的逆。
+\end_layout
+
+\begin_layout Standard
+最后，由于 
+\series bold
+\emph on
+between
+\series default
+\emph default
+ 的导数在其第二个参数中是特征式，因此 
+\series bold
+\emph on
+BetweenFactor
+\series default
+\emph default
+ 的误差的导数等同于在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Pushforward-of-Between"
+
+\end_inset
+
+ 节中推导的 
+\begin_inset Formula $\varphi(T_{1},T_{2})$
+\end_inset
+
+ 的前推的导数。
+\end_layout
+
+\begin_layout Section
+Point3
+\end_layout
+
+\begin_layout Standard
+一个叉积 
+\begin_inset Formula $a\times b$
+\end_inset
+
+ 可被写为一个矩阵乘法
+\begin_inset Formula 
+\[
+a\times b=\Skew ab
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\Skew a$
+\end_inset
+
+ 是一个斜对称矩阵，被定义为
+\begin_inset Formula 
+\[
+\Skew{x,y,z}=\left[\begin{array}{ccc}
+0 & -z & y\\
+z & 0 & -x\\
+-y & x & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+我们还有
+\begin_inset Formula 
+\[
+a^{T}\Skew b=-(\Skew ba)^{T}=-(a\times b)^{T}
+\]
+
+\end_inset
+
+叉积的导数为
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial(a\times b)}{\partial a}=\Skew{-b}\label{eq:Dcross1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial(a\times b)}{\partial b}=\Skew a\label{eq:Dcross2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 旋转
+\end_layout
+
+\begin_layout Subsection
+在GTSAM中的Rot2
+\end_layout
+
+\begin_layout Standard
+一个旋转存储为 
+\begin_inset Formula $(\cos\theta,\sin\theta)$
+\end_inset
+
+。使用三角加和的规则应用一个增量旋转：
+\begin_inset Formula 
+\[
+\cos\theta'=\cos\theta\cos\delta-\sin\theta\sin\delta
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\sin\theta'=\sin\theta\cos\delta+\cos\theta\sin\delta
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\delta$
+\end_inset
+
+ 是一个增量旋转角。
+\end_layout
+
+\begin_layout Subsection
+作用的导数
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 的情况下，向量空间是 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+，并且群作用 
+\begin_inset Formula $f(R,p)$
+\end_inset
+
+ 对应于旋转2D点 
+\begin_inset Formula $p$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+f(R,p)=Rp
+\]
+
+\end_inset
+
+根据定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Action"
+
+\end_inset
+
+, 
+\begin_inset Formula $f$
+\end_inset
+
+ 的雅可比矩阵给出为
+\begin_inset Formula 
+\[
+f'(R,p)=\left[\begin{array}{cc}
+RH(p) & R\end{array}\right]
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $H:\Reals 2\rightarrow\Reals{2\times2}$
+\end_inset
+
+ 是一个依赖于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的线性映射。在 
+\begin_inset Formula $\SOtwo$
+\end_inset
+
+ 的情况下，我们可以通过等式(如在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Hp"
+
+\end_inset
+
+)中所示)寻找 
+\begin_inset Formula $H(p)$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\skew wp=\left[\begin{array}{cc}
+0 & -\omega\\
+\omega & 0
+\end{array}\right]\left[\begin{array}{c}
+x\\
+y
+\end{array}\right]=\left[\begin{array}{c}
+-y\\
+x
+\end{array}\right]\omega=H(p)\omega
+\]
+
+\end_inset
+
+请注意
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+H(p)=\left[\begin{array}{c}
+-y\\
+x
+\end{array}\right]=\left[\begin{array}{cc}
+0 & -1\\
+1 & 0
+\end{array}\right]\left[\begin{array}{c}
+x\\
+y
+\end{array}\right]=R_{\pi/2}p
+\]
+
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+并由于2D旋转可交换，我们也有，其中
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $q=Rp$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+：
+\begin_inset Formula 
+\[
+f'(R,p)=\left[\begin{array}{cc}
+R\left(R_{\pi/2}p\right) & R\end{array}\right]=\left[\begin{array}{cc}
+R_{\pi/2}q & R\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+映射的前推
+\end_layout
+
+\begin_layout Standard
+因为 
+\begin_inset Formula $\Ad R\skew{\omega}=\skew{\omega}$
+\end_inset
+
+，我们有
+\series bold
+逆
+\series default
+(
+\series bold
+inverse
+\series default
+)的导数，
+\begin_inset Formula 
+\[
+\frac{\partial R^{T}}{\partial\omega}=-\Ad R=-1\mbox{ }
+\]
+
+\end_inset
+
+
+\series bold
+组合
+\series default
+(
+\series bold
+compose
+\series default
+)
+\series bold
+，
+\series default
+
+\begin_inset Formula 
+\[
+\frac{\partial\left(R_{1}R_{2}\right)}{\partial\omega_{1}}=\Ad{R_{2}^{T}}=1\mbox{ and }\frac{\partial\left(R_{1}R_{2}\right)}{\partial\omega_{2}}=1
+\]
+
+\end_inset
+
+以及
+\series bold
+相差
+\series default
+(
+\series bold
+between
+\series default
+)： 
+\begin_inset Formula 
+\[
+\frac{\partial\left(R_{1}^{T}R_{2}\right)}{\partial\omega_{1}}=-\Ad{R_{2}^{T}R_{1}}=-1\mbox{ and }\frac{\partial\left(R_{1}^{T}R_{2}\right)}{\partial\omega_{2}}=1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 刚性变换
+\end_layout
+
+\begin_layout Subsection
+作用的导数
+\end_layout
+
+\begin_layout Standard
+在2D点上 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 的作用通过使用齐次坐标将点嵌入 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ 来完成
+\begin_inset Formula 
+\[
+f(T,p)=\hat{q}=\left[\begin{array}{c}
+q\\
+1
+\end{array}\right]=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T\hat{p}
+\]
+
+\end_inset
+
+为找到导数，我们将量 
+\begin_inset Formula $\xihat\hat{p}$
+\end_inset
+
+ 写为 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $H(p)$
+\end_inset
+
+ 与 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 的乘积：
+\begin_inset Formula 
+\begin{equation}
+\xihat\hat{p}=\left[\begin{array}{cc}
+\skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+\skew{\omega}p+v\\
+0
+\end{array}\right]=\left[\begin{array}{cc}
+I_{2} & R_{\pi/2}p\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+v\\
+\omega
+\end{array}\right]=H(p)\xi\label{eq:HpSE2}
+\end{equation}
+
+\end_inset
+
+因此，根据定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Action"
+
+\end_inset
+
+ 我们有
+\begin_inset Formula 
+\begin{equation}
+\deriv{\left(T\hat{p}\right)}{\xi}=TH(p)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+I_{2} & R_{\pi/2}p\\
+0 & 0
+\end{array}\right]=\left[\begin{array}{cc}
+R & RR_{\pi/2}p\\
+0 & 0
+\end{array}\right]=\left[\begin{array}{cc}
+R & R_{\pi/2}q\\
+0 & 0
+\end{array}\right]\label{eq:SE2Action}
+\end{equation}
+
+\end_inset
+
+注意，仅查看方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:HpSE2"
+
+\end_inset
+
+ 和 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:SE2Action"
+
+\end_inset
+
+，我们可以认出量 
+\begin_inset Formula $\skew{\omega}p+v=v+\omega\left(R_{\pi/2}p\right)$
+\end_inset
+
+ 为 
+\begin_inset Formula $p$
+\end_inset
+
+ 在 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+ 中的速度，并且 
+\begin_inset Formula $\left[\begin{array}{cc}
+R & R_{\pi/2}q\end{array}\right]$
+\end_inset
+
+ 是作用于 
+\begin_inset Formula $\Rtwo$
+\end_inset
+
+ 上的导数。
+\end_layout
+
+\begin_layout Standard
+逆作用 
+\begin_inset Formula $g(T,p)=T^{-1}\hat{p}$
+\end_inset
+
+ 的导数由定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Th:InverseAction"
+
+\end_inset
+
+ 专门针对 
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+ 给出为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\deriv{\left(T^{-1}\hat{p}\right)}{\xi}=-H(T^{-1}p)=\left[\begin{array}{cc}
+-I_{2} & -R_{\pi/2}\left(T^{-1}p\right)\\
+0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+映射的前推
+\end_layout
+
+\begin_layout Standard
+我们可以仅用伴随映射定义所有的导数，在
+\begin_inset Formula $\SEtwo$
+\end_inset
+
+的情况下，在运动旋量坐标帧中，伴随映射是线性映射
+\begin_inset Formula 
+\[
+\Ad T\xi=\left[\begin{array}{cc}
+R & -R_{\pi/2}t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+v\\
+\omega
+\end{array}\right]
+\]
+
+\end_inset
+
+并且我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial T^{^{-1}}}{\partial\xi} & = & -\Ad T
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\left(T_{1}T_{2}\right)}{\partial\xi_{1}} & = & \Ad{T_{2}^{^{-1}}}\mbox{ and }\frac{\partial\left(T_{1}T_{2}\right)}{\partial\xi_{2}}=I_{3}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\left(T_{1}^{-1}T_{2}\right)}{\partial\xi_{1}} & = & -\Ad{T_{2}^{^{-1}}T_{1}}=-\Ad{between(T_{2},T_{1})}\mbox{ and }\frac{\partial\left(T_{1}^{-1}T_{2}\right)}{\partial\xi_{2}}=I_{3}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+3D 旋转
+\end_layout
+
+\begin_layout Subsection
+作用的导数
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 的情况下，向量空间是 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+，并且群作用 
+\begin_inset Formula $f(R,p)$
+\end_inset
+
+ 对应于旋转一个点
+\begin_inset Formula 
+\[
+q=f(R,p)=Rp
+\]
+
+\end_inset
+
+为计算在定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Action"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中使用的 
+\begin_inset Formula $H(p)$
+\end_inset
+
+，我们利用
+\begin_inset Formula 
+\[
+\Skew{\omega}p=\omega\times p=-p\times\omega=\Skew{-p}\omega
+\]
+
+\end_inset
+
+所以 
+\begin_inset Formula $H(p)\define\Skew{-p}$
+\end_inset
+
+。因此，一个作用的最终的导数，在它的第一个参数中为
+\begin_inset Formula 
+\begin{equation}
+\deriv{\left(Rp\right)}{\omega}=RH(p)=-R\Skew p\label{eq:Rot3action}
+\end{equation}
+
+\end_inset
+
+同样，根据定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Th:InverseAction"
+
+\end_inset
+
+，逆作用的导数给出为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\deriv{\left(R^{T}p\right)}{\omega}=-H(R^{T}p)=\Skew{R^{T}p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3DAngularVelocities"
+
+\end_inset
+
+瞬时速度
+\end_layout
+
+\begin_layout Standard
+对于从机体帧 
+\begin_inset Formula $b$
+\end_inset
+
+ 到导航帧 
+\begin_inset Formula $n$
+\end_inset
+
+ 的3D旋转 
+\begin_inset Formula $R_{b}^{n}$
+\end_inset
+
+，我们有空间角速度 
+\begin_inset Formula $\omega_{nb}^{n}$
+\end_inset
+
+，其在导航帧中测量，
+\begin_inset Formula 
+\[
+\Skew{\omega_{nb}^{n}}\define\dot{R}_{b}^{n}\left(R_{b}^{n}\right)^{T}=\dot{R}_{b}^{n}R_{n}^{b}
+\]
+
+\end_inset
+
+并且有机体的角速度 
+\begin_inset Formula $\omega_{nb}^{b}$
+\end_inset
+
+，其在机体帧内测量：
+\begin_inset Formula 
+\[
+\Skew{\omega_{nb}^{b}}\define\left(R_{b}^{n}\right)^{T}\dot{R}_{b}^{n}=R_{n}^{b}\dot{R}_{b}^{n}
+\]
+
+\end_inset
+
+这些量可用于推导一个点
+\begin_inset Formula $p$
+\end_inset
+
+的速度，并且根据我们选择表示
+\begin_inset Formula $p$
+\end_inset
+
+的帧，我们在空间或机体角速度之间进行选择：
+\begin_inset Formula 
+\[
+v^{n}=\Skew{\omega_{nb}^{n}}p^{n}=\omega_{nb}^{n}\times p^{n}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+v^{b}=\Skew{\omega_{nb}^{b}}p^{b}=\omega_{nb}^{b}\times p^{b}
+\]
+
+\end_inset
+
+我们可以通过共轭将这些斜对称矩阵从导航帧变换到机体帧，
+\begin_inset Formula 
+\[
+\Skew{\omega_{nb}^{b}}=R_{n}^{b}\Skew{\omega_{nb}^{n}}R_{b}^{n}
+\]
+
+\end_inset
+
+但因为伴随表示满足
+\begin_inset Formula 
+\[
+Ad_{R}\Skew{\omega}\define R\Skew{\omega}R^{T}=\Skew{R\omega}
+\]
+
+\end_inset
+
+我们甚至可以更容易地将空间角速度和机体角速度变换为
+\begin_inset Formula $3$
+\end_inset
+
+元向量：
+\begin_inset Formula 
+\[
+\omega_{nb}^{b}=R_{n}^{b}\omega_{nb}^{n}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+映射的前推
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 我们有 
+\begin_inset Formula $\Ad R\Skew{\omega}=\Skew{R\omega}$
+\end_inset
+
+，并且，根据角速度：
+\begin_inset Formula $\Ad R\omega=R\omega$
+\end_inset
+
+。因此，
+\series bold
+逆
+\series default
+(
+\series bold
+inverse
+\series default
+)映射的雅可比矩阵为(参见方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Dinverse"
+
+\end_inset
+
+))
+\begin_inset Formula 
+\[
+\frac{\partial R^{T}}{\partial\omega}=-\Ad R=-R
+\]
+
+\end_inset
+
+对于
+\series bold
+组合
+\series default
+(
+\series bold
+compose
+\series default
+)，我们有(方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Dcompose1"
+
+\end_inset
+
+) 和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Dcompose2"
+
+\end_inset
+
+))：
+\begin_inset Formula 
+\[
+\frac{\partial\left(R_{1}R_{2}\right)}{\partial\omega_{1}}=R_{2}^{T}\mbox{ and }\frac{\partial\left(R_{1}R_{2}\right)}{\partial\omega_{2}}=I_{3}
+\]
+
+\end_inset
+
+以及
+\series bold
+相差
+\series default
+(
+\series bold
+between
+\series default
+) (方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Dbetween1"
+
+\end_inset
+
+)):
+\begin_inset Formula 
+\[
+\frac{\partial\left(R_{1}^{T}R_{2}\right)}{\partial\omega_{1}}=-R_{2}^{T}R_{1}=-between(R_{2},R_{1})\mbox{ and }\frac{\partial\left(R_{1}R_{2}\right)}{\partial\omega_{2}}=I_{3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Retractions
+\end_layout
+
+\begin_layout Standard
+Absil 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "page 58"
+key "Absil07book"
+literal "true"
+
+\end_inset
+
+ 讨论了对于 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+，矩阵 
+\begin_inset Formula $R\Skew{\omega}$
+\end_inset
+
+基于QR分解或极性分解的两种可能的收回，但它们是昂贵的。另一种收回基于Cayley变换 
+\begin_inset Formula $\mathcal{C}:\sothree\rightarrow\SOthree$
+\end_inset
+
+，一种从斜对称矩阵到旋转矩阵的映射：
+\begin_inset Formula 
+\[
+Q=\mathcal{C}(\Omega)=(I-\Omega)(I+\Omega)^{-1}
+\]
+
+\end_inset
+
+有趣的是，逆Cayley变换 
+\begin_inset Formula $\mathcal{C}^{-1}:\SOthree\rightarrow\sothree$
+\end_inset
+
+ 具有相同的形式：
+\begin_inset Formula 
+\[
+\Omega=\mathcal{C}^{-1}(Q)=(I-Q)(I+Q)^{-1}
+\]
+
+\end_inset
+
+然而，收回需要一个系数 
+\begin_inset Formula $-\frac{1}{2}$
+\end_inset
+
+，以使其与测地线局部对齐：
+\begin_inset Formula 
+\[
+R'=\retract_{R}(\omega)=R\mathcal{C}(-\frac{1}{2}\Skew{\omega})
+\]
+
+\end_inset
+
+注意，给定 
+\begin_inset Formula $\omega=(x,y,z)$
+\end_inset
+
+，它具有以下封闭形式表达式
+\begin_inset Formula 
+\[
+\frac{1}{4+x^{2}+y^{2}+z^{2}}\left[\begin{array}{ccc}
+4+x^{2}-y^{2}-z^{2} & 2xy-4z & 2xz+4y\\
+2xy+4z & 4-x^{2}+y^{2}-z^{2} & 2yz-4x\\
+2xz-4y & 2yz+4x & 4-x^{2}-y^{2}+z^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+=\frac{1}{4+x^{2}+y^{2}+z^{2}}\left\{ 4(I+\Skew{\omega})+\left[\begin{array}{ccc}
+x^{2}-y^{2}-z^{2} & 2xy & 2xz\\
+2xy & -x^{2}+y^{2}-z^{2} & 2yz\\
+2xz & 2yz & -x^{2}-y^{2}+z^{2}
+\end{array}\right]\right\} 
+\]
+
+\end_inset
+
+因此它可以看作是 
+\begin_inset Formula $(I+\Skew{\omega})$
+\end_inset
+
+ 的二阶修正。对数映射的相应近似值为：
+\begin_inset Formula 
+\[
+\Skew{\omega}=\retract_{R}^{-1}(R')=-2\mathcal{C}^{-1}\left(R^{T}R'\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+3D 刚性变换
+\end_layout
+
+\begin_layout Subsection
+作用的导数
+\end_layout
+
+\begin_layout Standard
+在3D点上 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+ 的作用通过使用齐次坐标将点嵌入 
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+ 来完成
+\begin_inset Formula 
+\[
+\hat{q}=\left[\begin{array}{c}
+q\\
+1
+\end{array}\right]=f(T,p)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=T\hat{p}
+\]
+
+\end_inset
+
+量 
+\begin_inset Formula $\xihat\hat{p}$
+\end_inset
+
+ 对应于在 
+\begin_inset Formula $\mathbb{R}^{4}$
+\end_inset
+
+ 中的速度(在局部 
+\begin_inset Formula $T$
+\end_inset
+
+ 帧中)，并如方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Hp"
+
+\end_inset
+
+)所示将其等同于 
+\begin_inset Formula $H(p)\xi$
+\end_inset
+
+ 以产生 
+\begin_inset Formula $4\times6$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $H(p)$
+\end_inset
+
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $H(p)$
+\end_inset
+
+ 也可通过将
+\begin_inset Formula $6$
+\end_inset
+
+个生成元中的每个生成元的第
+\begin_inset Formula $j$
+\end_inset
+
+列乘以
+\begin_inset Formula $\hat{p}$
+\end_inset
+
+的分量来获得
+\end_layout
+
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\xihat\hat{p}=\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+p\\
+1
+\end{array}\right]=\left[\begin{array}{c}
+\omega\times p+v\\
+0
+\end{array}\right]=\left[\begin{array}{cc}
+\Skew{-p} & I_{3}\\
+0 & 0
+\end{array}\right]\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]=H(p)\xi
+\]
+
+\end_inset
+
+请注意，速度如何类似于射影几何中无穷远的点：它们对应于自由向量指示一个方向和幅值的变化。根据定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "th:Action"
+
+\end_inset
+
+，在齐次坐标中群作用的导数则为
+\begin_inset Formula 
+\[
+\deriv{\left(T\hat{p}\right)}{\xi}=TH(p)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+\Skew{-p} & I_{3}\\
+0 & 0
+\end{array}\right]=\left[\begin{array}{cc}
+R\Skew{-p} & R\\
+0 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\deriv{\left(T\hat{p}\right)}{\hat{p}}=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+在 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+ 中它变为 
+\begin_inset Formula $R\left[\begin{array}{cc}
+-\Skew p & I_{3}\end{array}\right]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+逆作用 
+\begin_inset Formula $T^{-1}p$
+\end_inset
+
+ 的导数由定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Th:InverseAction"
+
+\end_inset
+
+ 给出为：
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula 
+\[
+\deriv{\left(T^{-1}\hat{p}\right)}{\xi}=-H\left(T^{-1}\hat{p}\right)=\left[\begin{array}{cc}
+\Skew{T^{-1}\hat{p}} & -I_{3}\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\deriv{\left(T^{-1}\hat{p}\right)}{\hat{p}}=\left[\begin{array}{cc}
+R^{T} & -R^{T}t\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+让我们检查一个可视化SLAM示例。我们有2D测量值 
+\begin_inset Formula $z_{ij}$
+\end_inset
+
+，其中每个测量值由下式预测为
+\begin_inset Formula 
+\[
+z_{ij}=h(T_{i},p_{j})=\pi(T_{i}^{-1}p_{j})=\pi(q)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ 是第
+\begin_inset Formula $i$
+\end_inset
+
+个相机的3D位姿，
+\begin_inset Formula $p_{j}$
+\end_inset
+
+ 是第
+\begin_inset Formula $j$
+\end_inset
+
+个点的位置，
+\begin_inset Formula $q=(x',y',z')=T^{-1}p$
+\end_inset
+
+ 是相机坐标中的点，并且 
+\begin_inset Formula $\pi:(x,y,z)\mapsto(x/z,y/z)$
+\end_inset
+
+ 是来自示例 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ex:projection"
+
+\end_inset
+
+ 的相机投影函数。根据链式规则，我们则有
+\begin_inset Formula 
+\[
+\deriv{h(T,p)}{\xi}=\deriv{\pi(q)}q\deriv{(T^{-1}p)}{\xi}=\frac{1}{z'}\left[\begin{array}{ccc}
+1 & 0 & -x'/z'\\
+0 & 1 & -y'/z'
+\end{array}\right]\left[\begin{array}{cc}
+\Skew q & -I_{3}\end{array}\right]=\left[\begin{array}{cc}
+\pi'(q)\Skew q & -\pi'(q)\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\deriv{h(T,p)}p=\pi'(q)R^{T}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+伴随的导数
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:pose3_adjoint_deriv"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+考虑 
+\begin_inset Formula $f:SE(3)\times\mathbb{R}^{6}\rightarrow\mathbb{R}^{6}$
+\end_inset
+
+ 被定义为 
+\begin_inset Formula $f(T,\xi_{b})=Ad_{T}\hat{\xi}_{b}$
+\end_inset
+
+。导数用符号表示为(参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Derivatives-of-Actions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节)：
+\begin_inset Formula 
+\[
+Df_{(T,\xi_{b})}(\xi,\delta\xi_{b})=D_{1}f_{(T,\xi_{b})}(\xi)+D_{2}f_{(T,\xi_{b})}(\delta\xi_{b})
+\]
+
+\end_inset
+
+首先，计算 
+\begin_inset Formula $D_{2}f_{(T,\xi_{b})}(\xi_{b})$
+\end_inset
+
+ 很容易，因为它的矩阵是简单的 
+\begin_inset Formula $Ad_{T}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+f(T,\xi_{b}+\delta\xi_{b})=Ad_{T}(\widehat{\xi_{b}+\delta\xi_{b}})=Ad_{T}(\hat{\xi}_{b})+Ad_{T}(\delta\hat{\xi}_{b})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+D_{2}f_{(T,\xi_{b})}(\xi_{b})=Ad_{T}
+\]
+
+\end_inset
+
+我们将用两种方法推导出 
+\begin_inset Formula $D_{1}f_{(T,\xi_{b})}(\xi)$
+\end_inset
+
+ 。首先，我们将定义 
+\begin_inset Formula $g(T,\xi)\triangleq T\exp\hat{\xi}$
+\end_inset
+
+。从第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Derivatives-of-Actions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节开始，
+\begin_inset Formula 
+\begin{align*}
+D_{2}g_{(T,\xi)}(\xi) & =T\hat{\xi}\\
+D_{2}g_{(T,\xi)}^{-1}(\xi) & =-\hat{\xi}T^{-1}
+\end{align*}
+
+\end_inset
+
+现在我们可以使用伴随表示 
+\begin_inset Formula $Ad_{g}\hat{\xi}=g\hat{\xi}g^{-1}$
+\end_inset
+
+ 的定义(又称 
+\begin_inset Formula $g$
+\end_inset
+
+ 共轭)，然后应用乘积规则并简化：
+\begin_inset Formula 
+\begin{align*}
+D_{1}f_{(T,\xi_{b})}(\xi)=D_{1}\left(Ad_{T\exp(\hat{\xi})}\hat{\xi}_{b}\right)(\xi) & =D_{1}\left(g\hat{\xi}_{b}g^{-1}\right)(\xi)\\
+ & =\left(D_{2}g_{(T,\xi)}(\xi)\right)\hat{\xi}_{b}g^{-1}(T,0)+g(T,0)\hat{\xi}_{b}\left(D_{2}g_{(T,\xi)}^{-1}(\xi)\right)\\
+ & =T\hat{\xi}\hat{\xi}_{b}T^{-1}-T\hat{\xi}_{b}\hat{\xi}T^{-1}\\
+ & =T\left(\hat{\xi}\hat{\xi}_{b}-\hat{\xi}_{b}\hat{\xi}\right)T^{-1}\\
+ & =Ad_{T}(ad_{\hat{\xi}}\hat{\xi}_{b})\\
+ & =-Ad_{T}(ad_{\hat{\xi}_{b}}\hat{\xi})\\
+D_{1}F_{(T,\xi_{b})} & =-(Ad_{T})(ad_{\hat{\xi}_{b}})
+\end{align*}
+
+\end_inset
+
+其中 
+\begin_inset Formula $ad_{\hat{\xi}}:\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+ 是李代数的伴随映射。
+\end_layout
+
+\begin_layout Standard
+第二，也许是推导 
+\begin_inset Formula $D_{1}f_{(T,\xi_{b})}(\xi_{b})$
+\end_inset
+
+ 的更直观的方法，将使用以下事实：根据伴随 
+\begin_inset Formula $ad_{\xi}$
+\end_inset
+
+ 的定义，在原点处的导数为 
+\begin_inset Formula $D_{1}Ad_{I}\hat{\xi}_{b}=ad_{\hat{\xi}_{b}}$
+\end_inset
+
+。然后应用性质 
+\begin_inset Formula $Ad_{AB}=Ad_{A}Ad_{B}$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+D_{1}Ad_{T}\hat{\xi}_{b}(\xi)=D_{1}Ad_{T*I}\hat{\xi}_{b}(\xi)=Ad_{T}\left(D_{1}Ad_{I}\hat{\xi}_{b}(\xi)\right)=Ad_{T}\left(ad_{\hat{\xi}}(\hat{\xi}_{b})\right)=-Ad_{T}\left(ad_{\hat{\xi}_{b}}(\hat{\xi})\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+伴随转置的导数
+\end_layout
+
+\begin_layout Standard
+伴随的转置，
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $Ad_{T}^{T}:\mathfrak{g^{*}\rightarrow g^{*}}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，作为改变在对偶空间中向量的参考帧的一种方法，它非常有用(注意符号 
+\begin_inset Formula $^{*}$
+\end_inset
+
+ 标志我们现在在对偶空间中)。更具体地说，尽管 
+\begin_inset Formula $Ad_{T}\hat{\xi}_{b}$
+\end_inset
+
+ 从
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $T$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+帧转换运动旋量(
+\emph on
+twist
+\emph default
+) 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\xi_{b}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，而 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $Ad_{T}^{T}\hat{\xi}_{b}^{*}$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+从
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $T$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+帧转换动力旋量(
+\emph on
+wrench
+\emph default
+) 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\xi_{b}^{*}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+。对于 
+\begin_inset Formula $Ad_{T}^{T}\hat{\xi}_{b}^{*}$
+\end_inset
+
+ 的导数，很难应用在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:pose3_adjoint_deriv"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节中类似的推导，因为 
+\begin_inset Formula $Ad_{T}^{T}$
+\end_inset
+
+ 不能自然地定义为共轭，所以我们要通过代数来进行计算。省略细节，但结果的形式模糊相似于(但并不完全匹配于) 
+\begin_inset Formula $ad(Ad_{T}^{T}\hat{\xi}_{b}^{*})$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\begin{bmatrix}\omega_{T}\\
+v_{T}
+\end{bmatrix}^{*} & \triangleq Ad_{T}^{T}\hat{\xi}_{b}^{*}\\
+D_{1}Ad_{T}^{T}\hat{\xi}_{b}^{*}(\xi) & =\begin{bmatrix}\hat{\omega}_{T} & \hat{v}_{T}\\
+\hat{v}_{T} & 0
+\end{bmatrix}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+瞬时速度
+\end_layout
+
+\begin_layout Standard
+对于从机体帧 
+\begin_inset Formula $b$
+\end_inset
+
+ 到导航帧 
+\begin_inset Formula $n$
+\end_inset
+
+ 的刚性3D变换 
+\begin_inset Formula $T_{b}^{n}$
+\end_inset
+
+，我们有瞬时空间运动旋量 
+\begin_inset Formula $\xi_{nb}^{n}$
+\end_inset
+
+，其在导航帧中测量，
+\begin_inset Formula 
+\[
+\hat{\xi}_{nb}^{n}\define\dot{T}_{b}^{n}\left(T_{b}^{n}\right)^{-1}
+\]
+
+\end_inset
+
+并有瞬时机体运动旋量 
+\begin_inset Formula $\xi_{nb}^{b}$
+\end_inset
+
+，其在机体帧中测量：
+\begin_inset Formula 
+\[
+\hat{\xi}_{nb}^{b}\define\left(T_{b}^{n}\right)^{T}\dot{T}_{b}^{n}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+映射的前推
+\end_layout
+
+\begin_layout Standard
+因为我们可以根据运动旋量坐标表达伴随表示，我们有
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\omega'\\
+v'
+\end{array}\right]=\left[\begin{array}{cc}
+R & 0\\
+\Skew tR & R
+\end{array}\right]\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]
+\]
+
+\end_inset
+
+因此，与 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 一样，我们现在可以简单地假定
+\series bold
+逆
+\series default
+(
+\series bold
+inverse
+\series default
+)的导数为，
+\begin_inset Formula 
+\[
+\frac{\partial T^{-1}}{\partial\xi}=-\Ad T=-\left[\begin{array}{cc}
+R & 0\\
+\Skew tR & R
+\end{array}\right]
+\]
+
+\end_inset
+
+在其第一个参数中的
+\series bold
+组合
+\series default
+(
+\series bold
+compose
+\series default
+)为，
+\begin_inset Formula 
+\[
+\frac{\partial\left(T_{1}T_{2}\right)}{\partial\xi_{1}}=\Ad{T_{2}^{-1}}
+\]
+
+\end_inset
+
+在其第二个参数中的组合为，
+\begin_inset Formula 
+\[
+\frac{\partial\left(T_{1}T_{2}\right)}{\partial\xi_{2}}=I_{6}
+\]
+
+\end_inset
+
+在其第一个参数中的
+\series bold
+相差
+\series default
+(
+\series bold
+between
+\series default
+)为，
+\begin_inset Formula 
+\[
+\frac{\partial\left(T_{1}^{^{-1}}T_{2}\right)}{\partial\xi_{1}}=-\Ad{T_{2}^{^{-1}}T_{1}}=\left[\begin{array}{cc}
+-R_{2}^{T}R_{1} & 0\\
+R_{2}^{T}\left[t_{2}-t_{1}\right]_{\times}R_{1} & -R_{2}^{T}R_{1}
+\end{array}\right]
+\]
+
+\end_inset
+
+并且在其第二个参数中的相差为，
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\partial\left(T_{1}^{^{-1}}T_{2}\right)}{\partial\xi_{2}} & = & I_{6}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+收回
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\SEthree$
+\end_inset
+
+，与其使用真实的指数映射，不如设计其它收回，这在计算上更有效率。指数映射的一阶近似并不能完全解决这个问题，因为它产生了一个不在
+\begin_inset Formula $\SEthree$
+\end_inset
+
+中的 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ 矩阵：
+\begin_inset Formula 
+\begin{eqnarray*}
+T\exp\xihat & \approx & T(I+\xihat)\\
+ & = & T\left(I_{4}+\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\right)\\
+ & = & \left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+I_{3}+\Skew{\omega} & v\\
+0 & 1
+\end{array}\right]\\
+ & = & \left[\begin{array}{cc}
+R\left(I_{3}+\Skew{\omega}\right) & t+Rv\\
+0 & 1
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+然而，我们可以通过使用为 
+\begin_inset Formula $\SOthree$
+\end_inset
+
+ 定义的任意收回来将其变成一个收回，包括如下，使用指数映射 
+\begin_inset Formula $Re^{\Skew{\omega}}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\retract_{T}\left(\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]\right)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+e^{\Skew{\omega}} & v\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+Re^{\Skew{\omega}} & t+Rv\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+类似地，对于一个二阶近似，我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+T\exp\xihat & \approx & T(I+\xihat+\frac{\xihat^{2}}{2})\\
+ & = & T\left(I_{4}+\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]+\frac{1}{2}\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\left[\begin{array}{cc}
+\Skew{\omega} & v\\
+0 & 0
+\end{array}\right]\right)\\
+ & = & \left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left(\left[\begin{array}{cc}
+I_{3}+\Skew{\omega}+\frac{1}{2}\Skew{\omega}^{2} & v+\frac{1}{2}\Skew{\omega}v\\
+0 & 1
+\end{array}\right]\right)\\
+ & = & \left[\begin{array}{cc}
+R\left(I_{3}+\Skew{\omega}+\frac{1}{2}\Skew{\omega}^{2}\right) & t+R\left[v+\left(\omega\times v\right)/2\right]\\
+0 & 1
+\end{array}\right]
+\end{eqnarray*}
+
+\end_inset
+
+以激励收回
+\begin_inset Formula 
+\[
+\retract_{T}\left(\left[\begin{array}{c}
+\omega\\
+v
+\end{array}\right]\right)=\left[\begin{array}{cc}
+R & t\\
+0 & 1
+\end{array}\right]\left[\begin{array}{cc}
+e^{\Skew{\omega}} & v+\left(\omega\times v\right)/2\\
+0 & 1
+\end{array}\right]=\left[\begin{array}{cc}
+Re^{\Skew{\omega}} & t+R\left[v+\left(\omega\times v\right)/2\right]\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+球面 
+\begin_inset Formula $S^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+定义
+\end_layout
+
+\begin_layout Standard
+球面 
+\begin_inset Formula $S^{2}$
+\end_inset
+
+ 是 
+\begin_inset Formula $\Rthree$
+\end_inset
+
+ 中的所有单位向量的集合，即三维空间中的所有方向：
+\begin_inset Formula 
+\[
+S^{2}=\{p\in\Rthree|\left\Vert p\right\Vert =1\}
+\]
+
+\end_inset
+
+在点 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的切空间 
+\begin_inset Formula $T_{p}S^{2}$
+\end_inset
+
+ 由三元向量 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 组成，以使得 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 在点
+\begin_inset Formula $p$
+\end_inset
+
+ 处与 
+\begin_inset Formula $S^{2}$
+\end_inset
+
+ 相切，即，
+\begin_inset Formula 
+\[
+T_{p}S^{2}\define\left\{ \xihat\in\Rthree|p^{T}\xihat=0\right\} 
+\]
+
+\end_inset
+
+虽然不是一个李群，但我们可以定义一个指数映射，这在 Ma et.
+ al 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ma01ijcv"
+literal "true"
+
+\end_inset
+
+ 中给出，以及在Anuj Srivastava的CVPR教程中也给出：
+\begin_inset CommandInset href
+LatexCommand href
+name "http://stat.fsu.edu/~anuj/CVPR_Tutorial/Part2.pdf"
+literal "false"
+
+\end_inset
+
+ 。
+\begin_inset Formula 
+\[
+\exp_{p}\xihat=\cos\left(\left\Vert \xihat\right\Vert \right)p+\sin\left(\left\Vert \xihat\right\Vert \right)\frac{\xihat}{\left\Vert \xihat\right\Vert }
+\]
+
+\end_inset
+
+后者也给出逆映射，即从
+\begin_inset Formula $p$
+\end_inset
+
+到
+\begin_inset Formula $q$
+\end_inset
+
+得到切向量
+\begin_inset Formula $z$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+z=\log_{p}q=\frac{\theta}{\sin\theta}\left(q-p\cos\theta\right)p
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\theta=\cos^{-1}\left(p^{T}q\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+局部坐标
+\end_layout
+
+\begin_layout Standard
+对于切空间 
+\begin_inset Formula $T_{p}S^{2}$
+\end_inset
+
+，我们可以找到一个基 
+\begin_inset Formula $B_{p}$
+\end_inset
+
+，其中 
+\begin_inset Formula $B_{p}=\left[b_{1}|b_{2}\right]$
+\end_inset
+
+，一个 
+\begin_inset Formula $3\times2$
+\end_inset
+
+ 矩阵，它通过以下两种方式之一找到
+\end_layout
+
+\begin_layout Enumerate
+分解 
+\begin_inset Formula $p=QR$
+\end_inset
+
+，其中 
+\begin_inset Formula $Q$
+\end_inset
+
+ 为正交矩阵，并且 
+\begin_inset Formula $R$
+\end_inset
+
+ 的形式为 
+\begin_inset Formula $[1\,0\,0]^{T}$
+\end_inset
+
+，并因此 
+\begin_inset Formula $p=Q_{1}$
+\end_inset
+
+。该基为
+\begin_inset Formula $B_{p}=\left[Q_{2}|Q_{3}\right]$
+\end_inset
+
+，即 
+\begin_inset Formula $Q$
+\end_inset
+
+ 的最后两列。
+\end_layout
+
+\begin_layout Enumerate
+形式 
+\begin_inset Formula $b_{1}=p\times a$
+\end_inset
+
+，其中 
+\begin_inset Formula $a$
+\end_inset
+
+ (一致地)选择与 
+\begin_inset Formula $p$
+\end_inset
+
+ 不平行，并且 
+\begin_inset Formula $b_{2}=p\times b_{1}$
+\end_inset
+
+。
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+To choose 
+\begin_inset Formula $a$
+\end_inset
+
+, one way is to divide the sphere into regions, e.g., pick the axis 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ such that 
+\begin_inset Formula $e_{i}^{T}p$
+\end_inset
+
+ is smallest.
+ However, that leads to discontinuous boundaries.
+ Since 
+\begin_inset Formula $0\leq\left|e_{i}^{T}p\right|\leq1$
+\end_inset
+
+ for all 
+\begin_inset Formula $p\in S^{2}$
+\end_inset
+
+, a better idea might be to use a mixture, e.g.,
+\begin_inset Formula 
+\[
+a=\frac{1}{2(x^{2}+y^{2}+z^{2})}\left[\begin{array}{c}
+y^{2}+z^{2}\\
+x^{2}+z^{2}\\
+x^{2}+y^{2}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们可以用 
+\begin_inset Formula $\xi\in R^{2}$
+\end_inset
+
+ 写出 
+\begin_inset Formula $\xihat=B_{p}\xi$
+\end_inset
+
+，在切平面基 
+\begin_inset Formula $B_{p}$
+\end_inset
+
+ 中的2D坐标。
+\end_layout
+
+\begin_layout Subsection
+收回
+\end_layout
+
+\begin_layout Standard
+指数映射使用 
+\begin_inset Formula $\cos$
+\end_inset
+
+ 和 
+\begin_inset Formula $\sin$
+\end_inset
+
+，并且这超出我们优化的需要。假设我们有一个点 
+\begin_inset Formula $p\in S^{2}$
+\end_inset
+
+ 和一个
+\begin_inset Formula $3$
+\end_inset
+
+元向量 
+\begin_inset Formula $\xihat\in T_{p}S^{2}$
+\end_inset
+
+，Absil 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Absil07book"
+literal "true"
+
+\end_inset
+
+ 告诉我们，我们可以简单地把 
+\begin_inset Formula $\xihat$
+\end_inset
+
+ 加到 
+\begin_inset Formula $p$
+\end_inset
+
+ 上，然后重新正规化以得到球面上的一个新点
+\begin_inset Formula $q$
+\end_inset
+
+。这就是他所说的
+\series bold
+收回
+\series default
+(
+\series bold
+retraction
+\series default
+)
+\series bold
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\retract_{p}(\xihat)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，
+\begin_inset Formula 
+\[
+q=\retract_{p}(\xihat)=\frac{p+\xihat}{\left\Vert p+z\right\Vert }=\frac{p+\xihat}{\alpha}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 为 
+\begin_inset Formula $p+\xihat$
+\end_inset
+
+ 的范数。
+\end_layout
+
+\begin_layout Standard
+我们也可以从局部坐标 
+\begin_inset Formula $\xi\in\Rtwo$
+\end_inset
+
+ 定义一个收回：
+\begin_inset Formula 
+\[
+q=\retract_{p}(\xi)=\frac{p+B_{p}\xi}{\left\Vert p+B_{p}\xi\right\Vert }
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+逆收回
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $\xihat=B_{p}\xi$
+\end_inset
+
+，其中 
+\begin_inset Formula $\xi\in R^{2}$
+\end_inset
+
+ 是在切平面基 
+\begin_inset Formula $B_{p}$
+\end_inset
+
+ 中的2D坐标，我们有
+\begin_inset Formula 
+\[
+\xi=\frac{B_{p}^{T}q}{p^{T}q}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+我们寻求
+\begin_inset Formula 
+\[
+\alpha q=p+B_{p}\xi
+\]
+
+\end_inset
+
+如果我们将两边都乘以 
+\begin_inset Formula $B_{p}^{T}$
+\end_inset
+
+ (在基 
+\begin_inset Formula $B_{p}$
+\end_inset
+
+上投影)，我们获得
+\begin_inset Formula 
+\[
+\alpha B_{p}^{T}q=B_{p}^{T}p+B_{p}^{T}B_{p}\xi
+\]
+
+\end_inset
+
+并且因为 
+\begin_inset Formula $B_{p}^{T}p=0$
+\end_inset
+
+ 和 
+\begin_inset Formula $B_{p}^{T}B_{p}=I$
+\end_inset
+
+ ，我们很容易获得 
+\begin_inset Formula $\xi$
+\end_inset
+
+ 作为标度投影 
+\begin_inset Formula $B_{p}^{T}q$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\xi=\alpha B_{p}^{T}q
+\]
+
+\end_inset
+
+为了恢复比例因子 
+\begin_inset Formula $\alpha$
+\end_inset
+
+，我们在两侧都乘以 
+\begin_inset Formula $p^{T}$
+\end_inset
+
+，然后我们得到
+\begin_inset Formula 
+\[
+\alpha p^{T}q=p^{T}p+p^{T}B_{p}\xi
+\]
+
+\end_inset
+
+因为 
+\begin_inset Formula $p^{T}p=1$
+\end_inset
+
+ 和 
+\begin_inset Formula $p^{T}B_{p}\xi=0$
+\end_inset
+
+，则我们获得 
+\begin_inset Formula $\alpha=1/(p^{T}q)$
+\end_inset
+
+，从而完成了证明。
+\end_layout
+
+\begin_layout Subsection
+在3D方向上的旋转作用
+\end_layout
+
+\begin_layout Standard
+旋转在球面上的一个点 
+\begin_inset Formula $p\in S^{2}$
+\end_inset
+
+ 显然会产生在其上的另一个点 
+\begin_inset Formula $q=Rp\in S^{2}$
+\end_inset
+
+，因为旋转保持范数。
+\begin_inset Formula $f(R,p)$
+\end_inset
+
+ 相对于 
+\begin_inset Formula $R$
+\end_inset
+
+ 的导数可以通过下式找到
+\begin_inset Formula 
+\[
+Rp+B_{Rp}\xi=R(I+\Skew{\omega})p=Rp+R\Skew{\omega}p
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+B_{Rp}\xi=-R\Skew p\omega
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\xi=-B_{Rp}^{T}R\Skew p\omega
+\]
+
+\end_inset
+
+而相对于 
+\begin_inset Formula $p$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+Rp+B_{Rp}\xi_{q}=R(p+B_{p}\xi_{p})
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\xi_{q}=B_{Rp}^{T}RB_{p}\xi_{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+换句话说，雅可比矩阵给出为
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+f'(R,p)=\left[\begin{array}{cc}
+-B_{Rp}^{T}R\Skew p & B_{Rp}^{T}RB_{p}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+3D方向之间的误差
+\end_layout
+
+\begin_layout Standard
+我们想要定义两个方向 
+\begin_inset Formula $p,q\in S^{2}$
+\end_inset
+
+之间的距离度量 
+\begin_inset Formula $e(p,q)$
+\end_inset
+
+。一个明显的选择是
+\begin_inset Formula 
+\[
+\theta=\cos^{-1}\left(p^{T}q\right)
+\]
+
+\end_inset
+
+这正是在球面上沿最短路径(测地线)的距离，也就是说，这是与指数相关的距离度量。其优点是，它在任何地方都有定义，但它涉及 
+\begin_inset Formula $\cos^{-1}$
+\end_inset
+
+。相对于在 
+\begin_inset Formula $q$
+\end_inset
+
+ 中的一个变化的导数，通过 
+\begin_inset Formula $\xi$
+\end_inset
+
+，则为
+\begin_inset Formula 
+\[
+\frac{\partial\theta(p,q)}{\partial\xi}=\frac{\partial\cos^{-1}\left(p^{T}q\right)}{\partial\xi}=\frac{p^{T}B_{q}}{\sqrt{1-\left(p^{T}q\right)^{2}}}
+\]
+
+\end_inset
+
+其中对于
+\begin_inset Formula $p=q$
+\end_inset
+
+，这也是未定义的。
+\end_layout
+
+\begin_layout Standard
+一个更简单的度量由收回推导出来，但仅当 
+\begin_inset Formula $q\approx p$
+\end_inset
+
+ 时成立。它简单地将 
+\begin_inset Formula $q$
+\end_inset
+
+ 投影到由 
+\begin_inset Formula $p$
+\end_inset
+
+ 定义的局部坐标基 
+\begin_inset Formula $B_{p}$
+\end_inset
+
+ 上，并取范数：
+\begin_inset Formula 
+\[
+\theta(p,q)=\left\Vert B_{p}^{T}q\right\Vert 
+\]
+
+\end_inset
+
+相对于在 
+\begin_inset Formula $q$
+\end_inset
+
+ 中的一个变化的导数，通过 
+\begin_inset Formula $\xi$
+\end_inset
+
+，则为
+\begin_inset Formula 
+\[
+\frac{\partial\theta(p,q)}{\partial\xi_{q}}=\frac{\partial}{\partial\xi_{q}}\sqrt{\left(B_{p}^{T}q\right)^{2}}=\frac{1}{\sqrt{\left(B_{p}^{T}q\right)^{2}}}\left(B_{p}^{T}q\right)B_{p}^{T}B_{q}=\frac{B_{p}^{T}q}{\theta(q;p)}B_{p}^{T}B_{q}
+\]
+
+\end_inset
+
+注意，对于 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+，这也是未定义的。
+\end_layout
+
+\begin_layout Standard
+对于在概率因子中的使用，一个有符号的向量-值误差不会具有不连续性：
+\begin_inset Formula 
+\[
+\theta(p,q)=B_{p}^{T}q
+\]
+
+\end_inset
+
+注意，这是一个标量的逆收回。相对于在 
+\begin_inset Formula $q$
+\end_inset
+
+ 中的一个变化的导数，通过 
+\begin_inset Formula $\xi$
+\end_inset
+
+，通过下式找到：
+\begin_inset Formula 
+\[
+\frac{\partial\theta(p,q)}{\partial\xi_{q}}=B_{p}^{T}\frac{\partial q}{\partial\xi_{q}}=B_{p}^{T}B_{q}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+应用
+\end_layout
+
+\begin_layout Standard
+我们可以利用上述方法来寻找一个相机和一个IMU之间的未知的旋转。如果我们测量两帧之间的旋转为 
+\begin_inset Formula $c_{1}Zc_{2}$
+\end_inset
+
+，并且来自IMU的预测旋转为 
+\begin_inset Formula $i_{1}Ri_{2}$
+\end_inset
+
+，则我们可以预测
+\begin_inset Formula 
+\[
+c_{1}Zc_{2}=iRc^{T}\cdot i_{1}Ri_{2}\cdot iRc
+\]
+
+\end_inset
+
+并且增量旋转的轴线的关系为
+\begin_inset Formula 
+\[
+p=iRc\cdot z
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $p$
+\end_inset
+
+ 为在IMU帧中的角速度轴，而 
+\begin_inset Formula $z$
+\end_inset
+
+ 为两个相机之间的测量旋转轴。注意，这仅在旋转不为零时才有意义。因此，对于IMU和相机之间的未知旋转 
+\begin_inset Formula $iRc$
+\end_inset
+
+，给定一个初始估计R，误差的导数为 (使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Rot3action"
+
+\end_inset
+
+))
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+\frac{\partial\theta(Rz;p)}{\partial\omega}=B_{p}^{T}\left(Rz\right)B_{p}^{T}B_{Rz}\frac{\partial\left(Rz\right)}{\partial\omega}=B_{p}^{T}\left(Rz\right)B_{p}^{T}R\Skew z
+\]
+
+\end_inset
+
+这里，该 
+\begin_inset Formula $2\times3$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $B_{Rz}^{T}\Skew z$
+\end_inset
+
+ 将在 
+\begin_inset Formula $R$
+\end_inset
+
+ 中的变化转换为在 
+\begin_inset Formula $Rz$
+\end_inset
+
+ 中的变化，并且该 
+\begin_inset Formula $1\times2$
+\end_inset
+
+ 矩阵 
+\begin_inset Formula $B_{p}^{T}\left(Rz\right)$
+\end_inset
+
+ 描述在误差度量上的下游效应。
+\end_layout
+
+\begin_layout Section
+本质矩阵流形
+\end_layout
+
+\begin_layout Standard
+我们将本质矩阵参数化为一对 
+\begin_inset Formula $(R,t)$
+\end_inset
+
+，其中 
+\begin_inset Formula $R\in\SOthree$
+\end_inset
+
+，并且 
+\begin_inset Formula $t\in S^{2}$
+\end_inset
+
+ 是单位球面。则对极矩阵给出为
+\begin_inset Formula 
+\[
+E=\Skew tR
+\]
+
+\end_inset
+
+并且给定两个对应点 
+\begin_inset Formula $a$
+\end_inset
+
+ 和 
+\begin_inset Formula $b$
+\end_inset
+
+ 的对极误差为
+\begin_inset Formula 
+\[
+e(R,t;a,b)=a^{T}Eb
+\]
+
+\end_inset
+
+我们当然对相对于方向的导数感兴趣(使用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Rot3action"
+
+\end_inset
+
+))
+\begin_inset Formula 
+\[
+\frac{\partial(a^{T}[t]_{\times}Rb)}{\partial\omega}=a^{T}[t]_{\times}\frac{\partial(Rb)}{\partial\omega}=-a^{T}[t]_{\times}R\Skew b=-a^{T}E[b]_{\times}
+\]
+
+\end_inset
+
+并且相对于在方向
+\begin_inset Formula $t$
+\end_inset
+
+中的变化的导数为
+\begin_inset Formula 
+\[
+\frac{\partial e(a^{T}[t]_{\times}Rb)}{\partial\xi}=a^{T}\frac{\partial(B\xi\times Rb)}{\partial v}=-a^{T}[Rb]_{\times}B
+\]
+
+\end_inset
+
+这里我们利用了收回可以被写为
+\begin_inset Formula $t+B\xi$
+\end_inset
+
+ 的事实，其中 
+\begin_inset Formula $B$
+\end_inset
+
+ 是一个局部基，并且我们利用了方程
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dcross1"
+
+\end_inset
+
+：
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula 
+\[
+\frac{\partial(a\times b)}{\partial a}=\Skew{-b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+2D 线段 (Ocaml)
+\end_layout
+
+\begin_layout Standard
+在Line3.ml中定义了一条无限直线 
+\begin_inset Formula $(a,b,c)$
+\end_inset
+
+ 和一条2D线段 
+\begin_inset Formula $((x1,y1),(x2,y2))$
+\end_inset
+
+ 之间的误差。
+\end_layout
+
+\begin_layout Section
+Line3vd (Ocaml)
+\end_layout
+
+\begin_layout Standard
+直线的一种表示形式是通过
+\begin_inset Formula $2$
+\end_inset
+
+个向量 
+\begin_inset Formula $(v,d)$
+\end_inset
+
+，其中 
+\begin_inset Formula $v$
+\end_inset
+
+ 是方向，而向量 
+\begin_inset Formula $d$
+\end_inset
+
+ 从原点指向直线上最近的点。
+\end_layout
+
+\begin_layout Standard
+在这种表示中，将一条3D线从世界坐标帧变换到在
+\begin_inset Formula $(R_{w}^{c},t^{w})$
+\end_inset
+
+处的相机帧通过下式完成
+\begin_inset Formula 
+\[
+v^{c}=R_{w}^{c}v^{w}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+d^{c}=R_{w}^{c}\left(d^{w}+(t^{w}v^{w})v^{w}-t^{w}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Line3
+\end_layout
+
+\begin_layout Standard
+对于3D直线，我们使用 C.J.
+ Taylor 的参数化，使用
+\begin_inset Formula $1$
+\end_inset
+
+个旋转矩阵
+\begin_inset Formula $R$
+\end_inset
+
+和
+\begin_inset Formula $2$
+\end_inset
+
+个标量
+\begin_inset Formula $a$
+\end_inset
+
+和
+\begin_inset Formula $b$
+\end_inset
+
+进行。直线方向
+\begin_inset Formula $v$
+\end_inset
+
+只是旋转帧的
+\begin_inset Formula $Z$
+\end_inset
+
+轴，即
+\begin_inset Formula $v=R_{3}$
+\end_inset
+
+，而向量
+\begin_inset Formula $d$
+\end_inset
+
+由 
+\begin_inset Formula $d=aR_{1}+bR_{2}$
+\end_inset
+
+给出。
+\end_layout
+
+\begin_layout Standard
+现在，我们将
+\series bold
+不
+\series default
+使用我们对于旋转已使用的增量旋转方案：因为矩阵
+\begin_inset Formula $R$
+\end_inset
+
+从直线坐标帧变换到世界坐标帧，我们需要在右侧应用增量旋转：
+\begin_inset Formula 
+\[
+R'=R(I+\Omega)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+投影 Line3
+\end_layout
+
+\begin_layout Standard
+将一条直线投影到2D可以很容易地完成，因为
+\begin_inset Formula $v$
+\end_inset
+
+和
+\begin_inset Formula $d$
+\end_inset
+
+也是投影线上两点的2D齐次坐标，并因此我们有
+\begin_inset Formula 
+\begin{eqnarray*}
+l & = & v\times d\\
+ & = & R_{3}\times\left(aR_{1}+bR_{2}\right)\\
+ & = & a\left(R_{3}\times R_{1}\right)+b\left(R_{3}\times R_{2}\right)\\
+ & = & aR_{2}-bR_{1}
+\end{eqnarray*}
+
+\end_inset
+
+这可被写为一个点的一个旋转，
+\begin_inset Formula 
+\[
+l=R\left(\begin{array}{c}
+-b\\
+a\\
+0
+\end{array}\right)
+\]
+
+\end_inset
+
+但是因为增量旋转现在是在右侧完成的，我们需要再次计算导数：
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial(R(I+\Omega)x)}{\partial\omega}=\frac{\partial(R\Omega x)}{\partial\omega}=R\frac{\partial(\Omega x)}{\partial\omega}=R\Skew{-x}\label{eq:rotateRight}
+\end{equation}
+
+\end_inset
+
+并因此，投影 
+\begin_inset Formula $l$
+\end_inset
+
+ 相对于3D线的旋转矩阵 
+\begin_inset Formula $R$
+\end_inset
+
+的导数为
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial(l)}{\partial\omega}=R\Skew{\left(\begin{array}{c}
+b\\
+-a\\
+0
+\end{array}\right)}=\left[\begin{array}{ccc}
+aR_{3} & bR_{3} & -(aR_{1}+bR_{2})\end{array}\right]
+\end{equation}
+
+\end_inset
+
+或相对于 
+\begin_inset Formula $a,b$
+\end_inset
+
+ 标量的导数为：
+\begin_inset Formula 
+\[
+\frac{\partial(l)}{\partial a}=R_{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{\partial(l)}{\partial b}=-R_{1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+在直线上
+\begin_inset Formula $\SEthree$
+\end_inset
+
+的作用
+\end_layout
+
+\begin_layout Standard
+将3D线 
+\begin_inset Formula $(R,(a,b))$
+\end_inset
+
+ 从一个世界坐标帧变换为一个相机帧 
+\begin_inset Formula $T_{c}^{w}=(R_{c}^{w},t^{w})$
+\end_inset
+
+ 由下式完成
+\begin_inset Formula 
+\[
+R'=R_{w}^{c}R
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+a'=a-R_{1}^{T}t^{w}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+b'=b-R_{2}^{T}t^{w}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $R_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $R_{2}$
+\end_inset
+
+ 是 
+\begin_inset Formula $R$
+\end_inset
+
+ 的列，如前所述。
+\end_layout
+
+\begin_layout Standard
+为找到导数，一条直线 
+\begin_inset Formula $l^{w}=(R,a,b)$
+\end_inset
+
+ 从世界坐标帧到相机坐标帧 
+\begin_inset Formula $T_{c}^{w}$
+\end_inset
+
+ (在世界坐标帧中指定)的变换可被写为一个函数 
+\begin_inset Formula $f:\SEthree\times L\rightarrow L$
+\end_inset
+
+，如上所述，即，
+\begin_inset Formula 
+\[
+f(T_{c}^{w},l^{w})=\left(\left(R_{c}^{w}\right)^{T}R,a-R_{1}^{T}t^{w},b-R_{2}^{T}t^{w}\right).
+\]
+
+\end_inset
+
+让我们寻找 
+\begin_inset Formula $f$
+\end_inset
+
+ 相对于第一个参数
+\begin_inset Formula $T_{c}^{w}$
+\end_inset
+
+的雅可比矩阵 
+\begin_inset Formula $J_{1}$
+\end_inset
+
+，它应该服从于
+\begin_inset Formula 
+\begin{align*}
+f(T_{c}^{w}e^{\xihat},l^{w}) & \approx f(T_{c}^{w},l^{w})+J_{1}\xi
+\end{align*}
+
+\end_inset
+
+请注意
+\begin_inset Formula 
+\[
+T_{c}^{w}e^{\xihat}\approx\left[\begin{array}{cc}
+R_{c}^{w}\left(I_{3}+\Skew{\omega}\right) & t^{w}+R_{c}^{w}v\\
+0 & 1
+\end{array}\right]
+\]
+
+\end_inset
+
+让我们分别为每一个 
+\begin_inset Formula $R,a,b$
+\end_inset
+
+ 写出：
+\begin_inset Formula 
+\begin{align*}
+\left(R_{c}^{w}\left(I_{3}+\Skew{\omega}\right)\right)^{T}R & \approx\left(R_{c}^{w}\right)^{T}R(I+\left[J_{R\omega}\omega\right]_{\times})\\
+a-R_{1}^{T}\left(t^{w}+R_{c}^{w}v\right) & \approx a-R_{1}^{T}t^{w}+J_{av}v\\
+b-R_{2}^{T}\left(t^{w}+R_{c}^{w}v\right) & \approx b-R_{2}^{T}t^{w}+J_{bv}v
+\end{align*}
+
+\end_inset
+
+简化后，我们得到：
+\begin_inset Formula 
+\begin{align*}
+-\Skew{\omega}R' & \approx R'\left[J_{R\omega}\omega\right]_{\times}\\
+-R_{1}^{T}R_{c}^{w} & \approx J_{av}\\
+-R_{2}^{T}R_{c}^{w} & \approx J_{bv}
+\end{align*}
+
+\end_inset
+
+这对于 
+\begin_inset Formula $J_{av}$
+\end_inset
+
+ 和 
+\begin_inset Formula $J_{bv}$
+\end_inset
+
+给出了表达式。可以进一步简化顶行：
+\begin_inset Formula 
+\begin{align*}
+-\Skew{\omega}R' & \approx R'\left[J_{R\omega}\omega\right]_{\times}\\
+-R'^{T}\Skew{\omega}R' & \approx\left[J_{R\omega}\omega\right]_{\times}\\
+-\Skew{R'^{T}\omega} & \approx\left[J_{R\omega}\omega\right]_{\times}\\
+-R'^{T} & \approx J_{R\omega}
+\end{align*}
+
+\end_inset
+
+对于第二个参数
+\begin_inset Formula $R$
+\end_inset
+
+，我们现在简单地有：
+\begin_inset Formula 
+\begin{eqnarray*}
+AB(I+\Omega') & = & AB(I+\Omega)\\
+\Omega' & = & \Omega\\
+\omega' & = & \omega
+\end{eqnarray*}
+
+\end_inset
+
+标量导数可以通过以下实现来找到
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+a'\\
+b'\\
+...
+\end{array}\right)=\left(\begin{array}{c}
+a\\
+b\\
+0
+\end{array}\right)-R^{T}t^{w}
+\]
+
+\end_inset
+
+这里我们不关心第三行。因此
+\begin_inset Formula 
+\[
+\frac{\partial(\left(R(I+\Omega_{2})\right)^{T}t^{w})}{\partial\omega}=-\frac{\partial(\Omega_{2}R^{T}t^{w})}{\partial\omega}=-\Skew{R^{T}t^{w}}=\left[\begin{array}{ccc}
+0 & R_{3}^{T}t^{w} & -R_{2}^{T}t^{w}\\
+-R_{3}^{T}t^{w} & 0 & R_{1}^{T}t^{w}\\
+... & ... & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+
+\series bold
+对齐3D扫描
+\end_layout
+
+\begin_layout Standard
+下面是Pose3.align的基本解释，即使用SVD对齐两个点云。该灵感来自CVOnline，但经过修改...
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+我们的
+\series default
+模型是
+\begin_inset Formula 
+\[
+p^{c}=R\left(p^{w}-t\right)
+\]
+
+\end_inset
+
+即
+\begin_inset Formula $R$
+\end_inset
+
+是从相机到世界的变换，并且
+\begin_inset Formula $t$
+\end_inset
+
+是相机在世界坐标中的位置。目标函数为
+\begin_inset Formula 
+\begin{equation}
+\frac{1}{2}\sum\left(p^{c}-R(p^{w}-t)\right)^{2}=\frac{1}{2}\sum\left(p^{c}-Rp^{w}+Rt\right)^{2}=\frac{1}{2}\sum\left(p^{c}-Rp^{w}-t'\right)^{2}\label{eq:J}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $t'=-Rt$
+\end_inset
+
+ 是在相机帧中原点的位置。相对于 
+\begin_inset Formula $t'$
+\end_inset
+
+ 取导数并将其设置为零，我们有
+\begin_inset Formula 
+\[
+\sum\left(p^{c}-Rp^{w}-t'\right)=0
+\]
+
+\end_inset
+
+或者
+\begin_inset Formula 
+\begin{equation}
+t'=\frac{1}{n}\sum\left(p^{c}-Rp^{w}\right)=\bar{p}^{c}-R\bar{p}^{w}\label{eq:t}
+\end{equation}
+
+\end_inset
+
+这里 
+\begin_inset Formula $\bar{p}^{c}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\bar{p}^{w}$
+\end_inset
+
+ 是点云的中心。将其代回方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:J"
+
+\end_inset
+
+， 我们得到
+\begin_inset Formula 
+\[
+\frac{1}{2}\sum\left(p^{c}-R(p^{w}-t)\right)^{2}=\frac{1}{2}\sum\left(\left(p^{c}-\bar{p}^{c}\right)-R\left(p^{w}-\bar{p}^{w}\right)\right)^{2}=\frac{1}{2}\sum\left(\hat{p}^{c}-R\hat{p}^{w}\right)^{2}
+\]
+
+\end_inset
+
+现在，要最小化上述内容，只需将其最大化即可(参见CVOnline)
+\begin_inset Formula 
+\[
+\mathop{trace}\left(R^{T}C\right)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $C=\sum\hat{p}^{c}\left(\hat{p}^{w}\right)^{T}$
+\end_inset
+
+ 是相关矩阵。直观地说，点云被旋转以与主轴对齐。这可以通过在 
+\begin_inset Formula $C$
+\end_inset
+
+ 上的SVD分解来实现
+\begin_inset Formula 
+\[
+C=USV^{T}
+\]
+
+\end_inset
+
+并设置
+\begin_inset Formula 
+\[
+R=UV^{T}
+\]
+
+\end_inset
+
+显然，从方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:t"
+
+\end_inset
+
+，我们也则恢复最优
+\begin_inset Formula $t$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+t=\bar{p}^{w}-R^{T}\bar{p}^{c}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+附录
+\end_layout
+
+\begin_layout Subsection*
+微分规则
+\end_layout
+
+\begin_layout Standard
+Spivak 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Spivak65book"
+literal "true"
+
+\end_inset
+
+ 还注意到一些按分量定义的多元导数规则，但它们在实践中不太有用：
+\end_layout
+
+\begin_layout Itemize
+因为 
+\begin_inset Formula $f:\Multi nm$
+\end_inset
+
+ 是按照 
+\begin_inset Formula $m$
+\end_inset
+
+ 的分量函数 
+\begin_inset Formula $f^{i}$
+\end_inset
+
+定义的，则 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $a$
+\end_inset
+
+ 处是可微的，当且仅当每一个
+\begin_inset Formula $f^{i}$
+\end_inset
+
+是，并且雅可比矩阵
+\begin_inset Formula $F_{a}$
+\end_inset
+
+是
+\begin_inset Formula $m\times n$
+\end_inset
+
+矩阵，它们的第
+\begin_inset Formula $i$
+\end_inset
+
+行是 
+\begin_inset Formula $\left(f^{i}\right)'(a)$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+F_{a}\define f'(a)=\left[\begin{array}{c}
+\left(f^{1}\right)'(a)\\
+\vdots\\
+\left(f^{m}\right)'(a)
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+标量微分规则：如果 
+\begin_inset Formula $f,g:\OneD n$
+\end_inset
+
+ 在
+\begin_inset Formula $a$
+\end_inset
+
+处是可微的，则
+\begin_inset Formula 
+\[
+(f+g)'(a)=F_{a}+G_{a}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(f\cdot g)'(a)=g(a)F_{a}+f(a)G_{a}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+(f/g)'(a)=\frac{1}{g(a)^{2}}\left[g(a)F_{a}-f(a)G_{a}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+切空间与切丛
+\end_layout
+
+\begin_layout Standard
+以下内容改编自在文献 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Murray94book"
+literal "true"
+
+\end_inset
+
+ 中的附录A。
+\end_layout
+
+\begin_layout Standard
+一个流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 在一个点 
+\begin_inset Formula $p\in M$
+\end_inset
+
+ 处的
+\series bold
+切空间
+\series default
+(
+\series bold
+tangent space
+\series default
+) 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ 是在
+\begin_inset Formula $p$
+\end_inset
+
+处的
+\series bold
+切向量
+\series default
+(
+\series bold
+tangent vectors
+\series default
+)的向量空间。
+\series bold
+切丛
+\series default
+(
+\series bold
+tangent bundle
+\series default
+) 
+\begin_inset Formula $TM$
+\end_inset
+
+ 是所有切向量的集合
+\begin_inset Formula 
+\[
+TM\define\bigcup_{p\in M}T_{p}M
+\]
+
+\end_inset
+
+一个
+\series bold
+向量场
+\series default
+(
+\series bold
+vector field
+\series default
+) 
+\begin_inset Formula $X:M\rightarrow TM$
+\end_inset
+
+ 为每一个点
+\begin_inset Formula $p$
+\end_inset
+
+分配一个单一的切向量 
+\begin_inset Formula $x\in T_{p}M$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $F:M\rightarrow N$
+\end_inset
+
+ 是从流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 到流形 
+\begin_inset Formula $N$
+\end_inset
+
+ 的一个平滑映射，则我们可以定义
+\begin_inset Formula $F$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+处的
+\series bold
+切映射
+\series default
+(
+\series bold
+tangent map
+\series default
+)为线性映射
+\lang english
+ 
+\lang chinese-simplified
+
+\begin_inset Formula $F_{*p}:T_{p}M\rightarrow T_{F(p)}N$
+\end_inset
+
+，它将在 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ 中在
+\begin_inset Formula $p$
+\end_inset
+
+处的切向量映射到在
+\begin_inset Formula $T_{F(p)}N$
+\end_inset
+
+中在象
+\begin_inset Formula $F(p)$
+\end_inset
+
+处的切向量。
+\end_layout
+
+\begin_layout Subsection*
+同态
+\end_layout
+
+\begin_layout Standard
+以下内容
+\series bold
+可能
+\series default
+与
+\begin_inset CommandInset citation
+LatexCommand cite
+after "page 45"
+key "Hall00book"
+literal "true"
+
+\end_inset
+
+相关：假设 
+\begin_inset Formula $\Phi:G\rightarrow H$
+\end_inset
+
+ 是一个映射(李群同态)。则存在一个唯一的线性映射 
+\begin_inset Formula $\phi:\gg\rightarrow\mathfrak{h}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\phi(\xhat)\define\lim_{t\rightarrow0}\frac{d}{dt}\Phi\left(e^{t\xhat}\right)
+\]
+
+\end_inset
+
+以使得
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\Phi\left(e^{\xhat}\right)=e^{\phi\left(\xhat\right)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\phi\left(T\xhat T^{-1}\right)=\Phi(T)\phi(\xhat)\Phi(T^{-1})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\phi\left([\xhat,\yhat]\right)=\left[\phi(\xhat),\phi(\yhat)\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+换句话说，映射 
+\begin_inset Formula $\phi$
+\end_inset
+
+ 是 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ 在特征处的导数。举例来说，假设 
+\begin_inset Formula $\Phi(g)=g^{-1}$
+\end_inset
+
+，则
+\series bold
+在特征处
+\series default
+相应的导数为
+\begin_inset Formula 
+\[
+\phi(\xhat)\define\lim_{t\rightarrow0}\frac{d}{dt}\left(e^{t\xhat}\right)^{-1}=\lim_{t\rightarrow0}\frac{d}{dt}e^{-t\xhat}=-\xhat\lim_{t\rightarrow0}e^{-t\xhat}=-\xhat
+\]
+
+\end_inset
+
+在一般情况下，只需对 
+\begin_inset Formula $\gg$
+\end_inset
+
+ 的一个基计算 
+\begin_inset Formula $\phi$
+\end_inset
+
+ 即可。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Undercooked: What if we want the derivative of 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ at some other element 
+\begin_inset Formula $g$
+\end_inset
+
+? In other words, if we apply 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ at 
+\begin_inset Formula $g$
+\end_inset
+
+ incremented by some Lie algebra element 
+\begin_inset Formula $e^{\xhat}$
+\end_inset
+
+, then we are looking for a 
+\begin_inset Formula $\yhat\in\gg$
+\end_inset
+
+ will yield the same result: 
+\begin_inset Formula 
+\[
+\Phi\left(g\right)\lim_{t\rightarrow0}\frac{d}{dt}e^{t\yhat}=\lim_{t\rightarrow0}\frac{d}{dt}\Phi\left(ge^{t\xhat}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\lim_{t\rightarrow0}\frac{d}{dt}e^{t\yhat}=\Phi\left(g\right)^{-1}\lim_{t\rightarrow0}\frac{d}{dt}\Phi\left(ge^{t\xhat}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Let us define two mappings
+\begin_inset Formula 
+\[
+\Phi_{1}(A)=AB\mbox{ and }\Phi_{2}(B)=AB
+\]
+
+\end_inset
+
+Then 
+\begin_inset Formula 
+\[
+\phi_{1}(\xhat)=\lim_{t\rightarrow0}\frac{d}{dt}\Phi_{1}\left(e^{t\xhat}B\right)=
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "refs"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
