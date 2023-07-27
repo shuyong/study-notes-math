@@ -509,10 +509,10 @@ noprefix "false"
 
 \end_inset
 
-因此
+因此有
 \begin_inset Formula 
 \begin{equation}
-^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}=\mathbf{Ad}_{\mathcal{X}}\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right).\label{eq:31}
+\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}=\left(\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)^{\vee}.\label{eq:31}
 \end{equation}
 
 \end_inset
@@ -1077,7 +1077,7 @@ noprefix "false"
 \begin_inset Formula $\ominus$
 \end_inset
 
-对应目标域 (codomain) 或图 (image) 
+对应陪域 (codomain) 或图 (image) 
 \begin_inset Formula $\mathcal{N}$
 \end_inset
 
@@ -3115,7 +3115,70 @@ noprefix "false"
 
 \end_inset
 
-)。
+)。并且，根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:80"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，上式可以解释为
+\begin_inset Formula 
+\[
+\mathbf{F}=\left[\begin{array}{cc}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & -\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}\\
+\mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
+\end{array}\right]
+\]
+
+\end_inset
+
+这也说明姿态误差是一个很复杂的组合流形，增量角度误差
+\begin_inset Formula $\delta\boldsymbol{\theta}$
+\end_inset
+
+的方向和增量角度
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+，也即和角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+的方向相反，并且角速度偏差的误差
+\begin_inset Formula $\delta\boldsymbol{\omega}_{b}$
+\end_inset
+
+的方向同样相反，而且因为
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵为
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+矩阵的一阶导数，即
+\begin_inset Formula $\mathbf{R}^{\prime}=\mathbf{V}$
+\end_inset
+
+，所以偏差的误差值与
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+矩阵的一阶导数相关。
 \end_layout
 
 \begin_layout Standard
@@ -3217,15 +3280,7 @@ noprefix "false"
 
 \end_inset
 
-)。这也说明姿态误差是一个很复杂的组合流形，它的方向和增量角度
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
-，也即和角速度
-\begin_inset Formula $\boldsymbol{\omega}$
-\end_inset
-
-的方向相反。
+)。
 \end_layout
 
 \begin_layout Standard
@@ -3542,16 +3597,30 @@ noprefix "false"
 \begin_inset Formula $\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
 \end_inset
 
-矩阵，大概是刚体运动群
-\begin_inset Formula $\mathrm{SE}(3)$
+矩阵，是刚体旋转群
+\begin_inset Formula $\mathrm{SO}(3)$
 \end_inset
 
 对角度向量
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
-的右结合的加号的 Jacobian 矩阵(FIXME: 瞎猜的，还未进行验证)，
-\begin_inset Formula $\mathbf{J}_{\boldsymbol{\theta}}^{\mathbf{M}\oplus\boldsymbol{\theta}}=\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
+的右结合的加号的二阶导数，即方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:148"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的 Jacobian 矩阵
+\begin_inset Formula $\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)$
+\end_inset
+
+的导数，
+\begin_inset Formula $\mathbf{J}_{r}^{\prime}\left(\boldsymbol{\theta}\right)=\boldsymbol{\Sigma}\left(\boldsymbol{\theta}\right)$
 \end_inset
 
 。于是我们完全用 Jacobian 矩阵解释误差状态转换矩阵
@@ -3569,7 +3638,7 @@ noprefix "false"
 \end{array}\right]\\
  & =\left[\begin{array}{cccc}
 \mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{0}_{3\times3} & -\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{0}_{3\times3}\\
-\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{I}_{3\times3} & \mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{\boldsymbol{\theta}}^{\mathbf{M}\oplus\boldsymbol{\theta}} & -\mathsf{R}\cdot\Delta t\\
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}} & \mathbf{I}_{3\times3} & \mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathbf{a}}\mathbf{J}_{r}^{\prime}\left(\boldsymbol{\theta}\right) & -\mathsf{R}\cdot\Delta t\\
 \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3} & \mathbf{0}_{3\times3}\\
 \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{0}_{3\times3} & \mathbf{I}_{3\times3}
 \end{array}\right]
@@ -3577,7 +3646,37 @@ noprefix "false"
 
 \end_inset
 
-其中组合流形的几何意义明显可见。
+即，增量速度误差
+\begin_inset Formula $\delta\mathbf{v}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+矩阵的一阶导数相关相关，加速度偏差的误差
+\begin_inset Formula $\delta\mathbf{a}_{b}$
+\end_inset
+
+与
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+矩阵的而阶导数相关，方向都相反，并且都需要使用旋转作用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:150"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，即可得到经过时间
+\begin_inset Formula $\Delta t$
+\end_inset
+
+之后，新的增量速度误差和加速度偏差的误差。这其中组合流形的几何意义明显可见。
 \end_layout
 
 \begin_layout Section
