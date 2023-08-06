@@ -1,0 +1,7430 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "李群论中的伴随表示与指数映射导数"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+李群论中的伴随表示与指数映射导数
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+本文旨在深化对李群理论，尤其是伴随表示和指数映射导数的理解。本文将深入探讨伴随表示、雅可比矩阵和指数映射与对数映射的导数等几种数学概念的关系。在此基础上,详细分
+析了指数映射和对数映射的导数，揭示了它们与一阶线性近似之间的关系，并强调这些概念的几何直觉。最后以三维旋转群为例，通过具体的矩阵计算验证了理论结果，加深了对概念
+的理解。
+\end_layout
+
+\begin_layout Section
+李群知识快速回顾
+\end_layout
+
+\begin_layout Standard
+李群是一种具有连续性质的群，它在一个光滑流形上定义，并且具有群结构。李群的一个典型例子是三维旋转群，表示三维空间中的旋转。
+\end_layout
+
+\begin_layout Standard
+李代数是李群的局部线性化，它描述了李群在单位元附近的局部结构。李代数是一个向量空间，它具有一个叫做李括号的二元运算。李代数的一个典型例子是三维空间中的向量叉积。
+\end_layout
+
+\begin_layout Subsection
+李群的定义和性质
+\end_layout
+
+\begin_layout Standard
+李群 
+\begin_inset Formula $\mathcal{G}$
+\end_inset
+
+ 是一个光滑流形，其元素满足群公理。一方面，可微或光滑流形(
+\emph on
+smooth manifold
+\emph default
+)是局部类似于线性空间的拓扑空间。流形的光滑性意味着在每个点上存在唯一的切空间。 这个空间是一个线性或向量空间，我们可以在上面做微积分。 另一方面，
+ 一个群(
+\emph on
+group
+\emph default
+) 
+\begin_inset Formula $(\mathcal{G},\circ)$
+\end_inset
+
+ 是一个集合，
+\begin_inset Formula $\mathcal{G}$
+\end_inset
+
+，具有组合运算，
+\begin_inset Formula $\circ$
+\end_inset
+
+，这个算子，对于元素 
+\begin_inset Formula $\mathcal{X},\mathcal{Y},\mathcal{Z}\in\mathcal{G}$
+\end_inset
+
+，满足下列公理，
+\begin_inset Formula 
+\begin{align}
+\textrm{封闭于 `\ensuremath{\circ}'}~: & \mathcal{X}\circ\mathcal{Y}\in\mathcal{G}\label{eq:1}\\
+\textrm{幺元 \ensuremath{\mathcal{E}}}~: & \mathcal{E}\circ\mathcal{X}=\mathcal{X}\circ\mathcal{E}=\mathcal{X}\label{eq:2}\\
+\textrm{逆元 \ensuremath{\mathcal{X}^{-1}}}~: & \mathcal{X}^{-1}\circ\mathcal{X}=\mathcal{X}\circ\mathcal{X}^{-1}=\mathcal{E}\label{eq:3}\\
+\textrm{结合性}~: & (\mathcal{X}\circ\mathcal{Y})\circ\mathcal{Z}=\mathcal{X}\circ(\mathcal{Y}\circ\mathcal{Z})\label{eq:4}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在一个李群(
+\emph on
+Lie group
+\emph default
+)中，流形在每一点上看起来都是一样的(例如在球面的表面上)，并且因此在任意点上的所有切空间都是相同的。 群结构要求流形元素的组合保持在流形上(封闭方程)，并且每
+个元素在流形中也有一个逆元(逆元方程)。 其中一个特别的元素是幺元(幺元方程)，并因此有一个特殊的切空间是幺元处的正切，我们称之为李群的李代数。
+ 李群结合了光滑流形的局部性质，使我们能够利用群的全局性质进行微积分，从而实现远处对象的非线性组合。
+\end_layout
+
+\begin_layout Subsection
+李代数的定义和性质
+\end_layout
+
+\begin_layout Standard
+李代数是一种与李群相关的数学结构，它是一个向量空间。李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 被称为代数，因为它被赋予了一个二元运算，即李括号(
+\emph on
+Lie bracket
+\emph default
+) 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+，其性质与 
+\begin_inset Formula $\mathcal{G}$
+\end_inset
+
+ 的群运算密切相关，满足以下性质：
+\end_layout
+
+\begin_layout Enumerate
+反对称性：对于任意的向量
+\begin_inset Formula $x,y$
+\end_inset
+
+，有
+\begin_inset Formula $[x,y]=-[y,x]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+Jacobi恒等式：对于任意的向量
+\begin_inset Formula $x,y,z$
+\end_inset
+
+，有
+\begin_inset Formula $[x,[y,z]]+[y,[z,x]]+[z,[x,y]]=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+李代数的定义中，李括号是一个非常重要的概念，它描述了向量空间中两个向量之间的代数关系。李括号的反对称性意味着它是一个反对称的二元运算，而李恒等式和Jacobi恒
+等式则描述了李括号的代数性质，它们保证了李代数的结构是稳定的，并且可以通过李括号来推导出其他的代数性质。
+\end_layout
+
+\begin_layout Subsection
+切空间与李代数
+\end_layout
+
+\begin_layout Standard
+给定 
+\begin_inset Formula $\mathcal{X}(t)$
+\end_inset
+
+ 为在李群流形 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 上移动的点，它的速度 
+\begin_inset Formula $\dot{\mathcal{X}}=\partial\mathcal{X}/\partial t$
+\end_inset
+
+ 属于 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ 处与 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 正切的空间，我们标记为 
+\begin_inset Formula $T_{\mathcal{X}}\mathcal{M}$
+\end_inset
+
+。 流形的光滑性，即没有边或尖峰，意味着在每个点上存在唯一的切空间。 这种切空间的结构在任意地方都是相同的。
+\end_layout
+
+\begin_layout Standard
+幺元 
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+ 处的切空间称为 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 的李代数(
+\emph on
+Lie algebra
+\emph default
+)，标记为 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+\textrm{Lie algebra}\ : & \mathfrak{g}\triangleq T_{\mathcal{E}}\mathcal{M}\end{array}.
+\]
+
+\end_inset
+
+每一个李群都有一个关联的李代数。 我们通过以下事实将李群与其李代数联系起来:
+\end_layout
+
+\begin_layout Itemize
+李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 是一个向量空间。因此，它的元素可以用 
+\begin_inset Formula $\mathbb{R}^{m}$
+\end_inset
+
+ 中的向量来标识(
+\emph on
+identified
+\emph default
+)，其维数 
+\begin_inset Formula $m$
+\end_inset
+
+ 是 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 的自由度。
+\end_layout
+
+\begin_layout Itemize
+指数映射(
+\emph on
+exponential map
+\emph default
+)，
+\begin_inset Formula $\exp:\mathfrak{g}\to\mathcal{M}$
+\end_inset
+
+，将李代数的元素精确地转化为群的元素。对数映射
+\begin_inset Formula $\log$
+\end_inset
+
+是其逆运算。
+\end_layout
+
+\begin_layout Itemize
+通过线性变换，在 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ 处的切空间中的向量可以变换到幺元 
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+ 处的切空间中。这种变换称为伴随(
+\emph on
+adjoint
+\emph default
+)变换。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+李代数可以局部定义到一个切点 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+，建立局部坐标系于 
+\begin_inset Formula $T_{\mathcal{X}}\mathcal{M}$
+\end_inset
+
+。 我们将用“帽子”修饰符
+\begin_inset Formula $\hat{\ }$
+\end_inset
+
+来表示李代数的元素，例如 
+\begin_inset Formula $\mathbf{v}^{\wedge}$
+\end_inset
+
+ 表示速度或 
+\begin_inset Formula $\boldsymbol{\tau}^{\wedge}=(\mathbf{v}t)^{\wedge}=\mathbf{v}^{\wedge}t$
+\end_inset
+
+ 表示一般元素。 还可以添加一个左上标来指定精确的切空间，例如 
+\begin_inset Formula $^{\mathcal{X}}\mathbf{v}^{\wedge}\in T_{\mathcal{X}}\mathcal{M}$
+\end_inset
+
+ 和 
+\begin_inset Formula $^{\mathcal{E}}\mathbf{v}^{\wedge}\in T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+通过对群的约束方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) (即逆元方程)进行时间微分，李代数的结构可以被找到。 对于乘法群，这将产生新的约束 
+\begin_inset Formula $\mathcal{X}^{-1}\dot{\mathcal{X}}+\dot{\mathcal{X}^{-1}}\mathcal{X}=0$
+\end_inset
+
+，适用于正切于 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ 的元素(项 
+\begin_inset Formula $\dot{\mathcal{X}^{-1}}$
+\end_inset
+
+ 是其逆项的导数) 。 因此，李代数的元素的形式是，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}^{\wedge}=\mathcal{X}^{-1}\dot{\mathcal{X}}=-\dot{\mathcal{X}^{-1}}\mathcal{X}.\label{eq:9}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射
+\end_layout
+
+\begin_layout Standard
+指数映射 
+\begin_inset Formula $\exp()$
+\end_inset
+
+ 允许我们精确地将李代数的元 素变换到群上，一般称为收回 (
+\emph on
+retraction
+\emph default
+) 操 作。直观地说，
+\begin_inset Formula $\exp()$
+\end_inset
+
+ 将切元素缠绕在大圆弧或测地线 (
+\emph on
+geodesic
+\emph default
+) 跟随的流形上 (就像将弦缠绕在球上一样)。逆映射是 
+\begin_inset Formula $\log()$
+\end_inset
+
+，即展开操作。
+\begin_inset Formula $\exp()$
+\end_inset
+
+ 映射通过考虑流形上 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 的时间导数自然产生，如下所示。从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们有，
+\begin_inset Formula 
+\begin{equation}
+\dot{\mathcal{X}}=\mathcal{X}\mathbf{v}^{\wedge}\label{eq:12}
+\end{equation}
+
+\end_inset
+
+将 
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+ 做为常数，这是一个常微分方程 (ODE)，其解为
+\begin_inset Formula 
+\begin{equation}
+\mathcal{X}(t)=\mathcal{X}(0)\exp\left(\mathbf{v}^{\wedge}t\right)\label{eq:13}
+\end{equation}
+
+\end_inset
+
+即 
+\begin_inset Formula $\exp\left(\mathbf{v}^{\wedge}t\right)$
+\end_inset
+
+ 将李代数的元素 
+\begin_inset Formula $\mathbf{v}^{\wedge}t$
+\end_inset
+
+ 映射到群中。这被称为指数映射 (
+\emph on
+exponential map
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+为了给指数映射提供一个更通用的定义，让我们定义切增量 
+\begin_inset Formula $\boldsymbol{\tau}\triangleq\mathbf{v}t\in\mathbb{R}^{m}$
+\end_inset
+
+ 作为每一时刻的速度，这样我们就有 
+\begin_inset Formula $\boldsymbol{\tau}^{\wedge}=\mathbf{v}^{\wedge}t\in\mathfrak{g}$
+\end_inset
+
+ 做为李代数中的一个点。指数映射和它的逆(对数映射)，现在可以写成，
+\begin_inset Formula 
+\begin{align}
+\exp & :\mathfrak{g}\rightarrow\mathcal{M}\quad;\quad\boldsymbol{\tau}^{\wedge}\mapsto\mathcal{X}=\exp\left(\boldsymbol{\tau}^{\wedge}\right)\label{eq:14}\\
+\log: & \mathcal{M}\rightarrow\mathfrak{g}\quad;\quad\mathcal{X}\mapsto\boldsymbol{\tau}^{\wedge}=\log(\mathcal{X}).\label{eq:15}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过写出绝对收敛的泰勒级数，
+\begin_inset Formula 
+\begin{equation}
+\exp\left(\boldsymbol{\tau}^{\wedge}\right)=\mathcal{E}+\boldsymbol{\tau}^{\wedge}+\frac{1}{2}\boldsymbol{\tau}^{\wedge2}+\frac{1}{3!}\boldsymbol{\tau}^{\wedge3}+\cdots,\label{eq:16}
+\end{equation}
+
+\end_inset
+
+并且利用 
+\begin_inset Formula $\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+ 的幂的代数性质，得到了乘法群中的指数封闭形式。然后将这些求逆以找到对数映射。指数映射的关键性质是
+\begin_inset Formula 
+\begin{align}
+\exp\left(\left(t+s\right)\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(t\boldsymbol{\tau}^{\wedge}\right)\exp\left(s\boldsymbol{\tau}^{\wedge}\right)\label{eq:17}\\
+\exp\left(t\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{t}\label{eq:18}\\
+\exp\left(-\boldsymbol{\tau}^{\wedge}\right) & =\exp\left(\boldsymbol{\tau}^{\wedge}\right)^{-1}\label{eq:19}\\
+\exp\left(\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right) & =\mathcal{X}\exp\left(\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}\label{eq:20}
+\end{align}
+
+\end_inset
+
+其中方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 很有用，在推导伴随矩阵和 Jacobian 矩阵时经常用到。
+\end_layout
+
+\begin_layout Standard
+大写的 
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+ 映射是将向量元素 
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}\left(\cong T_{\mathcal{E}}\mathcal{M}\right)$
+\end_inset
+
+ 直接映射到元素 
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+ 的快捷方式。我们有，
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}: & \mathbb{R}^{m}\rightarrow\mathcal{M}\quad;\quad\boldsymbol{\tau}\mapsto\mathcal{X}=\mathrm{Exp}(\boldsymbol{\tau})\label{eq:21}\\
+\mathrm{Log}: & \mathcal{M}\rightarrow\mathbb{R}^{m}\quad;\quad\mathcal{X}\mapsto\boldsymbol{\tau}=\mathrm{Log}(\mathcal{X}).\label{eq:22}
+\end{align}
+
+\end_inset
+
+显然有
+\begin_inset Formula 
+\begin{align}
+\mathcal{X} & =\mathrm{Exp}(\boldsymbol{\tau})\triangleq\exp\left(\boldsymbol{\tau}^{\wedge}\right)\label{eq:23}\\
+\boldsymbol{\tau} & =\mathrm{Log}(\mathcal{X})\triangleq\log(\mathcal{X})^{\vee}.\label{eq:24}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+加号和减号算子
+\end_layout
+
+\begin_layout Standard
+加号和减号算子允许我们在 (弯曲的) 流形中的元素之间引入增量，并在 (平坦的) 切向量空间中表示它 们。它们用 
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 和 
+\begin_inset Formula $\ominus$
+\end_inset
+
+ 表示，将一个 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathrm{Exp}/\mathrm{Log}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 操作与一个结合操作组合在一起。由于组合的非交换性，它们根据操作数的顺序在右结合版本和左结合版本中定义。右结合算子是,
+\begin_inset Formula 
+\begin{align}
+\text{right}-\oplus: & \mathcal{Y}=\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\triangleq\mathcal{X}\circ\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\in\mathcal{M}\label{eq:25}\\
+\text{right}-\ominus: & ^{\mathcal{X}}\boldsymbol{\tau}=\mathcal{Y}\ominus\mathcal{X}\triangleq\mathrm{Log}\left(\mathcal{X}^{-1}\circ\mathcal{Y}\right)\in T_{\mathcal{X}}\mathcal{M}.\label{eq:26}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为在 
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 方程中 
+\begin_inset Formula $\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)$
+\end_inset
+
+ 出现在组合的右手侧，
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+ 属于 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ 处的切空间：我们按照约定说这个 
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+ 是在 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ 处的局部 (local) 坐标系中表示 — 我们标记到参考坐标系的左上标。 
+\end_layout
+
+\begin_layout Standard
+左结合算子是
+\begin_inset Formula 
+\begin{align}
+\text{left}-\oplus: & \mathcal{Y}={}^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}\triangleq\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\circ\mathcal{X}\in\mathcal{M}\label{eq:27}\\
+\text{left}-\ominus: & ^{\mathcal{E}}\boldsymbol{\tau}=\mathcal{Y}\ominus\mathcal{X}\triangleq\mathrm{Log}\left(\mathcal{Y}\circ\mathcal{X}^{-1}\right)\in T_{\mathcal{E}}\mathcal{M}.\label{eq:28}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在，在 
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 方程中 
+\begin_inset Formula $\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)$
+\end_inset
+
+ 出现在左侧，并且我们有 
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\in T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+：我们说这个 
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}$
+\end_inset
+
+ 是在全局 (global) 坐标系中表示。
+\end_layout
+
+\begin_layout Standard
+请注意，虽然右结合和左结合算子 
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 是按操作数顺序区分的，但符号 
+\begin_inset Formula $\ominus$
+\end_inset
+
+ 在上述方程中是不明确的。在本文中，我们默认表示局部扰动，因此我们默认使用 
+\begin_inset Formula $\oplus$
+\end_inset
+
+ 和 
+\begin_inset Formula $\ominus$
+\end_inset
+
+ 的右结合形式。
+\end_layout
+
+\begin_layout Subsection
+伴随和伴随矩阵
+\end_layout
+
+\begin_layout Standard
+如果我们在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中标识 
+\begin_inset Formula $\mathcal{Y}$
+\end_inset
+
+，我们就得到 
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}=\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+，它确定局部切元素和全局切元素之间的关系。我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来扩展它为
+\begin_inset Formula 
+\begin{align*}
+\mathrm{Exp}\left(^{\mathcal{E}}\boldsymbol{\tau}\right)\mathcal{X} & =\mathcal{X}\mathrm{Exp}\left(^{\mathcal{X}}\boldsymbol{\tau}\right)\\
+\exp\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right) & =\mathcal{X}\exp\left(^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\right)\mathcal{X}^{-1}=\exp\left(\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)\\
+^{\mathcal{E}}\boldsymbol{\tau}^{\wedge} & =\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+伴随
+\end_layout
+
+\begin_layout Standard
+因此，我们将 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 在 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 处的伴随 (
+\emph on
+adjoint
+\emph default
+)，记为 
+\begin_inset Formula $\mathrm{Ad}_{\mathcal{X}}$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\begin{equation}
+\mathrm{Ad}_{\mathcal{X}}:\mathfrak{g}\rightarrow\mathfrak{g};\ \boldsymbol{\tau}^{\wedge}\mapsto\mathrm{Ad}_{\mathcal{X}}\left(\boldsymbol{\tau}^{\wedge}\right)\triangleq\mathcal{X}\,{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1},\label{eq:29}
+\end{equation}
+
+\end_inset
+
+因此
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}=\mathrm{Ad}_{\mathcal{X}}\left(^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}\right).$
+\end_inset
+
+这定义了群在它自己的李代数上的伴随作用 (
+\emph on
+adjoint action
+\emph default
+)。伴随有两个有趣的 (并且很容易证明的) 性质，
+\begin_inset Formula 
+\begin{align*}
+\text{ Linear : } & \mathrm{Ad}_{\mathcal{X}}\left(a\boldsymbol{\tau}^{\wedge}+b\boldsymbol{\sigma}^{\wedge}\right)=a\mathrm{Ad}_{\mathcal{X}}\left(\boldsymbol{\tau}^{\wedge}\right)+b\mathrm{Ad}_{\mathcal{X}}\left(\boldsymbol{\sigma}^{\wedge}\right)\\
+\text{ Homomorphism : } & \mathrm{Ad}_{\mathcal{X}}\left(\mathrm{Ad}_{\mathcal{Y}}\left(\boldsymbol{\tau}^{\wedge}\right)\right)=\mathrm{Ad}_{\mathcal{X}\mathcal{Y}}\left(\boldsymbol{\tau}^{\wedge}\right).
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+伴随矩阵
+\end_layout
+
+\begin_layout Standard
+因为 
+\begin_inset Formula $\mathrm{Ad}_{\mathcal{X}}()$
+\end_inset
+
+ 是线性的，我们可以找到一个等价的矩阵算子 
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}$
+\end_inset
+
+，它映射笛卡尔切向量 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}\cong{}^{\mathcal{E}}\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 和 
+\begin_inset Formula $^{\mathcal{X}}\boldsymbol{\tau}\cong{}^{\mathcal{X}}\boldsymbol{\tau}^{\wedge}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathcal{X}}:\mathbb{R}^{m}\rightarrow\mathbb{R}^{m};{}^{\mathcal{X}}\boldsymbol{\tau}\mapsto{}^{\mathcal{E}}\boldsymbol{\tau}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau},\label{eq:30}
+\end{equation}
+
+\end_inset
+
+我们称之为伴随矩阵 (
+\emph on
+adjoint matrix
+\emph default
+)。这可以通过将 
+\begin_inset Formula $\vee$
+\end_inset
+
+ 应用于方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:29"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 来计算，因此写为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}=\left(\mathcal{X}\boldsymbol{\tau}^{\wedge}\mathcal{X}^{-1}\right)^{\vee},\label{eq:31}
+\end{equation}
+
+\end_inset
+
+然后扩展右手侧结合以标识伴随矩阵。伴随矩阵的其它性质是，
+\begin_inset Formula 
+\begin{align}
+\mathcal{X}\oplus\boldsymbol{\tau} & =\left(\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}\right)\oplus\mathcal{X}\label{eq:32}\\
+\mathbf{Ad}_{\mathcal{X}^{-1}} & =\mathbf{Ad}_{\mathcal{X}}{}^{-1}\label{eq:33}\\
+\mathbf{Ad}_{\mathcal{XY}} & =\mathbf{Ad}_{\mathcal{X}}\mathbf{Ad}_{\mathcal{Y}}.\label{eq:34}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+请注意在方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:33"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:34"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的左半部分通常比右半部分计算起来更方便快捷。我们将经常使用伴随矩阵将
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+处的切空间的向量线性变换为原点的切空间的向量，应用方程为
+\begin_inset Formula $^{\mathcal{E}}\boldsymbol{\tau}=\mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+李群导数与 Jacobian 矩阵
+\end_layout
+
+\begin_layout Paragraph
+Jacobian 
+\series bold
+矩阵
+\end_layout
+
+\begin_layout Standard
+在向量微积分中，多个变量的向量值函数的
+\series bold
+雅可比矩阵
+\series default
+(
+\series bold
+Jacobian matrix
+\series default
+)是其所有一阶偏导数的矩阵。
+\end_layout
+
+\begin_layout Standard
+假设
+\begin_inset Formula $\mathbf{f}:\mathbf{R}^{n}\rightarrow\mathbf{R}^{m}$
+\end_inset
+
+是一个函数，使得它的每个一阶偏导数都存在于
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+上。该函数将点
+\begin_inset Formula $\mathbf{x}\in\mathbf{R}^{n}$
+\end_inset
+
+作为输入，并生成向量
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)\in\mathbf{R}^{m}$
+\end_inset
+
+作为输出。那么
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的Jacobian矩阵被定义为一个
+\begin_inset Formula $m\times n$
+\end_inset
+
+矩阵，记为
+\begin_inset Formula $\mathbf{J}$
+\end_inset
+
+，其第
+\begin_inset Formula $(i,j)$
+\end_inset
+
+项为
+\begin_inset Formula $\mathbf{J}_{ij}=\frac{\partial f_{i}}{\partial x_{j}}$
+\end_inset
+
+，或明确地
+\begin_inset Formula 
+\[
+\mathbf{J}=\left[\begin{array}{ccc}
+\frac{\partial\mathbf{f}}{\partial x_{1}} & \cdots & \frac{\partial\mathbf{f}}{\partial x_{n}}\end{array}\right]=\left[\begin{array}{c}
+\nabla^{\mathrm{T}}f_{1}\\
+\vdots\\
+\nabla^{\mathrm{T}}f_{m}
+\end{array}\right]=\left[\begin{array}{ccc}
+\frac{\partial f_{1}}{\partial x_{1}} & \cdots & \frac{\partial f_{1}}{\partial x_{n}}\\
+\vdots & \ddots & \vdots\\
+\frac{\partial f_{m}}{\partial x_{1}} & \cdots & \frac{\partial f_{m}}{\partial x_{n}}
+\end{array}\right]
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\nabla^{\mathrm{T}}f_{i}$
+\end_inset
+
+是梯度的转置(行向量)的第
+\begin_inset Formula $i$
+\end_inset
+
+个分量。
+\end_layout
+
+\begin_layout Standard
+Jacobian矩阵表示 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+ 在
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+的可微分的每个点上的微分。具体来说，如果
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处可微，如果
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+是一个列矩阵表示的位移向量，那么矩阵乘积 
+\begin_inset Formula $\mathbf{J}\left(\mathbf{x}\right)\cdot\mathbf{h}$
+\end_inset
+
+ 是另一个位移向量，即
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的邻域内的变化的最佳线性近似。这意味着将
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+映射到
+\begin_inset Formula $\mathbf{f}\left(\mathbf{x}\right)+\mathbf{J}\left(\mathbf{x}\right)\cdot\left(\mathbf{y}-\mathbf{x}\right)$
+\end_inset
+
+的函数是
+\begin_inset Formula $\mathbf{f}\left(\mathbf{y}\right)$
+\end_inset
+
+对于所有靠近
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+的点的最佳线性逼近。该线性函数称为
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+在
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+处的
+\series bold
+导数
+\series default
+(
+\emph on
+derivative
+\emph default
+)或
+\series bold
+微分
+\series default
+ (
+\emph on
+differential
+\emph default
+)。
+\end_layout
+
+\begin_layout Standard
+在李群中定义导数的各种方法中，我们主要关注 Jacobian 矩阵映射向量切空间的形式。这在工程应用很常见，因为在这些空间中，不确定性和增量可以被恰当而容易地定
+义。利用这些 Jacobian 矩阵，李群中的不确定性管理公式与向量空间中的不确定性管理公式基本相似。
+\end_layout
+
+\begin_layout Paragraph
+向量空间上的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+对于多元 函数 
+\begin_inset Formula $f:\mathbb{R}^{m}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+，Jacobian 矩阵定义为所有偏导数 的 
+\begin_inset Formula $n\times m$
+\end_inset
+
+ 矩阵，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}=\frac{\partial f(\mathbf{x})}{\partial\mathbf{x}}\triangleq\left[\begin{array}{ccc}
+\frac{\partial f_{1}}{\partial x_{1}} & \cdots & \frac{\partial f_{1}}{\partial x_{m}}\\
+\vdots &  & \vdots\\
+\frac{\partial f_{n}}{\partial x_{1}} & \cdots & \frac{\partial f_{n}}{\partial x_{m}}
+\end{array}\right]\in\mathbb{R}^{n\times m}.\label{eq:35}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用下面的形式定义这个矩阵很方便。让我们分割 
+\begin_inset Formula $\mathbf{J}=\left[\mathbf{j}_{1}\cdots\mathbf{j}_{m}\right]$
+\end_inset
+
+ 作为它的第 
+\begin_inset Formula $i$
+\end_inset
+
+ 个列向量 
+\begin_inset Formula $\mathbf{j}_{i}=\left[\frac{\partial f_{1}}{\partial x_{i}}\cdots\frac{\partial f_{n}}{\partial x_{i}}\right]^{\top}$
+\end_inset
+
+，并让此列向量响应于
+\begin_inset Formula 
+\begin{equation}
+\mathbf{j}_{i}=\frac{\partial f(\mathbf{x})}{\partial x_{i}}\triangleq\lim_{h\rightarrow0}\frac{f\left(\mathbf{x}+h\mathbf{e}_{i}\right)-f(\mathbf{x})}{h}\in\mathbb{R}^{n},\label{eq:36}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+ 是 
+\begin_inset Formula $\mathbb{R}^{m}$
+\end_inset
+
+ 的自然基的第 
+\begin_inset Formula $i$
+\end_inset
+
+ 个向量。至于分子，注意这个向量
+\begin_inset Formula 
+\begin{equation}
+\mathbf{v}_{i}(h)\triangleq f\left(\mathbf{x}+h\mathbf{e}_{i}\right)-f(\mathbf{x})\quad\in\mathbb{R}^{n}\label{eq:37}
+\end{equation}
+
+\end_inset
+
+是当 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+ 在 
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+ 方向上受到扰动时，
+\begin_inset Formula $f(\mathbf{x})$
+\end_inset
+
+ 的变化量，并且相应的 Jacobian 矩阵的列仅为 
+\begin_inset Formula $\mathbf{j}_{i}=\partial\mathbf{v}_{i}(h)/\left.\partial h\right|_{h=0}=\lim_{h\rightarrow0}\mathbf{v}_{i}(h)/h$
+\end_inset
+
+。在本文中，为了方便起见，我们引入了紧凑形式，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}=\frac{\partial f(\mathbf{x})}{\partial\mathbf{x}}\triangleq\lim_{\mathbf{h}\rightarrow0}\frac{f(\mathbf{x}+\mathbf{h})-f(\mathbf{x})}{\mathbf{h}}\in\mathbb{R}^{n\times m},\label{eq:38}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\mathbf{h}\in\mathbb{R}^{m}$
+\end_inset
+
+，其用方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:36"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算所有列以形成方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:35"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的定义。通过将分子扩展成 
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+ 中的线性形式，并将左手侧标识为 Jacobian 矩阵，该形式可用于计算 Jacobian 矩阵，即机制方程，
+\begin_inset Formula 
+\begin{equation}
+\lim_{\mathbf{h}\rightarrow0}\frac{f(\mathbf{x}+\mathbf{h})-f(\mathbf{x})}{\mathbf{h}}=\cdots=\lim_{\mathbf{h}\rightarrow0}\frac{\mathbf{Jh}}{\mathbf{h}}\triangleq\frac{\partial\mathbf{Jh}}{\partial\mathbf{h}}=\mathbf{J}.\label{eq:39}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后请注意，对于 
+\begin_inset Formula $\mathbf{h}$
+\end_inset
+
+ 的小值，我们有线性近似值，
+\begin_inset Formula 
+\begin{equation}
+f\left(\mathbf{x}+\mathbf{h}\right)\underset{\mathbf{h}\rightarrow0}{\longrightarrow}f\left(\mathbf{x}\right)+\frac{\partial f\left(\mathbf{x}\right)}{\partial\mathbf{x}}\mathbf{h}.\label{eq:40}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+李群上的右 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+受上面标准导数定义方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的启发，我们现在可以使用我们的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+算子来定义作用于流形的函数
+\begin_inset Formula $f:\mathcal{M}\rightarrow\mathcal{N}$
+\end_inset
+
+的Jacobian 矩阵。使用右结合 (right-) 的
+\begin_inset Formula $\{\oplus,\ominus\}$
+\end_inset
+
+代替
+\begin_inset Formula $\{+,-\}$
+\end_inset
+
+，我们获得一个类似于标准导数的形式，
+\begin_inset Flex Subequations
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}} & \triangleq\lim_{\boldsymbol{\tau}\rightarrow0}\frac{f\left(\mathcal{X}\oplus\boldsymbol{\tau}\right)\ominus f\left(\mathcal{X}\right)}{\boldsymbol{\tau}}\in\mathbb{R}^{n\times m}\label{eq:41a}\\
+ & =\lim_{\boldsymbol{\tau}\rightarrow0}\frac{\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)}{\boldsymbol{\tau}}\label{eq:41b}\\
+ & =\left.\frac{\partial\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)}{\partial\boldsymbol{\tau}}\right|_{\boldsymbol{\tau}=0}.\label{eq:41c}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们把这种 Jacobian 矩阵称为
+\begin_inset Formula $f$
+\end_inset
+
+函数的右 Jacobian 矩阵。请注意方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41c"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 只是在标准导数方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:38"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中使用相当复杂的函数
+\begin_inset Formula $g\left(\boldsymbol{\tau}\right)=\mathrm{Log}\left(f\left(\mathcal{X}\right)^{-1}\circ f\left(\mathcal{X}\circ\mathrm{Exp}\left(\boldsymbol{\tau}\right)\right)\right)$
+\end_inset
+
+。将其写入方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中传达了更多的直觉：它是
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+相对于
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+的导数，只是我们表达为在切空间中的无穷小变化！实际上，由于使用右结合 (right-) 的
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+的操作，
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+和
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+中的变量现在被表示为局部切空间中的向量，即分别在
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $f\left(\mathcal{X}\right)\in\mathcal{N}$
+\end_inset
+
+处的正切。这个导数是一个适当的 Jacobian 矩阵
+\begin_inset Formula $\mathbb{R}^{n\times m}$
+\end_inset
+
+线性地映射到局部 (local) 切空间
+\begin_inset Formula $T_{\mathcal{X}}\mathcal{M}\rightarrow T_{f\left(\mathcal{X}\right)}\mathcal{N}$
+\end_inset
+
+ (并且我们用一个局部‘
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+’上标来标记导数)。就像在向量空间中一样，这个矩阵的列对应于方向导数。也就是对于向量
+\begin_inset Formula 
+\begin{equation}
+\boldsymbol{\sigma}_{i}\left(h\right)=f\left(\mathcal{X}\oplus h\mathbf{e}_{i}\right)\ominus f\left(\mathcal{X}\right)\in\mathbb{R}^{n}\label{eq:42}
+\end{equation}
+
+\end_inset
+
+用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:37"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的
+\begin_inset Formula $\mathbf{v}_{i}$
+\end_inset
+
+来比较方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:42"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\sigma}_{i}$
+\end_inset
+
+，其是当
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+沿着
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+方向变化时，
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $f\left(\mathcal{X}\right)$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+的变化。其相应的 Jacobian 矩阵的列是
+\begin_inset Formula 
+\[
+\mathbf{j}_{i}=\left.\dfrac{\partial\boldsymbol{\sigma}_{i}\left(h\right)}{\partial h}\right|_{h=0}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，每当函数
+\begin_inset Formula $f$
+\end_inset
+
+从一个流形传递到另一个流形时，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的加号和减号算子必须被正确选择：
+\begin_inset Formula $\oplus$
+\end_inset
+
+对应定义域 (domain) 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+，并且
+\begin_inset Formula $\ominus$
+\end_inset
+
+对应陪域 (codomain) 或象 (image) 
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的小值，以下近似值适用，
+\begin_inset Formula 
+\begin{equation}
+f\left(\mathcal{X}\oplus{}^{\mathcal{X}}\boldsymbol{\tau}\right)\underset{^{\mathcal{X}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}f\left(\mathcal{X}\right)\oplus\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}\in\mathcal{N}.\label{eq:43}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+李群上的左 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+导数也可以由左结合 (left-) 加号和减号算子定义，因此，
+\begin_inset Formula 
+\begin{align}
+\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}} & \triangleq\lim_{\boldsymbol{\tau}\rightarrow0}\frac{f(\boldsymbol{\tau}\oplus\mathcal{X})\ominus f\left(\mathcal{X}\right)}{\boldsymbol{\tau}}\in\mathbb{R}^{n\times m}\label{eq:44}\\
+ & =\lim_{\boldsymbol{\tau}\rightarrow0}\frac{\log\left(f\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\circ\mathcal{X}\right)\circ f\left(\mathcal{X}\right)^{-1}\right)}{\boldsymbol{\tau}}\nonumber \\
+ & =\left.\frac{\partial\log\left(f\left(\mathrm{Exp}\left(\boldsymbol{\tau}\right)\circ\mathcal{X}\right)\circ f\left(\mathcal{X}\right)^{-1}\right)}{\partial\boldsymbol{\tau}}\right|_{\boldsymbol{\tau}=0},\nonumber 
+\end{align}
+
+\end_inset
+
+我们称之为
+\begin_inset Formula $f$
+\end_inset
+
+函数的左 Jacobian 矩阵。请注意，现在
+\begin_inset Formula $\boldsymbol{\tau}\in T_{\mathcal{E}}\mathcal{M}$
+\end_inset
+
+，并且分子属于
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{N}$
+\end_inset
+
+，因此左 Jacobian 矩阵是一个
+\begin_inset Formula $n\times m$
+\end_inset
+
+的矩阵，映射了全局 (global) 切空间，
+\begin_inset Formula $T_{\mathcal{E}}\mathcal{M}\rightarrow T_{\mathcal{E}}\mathcal{N}$
+\end_inset
+
+，这是
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+和
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+的李代数(并且我们用全局或原点‘
+\begin_inset Formula $\mathcal{E}$
+\end_inset
+
+’上标来标记导数)。对于
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+的小值，以下方程成立，
+\begin_inset Formula 
+\begin{equation}
+f\left(^{\mathcal{E}}\boldsymbol{\tau}\oplus\mathcal{X}\right)\underset{^{\mathcal{E}}\boldsymbol{\tau}\rightarrow0}{\longrightarrow}\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}{}^{\mathcal{E}}\boldsymbol{\tau}\oplus f\left(\mathcal{X}\right)\quad\in\mathcal{N}.\label{eq:45}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:45"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中展示左和右 Jacobian 矩阵由定义域 (domain) 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 和象(image)
+\begin_inset Formula $\mathcal{N}$
+\end_inset
+
+的伴随相关联的关系，
+\begin_inset Formula 
+\begin{equation}
+\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\mathbf{Ad}_{\mathcal{X}}=\mathbf{Ad}_{f\left(\mathcal{X}\right)}\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}.\label{eq:46}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+指数映射的导数
+\end_layout
+
+\begin_layout Standard
+除了我们下面特别说明的所谓的左 Jacobian 矩阵 (
+\emph on
+left Jacobian
+\emph default
+)，这里扩展的所有 Jacobian 矩阵都是右 Jacobian 矩阵 (
+\emph on
+right-Jacobian
+\emph default
+)，即由方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 所定义。通过遵循这里的提示，感兴趣的读者应该不会发现在扩展左 Jacobian 矩阵时有什么特别的困难。对于不愿意这样做的读者，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:46"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 可用于此目的，因为
+\begin_inset Formula 
+\begin{equation}
+\frac{^{\mathcal{E}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}=\mathbf{Ad}_{f\left(\mathcal{X}\right)}\frac{^{\mathcal{X}}Df\left(\mathcal{X}\right)}{D\mathcal{X}}\mathbf{Ad}_{\mathcal{X}}{}^{-1}.\label{eq:57}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们使用符号 
+\begin_inset Formula $\mathbf{J}_{\mathcal{X}}^{f(\mathcal{X})}\triangleq\frac{Df(\mathcal{X})}{D\mathcal{X}}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{J}_{\mathcal{X}}^{\mathcal{Y}}\triangleq\frac{D\mathcal{Y}}{D\mathcal{X}}$
+\end_inset
+
+ 。我 们还注意到，
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}}{}^{-1}$
+\end_inset
+
+ 应该由 
+\begin_inset Formula $\mathbf{Ad}_{\mathcal{X}^{-1}}$
+\end_inset
+
+ 实现。
+\end_layout
+
+\begin_layout Paragraph
+流形 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 上的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+我们定义流形 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 的右 Jacobian 矩阵为 
+\begin_inset Formula $\mathcal{X}=\mathrm{Exp}(\boldsymbol{\tau})$
+\end_inset
+
+ 的右 Jacobian 矩阵，即，对于 
+\begin_inset Formula $\boldsymbol{\tau}\in\mathbb{R}^{m}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{r}(\boldsymbol{\tau})\triangleq\frac{^{\boldsymbol{\tau}}D\mathrm{Exp}(\boldsymbol{\tau})}{D\boldsymbol{\tau}}\in\mathbb{R}^{m\times m},\label{eq:67}
+\end{equation}
+
+\end_inset
+
+这由方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义。右 Jacobian 矩阵将参数 
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+ 的变化映射到 
+\begin_inset Formula $\mathrm{Exp}(\boldsymbol{\tau})$
+\end_inset
+
+ 处的局部 (
+\emph on
+local
+\emph default
+) 切空间中的变化，此即局部切空间的指数映射的导数。从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 这很容易证明，对于小的 
+\begin_inset Formula $\delta\boldsymbol{\tau}$
+\end_inset
+
+ 值，以下近似值成立，
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}(\boldsymbol{\tau}+\delta\boldsymbol{\tau}) & \approx\mathrm{Exp}(\boldsymbol{\tau})\mathrm{Exp}\left(\mathbf{J}_{r}(\boldsymbol{\tau})\delta\boldsymbol{\tau}\right)\label{eq:68}\\
+\mathrm{Exp}(\boldsymbol{\tau})\mathrm{Exp}(\delta\boldsymbol{\tau}) & \approx\mathrm{Exp}\left(\boldsymbol{\tau}+\mathbf{J}_{r}^{-1}(\boldsymbol{\tau})\delta\boldsymbol{\tau}\right)\label{eq:69}\\
+\mathrm{Log}(\mathrm{Exp}(\boldsymbol{\tau})\mathrm{Exp}(\delta\boldsymbol{\tau})) & \approx\boldsymbol{\tau}+\mathbf{J}_{r}^{-1}(\boldsymbol{\tau})\delta\boldsymbol{\tau}.\label{eq:70}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+作为补充， 流形 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ 的 左 Jacobian 矩阵被定义为，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{l}(\boldsymbol{\tau})\triangleq\frac{^{\mathcal{E}}D\mathrm{Exp}(\boldsymbol{\tau})}{D\boldsymbol{\tau}}\in\mathbb{R}^{m\times m},\label{eq:71}
+\end{equation}
+
+\end_inset
+
+使用左 Jacobian 矩阵方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，得出近似值
+\begin_inset Formula 
+\begin{align}
+\mathrm{Exp}(\boldsymbol{\tau}+\delta\boldsymbol{\tau}) & \approx\mathrm{Exp}\left(\mathbf{J}_{l}(\boldsymbol{\tau})\delta\boldsymbol{\tau}\right)\mathrm{Exp}(\boldsymbol{\tau})\label{eq:72}\\
+\mathrm{Exp}(\delta\boldsymbol{\tau})\mathrm{Exp}(\boldsymbol{\tau}) & \approx\mathrm{Exp}\left(\boldsymbol{\tau}+\mathbf{J}_{l}^{-1}(\boldsymbol{\tau})\delta\boldsymbol{\tau}\right)\label{eq:73}\\
+\mathrm{Log}(\mathrm{Exp}(\delta\boldsymbol{\tau})\mathrm{Exp}(\boldsymbol{\tau})) & \approx\boldsymbol{\tau}+\mathbf{J}_{l}^{-1}(\boldsymbol{\tau})\delta\boldsymbol{\tau}.\label{eq:74}
+\end{align}
+
+\end_inset
+
+左 Jacobian 矩阵将参数 
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+ 的变化映射到全局 (
+\emph on
+global
+\emph default
+) 切空间或李代数中的变化，此即全局切空间的指数映射的导数。从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:72"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们可以把左 Jacobian 矩阵和右 Jacobian 矩阵用伴随联系起来，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathrm{Exp}(\boldsymbol{\tau})}=\mathbf{J}_{l}(\boldsymbol{\tau})\mathbf{J}_{r}^{-1}(\boldsymbol{\tau}).\label{eq:75}
+\end{equation}
+
+\end_inset
+
+此外，链式法则允许我们关联 
+\begin_inset Formula $\mathbf{J}_{r}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{J}_{l}$
+\end_inset
+
+ ，
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{r}(-\boldsymbol{\tau}) & \triangleq\mathbf{J}_{-\boldsymbol{\tau}}^{\mathrm{Exp}(-\boldsymbol{\tau})}=\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}(-\boldsymbol{\tau})}\mathbf{J}_{-\boldsymbol{\tau}}^{\boldsymbol{\tau}}=\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}(\boldsymbol{\tau})^{-1}}(-\mathbf{I})\nonumber \\
+ & =-\mathbf{J}_{\mathrm{Exp}(\boldsymbol{\tau})}^{\mathrm{Exp}(\boldsymbol{\tau})}\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}(\boldsymbol{\tau})}=\mathbf{Ad}_{\mathrm{Exp}(\boldsymbol{\tau})}\mathbf{J}_{r}(\boldsymbol{\tau})\nonumber \\
+ & =\mathbf{J}_{l}(\boldsymbol{\tau}).\label{eq:76}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于使用中的经典流形，如
+\begin_inset Formula $SO(3)$
+\end_inset
+
+和
+\begin_inset Formula $SE(3)$
+\end_inset
+
+，
+\begin_inset Formula $\mathbf{J}_{r},\mathbf{J}_{r}^{-1},\mathbf{J}_{l}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{J}_{l}^{-1}$
+\end_inset
+
+，存在封闭形式。
+\end_layout
+
+\begin_layout Paragraph
+群作用
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\mathcal{X}\in\mathcal{M}$
+\end_inset
+
+ 和 
+\begin_inset Formula $v\in\mathcal{V}$
+\end_inset
+
+ 我们用方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 定义
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\cdot v} & \triangleq\frac{^{\mathcal{X}}D\mathcal{X}\cdot v}{D\mathcal{X}}\label{eq:77}\\
+\mathbf{J}_{v}^{\mathcal{X}\cdot v} & \triangleq\frac{^{v}D\mathcal{X}\cdot v}{Dv}.\label{eq:78}
+\end{align}
+
+\end_inset
+
+由于群作用依赖于集合 
+\begin_inset Formula $\mathcal{V}$
+\end_inset
+
+，因此这些表达式不能通用化。
+\end_layout
+
+\begin_layout Paragraph
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 映射的导数
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $\boldsymbol{\tau}=\mathrm{Log}(\mathcal{X})$
+\end_inset
+
+，并根据方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:70"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) ，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{\mathcal{X}}^{\mathrm{Log}(\mathcal{X})}=\mathbf{J}_{r}^{-1}(\boldsymbol{\tau})\label{eq:79}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+加号和减号的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+我们有
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\oplus\boldsymbol{\tau}} & =\mathbf{J}_{\mathcal{X}}^{\mathcal{X}\circ(\mathrm{Exp}(\boldsymbol{\tau}))}\qquad\quad=\mathbf{Ad}_{\mathrm{Exp}(\boldsymbol{\tau})}{}^{-1}\label{eq:80}\\
+\mathbf{J}_{\boldsymbol{\tau}}^{\mathcal{X}\oplus\boldsymbol{\tau}} & =\mathbf{J}_{\mathrm{Exp}(\boldsymbol{\tau})}^{\mathcal{X}\circ(\mathrm{Exp}(\boldsymbol{\tau}))}\mathbf{J}_{\boldsymbol{\tau}}^{\mathrm{Exp}(\boldsymbol{\tau})}=\mathbf{J}_{r}(\boldsymbol{\tau})\label{eq:81}
+\end{align}
+
+\end_inset
+
+并得到 
+\begin_inset Formula $\mathcal{Z}=\mathcal{X}^{-1}\circ\mathcal{Y}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\boldsymbol{\tau}=\mathcal{Y}\ominus\mathcal{X}=\mathrm{Log}(\mathcal{Z})$
+\end_inset
+
+ 相关的 Jacobian 矩阵
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathcal{X}}^{\mathcal{Y}\ominus\mathcal{X}} & =\mathbf{J}_{\mathcal{Z}}^{\mathrm{Log}(\mathcal{Z})}\mathbf{J}_{\mathcal{X}^{-1}}^{\mathcal{Z}}\mathbf{J}_{\mathcal{X}}^{\mathcal{X}^{-1}}=-\mathbf{J}_{l}^{-1}(\boldsymbol{\tau})\label{eq:82}\\
+\mathbf{J}_{\mathcal{Y}}^{\mathcal{Y}\ominus\mathcal{X}} & =\mathbf{J}_{\mathcal{Z}}^{\mathrm{Log}(\mathcal{Z})}\mathbf{J}_{\mathcal{Y}}^{\mathcal{Z}}\qquad\quad=\mathbf{J}_{r}^{-1}(\boldsymbol{\tau}).\label{eq:83}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+旋转群
+\begin_inset Formula $S^{3}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+单位四元数群
+\begin_inset Formula $S^{3}$
+\end_inset
+
+和特殊正交矩阵群
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+，两者都可旋转
+\begin_inset Formula $3$
+\end_inset
+
+元向量。它们有同构的切空间， 其元素可用
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的旋转向量标识，所以我们把它们放在一起研究。正是在这个空间
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中，我们定义旋转率
+\begin_inset Formula $\boldsymbol{\omega}\triangleq\mathbf{u}\omega$
+\end_inset
+
+、轴-角
+\begin_inset Formula $\boldsymbol{\theta}\triangleq\mathbf{u}\theta$
+\end_inset
+
+，以及所有扰动和不确定性的向量。
+\end_layout
+
+\begin_layout Standard
+四元数流形
+\begin_inset Formula $S^{3}$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的双倍覆盖，即
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+和
+\begin_inset Formula $-\mathbf{q}$
+\end_inset
+
+表示相同的旋转
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+。第一个覆盖对应于正实部
+\begin_inset Formula $w>0$
+\end_inset
+
+的四元数。这两个群可以被认为是同构的第一覆盖。
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{Exp}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{Log}$
+\end_inset
+
+映射可以定义为
+\begin_inset Formula $S^{3}$
+\end_inset
+
+的四元数和
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的旋转矩阵。对于四元数
+\begin_inset Formula $\mathbf{q}=\left(w,\mathbf{v}\right)\in\mathbb{H}$
+\end_inset
+
+我们有
+\begin_inset Formula 
+\begin{align}
+\mathbf{q}=\mathrm{Exp}\left(\theta\mathbf{u}\right) & \triangleq\cos\left(\theta/2\right)+\mathbf{u}\sin\left(\theta/2\right)\;\in\mathbb{H}\label{eq:132}\\
+\theta\mathbf{u}=\mathrm{Log}\left(\mathbf{q}\right) & \triangleq2\mathbf{v}\frac{\arctan\left(\left\Vert \mathbf{v}\right\Vert ,w\right)}{\left\Vert \mathbf{v}\right\Vert }\qquad\in\mathbb{R}^{3}\label{eq:133}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于旋转矩阵我们有，
+\begin_inset Formula 
+\begin{align}
+\mathbf{R} & =\mathrm{Exp}\left(\theta\mathbf{u}\right)\triangleq\mathbf{I}+\sin\theta\left[\mathbf{u}\right]_{\times}+\left(1-\cos\theta\right)\left[\mathbf{u}\right]_{\times}^{2}\,\in\mathbb{R}^{3\times3}\label{eq:134}\\
+\theta\mathbf{u} & =\mathrm{Log}\left(\mathbf{R}\right)\triangleq\frac{\theta\left(\mathbf{R}-\mathbf{R}^{\top}\right)^{\vee}}{2\sin\theta}\qquad\qquad\qquad\qquad\in\mathbb{R}^{3},\label{eq:135}
+\end{align}
+
+\end_inset
+
+其中
+\begin_inset Formula $\theta=\cos^{-1}\left(\frac{\mathrm{trace}\left(\mathbf{R}\right)-1}{2}\right)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+旋转作用
+\end_layout
+
+\begin_layout Standard
+给定上述四元数和旋转矩阵的表达式，四元数在
+\begin_inset Formula $3$
+\end_inset
+
+元向量上的旋转作用是由双四元数积来完成的，
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}^{\prime}=\mathbf{q}\mathbf{x}\mathbf{q}^{*}\label{eq:136}
+\end{equation}
+
+\end_inset
+
+当旋转矩阵使用单个矩阵积时，
+\begin_inset Formula 
+\begin{equation}
+\mathbf{x}^{\prime}=\mathbf{R}\mathbf{x}.\label{eq:137}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+两者相当于一个围绕轴
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+旋转角度
+\begin_inset Formula $\theta$
+\end_inset
+
+弧度 (
+\begin_inset Formula $\mathrm{rad}$
+\end_inset
+
+) 的右手旋转。从四元数
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+变换到旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+的公式为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}\left(\mathbf{q}\right)=\left[\begin{array}{ccc}
+w^{2}+x^{2}-y^{2}-z^{2} & 2(xy-wz) & 2(xz+wy)\\
+2(xy+wz) & w^{2}-x^{2}+y^{2}-z^{2} & 2(yz-wx)\\
+2(xz-wy) & 2(yz+wx) & w^{2}-x^{2}-y^{2}+z^{2}
+\end{array}\right].\label{eq:138}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+旋转群的 Jacobian 矩阵
+\end_layout
+
+\begin_layout Standard
+由于我们定义的导数映射切向量空间，并且这些空间重叠于
+\begin_inset Formula $S^{3}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的三维旋转流形，即，
+\begin_inset Formula $\boldsymbol{\theta}=\mathrm{Log}\left(\mathbf{q}\right)=\mathrm{Log}\left(\mathbf{R}\right)$
+\end_inset
+
+，因此 Jacobian 矩阵独立于所使用的表示 (
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+)。因此，我们考虑通用的 3D 旋转元素， 并用无衬线字体
+\begin_inset Formula $\mathsf{R}$
+\end_inset
+
+来标记它们。
+\end_layout
+
+\begin_layout Paragraph
+伴随:
+\end_layout
+
+\begin_layout Standard
+从方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:31"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{Ad}_{\mathsf{R}}\boldsymbol{\theta}=\left(\mathbf{R}\left[\boldsymbol{\theta}\right]_{\times}\mathbf{R}^{\top}\right)^{\vee}=\left(\left[\left(\mathbf{R}\boldsymbol{\theta}\right)\right]_{\times}\right)^{\vee}=\mathbf{R}\boldsymbol{\theta}
+\]
+
+\end_inset
+
+因此
+\begin_inset Formula 
+\begin{equation}
+\mathbf{Ad}_{\mathsf{R}}=\mathbf{R},\label{eq:139}
+\end{equation}
+
+\end_inset
+
+具体的，对于
+\begin_inset Formula $\mathbf{q}$
+\end_inset
+
+有
+\begin_inset Formula $\mathbf{Ad}_{\mathbf{q}}=\mathbf{R}\left(\mathbf{q}\right)$
+\end_inset
+
+，参见方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:138"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对于
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+有
+\begin_inset Formula $\mathbf{Ad}_{\mathbf{R}}=\mathbf{R}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph
+右 Jacobian 矩阵与左 Jacobian 矩阵:
+\end_layout
+
+\begin_layout Standard
+它们有封闭形式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{r}\left(\boldsymbol{\theta}\right) & =\mathbf{I}-\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:143}\\
+\mathbf{J}_{r}{}^{-1}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:144}\\
+\mathbf{J}_{l}\left(\boldsymbol{\theta}\right) & =\mathbf{I}+\frac{1-\cos\theta}{\theta^{2}}\left[\boldsymbol{\theta}\right]_{\times}+\frac{\theta-\sin\theta}{\theta^{3}}\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:145}\\
+\mathbf{J}_{l}{}^{-1}\left(\boldsymbol{\theta}\right) & =\mathbf{I}-\frac{1}{2}\left[\boldsymbol{\theta}\right]_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\left[\boldsymbol{\theta}\right]_{\times}^{2}\label{eq:146}
+\end{align}
+
+\end_inset
+
+其中我们可以观察到
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{l}=\mathbf{J}_{r}^{\top},\quad\mathbf{J}_{l}^{-1}=\mathbf{J}_{r}^{-\top}\label{eq:147}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+右结合的加号和减号:
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\boldsymbol{\theta}=\mathsf{Q}\ominus\mathsf{R}$
+\end_inset
+
+，我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{R}\left(\boldsymbol{\theta}\right)^{\top} & \quad\mathbf{J}_{\boldsymbol{\theta}}^{\mathsf{R}\oplus\boldsymbol{\theta}}=\mathbf{J}_{r}\left(\boldsymbol{\theta}\right)\label{eq:148}\\
+\mathbf{J}_{\mathsf{Q}}^{\mathsf{Q}\ominus\mathsf{R}}=\mathbf{J}_{r}^{-1}\left(\boldsymbol{\theta}\right) & \quad\mathbf{J}_{\mathsf{R}}^{\mathsf{Q}\ominus\mathsf{R}}=-\mathbf{J}_{l}^{-1}\left(\boldsymbol{\theta}\right)\label{eq:149}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+旋转作用:
+\end_layout
+
+\begin_layout Standard
+我们有
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+\mathbf{J}_{\mathsf{R}}^{\mathsf{R}\cdot\mathsf{v}} & \triangleq\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\left(\mathbf{R}\oplus\boldsymbol{\theta}\right)\mathbf{v}-\mathbf{R}\mathbf{v}}{\boldsymbol{\theta}}=\nonumber \\
+\frac{\mathbf{R}\mathrm{Exp}\left(\boldsymbol{\theta}\right)\mathbf{v}-\mathbf{Rv}}{\boldsymbol{\theta}} & =\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\mathbf{R}\left(\mathbf{I}+\left[\boldsymbol{\theta}\right]_{\times}\right)\mathbf{v}-\mathbf{R}\mathbf{v}}{\boldsymbol{\theta}}\nonumber \\
+=\lim_{\boldsymbol{\theta}\rightarrow0}\frac{\mathbf{R}\left[\boldsymbol{\theta}\right]_{\times}\mathbf{v}}{\boldsymbol{\theta}} & =\lim_{\boldsymbol{\theta}\rightarrow0}\frac{-\mathbf{R}\left[\mathbf{v}\right]_{\times}\boldsymbol{\theta}}{\boldsymbol{\theta}}=-\mathbf{R}\left[\mathbf{v}\right]_{\times}\label{eq:150}
+\end{align}
+
+\end_inset
+
+其中我们使用属性
+\begin_inset Formula $\mathrm{Exp}\left(\boldsymbol{\theta}\right)\approx\mathbf{I}+\left[\boldsymbol{\theta}\right]_{\times}$
+\end_inset
+
+和
+\begin_inset Formula $\left[\mathbf{a}\right]_{\times}\mathbf{b}=-\left[\mathbf{b}\right]_{\times}\mathbf{a}$
+\end_inset
+
+。另一个 Jacobian 矩阵为
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbf{J}_{\mathbf{v}}^{\mathsf{R}\cdot\mathbf{v}}\triangleq\lim_{\partial\mathbf{v}\rightarrow0}\frac{\mathbf{R}\left(\mathbf{v}+\partial\mathbf{v}\right)-\mathbf{R}\mathbf{v}}{\partial\mathbf{v}}=\mathbf{R}.\label{eq:151}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+补充说明
+\end_layout
+
+\begin_layout Standard
+本章的内容主要来自文献[1]。但是因为文献[1]太过于惜字如金，试图在17页的论文里讲述李群的入门知识，因此有很多重要的李群和李代数的知识没能加入到论文中。比如
+，李括号的内容就特意忽略，因此相关的李代数的伴随表示，以及指数映射的导数等等内容就只能在给出几个公式后快速带过。但是，伴随表示和指数映射的导数是李群理论中的两个
+核心内容。因此后面两个章节将补充这方面的内容，然后再用一章的示例，以旋转群SO(3)为例去理解这些知识。
+\end_layout
+
+\begin_layout Section
+伴随表示
+\end_layout
+
+\begin_layout Standard
+在数学中，李群
+\begin_inset Formula $G$
+\end_inset
+
+的
+\series bold
+伴随表示
+\series default
+(
+\series bold
+adjoint representation
+\series default
+)或
+\series bold
+伴随作用
+\series default
+(
+\series bold
+adjoint action
+\series default
+)是一种将群元素表示为群的李代数的线性变换的方法，其中李代数被认为是向量空间 。例如，如果
+\begin_inset Formula $G$
+\end_inset
+
+是
+\begin_inset Formula $GL(n,\mathbb{R})$
+\end_inset
+
+，实
+\begin_inset Formula $n\times n$
+\end_inset
+
+可逆矩阵的李群，则伴随表示是群同态，它将
+\begin_inset Formula $n\times n$
+\end_inset
+
+可逆的矩阵
+\begin_inset Formula $g$
+\end_inset
+
+发送到
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的所有线性变换的向量空间的自同态，该向量空间被定义为
+\begin_inset Formula $x\mapsto gxg^{-1}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于任意李群，这种自然表示是通过共轭将
+\begin_inset Formula $G$
+\end_inset
+
+对其自身的作用线性化(即取其微分)而获得的。伴随表示可以定义为任意域上的线性代数群。
+\end_layout
+
+\begin_layout Subsection
+定义
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $G$
+\end_inset
+
+为一个李群，并设
+\begin_inset Formula 
+\[
+\Psi:G\rightarrow\mathrm{Aut}(G)
+\]
+
+\end_inset
+
+为映射
+\begin_inset Formula $g\mapsto\Psi_{g}$
+\end_inset
+
+， 其中
+\begin_inset Formula $\mathrm{Aut}(G)$
+\end_inset
+
+为
+\begin_inset Formula $G$
+\end_inset
+
+的自同构群，并且
+\begin_inset Formula $\Psi_{g}:G\rightarrow G$
+\end_inset
+
+由内部自同构(共轭)给出为
+\begin_inset Formula 
+\[
+\Psi_{g}(h)=ghg^{-1}.
+\]
+
+\end_inset
+
+这个
+\begin_inset Formula $\Psi$
+\end_inset
+
+是一个李群同态。
+\end_layout
+
+\begin_layout Standard
+对于在
+\begin_inset Formula $G$
+\end_inset
+
+中的每一个
+\begin_inset Formula $g$
+\end_inset
+
+，定义
+\begin_inset Formula $\mathrm{Ad}_{g}$
+\end_inset
+
+为
+\begin_inset Formula $\Psi_{g}$
+\end_inset
+
+在原点处的导数：
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{g}=\left(d\Psi_{g}\right)_{e}:T_{e}G\rightarrow T_{e}G
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $d$
+\end_inset
+
+是微分，并且
+\begin_inset Formula $\mathfrak{g}=T_{e}G$
+\end_inset
+
+是在原点
+\begin_inset Formula $e$
+\end_inset
+
+处(
+\begin_inset Formula $e$
+\end_inset
+
+为群
+\begin_inset Formula $G$
+\end_inset
+
+的恒等元)的切空间。由于
+\begin_inset Formula $\Psi_{g}$
+\end_inset
+
+是一个李群自同构，
+\begin_inset Formula $\mathrm{Ad}_{g}$
+\end_inset
+
+是李代数自同构；即
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+到其自身的可逆线性变换，并保持李括号。而且，因为
+\begin_inset Formula $g\mapsto\Psi_{g}$
+\end_inset
+
+是一个群同态，所以
+\begin_inset Formula $g\mapsto\mathrm{Ad}_{g}$
+\end_inset
+
+也是一个群同态。因此，映射
+\begin_inset Formula 
+\[
+\mathrm{Ad}:G\rightarrow\mathrm{Aut}(\mathfrak{g}),g\mapsto\mathrm{Ad}_{g}
+\]
+
+\end_inset
+
+是一个群表示，被称为
+\begin_inset Formula $G$
+\end_inset
+
+的
+\series bold
+伴随表示
+\series default
+(
+\series bold
+adjoint representation
+\series default
+)。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $G$
+\end_inset
+
+是一般线性群 
+\begin_inset Formula $\mathrm{GL}_{n}(\mathbb{C})$
+\end_inset
+
+ (被称为浸入线性李群)的浸入李子群，则李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+由矩阵组成，并且对于具有小的算子范数的矩阵
+\begin_inset Formula $X$
+\end_inset
+
+，指数映射是矩阵指数
+\begin_inset Formula $\exp(X)=e^{X}$
+\end_inset
+
+。因此，对于在
+\begin_inset Formula $G$
+\end_inset
+
+中的
+\begin_inset Formula $g$
+\end_inset
+
+以及在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的小
+\begin_inset Formula $X$
+\end_inset
+
+ ，取在
+\begin_inset Formula $t=0$
+\end_inset
+
+处
+\begin_inset Formula $\Psi_{g}(\exp(tX))=ge^{tX}g^{-1}$
+\end_inset
+
+的导数，我们得到：
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{g}(X)=gXg^{-1}
+\]
+
+\end_inset
+
+其中在右侧我们有矩阵的乘积。若
+\begin_inset Formula $G\subset\mathrm{GL}_{n}(\mathbb{C})$
+\end_inset
+
+是一个闭子群(即
+\begin_inset Formula $G$
+\end_inset
+
+一个是矩阵李群)，则该公式对于在
+\begin_inset Formula $G$
+\end_inset
+
+中的所有
+\begin_inset Formula $g$
+\end_inset
+
+和在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的所有
+\begin_inset Formula $X$
+\end_inset
+
+都有效。
+\end_layout
+
+\begin_layout Standard
+简单地说，伴随表示是在
+\begin_inset Formula $G$
+\end_inset
+
+的单位元周围与
+\begin_inset Formula $G$
+\end_inset
+
+共轭作用相关联的各向同性表示(isotropy representation)。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+ 的导数
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过在恒等式处取导数，我们始终可以从李群
+\begin_inset Formula $G$
+\end_inset
+
+的表示形式传递到李代数的表示形式。
+\end_layout
+
+\begin_layout Standard
+取伴随映射的导数
+\begin_inset Formula 
+\[
+\mathrm{Ad}:G\rightarrow\mathrm{Aut}(\mathfrak{g})
+\]
+
+\end_inset
+
+在单位元处给出
+\begin_inset Formula $G$
+\end_inset
+
+的李代数
+\begin_inset Formula $\mathfrak{g}=\mathrm{Lie}(G)$
+\end_inset
+
+的
+\series bold
+伴随表示
+\series default
+(
+\series bold
+adjoint representation
+\series default
+)：
+\begin_inset Formula 
+\[
+\begin{aligned}\mathrm{ad}:\mathfrak{g} & \rightarrow\mathrm{Der}(\mathfrak{g})\\
+x & \mapsto\mathrm{ad}_{x}=d(\mathrm{Ad})_{e}(x)
+\end{aligned}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{Der}(\mathfrak{g})=\mathrm{Lie}(\mathrm{Aut}(\mathfrak{g}))$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{Aut}(\mathfrak{g})$
+\end_inset
+
+的李代数，其可以通过
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的导子代数标识。我们可以证明
+\begin_inset Formula 
+\[
+\mathrm{ad}_{x}(y)=[x,y]
+\]
+
+\end_inset
+
+对于所有的 
+\begin_inset Formula $x,y\in\mathfrak{g}$
+\end_inset
+
+ 成立，其中右侧由向量场的李括号给出(诱导)。实际上，回想一下，将
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+视为在
+\begin_inset Formula $G$
+\end_inset
+
+上左不变向量场的李代数，在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+上的括号给出为：对于左不变向量场
+\begin_inset Formula $X,Y$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+[X,Y]=\lim_{t\rightarrow0}\frac{1}{t}\left(d\varphi_{-t}(Y)-Y\right)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\varphi_{t}:G\rightarrow G$
+\end_inset
+
+标识由
+\begin_inset Formula $X$
+\end_inset
+
+生成的流。结果表明，
+\begin_inset Formula $\varphi_{t}(g)=g\varphi_{t}(e)$
+\end_inset
+
+，这大致是因为两侧满足定义流的相同ODE。也就是，
+\begin_inset Formula $\varphi_{t}=R_{\varphi_{t}(e)}$
+\end_inset
+
+，其中
+\begin_inset Formula $R_{h}$
+\end_inset
+
+标识与
+\begin_inset Formula $h\in G$
+\end_inset
+
+的右乘法。另一方面，由于
+\begin_inset Formula $\Psi_{g}=R_{g^{-1}}\circ L_{g}$
+\end_inset
+
+，根据链式规则，
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{g}(Y)=d\left(R_{g^{-1}}\circ L_{g}\right)(Y)=dR_{g^{-1}}\left(dL_{g}(Y)\right)=dR_{g^{-1}}(Y)
+\]
+
+\end_inset
+
+因为
+\begin_inset Formula $Y$
+\end_inset
+
+是左不变的。因此，
+\begin_inset Formula 
+\[
+[X,Y]=\lim_{t\rightarrow0}\frac{1}{t}\left(\mathrm{Ad}_{\varphi_{t}(e)}(Y)-Y\right)
+\]
+
+\end_inset
+
+这就是我们需要证明的。
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $\mathrm{ad}_{x}$
+\end_inset
+
+与下面第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:3.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节“李代数的伴随表示”中的定义相同。
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+通过指数映射相关：具体地，
+\begin_inset Formula $\mathrm{Ad}_{\exp(x)}=\exp\left(\mathrm{ad}_{x}\right)$
+\end_inset
+
+对于在李代数中所有的
+\begin_inset Formula $x$
+\end_inset
+
+都成立。它是通过指数映射将李群与李代数同态联系起来的一般结果的一个后果。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $G$
+\end_inset
+
+是一个浸入线性李群，则上述计算将简化，如前所述，
+\begin_inset Formula $\mathrm{Ad}_{g}(Y)=gYg^{-1}$
+\end_inset
+
+，并因此有
+\begin_inset Formula $g=e^{tX}$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{e^{tX}}(Y)=e^{tX}Ye^{-tX}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+取其在
+\begin_inset Formula $t=0$
+\end_inset
+
+处的导数，我们有：
+\begin_inset Formula 
+\[
+\mathrm{ad}_{X}Y=XY-YX.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般情况也可以由线性情形导出：其实，设
+\begin_inset Formula $G^{\prime}$
+\end_inset
+
+为一个浸入线性李群，其李代数与
+\begin_inset Formula $G$
+\end_inset
+
+相同，则
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+在
+\begin_inset Formula $G$
+\end_inset
+
+的单位元处的导数与
+\begin_inset Formula $G^{\prime}$
+\end_inset
+
+的导数重合；因此，在不丧失一般性的情况下，
+\begin_inset Formula $G$
+\end_inset
+
+可以假定为
+\begin_inset Formula $G^{\prime}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+大写/小写符号在文献中广泛使用。因此，例如，在代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的一个向量
+\begin_inset Formula $x$
+\end_inset
+
+生成在群
+\begin_inset Formula $G$
+\end_inset
+
+中的一个向量场
+\begin_inset Formula $X$
+\end_inset
+
+。类似地，在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的向量的伴随映射
+\begin_inset Formula $\mathrm{ad}_{x}y=[x,y]$
+\end_inset
+
+同态于在群
+\begin_inset Formula $G$
+\end_inset
+
+上(其做为一个流形)的向量场的李导数
+\begin_inset Formula $\mathrm{L}_{X}Y=[X,Y]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+进一步的内容请参见“
+\begin_inset CommandInset href
+LatexCommand href
+name "指数映射的导数"
+target "https://en.wikipedia.org/wiki/Derivative_of_the_exponential_map"
+literal "false"
+
+\end_inset
+
+”一文。
+\end_layout
+
+\begin_layout Subsection
+李代数的伴随表示
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:3.3"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+为某个域上的李代数。给定李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的一个元素
+\begin_inset Formula $x$
+\end_inset
+
+，我们定义在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+上的
+\begin_inset Formula $x$
+\end_inset
+
+的伴随作用为映射
+\begin_inset Formula 
+\[
+\mathrm{ad}_{x}:\mathfrak{g}\rightarrow\mathfrak{g}\quad\text{ with }\quad\mathrm{ad}_{x}(y)=[x,y]
+\]
+
+\end_inset
+
+其对所有在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的
+\begin_inset Formula $y$
+\end_inset
+
+成立。它被称为
+\series bold
+伴随自同态
+\series default
+(
+\series bold
+adjoint endomorphism
+\series default
+)或
+\series bold
+伴随作用
+\series default
+(
+\series bold
+adjoint action
+\series default
+)。(
+\begin_inset Formula $\mathrm{ad}_{x}$
+\end_inset
+
+通常也标志为
+\begin_inset Formula $\mathrm{ad}(x)$
+\end_inset
+
+。)由于括号是双线性的，这决定线性映射
+\begin_inset Formula 
+\[
+\mathrm{ad}:\mathfrak{g}\rightarrow\mathfrak{gl}(\mathfrak{g})=(\mathrm{End}(\mathfrak{g}),[,])
+\]
+
+\end_inset
+
+由
+\begin_inset Formula $x\mapsto\mathrm{ad}_{x}$
+\end_inset
+
+给出。在
+\begin_inset Formula $\mathrm{End}(\mathfrak{g})$
+\end_inset
+
+内，根据定义，括号由两个算子的交换子(commutator)给出为：
+\begin_inset Formula 
+\[
+[T,S]=T\circ S-S\circ T
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\circ$
+\end_inset
+
+标识线性映射的组合。使用上述括号定义雅各比恒等式(Jacobi identity)
+\begin_inset Formula 
+\[
+[x,[y,z]]+[y,[z,x]]+[z,[x,y]]=0
+\]
+
+\end_inset
+
+采用形式
+\begin_inset Formula 
+\[
+\left(\left[\mathrm{ad}_{x},\mathrm{ad}_{y}\right]\right)(z)=\left(\mathrm{ad}_{[x,y]}\right)(z)
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $x,y$
+\end_inset
+
+和
+\begin_inset Formula $z$
+\end_inset
+
+是
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的任意元素。
+\end_layout
+
+\begin_layout Standard
+最后一个恒等式表明
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+是一个李代数同态；即从括号到括号的线性映射。因此，
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+是李代数的一个表示，并被称为代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的
+\series bold
+伴随表示
+\series default
+(
+\series bold
+adjoint representation
+\series default
+)。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+是有限维的，并且选择了它的一个基(basis)，则
+\begin_inset Formula $\mathfrak{gl}(\mathfrak{g})$
+\end_inset
+
+是平方矩阵的李代数，并且组合对应于矩阵乘法。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+的核是
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的中心(这只是对定义的重新表述)。另一方面，对于在
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的每个元素
+\begin_inset Formula $Z$
+\end_inset
+
+，线性映射
+\begin_inset Formula $\delta=\mathrm{ad}_{z}$
+\end_inset
+
+服从莱布尼兹定律：
+\begin_inset Formula 
+\[
+\delta([x,y])=[\delta(x),y]+[x,\delta(y)]
+\]
+
+\end_inset
+
+这对于在代数中的所有
+\begin_inset Formula $x$
+\end_inset
+
+和
+\begin_inset Formula $y$
+\end_inset
+
+都成立(雅可比恒等式的重述)。也就是说，
+\begin_inset Formula $\mathrm{ad}_{z}$
+\end_inset
+
+是一个导数，并且
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+在
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+下的象(image)是
+\begin_inset Formula $\mathrm{Der}(\mathfrak{g})$
+\end_inset
+
+的一个子代数，
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的所有导数的空间。
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $\mathfrak{g}=\mathrm{Lie}(G)$
+\end_inset
+
+是李群
+\begin_inset Formula $G$
+\end_inset
+
+的李代数时，
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+在
+\begin_inset Formula $G$
+\end_inset
+
+的单位元处的微分。
+\end_layout
+
+\begin_layout Subsection
+属性
+\end_layout
+
+\begin_layout Standard
+下表总结了在定义中提到的各种映射的属性
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Psi:G\rightarrow\mathrm{Aut}(G)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Psi_{g}:G\rightarrow G$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李群同态：
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李群自同构：
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\Psi_{gh}=\Psi_{g}\Psi_{h}\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\Psi_{g}(ab)=\Psi_{g}(a)\Psi_{g}(b)\\
+\text{ - }\left(\Psi_{g}\right)^{-1}=\Psi_{g^{-1}}
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Ad}:G\rightarrow\mathrm{Aut}(\mathfrak{g})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{Ad}_{g}:\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李群同态：
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李代数自同构：
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\mathrm{Ad}_{gh}=\mathrm{Ad}_{g}\mathrm{Ad}_{h}\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\mathrm{Ad}_{g}\text{ 是线性的}\\
+\text{ - }\left(\mathrm{Ad}_{g}\right)^{-1}=\mathrm{Ad}_{g^{-1}}\\
+\text{ - }\mathrm{Ad}_{g}[x,y]=\left[\mathrm{Ad}_{g}x,\mathrm{Ad}_{g}y\right]
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{ad}:\mathfrak{g}\rightarrow\mathrm{Der}(\mathfrak{g})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{ad}_{x}:\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李代数同态：
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+李代数导数：
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\text{\mathrm{ad} 是线性的}\\
+\text{ - }\mathrm{ad}_{[x,y]}=\left[\mathrm{ad}_{x},\mathrm{ad}_{y}\right]
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{array}{l}
+\text{ - }\mathrm{ad}_{x}\text{ 是线性的}\\
+\text{ - }\mathrm{ad}_{x}[y,z]=\left[\mathrm{ad}_{x}y,z\right]+\left[y,\mathrm{ad}_{x}z\right]
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+证明
+\end_layout
+
+\begin_layout Standard
+本节我们证明
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+与
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+通过指数映射相关的关系式，因为在后面证明指数映射的导数时会用到这个关系式。
+\end_layout
+
+\begin_layout Proposition
+对于任意
+\begin_inset Formula $X\in\mathrm{M}_{n}(\mathbb{R})=\mathfrak{gl}(n,\mathbb{R})$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{e^{X}}=e^{\mathrm{ad}_{X}}=\sum_{k=0}^{\infty}\frac{\left(\mathrm{ad}_{X}\right)^{k}}{k!};
+\]
+
+\end_inset
+
+也就是，
+\begin_inset Formula 
+\[
+\begin{aligned}e^{X}Ye^{-X}= & e^{\mathrm{ad}_{X}}Y\\
+= & Y+[X,Y]+\frac{1}{2!}[X,[X,Y]]+\frac{1}{3!}[X,[X,[X,Y]]]\\
+ & \;+\cdots
+\end{aligned}
+\]
+
+\end_inset
+
+对于所有
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+的
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $X,Y\in\mathrm{M}_{n}(\mathbb{R})$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Proof
+如前所述，
+\begin_inset Formula $\mathrm{Ad}_{g}(Y)=gYg^{-1}$
+\end_inset
+
+，并且有
+\begin_inset Formula $g=e^{tX}$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{e^{tX}}(Y)=e^{tX}Ye^{-tX}.
+\]
+
+\end_inset
+
+取其在
+\begin_inset Formula $t=0$
+\end_inset
+
+处的导数，我们有：
+\begin_inset Formula 
+\begin{align*}
+\left.\frac{d}{dt}\left(e^{tX}Ye^{-tX}\right)\right|_{t=0} & =\left.\frac{d}{dt}(\exp(tX)\cdot Y)\cdot\exp(-tX)+\exp(tX)\cdot Y\cdot\frac{d}{dt}\exp(-tX)\right|_{t=0}\\
+ & =\left.X\exp(tX)\cdot Y\cdot\exp(-tX)-\exp(tX)\cdot Y\cdot X\exp(-tX)\right|_{t=0}\\
+ & =XY-YX\\
+ & =[X,Y]\\
+ & =\mathrm{ad}_{X}Y,
+\end{align*}
+
+\end_inset
+
+即
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{e^{X}}=e^{\mathrm{ad}_{X}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个关系式表明，对于给定的李代数元素 
+\begin_inset Formula $X$
+\end_inset
+
+，它的指数映射 
+\begin_inset Formula $\exp(X)$
+\end_inset
+
+ 的伴随矩阵等于对应的李代数的伴随矩阵的指数映射。这个公式的意义在于，通过指数映射和伴随矩阵的关系，我们可以在李群和李代数之间进行转换和对应。也即，李群和李代数
+之间存在指数映射的对应关系，对于任意李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+中的元素
+\begin_inset Formula $X$
+\end_inset
+
+，我们都可以找到对应的李群
+\begin_inset Formula $\mathcal{G}$
+\end_inset
+
+中的元素
+\begin_inset Formula $\exp(X)$
+\end_inset
+
+；同时，李代数和李群之间也存在着相似的伴随表达变换的概念。 因此,李代数元素
+\begin_inset Formula $X$
+\end_inset
+
+与李群元素
+\begin_inset Formula $\exp(X)$
+\end_inset
+
+之间，其伴随变换应该存在某种一一对应关系。这两者之间的联系可以通过这个公式 
+\begin_inset Formula $\mathrm{Ad}_{\exp(X)}=\exp\left(\mathrm{ad}_{X}\right)$
+\end_inset
+
+ 来表达。
+\end_layout
+
+\begin_layout Subsection
+伴随表示的几何意义
+\end_layout
+
+\begin_layout Standard
+伴随表示是我们理解和研究李群和李代数的重要工具。从几何的角度，伴随表示提供了关于李群和李代数内部运动方式的直观理解；从本质的角度，伴随表示揭示了李群和李代数的内
+在结构，它连接了群的自动性质和代数的李括号运算。
+\end_layout
+
+\begin_layout Subsubsection
+伴随表示的几何直觉
+\end_layout
+
+\begin_layout Standard
+伴随表示揭示了李群和李代数的内部运动方式。具体来说，对于李群 
+\begin_inset Formula $G$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $g$
+\end_inset
+
+ 和 
+\begin_inset Formula $h$
+\end_inset
+
+，伴随表示 
+\begin_inset Formula $\mathrm{Ad}(g)(h)=ghg^{-1}$
+\end_inset
+
+ 描述了一个“共轭”操作：首先按照 
+\begin_inset Formula $g$
+\end_inset
+
+ 进行变换，然后进行 
+\begin_inset Formula $h$
+\end_inset
+
+ 的变换，最后再按照 
+\begin_inset Formula $g^{-1}$
+\end_inset
+
+ 的方式变换回来，最终得到的总的变换，即是新的元素 
+\begin_inset Formula $\mathrm{Ad}(g)(h)$
+\end_inset
+
+。在几何上，这可以理解为 
+\begin_inset Formula $g$
+\end_inset
+
+ 定义了一个“参考框架”的改变，
+\begin_inset Formula $h$
+\end_inset
+
+ 是在新的参考框架下的变换。
+\end_layout
+
+\begin_layout Standard
+对于李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+，伴随表示 
+\begin_inset Formula $\mathrm{ad}(X)(Y)=[X,Y]=XY-YX$
+\end_inset
+
+ 描述了一个“对易”操作，这个操作测量了 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的“不对易程度”。在几何上，这可以理解为 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 对应的无穷小变换是否可以交换顺序。
+\end_layout
+
+\begin_layout Subsubsection
+伴随表示的本质理解
+\end_layout
+
+\begin_layout Standard
+伴随表示的本质在于它提供了一种理解和描述李群和李代数中的“内部”运动的方式。这种“内部”运动是李群和李代数的重要性质，是理解和研究李群和李代数的重要工具。
+\end_layout
+
+\begin_layout Standard
+更深入地，伴随表示揭示了李群和李代数的本质结构。对于李群来说，伴随表示描述了群的“自动”结构，即群元素自身如何通过共轭操作作用在群上。这是群结构的一个重要方面，
+因为它描述了群的内部运动方式。
+\end_layout
+
+\begin_layout Standard
+对于李代数来说，伴随表示描述了李代数的“李结构”，即李括号运算。这是李代数结构的一个重要方面，因为它描述了李代数中元素的交换性质，这反映了李群的局部运动方式。
+\end_layout
+
+\begin_layout Standard
+从这个角度来看，伴随表示提供了一种理解李群和李代数内部结构的重要工具，它将群和代数的结构联系起来，并且揭示了它们的几何和代数性质。
+\end_layout
+
+\begin_layout Section
+指数映射的导数
+\end_layout
+
+\begin_layout Standard
+在李群理论中，指数映射是从一个李群
+\begin_inset Formula $G$
+\end_inset
+
+的李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+到
+\begin_inset Formula $G$
+\end_inset
+
+的映射。如果
+\begin_inset Formula $G$
+\end_inset
+
+是矩阵李群，则指数映射可约化为矩阵指数。指数映射，标志为
+\begin_inset Formula $\exp:\mathfrak{g}\rightarrow G$
+\end_inset
+
+，是解析的，并且具有这样一个导数
+\begin_inset Formula $\frac{d}{dt}\exp(X(t)):\mathrm{T}\mathfrak{g}\rightarrow\mathrm{T}G$
+\end_inset
+
+，其中
+\begin_inset Formula $X(t)$
+\end_inset
+
+是在李代数中的一个
+\begin_inset Formula $C^{1}$
+\end_inset
+
+路径，以及一个密切相关的微分
+\begin_inset Formula $d\exp:\mathrm{T}\mathfrak{g}\rightarrow\mathrm{T}G$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在本文中，符号
+\begin_inset Formula $\exp(X)$
+\end_inset
+
+和
+\begin_inset Formula $e^{X}$
+\end_inset
+
+将互换使用，以标志给定参数的指数，除非如前所述，符号具有专用的不同含义。为了在方程中具有更好的可读性，这里首选微积分形式的符号。另一方面，
+\begin_inset Formula $\exp$
+\end_inset
+
+样式有时对于内联公式更方便，并且在需要进行真正区分的少数情况下是必需的。
+\end_layout
+
+\begin_layout Subsection
+声明
+\end_layout
+
+\begin_layout Standard
+指数映射的导数给出为：
+\begin_inset Formula 
+\begin{equation}
+\boxed{\frac{d}{dt}e^{X(t)}=e^{X(t)}\frac{1-e^{-\mathrm{ad}_{X}}}{\mathrm{ad}_{X}}\frac{dX(t)}{dt}.}\label{eq:1-78}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+解释
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $X=X(t)$
+\end_inset
+
+是在李代数中的一条 
+\begin_inset Formula $C^{1}$
+\end_inset
+
+ (连续可微)路径，其导数为
+\begin_inset Formula $X^{\prime}(t)=\frac{dX(t)}{dt}$
+\end_inset
+
+。在不需要时可省略参数
+\begin_inset Formula $t$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathrm{ad}_{X}$
+\end_inset
+
+是李代数的线性变换，给出为
+\begin_inset Formula $\mathrm{ad}_{X}(Y)=[X,Y]$
+\end_inset
+
+。它是李代数对其自身的伴随作用。
+\end_layout
+
+\begin_layout Itemize
+分数
+\begin_inset Formula $\frac{1-\exp\left(-\mathrm{ad}_{X}\right)}{\mathrm{ad}_{X}}$
+\end_inset
+
+由幂级数给出为
+\begin_inset Formula 
+\begin{equation}
+\frac{1-e^{-\mathrm{ad}_{X}}}{\mathrm{ad}_{X}}=\sum_{k=0}^{\infty}\frac{(-1)^{k}}{(k+1)!}\left(\mathrm{ad}_{X}\right)^{k}.\label{eq:2-79}
+\end{equation}
+
+\end_inset
+
+它由线性自同态的指数映射的幂级数推导出，如在矩阵幂运算中。
+\end_layout
+
+\begin_layout Itemize
+当
+\begin_inset Formula $G$
+\end_inset
+
+是矩阵李群时，所有指数的出现都由它们的幂级数展开式给出。
+\end_layout
+
+\begin_layout Itemize
+当
+\begin_inset Formula $G$
+\end_inset
+
+不是矩阵李群时， 
+\begin_inset Formula $\frac{1-\exp\left(-\mathrm{ad}_{X}\right)}{\mathrm{ad}_{X}}$
+\end_inset
+
+仍然由其幂级数方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出，而公式中
+\begin_inset Formula $\exp$
+\end_inset
+
+的另外两个项，现在是在李理论中的指数映射，指左不变向量场
+\begin_inset Formula $X$
+\end_inset
+
+的“时间-1”的流，即在一般情况下定义的李代数元素，关于李群
+\begin_inset Formula $G$
+\end_inset
+
+的分析流形。这仍然与矩阵情况下的公式完全相同。代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+的元素与李群的元素
+\begin_inset Formula $\exp(X(t))$
+\end_inset
+
+的左乘法被解释为应用左平移
+\begin_inset Formula $\mathrm{dL}_{\exp(X(t))}$
+\end_inset
+
+的微分。
+\end_layout
+
+\begin_layout Itemize
+该公式适用于
+\begin_inset Formula $\exp$
+\end_inset
+
+被认为是在
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+或
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+上的矩阵空间的映射的情况，请参见
+\begin_inset CommandInset href
+LatexCommand href
+name "矩阵指数"
+target "https://en.wikipedia.org/wiki/Matrix_exponential"
+literal "false"
+
+\end_inset
+
+。当
+\begin_inset Formula $G=\mathrm{GL}(n,\mathbf{C})$
+\end_inset
+
+或
+\begin_inset Formula $\mathrm{GL}(n,\mathbf{R})$
+\end_inset
+
+时，这些概念正好重合。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了计算在
+\begin_inset Formula $X$
+\end_inset
+
+处
+\begin_inset Formula $\exp$
+\end_inset
+
+的微分
+\begin_inset Formula $d\exp$
+\end_inset
+
+，
+\begin_inset Formula $d\exp_{X}:\mathrm{T}\mathfrak{g}_{X}\rightarrow\mathrm{T}G_{\exp(X)}$
+\end_inset
+
+，我们使用标准方程
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d\exp_{X}Y=\left.\frac{d}{dt}e^{Z(t)}\right|_{t=0},Z(0)=X,Z^{\prime}(0)=Y.
+\]
+
+\end_inset
+
+对于
+\begin_inset Formula $Z(t)=X+tY$
+\end_inset
+
+，跟随在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1-78"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)之后，其结果立刻得出为
+\begin_inset Formula 
+\begin{equation}
+d\exp_{X}Y=e^{X}\frac{1-e^{-\mathrm{ad}_{X}}}{\mathrm{ad}_{X}}Y.\label{eq:3-80}
+\end{equation}
+
+\end_inset
+
+特别地，
+\begin_inset Formula $d\exp_{0}:\mathrm{T}\mathfrak{g}_{0}\rightarrow\mathrm{T}G_{\exp(0)}=\mathrm{T}G_{e}$
+\end_inset
+
+是恒等式，因为 
+\begin_inset Formula $\mathrm{T}\mathfrak{g}_{X}\simeq\mathfrak{g}$
+\end_inset
+
+ (因为
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+是向量空间)并且
+\begin_inset Formula $\mathrm{T}G_{e}\simeq\mathfrak{g}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+证明
+\end_layout
+
+\begin_layout Standard
+下面给出的证明假设一个矩阵李群。这意味着从李代数到矩阵李群的指数映射由通常的幂级数给出，即矩阵指数化。只要
+\begin_inset Formula $\exp$
+\end_inset
+
+的每一次出现都得到正确的解释，证明结论在一般情况下仍然成立。
+\end_layout
+
+\begin_layout Standard
+证明大纲使用了参数化表达式相对于
+\begin_inset Formula $s$
+\end_inset
+
+微分的技巧
+\begin_inset Formula 
+\[
+\Gamma(s,t)=e^{-sX(t)}\frac{\partial}{\partial t}e^{sX(t)}
+\]
+
+\end_inset
+
+以获得
+\begin_inset Formula $\Gamma$
+\end_inset
+
+的一阶微分方程，其可在
+\begin_inset Formula $s$
+\end_inset
+
+中的直接积分法求解。则该解为
+\begin_inset Formula $e^{X}\Gamma(1,\mathrm{t})$
+\end_inset
+
+ 。
+\end_layout
+
+\begin_layout Lemma*
+设
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+标志群在其李代数上的伴随作用。对于
+\begin_inset Formula $A\in G,X\in\mathfrak{g}$
+\end_inset
+
+，其作用给出为
+\begin_inset Formula $\mathrm{Ad}_{A}X=AXA^{-1}$
+\end_inset
+
+。一个
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+之间的常用关系给出为
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+可在
+\begin_inset CommandInset href
+LatexCommand href
+name "这里"
+target "https://en.wikipedia.org/wiki/Baker%E2%80%93Campbell%E2%80%93Hausdorff_formula#An_important_lemma"
+literal "false"
+
+\end_inset
+
+找到该恒等式的一个证明。这个关系很简单，根据李对应(
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie correspondence"
+target "https://en.wikipedia.org/wiki/Lie_correspondence"
+literal "false"
+
+\end_inset
+
+)关系，这就是一个李群的表示和它的李代数的表示之间的关系，因为
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+和
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+都是
+\begin_inset Formula $\mathrm{ad}=d\mathrm{Ad}$
+\end_inset
+
+的表示。
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\boxed{\mathrm{Ad}_{e^{X}}=e^{\mathrm{ad}_{X}},X\in\mathfrak{g}.}\label{eq:4-81}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+使用乘积规则两次寻找，
+\begin_inset Formula 
+\[
+\frac{\partial\Gamma}{\partial s}=e^{-sX}(-X)\frac{\partial}{\partial t}e^{sX(t)}+e^{-sX}\frac{\partial}{\partial t}\left[X(t)e^{sX(t)}\right]=e^{-sX}\frac{dX}{dt}e^{sX}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+则通过上述方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4-81"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们观察到
+\begin_inset Formula 
+\[
+\frac{\partial\Gamma}{\partial s}=\mathrm{Ad}_{e^{-sX}}X^{\prime}=e^{-\mathrm{ad}_{sX}}X^{\prime}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+收集各项产出
+\begin_inset Formula 
+\[
+\Gamma(1,t)=e^{-X(t)}\frac{\partial}{\partial t}e^{X(t)}=\int_{0}^{1}\frac{\partial\Gamma}{\partial s}ds=\int_{0}^{1}e^{-\mathrm{ad}_{sX}}X^{\prime}ds.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+使用形式幂级数展开指数，逐项积分，并最后识别方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2-79"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，
+\begin_inset Formula 
+\[
+\Gamma(1,t)=\int_{0}^{1}\sum_{k=0}^{\infty}\frac{(-1)^{k}s^{k}}{k!}\left(\mathrm{ad}_{X}\right)^{k}\frac{dX}{dt}ds=\sum_{k=0}^{\infty}\frac{(-1)^{k}}{(k+1)!}\left(\mathrm{ad}_{X}\right)^{k}\frac{dX}{dt}=\frac{1-e^{-\mathrm{ad}_{X}}}{\mathrm{ad}_{X}}\frac{dX}{dt},
+\]
+
+\end_inset
+
+这就得出结果。
+\end_layout
+
+\begin_layout Subsection
+备注
+\end_layout
+
+\begin_layout Remark
+从参考资料中对比指数映射的导数公式，就会发现文献[3,4,5]的结论
+\begin_inset Formula 
+\begin{equation}
+D_{\exp}(X)=\sum_{i=0}^{\infty}\frac{(-1)^{i}\mathrm{ad}_{X}^{i}}{(i+1)!}\label{eq:82-local}
+\end{equation}
+
+\end_inset
+
+与文献[2]的方程(35)
+\begin_inset Formula 
+\begin{equation}
+D_{\exp}(X)=\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{X}^{i}}{(i+1)!}\label{eq:83-global}
+\end{equation}
+
+\end_inset
+
+不一致。这其实是选取全局坐标和局部坐标造成的差异。
+\end_layout
+
+\begin_layout Remark
+本章的前两节的内容与文献[3,4,5]的内容一致，对应的是文献[1]中表示局部坐标系的右结合(right-)算子
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+，文献[1]的方程(25,26)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:26"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及表示
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+局部
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $X$
+\end_inset
+
+处的导数，即右Jacobian矩阵，文献[1]的方程(41a)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:41a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。其结果，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3-80"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，对应于文献[1]的方程(67)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:67"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Remark
+文献[2]从其定义方程(1)开始，对应的是文献[1]中表示全局坐标系的左结合(left-)算子
+\begin_inset Formula $\oplus$
+\end_inset
+
+和
+\begin_inset Formula $\ominus$
+\end_inset
+
+，文献[1]的方程(27,28)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:27"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:28"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，以及表示全局或原点处的导数，即左Jacobian矩阵，文献[1]的方程(44)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:44"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。其结果，文献[2]的方程(35)，对应于文献[1]的方程(71)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:71"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Remark
+全局表示与局部表示的导数之间的关系，参见文献[1]的方程(75,76)，即本文的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:75"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:76"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Remark
+要证明全局的指数映射的导数也可使用上一节同样的方法，只需要将
+\begin_inset Formula $e^{-sX}$
+\end_inset
+
+和
+\begin_inset Formula $e^{sX}$
+\end_inset
+
+对调即可证明。文献[2]也提供了类似的证明方法。
+\end_layout
+
+\begin_layout Remark
+另外，对于幂级数
+\begin_inset Formula 
+\[
+\sum_{i=0}^{\infty}\frac{(-1)^{i}\mathrm{ad}_{x}^{i}}{(i+1)!}
+\]
+
+\end_inset
+
+通常习惯地被简写为
+\begin_inset Formula 
+\[
+\frac{\mathrm{id}-e^{-\mathrm{ad}_{x}}}{\mathrm{ad}_{x}},
+\]
+
+\end_inset
+
+这样的写法更加简洁，也反映了这个级数与指数函数关系的本质。类似地，对于幂级数
+\begin_inset Formula 
+\[
+\sum_{i=0}^{\infty}\frac{\mathrm{ad}_{x}^{i}}{(i+1)!}
+\]
+
+\end_inset
+
+也可以被简写为
+\begin_inset Formula 
+\[
+\frac{e^{\mathrm{ad}_{x}}-\mathrm{id}}{\mathrm{ad}_{x}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Remark
+对数映射
+\begin_inset Formula $\log$
+\end_inset
+
+是指数映射
+\begin_inset Formula $\exp$
+\end_inset
+
+的逆函数。在函数的双射区域中，逆映射的导数是导数的逆映射。因此
+\begin_inset Formula $\log$
+\end_inset
+
+的导数为
+\begin_inset Formula 
+\begin{equation}
+D_{\log}(x)=D_{\exp}^{-1}(x)\label{eq:84}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Remark
+文献[1,2]与文献[3,4,5]，对于导数的定义方程还有一些微妙的差异。文献[3,4,5]是相对于一个实数，即相对于时间
+\begin_inset Formula $t=0$
+\end_inset
+
+的求导；而文献[1,2]是相对于一个李代数元素或向量元素的求导，即相对于一个状态量的求导。这两者都有各自的应用领域。例如，在使用EKF/ESKF对刚体的位姿进行
+最优估计的算法中就得到应用。EKF/ESKF的一次迭代分为两个阶段：时间更新和测量更新。在时间更新阶段，我们需要使用运动学方程或动力学方程，也就是使用时间相关的
+方程，因此使用的导数适用于文献[3,4,5]的定义。在测量更新阶段，我们认为用于校正的测量值是同步测量得到，只有状态量差异而没有时间差异，因此使用的导数适用于文
+献[1,2]的定义。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Remark
+我们想寻找一个 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 雅可比矩阵
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $f'(\xi)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+，以使得
+\begin_inset Formula 
+\begin{equation}
+f\left(\xi+\delta\right)\approx f\left(\xi\right)\exp\left(\widehat{f'(\xi)\delta}\right)\label{eq:push_exp}
+\end{equation}
+
+\end_inset
+
+该方程即前面的近似方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:68"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。指数映射的导数告诉我们，对于任意李代数元素 
+\begin_inset Formula $\hat{\xi}\in\mathfrak{g}$
+\end_inset
+
+，存在一个线性映射
+\begin_inset Formula $d\exp_{\hat{\xi}}:T_{\hat{\xi}}\mathfrak{g}\rightarrow T_{\exp(\hat{\xi})}G$
+\end_inset
+
+，给出为
+\begin_inset Formula 
+\begin{equation}
+d\exp_{\hat{\xi}}\hat{x}=\exp(\hat{\xi})\frac{1-\exp(-\mathrm{ad}_{\hat{\xi}})}{\mathrm{ad}_{\hat{\xi}}}\hat{x}\label{eq:dexp}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $\hat{x}\in T_{\hat{\xi}}\mathfrak{g}$
+\end_inset
+
+，并且 
+\begin_inset Formula $\mathrm{ad}_{\hat{\xi}}$
+\end_inset
+
+ 它本身是一个线性映射，把 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ 带到 
+\begin_inset Formula $[\hat{\xi},\hat{x}]$
+\end_inset
+
+，即李括号。上面的公式很重要，因为它直接根据切向量来表达 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 和 
+\begin_inset Formula $G$
+\end_inset
+
+，但是了解线性映射存在的事实更重要。方程 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:dexp"
+
+\end_inset
+
+ 是一个切向量，我们看到它将
+\begin_inset Formula $x$
+\end_inset
+
+映射到局部坐标 
+\begin_inset Formula $y$
+\end_inset
+
+，如下所示：
+\begin_inset Formula 
+\[
+\hat{y}=\frac{1-\exp(-\mathrm{ad}_{\hat{\xi}})}{\mathrm{ad}_{\hat{\xi}}}\hat{x}
+\]
+
+\end_inset
+
+这可被用来构造雅可比矩阵 
+\begin_inset Formula $f'(\xi)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsection
+指数映射与导数的几何直觉
+\end_layout
+
+\begin_layout Standard
+理解指数映射和导数的几何直觉能加深我们对李群和李代数结构的理解。下面我们从几何的角度来理解指数映射和导数的意义。
+\end_layout
+
+\begin_layout Subsubsection
+指数映射的几何直觉
+\end_layout
+
+\begin_layout Standard
+指数映射的几何直觉可以从其在李群和李代数中的定义理解。在李代数中，元素 
+\begin_inset Formula $X$
+\end_inset
+
+ 可以看作是无穷小变换，而指数映射 
+\begin_inset Formula $\exp(X)$
+\end_inset
+
+ 则生成了对应的有限变换。
+\end_layout
+
+\begin_layout Standard
+指数映射 
+\begin_inset Formula $\exp:\mathfrak{g}\to G$
+\end_inset
+
+ 从李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 到李群 
+\begin_inset Formula $G$
+\end_inset
+
+ 的映射，从几何上看，它是一个从切空间(李代数)到流形(李群)的映射。指数映射给出了从李群的单位元 
+\begin_inset Formula $e$
+\end_inset
+
+ 出发，沿着给定方向 
+\begin_inset Formula $X\in\mathfrak{g}$
+\end_inset
+
+ “行进”的路径。具体地，对于 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+，
+\begin_inset Formula $\exp(tX)$
+\end_inset
+
+ 给出了从 
+\begin_inset Formula $e$
+\end_inset
+
+ 出发，沿着方向 
+\begin_inset Formula $X$
+\end_inset
+
+，“行走” 距离 
+\begin_inset Formula $t$
+\end_inset
+
+ 后到达的位置。
+\end_layout
+
+\begin_layout Standard
+在几何上，这可以被视为在李群的流形上定义的一种“直线” 或“测地线”。这个“直线”的特性是，它始终沿着(由 
+\begin_inset Formula $X$
+\end_inset
+
+ 给出的)同一方向前进，即其是由
+\begin_inset Formula $X$
+\end_inset
+
+生成的单参数子群在
+\begin_inset Formula $G$
+\end_inset
+
+上的积分曲线。
+\end_layout
+
+\begin_layout Subsubsection
+导数的几何直觉
+\end_layout
+
+\begin_layout Standard
+导数的几何直觉可以通过考虑李群元素或李代数元素的微小变化来理解。在李群中，元素 
+\begin_inset Formula $g$
+\end_inset
+
+ 的微小变化可以通过考虑 
+\begin_inset Formula $g$
+\end_inset
+
+ 在单位元附近的运动来理解。在李代数中，元素 
+\begin_inset Formula $X$
+\end_inset
+
+ 的微小变化可以通过考虑 
+\begin_inset Formula $X$
+\end_inset
+
+ 在零元附近的运动来理解。
+\end_layout
+
+\begin_layout Standard
+导数在几何上通常被理解为一个函数的局部线性近似。在李群和李代数的语境中，这一概念有两种主要的几何解释。
+\end_layout
+
+\begin_layout Standard
+首先，指数映射的导数 
+\begin_inset Formula $\frac{d}{dt}\exp(tX)$
+\end_inset
+
+ 描述了如何沿着李群的“直线”前进。具体地，
+\begin_inset Formula $\exp(tX)\cdot X$
+\end_inset
+
+ 给出了在点 
+\begin_inset Formula $\exp(tX)$
+\end_inset
+
+ 处，沿着方向 
+\begin_inset Formula $X$
+\end_inset
+
+ “行走” 的速度。这直观地说明了如何在李群的流形上“前进”。
+\end_layout
+
+\begin_layout Standard
+其次，对数映射的导数 
+\begin_inset Formula $\frac{d}{dt}\log(g\exp(tX))$
+\end_inset
+
+ 描述了如何在李代数中变化。具体地，
+\begin_inset Formula $\mathrm{Ad}_{g^{-1}}(X)$
+\end_inset
+
+ 给出了在点 
+\begin_inset Formula $g$
+\end_inset
+
+ 处，对于李群元素的微小变化 
+\begin_inset Formula $g\exp(tX)$
+\end_inset
+
+，其对应的李代数元素如何变化。这提供了一种理解李代数的动态变化的方法。
+\end_layout
+
+\begin_layout Standard
+这两种几何解释为我们提供了深入理解李群和李代数，以及它们之间关系的视角。这些视角在理解和应用李群和李代数的理论时都非常有用。
+\end_layout
+
+\begin_layout Section
+三维旋转群 SO(3)及其李代数so(3)
+\end_layout
+
+\begin_layout Subsection
+SO(3)和so(3)的基本性质
+\end_layout
+
+\begin_layout Subsubsection
+SO(3)作为李群
+\end_layout
+
+\begin_layout Standard
+三维旋转群SO(3)被定义为
+\begin_inset Formula $3\times3$
+\end_inset
+
+正交矩阵和旋转组成的群:
+\begin_inset Formula 
+\[
+SO(3)=\{R\in\mathbb{R}^{3\times3}|RR^{T}=I,\det(R)=1\}
+\]
+
+\end_inset
+
+具有矩阵乘法的群运算。SO(3)是一个紧致李群。
+\end_layout
+
+\begin_layout Standard
+旋转群SO(3)具有一些重要的性质：
+\end_layout
+
+\begin_layout Itemize
+封闭性：两个旋转的组合仍然是一个旋转，即，如果 
+\begin_inset Formula $R_{1},R_{2}\in SO(3)$
+\end_inset
+
+，则 
+\begin_inset Formula $R_{1}R_{2}\in SO(3)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+连续性：对于任意小的 
+\begin_inset Formula $\epsilon>0$
+\end_inset
+
+，总存在一个足够小的 
+\begin_inset Formula $\delta>0$
+\end_inset
+
+，使得对于所有满足 
+\begin_inset Formula $|R-I|<\delta$
+\end_inset
+
+ 的 
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+，我们有 
+\begin_inset Formula $|RR_{0}-R_{0}|<\epsilon$
+\end_inset
+
+，对于所有 
+\begin_inset Formula $R_{0}\in SO(3)$
+\end_inset
+
+成立。这说明了旋转群SO(3)是一个连续的群。
+\end_layout
+
+\begin_layout Itemize
+结合性：旋转群SO(3)满足结合律，即对于任意的 
+\begin_inset Formula $R_{1},R_{2},R_{3}\in SO(3)$
+\end_inset
+
+，我们有 
+\begin_inset Formula $(R_{1}R_{2})R_{3}=R_{1}(R_{2}R_{3})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Itemize
+单位元和逆元：旋转群SO(3)的单位元是 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 单位矩阵 
+\begin_inset Formula $I$
+\end_inset
+
+，即对于任意的 
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+，我们有 
+\begin_inset Formula $RI=IR=R$
+\end_inset
+
+。每个元素的逆元是其转置，即对于任意的 
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+，我们有 
+\begin_inset Formula $RR^{T}=R^{T}R=I$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+so(3)作为李代数
+\end_layout
+
+\begin_layout Standard
+对应的李代数so(3)被定义为
+\begin_inset Formula $3\times3$
+\end_inset
+
+的反对称矩阵:
+\begin_inset Formula 
+\[
+so(3)=\{A\in\mathbb{R}^{3\times3}|A^{T}=-A\}
+\]
+
+\end_inset
+
+其李括号运算为矩阵的交换子。满足
+\begin_inset Formula $A^{T}=-A$
+\end_inset
+
+ (
+\begin_inset Formula $A^{T}$
+\end_inset
+
+ 是 
+\begin_inset Formula $A$
+\end_inset
+
+ 的转置)条件的矩阵可以表示为：
+\begin_inset Formula 
+\[
+A=\left[\begin{array}{ccc}
+0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{array}\right],
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $(a_{1},a_{2},a_{3})^{\mathrm{T}}$
+\end_inset
+
+ 是一个三维向量，它以轴-角形式描述了旋转的轴和角度。这个向量的模长等于旋转的角度，向量的方向与旋转的轴成正比。
+\end_layout
+
+\begin_layout Standard
+首先，so(3)作为一个李代数，它的主要性质是满足李括号运算，即对于任意的
+\begin_inset Formula $X,Y\in so(3)$
+\end_inset
+
+，有
+\begin_inset Formula $[X,Y]=XY-YX\in so(3)$
+\end_inset
+
+。其次，so(3)也是一个向量空间，它对于向量加法和标量乘法封闭。
+\end_layout
+
+\begin_layout Standard
+此外，李代数so(3)还具有一些重要的性质：
+\end_layout
+
+\begin_layout Enumerate
+线性空间结构：李代数so(3)是一个线性空间，意味着两个李代数元素的线性组合仍然是一个李代数元素。
+\end_layout
+
+\begin_layout Enumerate
+李括号运算：李代数so(3)中定义了一个特殊的二元运算，称为李括号或者李括号运算。对于任意的 
+\begin_inset Formula $A,B\in\mathfrak{so}(3)$
+\end_inset
+
+，李括号定义为
+\begin_inset Formula $[A,B]=AB-BA$
+\end_inset
+
+。这个运算满足反对称性(
+\begin_inset Formula $[A,B]=-[B,A]$
+\end_inset
+
+)、双线性性(每个变量分别线性)和雅可比恒等式(
+\begin_inset Formula $[A,[B,C]]+[B,[C,A]]+[C,[A,B]]=0$
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Enumerate
+与SO(3)的关系：李代数so(3)可以被视为旋转群SO(3)在单位元处的切空间。具体来说，给定一个so(3)中的元素
+\begin_inset Formula $A$
+\end_inset
+
+，可以通过指数映射
+\begin_inset Formula $\exp(A)$
+\end_inset
+
+找到对应的SO(3)中的元素。反过来，也可以通过对数映射
+\begin_inset Formula $\log(R)$
+\end_inset
+
+找到给定的SO(3)中元素
+\begin_inset Formula $R$
+\end_inset
+
+对应的so(3)中的元素。
+\end_layout
+
+\begin_layout Subsubsection
+与三维空间的联系
+\end_layout
+
+\begin_layout Standard
+SO(3)作用于
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+给出三维空间的旋转变换。so(3)与叉积运算对应。
+\end_layout
+
+\begin_layout Subsection
+三维向量的叉乘与斜对称矩阵
+\end_layout
+
+\begin_layout Standard
+三维向量的叉乘和斜对称矩阵在旋转群SO(3)和李代数so(3)的理论中有着紧密的联系。
+\end_layout
+
+\begin_layout Subsubsection
+三维向量的叉乘
+\end_layout
+
+\begin_layout Standard
+三维向量的叉乘是一个二元运算，对于两个三维向量 
+\begin_inset Formula $a,b\in\mathbb{R}^{3}$
+\end_inset
+
+，其叉乘定义为
+\begin_inset Formula 
+\[
+a\times b=\begin{bmatrix}a_{2}b_{3}-a_{3}b_{2}\\
+a_{3}b_{1}-a_{1}b_{3}\\
+a_{1}b_{2}-a_{2}b_{1}
+\end{bmatrix},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $a=(a_{1},a_{2},a_{3})^{T}$
+\end_inset
+
+, 
+\begin_inset Formula $b=(b_{1},b_{2},b_{3})^{T}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+叉乘操作具有以下性质：
+\end_layout
+
+\begin_layout Itemize
+反对称性：
+\begin_inset Formula $a\times b=-b\times a$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+分配律：
+\begin_inset Formula $a\times(b+c)=a\times b+a\times c$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+双线性：
+\begin_inset Formula $(\alpha a+\beta b)\times c=\alpha(a\times c)+\beta(b\times c)$
+\end_inset
+
+，其中 
+\begin_inset Formula $\alpha,\beta$
+\end_inset
+
+ 是标量。
+\end_layout
+
+\begin_layout Standard
+叉乘操作与李代数so(3)有着紧密的联系。实际上，给定一个so(3)中的元素 
+\begin_inset Formula $A$
+\end_inset
+
+，其对应的向量 
+\begin_inset Formula $a$
+\end_inset
+
+ 可以通过 
+\begin_inset Formula $A=\left[a\right]_{\times}$
+\end_inset
+
+ 得到，其中 
+\begin_inset Formula $\left[a\right]_{\times}$
+\end_inset
+
+ 是由向量 
+\begin_inset Formula $a$
+\end_inset
+
+ 定义的斜对称矩阵。
+\end_layout
+
+\begin_layout Subsubsection
+斜对称矩阵
+\end_layout
+
+\begin_layout Standard
+斜对称矩阵是一种特殊的方阵，它满足 
+\begin_inset Formula $A^{T}=-A$
+\end_inset
+
+。对于一个三维向量 
+\begin_inset Formula $a\in\mathbb{R}^{3}$
+\end_inset
+
+，我们可以构造一个与之对应的斜对称矩阵
+\begin_inset Formula 
+\[
+\left[a\right]_{\times}=\begin{bmatrix}0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{bmatrix}.
+\]
+
+\end_inset
+
+这个斜对称矩阵的一个重要性质是，对于任意三维向量 
+\begin_inset Formula $b\in\mathbb{R}^{3}$
+\end_inset
+
+，都有
+\begin_inset Formula 
+\[
+\left[a\right]_{\times}b=a\times b.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这表明，对于 $so(3)$ 中的元素 
+\begin_inset Formula $X$
+\end_inset
+
+，可以找到一个对应的三维向量 
+\begin_inset Formula $a$
+\end_inset
+
+，使得 
+\begin_inset Formula $X$
+\end_inset
+
+ 的作用等价于 
+\begin_inset Formula $a$
+\end_inset
+
+ 的叉乘。即，斜对称矩阵可以用来表示三维空间中的叉乘操作。
+\end_layout
+
+\begin_layout Standard
+斜对称矩阵与李代数so(3)的关系非常紧密。实际上，李代数so(3)就是所有 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 斜对称矩阵的集合。这提供了一种从向量到旋转的方法，即通过将向量转化为斜对称矩阵，然后在斜对称矩阵上应用指数映射，我们可以得到一种表示旋转的方法。
+\end_layout
+
+\begin_layout Subsection
+SO(3)和so(3)的伴随表示
+\end_layout
+
+\begin_layout Subsubsection
+SO(3)的伴随矩阵表示
+\end_layout
+
+\begin_layout Standard
+SO(3)的伴随表示采用矩阵乘法的形式:
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{\mathbf{R}}A=\mathbf{R}A\mathbf{R}^{-1}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $R\in\mathrm{SO}(3)$
+\end_inset
+
+,
+\begin_inset Formula $A\in\mathrm{so}(3)$
+\end_inset
+
+。其结果已经在前面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:139"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中给出
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{\mathbf{R}}=\mathbf{R}.
+\]
+
+\end_inset
+
+下面从其微分式进行证明。
+\end_layout
+
+\begin_layout Standard
+在李群中，经常需要将一个切向量从一个元素周围的切空间中变换到另一个元素的切空间中。
+\series bold
+伴随
+\series default
+执行此变换。一般来说，李群的一个很好的性质是这个变换是线性的。对于李群的一个元素
+\begin_inset Formula $X$
+\end_inset
+
+，伴随写为
+\begin_inset Formula $\mathrm{Ad}_{X}$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align}
+\boldsymbol{\omega} & \in\mathrm{so}(3),\mathbf{R}\in\mathrm{SO}(3)\nonumber \\
+\mathbf{R}\cdot\exp(\boldsymbol{\omega}) & =\exp\left(\mathrm{Ad}_{\mathbf{R}}\cdot\boldsymbol{\omega}\right)\cdot\mathbf{R}\label{eq:87}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+首先，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:87"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的特征重新排列如下：
+\begin_inset Formula 
+\[
+\exp\left(\mathrm{Ad}_{\mathbf{R}}\cdot\boldsymbol{\omega}\right)=\mathbf{R}\cdot\exp(\boldsymbol{\omega})\cdot\mathbf{R}^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，在不失一般性的情况下，对于
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+，设
+\begin_inset Formula $\boldsymbol{\omega}=t\cdot\boldsymbol{v}$
+\end_inset
+
+，在
+\begin_inset Formula $t=0$
+\end_inset
+
+时求相对于
+\begin_inset Formula $t$
+\end_inset
+
+的微分：
+\begin_inset Formula 
+\begin{align*}
+\left.\dfrac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\exp\left(\mathrm{Ad}_{\mathbf{R}}\cdot t\cdot\boldsymbol{v}\right) & =\left.\dfrac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\left[\mathbf{R}\cdot\exp(t\cdot\boldsymbol{v})\cdot\mathbf{R}^{-1}\right]\\
+\left.\dfrac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\left[\mathbf{I}+\left(\mathrm{Ad}_{\mathbf{R}}\cdot t\cdot\boldsymbol{v}\right)_{\times}+O\left(t^{2}\right)\right] & =\mathbf{R}\cdot\left.\dfrac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\left[\mathbf{I}+(t\cdot\boldsymbol{v})_{\times}+O\left(t^{2}\right)\right]\cdot\mathbf{R}^{-1}\\
+\left(\mathrm{Ad}_{\mathbf{R}}\cdot\boldsymbol{v}\right)_{\times} & =\mathbf{R}\cdot\boldsymbol{v}_{\times}\cdot\mathbf{R}^{-1}\\
+ & =\left(\mathbf{R}\boldsymbol{v}\right)_{\times}\\
+\Longrightarrow\mathrm{Ad}_{\mathbf{R}} & =\mathbf{R}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+的情况，群元素的伴随变换特别简单：它与用来表示元素的旋转矩阵相同。通过一个群元素旋转一个切向量，将其从元素右侧的切空间“移动”到左侧的切空间。
+\end_layout
+
+\begin_layout Subsubsection
+so(3)的叉积表达式
+\end_layout
+
+\begin_layout Standard
+so(3)的伴随表示为叉积:
+\begin_inset Formula 
+\[
+\mathrm{ad}_{A}B=A\times B
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $A,B\in\mathrm{so}(3)$
+\end_inset
+
+,对应到
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+向量的叉积。这个关系式可以从叉积的定义推导出来。
+\end_layout
+
+\begin_layout Standard
+下面我们将验证 
+\begin_inset Formula $\mathrm{so}(3)$
+\end_inset
+
+ 的伴随表示 
+\begin_inset Formula $\mathrm{ad}_{A}$
+\end_inset
+
+ 的作用等价于向量的叉积，也就是说，我们要验证 
+\begin_inset Formula $[A,B]=AB-BA$
+\end_inset
+
+ 对应于 
+\begin_inset Formula $a\times b$
+\end_inset
+
+ 的反对称矩阵。
+\end_layout
+
+\begin_layout Standard
+首先，对于李代数 
+\begin_inset Formula $\mathrm{so}(3)$
+\end_inset
+
+ 中的元素
+\begin_inset Formula $A,B\in\mathrm{so}(3)$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+A=\begin{pmatrix}0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{pmatrix},\quad B=\begin{pmatrix}0 & -b_{3} & b_{2}\\
+b_{3} & 0 & -b_{1}\\
+-b_{2} & b_{1} & 0
+\end{pmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接下来，我们计算 
+\begin_inset Formula $AB$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+AB=\begin{pmatrix}0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{pmatrix}\begin{pmatrix}0 & -b_{3} & b_{2}\\
+b_{3} & 0 & -b_{1}\\
+-b_{2} & b_{1} & 0
+\end{pmatrix}=\begin{pmatrix}-a_{3}b_{3}-a_{2}b_{2} & a_{2}b_{1} & a_{3}b_{1}\\
+a_{1}b_{2} & -a_{1}b_{1}-a_{3}b_{3} & a_{3}b_{2}\\
+a_{1}b_{3} & a_{2}b_{3} & -a_{1}b_{1}-a_{2}b_{2}
+\end{pmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，我们计算 
+\begin_inset Formula $BA$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+BA=\begin{pmatrix}0 & -b_{3} & b_{2}\\
+b_{3} & 0 & -b_{1}\\
+-b_{2} & b_{1} & 0
+\end{pmatrix}\begin{pmatrix}0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{pmatrix}=\begin{pmatrix}-b_{3}a_{3}-b_{2}a_{2} & b_{2}a_{1} & b_{3}a_{1}\\
+b_{1}a_{2} & -b_{1}a_{1}-b_{3}a_{3} & b_{3}a_{2}\\
+b_{1}a_{3} & b_{2}a_{3} & -b_{1}a_{1}-b_{2}a_{2}
+\end{pmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+于是我们得到 
+\begin_inset Formula $AB-BA$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+AB-BA & =\begin{pmatrix}0 & a_{2}b_{1}-b_{2}a_{1} & a_{3}b_{1}-b_{3}a_{1}\\
+a_{1}b_{2}-b_{1}a_{2} & 0 & a_{3}b_{2}-b_{3}a_{2}\\
+a_{1}b_{3}-b_{1}a_{3} & a_{2}b_{3}-b_{2}a_{3} & 0
+\end{pmatrix}\\
+ & =\begin{pmatrix}0 & -(a_{1}b_{2}-a_{2}b_{1}) & a_{3}b_{1}-a_{1}b_{3}\\
+a_{1}b_{2}-a_{2}b_{1} & 0 & -(a_{2}b_{3}-a_{3}b_{2})\\
+-(a_{3}b_{1}-a_{1}b_{3}) & a_{2}b_{3}-a_{3}b_{2} & 0
+\end{pmatrix}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+最后，我们可以验证这个矩阵就是向量 
+\begin_inset Formula $a\times b=(a_{2}b_{3}-a_{3}b_{2},a_{3}b_{1}-a_{1}b_{3},a_{1}b_{2}-a_{2}b_{1})^{T}$
+\end_inset
+
+ 的反对称矩阵。所以，我们验证了 
+\begin_inset Formula $\mathrm{so}(3)$
+\end_inset
+
+ 的伴随表示 
+\begin_inset Formula $\mathrm{ad}_{A}$
+\end_inset
+
+ 的作用等价于向量的叉积，即
+\begin_inset Formula 
+\[
+\mathrm{ad}_{A}=\begin{pmatrix}0 & -a_{3} & a_{2}\\
+a_{3} & 0 & -a_{1}\\
+-a_{2} & a_{1} & 0
+\end{pmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+与叉积相关矩阵
+\end_layout
+
+\begin_layout Standard
+进一步的，我们计算
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 这种形式的矩阵。
+\end_layout
+
+\begin_layout Standard
+对于两个三维向量 
+\begin_inset Formula $A,B\in\mathbb{R}^{3}$
+\end_inset
+
+，其中，
+\begin_inset Formula $A=(a_{1},a_{2},a_{3})^{T}$
+\end_inset
+
+, 
+\begin_inset Formula $B=(b_{1},b_{2},b_{3})^{T}$
+\end_inset
+
+，其叉乘为
+\begin_inset Formula 
+\[
+A\times B=\begin{bmatrix}a_{2}b_{3}-a_{3}b_{2}\\
+a_{3}b_{1}-a_{1}b_{3}\\
+a_{1}b_{2}-a_{2}b_{1}
+\end{bmatrix}
+\]
+
+\end_inset
+
+我们计算
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{align*}
+AB^{T}-BA^{T} & =\left[\begin{array}{c}
+a_{1}\\
+a_{2}\\
+a_{3}
+\end{array}\right]\left[\begin{array}{ccc}
+b_{1} & b_{2} & b_{3}\end{array}\right]-\left[\begin{array}{c}
+b_{1}\\
+b_{2}\\
+b_{3}
+\end{array}\right]\left[\begin{array}{ccc}
+a_{1} & a_{2} & a_{3}\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+a_{1}b_{1} & a_{1}b_{2} & a_{1}b_{3}\\
+a_{2}b_{1} & a_{2}b_{2} & a_{2}b_{3}\\
+a_{3}b_{1} & a_{3}b_{2} & a_{3}b_{3}
+\end{array}\right]-\left[\begin{array}{ccc}
+b_{1}a_{1} & b_{1}a_{2} & b_{1}a_{3}\\
+b_{2}a_{1} & b_{2}a_{2} & b_{2}a_{3}\\
+b_{3}a_{1} & b_{3}a_{2} & b_{3}a_{3}
+\end{array}\right]\\
+ & =\left[\begin{array}{ccc}
+0 & a_{1}b_{2}-a_{2}b_{1} & a_{1}b_{3}-a_{3}b_{1}\\
+a_{2}b_{1}-a_{1}b_{2} & 0 & a_{2}b_{3}-a_{3}b_{2}\\
+a_{3}b_{1}-a_{1}b_{3} & a_{3}b_{2}-a_{2}b_{3} & 0
+\end{array}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过观察，我们可以看到：
+\begin_inset Formula $AB^{T}-BA^{T}=-(A\times B)^{\wedge}$
+\end_inset
+
+，即这两个矩阵的每一个元素都是相同的，只是符号相反。现在让我们考虑 
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 的元素，可以看到，矩阵 
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 的非对角线元素对应于向量 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 的叉积的各个分量。具体来说，
+\begin_inset Formula 
+\begin{align*}
+(AB^{T}-BA^{T})_{23} & =a_{2}b_{3}-a_{3}b_{2}=(A\times B)_{1}\\
+(AB^{T}-BA^{T})_{31} & =a_{3}b_{1}-a_{1}b_{3}=(A\times B)_{2}\\
+(AB^{T}-BA^{T})_{12} & =a_{1}b_{2}-a_{2}b_{1}=(A\times B)_{3}
+\end{align*}
+
+\end_inset
+
+因此，矩阵 
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 可以被视为向量 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 的叉积的一种矩阵表示。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 这种形式的矩阵在许多应用领域中都有重要的作用。特别地，它在物理学、计算机图形学以及机器人学中有着广泛的应用。
+\end_layout
+
+\begin_layout Enumerate
+物理学：在物理学中，特别是在经典力学和量子力学中，
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 通常被用来描述系统的动力学。特别地，如果 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 是两个物理量，那么 
+\begin_inset Formula $[A,B]=AB^{T}-BA^{T}$
+\end_inset
+
+ 就被称为这两个量的对易子。例如，角动量算符的对易关系就是这种形式的，它在描述粒子的旋转动力学时起着关键作用。
+\end_layout
+
+\begin_layout Enumerate
+计算机图形学：在计算机图形学中，
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 的形式常常用于描述二维或三维空间的旋转。特别地，如果 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 是空间中的两个向量，那么 
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 就对应于 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 的叉积，这是一种描述旋转的重要方式。另外，这种矩阵也常常用于实现各种图形变换，如缩放、剪切和反射等。
+\end_layout
+
+\begin_layout Enumerate
+机器人学：在机器人学中，
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 的形式常常用于描述机器人关节的旋转。特别地，如果 
+\begin_inset Formula $A$
+\end_inset
+
+ 和 
+\begin_inset Formula $B$
+\end_inset
+
+ 是描述机器人关节位置的向量，那么 
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 就可以描述关节的旋转动力学，这在实现机器人的运动控制中非常重要。
+\end_layout
+
+\begin_layout Standard
+因此，
+\begin_inset Formula $AB^{T}-BA^{T}$
+\end_inset
+
+ 这种形式的矩阵在许多应用领域中都非常重要，它提供了一种强大的工具来描述和分析各种旋转和动力学系统。
+\end_layout
+
+\begin_layout Subsubsection
+关系式的验证
+\end_layout
+
+\begin_layout Standard
+可以直接验证这两种伴随表示满足关系式:
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{\exp(A)}=\exp(\mathrm{ad}_{A})
+\]
+
+\end_inset
+
+矩阵指数和叉积具有这一对应关系。
+\end_layout
+
+\begin_layout Standard
+SO(3)和so(3)的伴随表示都可用矩阵运算明确表达,并满足一般的对应关系式。
+\end_layout
+
+\begin_layout Subsection
+指数映射的导数
+\end_layout
+
+\begin_layout Subsubsection
+罗德里格斯公式
+\end_layout
+
+\begin_layout Standard
+将斜对称矩阵转化为旋转矩阵的指数映射，只是在生成元线性组合上的矩阵指数：
+\begin_inset Formula 
+\begin{align*}
+\exp\left(\boldsymbol{\omega}_{\times}\right) & \equiv\exp\left(\begin{array}{ccc}
+0 & -\omega_{3} & \omega_{2}\\
+\omega_{3} & 0 & -\omega_{1}\\
+-\omega_{2} & \omega_{1} & 0
+\end{array}\right)\\
+ & =\mathbf{I}+\boldsymbol{\omega}_{\times}+\dfrac{1}{2!}\boldsymbol{\omega}_{\times}^{2}+\dfrac{1}{3!}\boldsymbol{\omega}_{\times}^{3}+\cdots
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+成对地写这些项，我们有：
+\begin_inset Formula 
+\[
+\exp\left(\boldsymbol{\omega}_{\times}\right)=\mathbf{I}+\sum_{i=0}^{\infty}\left[\dfrac{\boldsymbol{\omega}_{\times}^{2i+1}}{(2i+1)!}+\dfrac{\boldsymbol{\omega}_{\times}^{2i+2}}{(2i+2)!}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们可以利用斜对称矩阵的一个特性：
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}_{\times}^{3}=-\left(\boldsymbol{\omega}^{\mathrm{T}}\boldsymbol{\omega}\right)\cdot\boldsymbol{\omega}_{\times}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+首先将这个特征扩展到一般情况：
+\begin_inset Formula 
+\begin{align*}
+\theta^{2} & \equiv\boldsymbol{\omega}^{\mathrm{T}}\boldsymbol{\omega}\\
+\boldsymbol{\omega}_{\times}^{2i+1} & =(-1)^{i}\theta^{2i}\boldsymbol{\omega}_{\times}\\
+\boldsymbol{\omega}_{\times}^{2i+2} & =(-1)^{i}\theta^{2i}\boldsymbol{\omega}_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+现在我们可以对指数映射级数进行因子化，并识别系数中的泰勒展开式：
+\begin_inset Formula 
+\begin{align}
+\exp\left(\boldsymbol{\omega}_{\times}\right) & =\mathbf{I}+\left(\sum_{i=0}^{\infty}\dfrac{(-1)^{i}\theta^{2i}}{(2i+1)!}\right)\boldsymbol{\omega}_{\times}+\left(\sum_{i=0}^{\infty}\dfrac{(-1)^{i}\theta^{2i}}{(2i+2)!}\right)\boldsymbol{\omega}_{\times}^{2}\nonumber \\
+ & =\mathbf{I}+\left(1-\dfrac{\theta^{2}}{3!}+\dfrac{\theta^{4}}{5!}+\cdots\right)\boldsymbol{\omega}_{\times}+\left(\dfrac{1}{2!}-\dfrac{\theta^{2}}{4!}+\dfrac{\theta^{4}}{6!}+\cdots\right)\boldsymbol{\omega}_{\times}^{2}\nonumber \\
+ & =\mathbf{I}+\left(\dfrac{\sin\theta}{\theta}\right)\boldsymbol{\omega}_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\omega}_{\times}^{2}\label{eq:88}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:88"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)就是大家熟悉的罗德里格斯公式，其中
+\begin_inset Formula $\theta=\|\boldsymbol{\omega}\|$
+\end_inset
+
+。该公式对应于前面给出的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:134"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。指数映射产生一个由
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+给出旋转轴并旋转
+\begin_inset Formula $\theta$
+\end_inset
+
+弧度的旋转。
+\end_layout
+
+\begin_layout Standard
+指数映射可以用对数求逆，即从
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+到
+\begin_inset Formula $\mathrm{so}(3)$
+\end_inset
+
+的映射：
+\begin_inset Formula 
+\begin{align*}
+\mathbf{R} & \in\mathrm{SO}(3)\\
+\theta & =\arccos\left(\dfrac{\mathrm{tr}(\mathbf{R})-1}{2}\right)\\
+\ln(\mathbf{R}) & =\dfrac{\theta}{2\sin\theta}\cdot\left(\mathbf{R}-\mathbf{R}^{\mathrm{T}}\right)
+\end{align*}
+
+\end_inset
+
+然后向量
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+从
+\begin_inset Formula $\ln(\mathbf{R})$
+\end_inset
+
+的非对角元素中提取。该公式对应于前面给出的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:135"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Standard
+对于方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:88"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们定义为局部坐标系到全局坐标系的旋转，根据
+\begin_inset Formula $\mathbf{R}^{-1}=\mathbf{R}^{\mathrm{T}}$
+\end_inset
+
+，则全局坐标系到局部坐标系的旋转为
+\begin_inset Formula 
+\begin{equation}
+\mathbf{R}^{\mathrm{T}}=\mathbf{I}-\left(\dfrac{\sin\theta}{\theta}\right)\boldsymbol{\omega}_{\times}+\left(\dfrac{1-\cos\theta}{\theta^{2}}\right)\boldsymbol{\omega}_{\times}^{2}\label{eq:89}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+局部坐标系的导数
+\end_layout
+
+\begin_layout Standard
+代数 
+\begin_inset Formula $\mathfrak{so}(3)$
+\end_inset
+
+ 的元素为 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ 斜对称矩阵，且伴随表示相同：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\omega} & \in\Re^{3}\\
+\boldsymbol{\omega}_{\times} & =\left(\begin{array}{ccc}
+0 & -\omega_{3} & \omega_{2}\\
+\omega_{3} & 0 & -\omega_{1}\\
+-\omega_{2} & \omega_{1} & 0
+\end{array}\right)\in\mathfrak{so}(3)\\
+\mathrm{ad}_{\boldsymbol{\omega}} & =\boldsymbol{\omega}_{\times}\\
+\mathrm{ad}_{\boldsymbol{\omega}}^{3} & =-\|\boldsymbol{\omega}\|^{2}\cdot\mathrm{ad}_{\boldsymbol{\omega}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+根据前面给出的指数映射
+\begin_inset Formula $\exp$
+\end_inset
+
+的求导方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:82-local"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们可以求出
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+在局部坐标系的导数。由于 
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+ 的高阶次幂折回到低阶次幂，因此我们可以收集系列中的项：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(\boldsymbol{\omega}) & =\mathbf{I}-\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\boldsymbol{\omega}\|^{2i}}{(2i+2)!}\right)\cdot\mathrm{ad}_{\boldsymbol{\omega}}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\boldsymbol{\omega}\|^{2i}}{(2i+3)!}\right)\cdot\mathrm{ad}_{\boldsymbol{\omega}}^{2}\nonumber \\
+ & =\mathbf{I}-\left(\frac{1-\cos\|\boldsymbol{\omega}\|}{\|\boldsymbol{\omega}\|^{2}}\right)\cdot\boldsymbol{\omega}_{\times}+\left(\frac{1-\frac{\sin\|\boldsymbol{\omega}\|}{\|\boldsymbol{\omega}\|}}{\|\boldsymbol{\omega}\|^{2}}\right)\cdot\boldsymbol{\omega}_{\times}^{2}\label{eq:90}
+\end{align}
+
+\end_inset
+
+该方程就是前面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:143"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的右Jacobian矩阵
+\begin_inset Formula $\mathbf{J}_{r}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+。注意，该矩阵同样是在文献[1]的方程(174)中给出SE(3)矩阵的
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵的转置矩阵
+\begin_inset Formula $\mathbf{V}^{\top}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:84"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，在 
+\begin_inset Formula $\exp$
+\end_inset
+
+ 和 
+\begin_inset Formula $\log$
+\end_inset
+
+ 的双射区域中， 
+\begin_inset Formula $\log$
+\end_inset
+
+的导数是
+\begin_inset Formula 
+\begin{equation}
+D_{\log}(\boldsymbol{\omega})=D_{\exp}^{-1}(\boldsymbol{\omega})\label{eq:91}
+\end{equation}
+
+\end_inset
+
+根据前面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:144"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的右Jacobian矩阵的逆矩阵
+\begin_inset Formula $\mathbf{J}_{r}{}^{-1}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\begin{align*}
+D_{\log}(\boldsymbol{\omega}) & =\mathbf{J}_{r}{}^{-1}\left(\boldsymbol{\omega}\right)\\
+ & =\mathbf{I}+\frac{1}{2}\boldsymbol{\omega}_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\boldsymbol{\omega}_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+全局坐标系的导数
+\end_layout
+
+\begin_layout Standard
+根据前面给出的指数映射
+\begin_inset Formula $\exp$
+\end_inset
+
+的求导方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:83-global"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们可以求出
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+在全局坐标系的导数：
+\begin_inset Formula 
+\begin{align}
+D_{\exp}(\boldsymbol{\omega}) & =\mathbf{I}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\boldsymbol{\omega}\|^{2i}}{(2i+2)!}\right)\cdot\mathrm{ad}_{\boldsymbol{\omega}}+\left(\sum_{i=0}^{\infty}\frac{(-1)^{i}\cdot\|\boldsymbol{\omega}\|^{2i}}{(2i+3)!}\right)\cdot\mathrm{ad}_{\boldsymbol{\omega}}^{2}\nonumber \\
+ & =\mathbf{I}+\left(\frac{1-\cos\|\boldsymbol{\omega}\|}{\|\boldsymbol{\omega}\|^{2}}\right)\cdot\boldsymbol{\omega}_{\times}+\left(\frac{1-\frac{\sin\|\boldsymbol{\omega}\|}{\|\boldsymbol{\omega}\|}}{\|\boldsymbol{\omega}\|^{2}}\right)\cdot\boldsymbol{\omega}_{\times}^{2}\label{eq:92}
+\end{align}
+
+\end_inset
+
+该方程就是前面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:145"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的左Jacobian矩阵
+\begin_inset Formula $\mathbf{J}_{l}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+。注意，该矩阵同样是在文献[1]的方程(174)中给出SE(3)矩阵的
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+矩阵。并且根据前面的方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:146"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出的左Jacobian矩阵的逆矩阵
+\begin_inset Formula $\mathbf{J}_{l}{}^{-1}\left(\boldsymbol{\omega}\right)$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\begin{align*}
+D_{\log}(\boldsymbol{\omega}) & =\mathbf{J}_{l}{}^{-1}\left(\boldsymbol{\omega}\right)\\
+ & =\mathbf{I}-\frac{1}{2}\boldsymbol{\omega}_{\times}+\left(\frac{1}{\theta^{2}}-\frac{1+\cos\theta}{2\theta\sin\theta}\right)\boldsymbol{\omega}_{\times}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因此，观察全局坐标系的导数和局部坐标系的导数之间的关系，由方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:147"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)给出为
+\begin_inset Formula 
+\[
+\mathbf{J}_{l}=\mathbf{J}_{r}^{\top},\quad\mathbf{J}_{l}^{-1}=\mathbf{J}_{r}^{-\top}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+姿态的导数与瞬时角速度
+\end_layout
+
+\begin_layout Standard
+刚体的姿态
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+为李群流形
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+上移动的点，其变化速度
+\begin_inset Formula $\dot{\mathbf{R}}=\partial\mathbf{R}/\partial t$
+\end_inset
+
+属于在当前点
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+处与
+\begin_inset Formula $\mathrm{SO}(3)$
+\end_inset
+
+正切的空间。假设球面上的向量以角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+匀速旋转，根据约束条件
+\begin_inset Formula 
+\[
+\mathbf{R}\mathbf{R}^{\mathrm{T}}=\mathbf{I}
+\]
+
+\end_inset
+
+两边取导数
+\begin_inset Formula 
+\[
+\dfrac{\mathrm{d}}{\mathrm{d}t}\left\{ \mathbf{R}\mathbf{R}^{\mathrm{T}}\right\} =\dfrac{\mathrm{d}}{\mathrm{d}t}\mathbf{I}\rightarrow\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}+\mathbf{R}\dot{\mathbf{R}}^{\mathrm{T}}=0
+\]
+
+\end_inset
+
+这就是一个斜对称矩阵
+\begin_inset Formula 
+\[
+\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}=-\left(\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}\right)^{\mathrm{T}}
+\]
+
+\end_inset
+
+我们定义
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\right]_{\times}=\dot{\mathbf{R}}\mathbf{R}^{\mathrm{T}}
+\]
+
+\end_inset
+
+则旋转矩阵的导数(旋转运动的基本方程)为：
+\begin_inset Formula 
+\[
+\dot{\mathbf{R}}=\left[\boldsymbol{\omega}\right]_{\times}\mathbf{R}
+\]
+
+\end_inset
+
+当
+\begin_inset Formula $\mathbf{R}\left(0\right)=\mathbf{I}$
+\end_inset
+
+时的解为
+\begin_inset Formula 
+\[
+\mathbf{R}=e^{\left[\boldsymbol{\omega}\right]_{\times}t}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\left[\boldsymbol{\omega}\right]_{\times}$
+\end_inset
+
+表示在切空间中的角速度。
+\end_layout
+
+\begin_layout Standard
+我们在笛卡尔空间测量得到的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+为向量
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}=\left[\begin{array}{c}
+\omega_{x}\\
+\omega_{y}\\
+\omega_{z}
+\end{array}\right]
+\]
+
+\end_inset
+
+关连到
+\begin_inset Formula $\left[\boldsymbol{\omega}\right]_{\times}$
+\end_inset
+
+这个斜对称矩阵则为
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}\right]_{\times}=\left[\begin{array}{ccc}
+0 & -\omega_{z} & \omega_{y}\\
+\omega_{z} & 0 & -\omega_{x}\\
+-\omega_{y} & \omega_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+旋转在切空间中的导数，也就是在切空间中的角速度，对于三维空间为
+\begin_inset Formula 
+\[
+\dot{\mathbf{R}}=\begin{cases}
+\left[\boldsymbol{\omega}\right]_{\times} & \text{if }\mathbf{R}=\mathbf{I}\\
+\left[\boldsymbol{\omega}\right]_{\times}\mathbf{R} & \text{exp map}
+\end{cases}
+\]
+
+\end_inset
+
+这是在全局(global)坐标系中的表示。对于局部(local)坐标系的表示为
+\begin_inset Formula 
+\begin{align*}
+\dot{\mathbf{R}} & =\mathbf{R}\left[\boldsymbol{\omega}\right]_{\times}\in\mathrm{SO}(3)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+因为角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+涉及到在全局(global)坐标系或在局部(local)坐标系中测量的问题，所以我们需要对符号使用上下标进行更明晰地标识。对于从机体帧(body
+ frame) 
+\begin_inset Formula $b$
+\end_inset
+
+ 到导航帧(navigation frame) 
+\begin_inset Formula $n$
+\end_inset
+
+ 的3D旋转 
+\begin_inset Formula $\mathbf{R}_{b}^{n}$
+\end_inset
+
+，我们有空间角速度(spatial angular velocity) 
+\begin_inset Formula $\boldsymbol{\omega}_{nb}^{n}$
+\end_inset
+
+，其在导航帧中测量，
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}_{nb}^{n}\right]_{\times}\triangleq\dot{\mathbf{R}}_{b}^{n}\left(\mathbf{R}_{b}^{n}\right)^{T}=\dot{\mathbf{R}}_{b}^{n}\mathbf{R}_{n}^{b}
+\]
+
+\end_inset
+
+并且有机体的角速度 
+\begin_inset Formula $\boldsymbol{\omega}_{nb}^{b}$
+\end_inset
+
+，其在机体帧内测量：
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}_{nb}^{b}\right]_{\times}\triangleq\left(\mathbf{R}_{b}^{n}\right)^{T}\dot{\mathbf{R}}_{b}^{n}=\mathbf{R}_{n}^{b}\dot{\mathbf{R}}_{b}^{n}
+\]
+
+\end_inset
+
+我们可以通过共轭将这些斜对称矩阵从导航帧变换到机体帧，
+\begin_inset Formula 
+\[
+\left[\boldsymbol{\omega}_{nb}^{b}\right]_{\times}=\mathbf{R}_{n}^{b}\left[\boldsymbol{\omega}_{nb}^{n}\right]_{\times}\mathbf{R}_{b}^{n}
+\]
+
+\end_inset
+
+但因为伴随表示满足
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{\mathbf{R}}\left[\boldsymbol{\omega}\right]_{\times}\triangleq\mathbf{R}\left[\boldsymbol{\omega}\right]_{\times}\mathbf{R}^{T}=\left[\mathbf{R}\boldsymbol{\omega}\right]_{\times}
+\]
+
+\end_inset
+
+我们甚至可以更容易地将空间角速度和机体角速度变换为
+\begin_inset Formula $3$
+\end_inset
+
+维向量：
+\begin_inset Formula 
+\[
+\boldsymbol{\omega}_{nb}^{b}=\mathbf{R}_{n}^{b}\boldsymbol{\omega}_{nb}^{n}
+\]
+
+\end_inset
+
+上述的表示有些繁琐，我们可以进行一些简化，并且有时候导航帧与空间帧(space frame)通用，所以我们有
+\begin_inset Formula 
+\begin{align*}
+\left[\boldsymbol{\omega}_{s}\right]_{\times} & \triangleq\dot{\mathbf{R}}_{b}^{n}\left(\mathbf{R}_{b}^{n}\right)^{-1}\\
+\left[\boldsymbol{\omega}_{b}\right]_{\times} & \triangleq\left(\mathbf{R}_{b}^{n}\right)^{-1}\dot{\mathbf{R}}_{b}^{n}
+\end{align*}
+
+\end_inset
+
+并且通常情况下，旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+在没有上下标指示的情况下指的是
+\begin_inset Formula $\mathbf{R}_{b}^{n}$
+\end_inset
+
+，而角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+在没有上下标指示的情况下指的是
+\begin_inset Formula $\boldsymbol{\omega}_{s}$
+\end_inset
+
+。于是对于角速度在坐标系中的变换
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\omega}_{s} & =\mathbf{R}\boldsymbol{\omega}_{b}\\
+\boldsymbol{\omega}_{b} & =\mathbf{R}^{-1}\boldsymbol{\omega}_{s}
+\end{align*}
+
+\end_inset
+
+可以这么理解
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{\omega}_{s} & =\mathrm{Ad}_{\mathbf{R}}\boldsymbol{\omega}_{b}\\
+\boldsymbol{\omega}_{b} & =\mathrm{Ad}_{\mathbf{R}^{-1}}\boldsymbol{\omega}_{s}
+\end{align*}
+
+\end_inset
+
+最终SO(3)和SE(3)的伴随矩阵的作用关系见下表：(screw-table2.pdf)
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../01/screw-table2.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+由上表中公式得出，空间角速度
+\begin_inset Formula $\boldsymbol{\omega}_{s}$
+\end_inset
+
+不依赖于机体坐标系的选择。同样，机体角速度
+\begin_inset Formula $\boldsymbol{\omega}_{b}$
+\end_inset
+
+也不依赖参考坐标系的选择。虽然
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+和
+\begin_inset Formula $\dot{\mathbf{R}}$
+\end_inset
+
+各自都依赖于坐标系
+\begin_inset Formula $\left\{ s\right\} $
+\end_inset
+
+和
+\begin_inset Formula $\left\{ b\right\} $
+\end_inset
+
+，但是
+\begin_inset Formula $\dot{\mathbf{R}}\mathbf{R}^{-1}$
+\end_inset
+
+与
+\begin_inset Formula $\left\{ b\right\} $
+\end_inset
+
+无关，
+\begin_inset Formula $\mathbf{R}^{-1}\dot{\mathbf{R}}$
+\end_inset
+
+与
+\begin_inset Formula $\left\{ s\right\} $
+\end_inset
+
+无关。
+\end_layout
+
+\begin_layout Standard
+在上表中的微分算子
+\begin_inset Formula $\left[\boldsymbol{\omega}\right]_{\times}=\dot{\mathbf{R}}\mathbf{R}^{-1}$
+\end_inset
+
+可计算得出生成元，即
+\begin_inset Formula 
+\[
+G_{i}=\left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & 0 & -1\\
+0 & 1 & 0
+\end{array}\right),G_{j}=\left(\begin{array}{ccc}
+0 & 0 & 1\\
+0 & 0 & 0\\
+-1 & 0 & 0
+\end{array}\right),G_{k}=\left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right),
+\]
+
+\end_inset
+
+则做为
+\begin_inset Formula $\mathrm{so}(3)$
+\end_inset
+
+的一个元素的角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+表示为生成元的线性组合：
+\begin_inset Formula 
+\[
+\omega_{x}G_{i}+\omega_{y}G_{j}+\omega_{z}G_{k}\in\mathrm{so}(3)
+\]
+
+\end_inset
+
+由此看出，在空间坐标系中的微分算子和所选择的机体坐标系无关。并且生成元
+\begin_inset Formula $G_{i},G_{j},G_{k}$
+\end_inset
+
+就是四元数的
+\begin_inset Formula $3$
+\end_inset
+
+个虚数
+\begin_inset Formula $i,j,k$
+\end_inset
+
+在切空间中的矩阵表示。
+\end_layout
+
+\begin_layout Standard
+因为上述性质，这个斜对称矩阵
+\begin_inset Formula $\left[\boldsymbol{\omega}\right]_{\times}$
+\end_inset
+
+又被称为速度张量 (velocity tensor)，而旋转矩阵
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+又被称为正交固有张量(orthogonal proper tensor)。因为一个刚体只有一个角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+，因此如何在刚体运动中找到与其上任意点
+\begin_inset Formula $p$
+\end_inset
+
+无关的速度不变量 (velocity invariant)，或称不变性向量 (invariant vector)，则是旋量理论(The theory
+ of screws)或空间向量代数(Spatial Vector Algebra)研究的初始问题。因为斜对称矩阵和旋转矩阵有许多简单易解的性质，因此有些问题可
+以转换成对偶向量用罗德里格斯公式进行求解，这就需要对偶李代数的知识，比如对刚体位姿SE(3)的计算，或者是研究高阶运动学的高阶加速度向量场的问题。
+\end_layout
+
+\begin_layout Subsection
+小结
+\end_layout
+
+\begin_layout Subsubsection
+几何理解伴随表示
+\end_layout
+
+\begin_layout Standard
+从几何的角度看，
+\begin_inset Formula $SO(3)$
+\end_inset
+
+的伴随表示描述的是一个给定的旋转如何影响其他旋转。在 
+\begin_inset Formula $SO(3)$
+\end_inset
+
+ 中，如果我们有两个旋转 
+\begin_inset Formula $R$
+\end_inset
+
+ 和 
+\begin_inset Formula $g$
+\end_inset
+
+，其中
+\begin_inset Formula $g$
+\end_inset
+
+可以是以旋转表示的机体姿态，则伴随表示 
+\begin_inset Formula $\mathrm{Ad}(R)(g)=RgR^{-1}$
+\end_inset
+
+ 描述的就是先按照 
+\begin_inset Formula $R$
+\end_inset
+
+ 旋转，然后进行 
+\begin_inset Formula $g$
+\end_inset
+
+ 的旋转，最后再按照 
+\begin_inset Formula $R^{-1}$
+\end_inset
+
+ 旋转回来，得到的新的旋转，或机体新的姿态。
+\end_layout
+
+\begin_layout Standard
+如果对
+\begin_inset Formula $so(3)$
+\end_inset
+
+的一个元素
+\begin_inset Formula $Y$
+\end_inset
+
+应用李群的伴随表示，即
+\begin_inset Formula $\mathrm{Ad}_{R}Y$
+\end_inset
+
+，则其对应的伴随表示
+\begin_inset Formula $\mathrm{Ad}_{R}:so(3)\to so(3)$
+\end_inset
+
+描述了在
+\begin_inset Formula $R$
+\end_inset
+
+的作用下，so(3)中的元素如何变换。具体来说，伴随表示描述了在给定旋转
+\begin_inset Formula $R$
+\end_inset
+
+的影响下，刚体的角速度向量(在
+\begin_inset Formula $so(3)$
+\end_inset
+
+中表示)的变化。也就是说，如果一个刚体首先经历一个角速度为
+\begin_inset Formula $\omega$
+\end_inset
+
+的旋转，然后再经历一个旋转
+\begin_inset Formula $R$
+\end_inset
+
+，则刚体的最终角速度向量将会被伴随表示
+\begin_inset Formula $\mathrm{Ad}_{R}$
+\end_inset
+
+变换，变为
+\begin_inset Formula $\mathrm{Ad}_{R}(\omega)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $so(3)$
+\end_inset
+
+ 中，如果我们有两个无穷小旋转 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+，则李代数的伴随表示 
+\begin_inset Formula $\mathrm{ad}(X)(Y)=[X,Y]$
+\end_inset
+
+ 描述的就是 
+\begin_inset Formula $X$
+\end_inset
+
+ 对 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的扰动效应。
+\end_layout
+
+\begin_layout Subsubsection
+几何理解指数映射和对数映射的导数
+\end_layout
+
+\begin_layout Standard
+从几何的角度看，指数映射的导数描述的是无穷小旋转的“速度”，而对数映射的导数描述的是有限旋转的瞬时角速度。
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $so(3)$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $X$
+\end_inset
+
+，指数映射的导数 
+\begin_inset Formula $\left.\frac{d}{dt}\right|_{t=0}\exp(tX)$
+\end_inset
+
+ 是 
+\begin_inset Formula $X$
+\end_inset
+
+ 自身，表明 
+\begin_inset Formula $X$
+\end_inset
+
+ 就是对应的无穷小旋转的“速度”。这反映了无穷小旋转的线性性：无穷小旋转的“速度”与其大小成正比。
+\end_layout
+
+\begin_layout Standard
+对于 
+\begin_inset Formula $SO(3)$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $R$
+\end_inset
+
+，对数映射的导数 
+\begin_inset Formula $\left.\frac{d}{dt}\right|_{t=0}\log(Re^{tX})$
+\end_inset
+
+ 是 
+\begin_inset Formula $X$
+\end_inset
+
+ 自身，表明 
+\begin_inset Formula $X$
+\end_inset
+
+ 就是对应的有限旋转的瞬时角速度。这反映了有限旋转的非线性性：有限旋转的瞬时角速度不仅取决于旋转的大小，还取决于旋转的方向和旋转轴的位置。
+\end_layout
+
+\begin_layout Standard
+指数映射的导数在几何上可以理解为描述无穷小旋转的速度。具体来说，对于给定的
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+，其对应的指数映射的导数
+\begin_inset Formula $D\exp_{R}:so(3)\to T_{R}SO(3)$
+\end_inset
+
+描述了在
+\begin_inset Formula $R$
+\end_inset
+
+的作用下，
+\begin_inset Formula $so(3)$
+\end_inset
+
+中的元素如何变换。
+\end_layout
+
+\begin_layout Standard
+具体来说，从几何的角度来看，指数映射的导数描述了在给定旋转
+\begin_inset Formula $R$
+\end_inset
+
+的影响下，刚体的角速度向量(在
+\begin_inset Formula $so(3)$
+\end_inset
+
+中表示)的变化。也就是说，如果一个刚体首先经历一个角速度为
+\begin_inset Formula $\omega$
+\end_inset
+
+的旋转，然后再经历一个旋转
+\begin_inset Formula $R$
+\end_inset
+
+，则刚体的最终角速度向量将会被指数映射的导数
+\begin_inset Formula $D\exp_{R}$
+\end_inset
+
+变换，其值为
+\begin_inset Formula $D\exp_{R}(\omega)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+相似的，对数映射的导数在几何上可以理解为描述有限旋转的瞬时角速度。具体来说，对于给定的
+\begin_inset Formula $R\in SO(3)$
+\end_inset
+
+，其对应的对数映射的导数
+\begin_inset Formula $D\log_{R}:T_{R}SO(3)\to so(3)$
+\end_inset
+
+描述了在
+\begin_inset Formula $R$
+\end_inset
+
+的作用下，
+\begin_inset Formula $SO(3)$
+\end_inset
+
+中的元素如何变换。
+\end_layout
+
+\begin_layout Standard
+同样的，从几何的角度来看，对数映射的导数描述了在给定旋转
+\begin_inset Formula $R$
+\end_inset
+
+的影响下，刚体的旋转矩阵(在
+\begin_inset Formula $SO(3)$
+\end_inset
+
+中表示)的变化。也就是说，如果一个刚体首先经历一个旋转
+\begin_inset Formula $R$
+\end_inset
+
+，然后再经历一个角速度为
+\begin_inset Formula $\omega$
+\end_inset
+
+的旋转，则刚体的最终旋转矩阵将会被对数映射的导数
+\begin_inset Formula $D\log_{R}$
+\end_inset
+
+变换，其值为
+\begin_inset Formula $D\log_{R}(\dot{R})$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+本章将从李群的对称表示性质进行总结。李群的对称表示是描述李群元素如何作用在某一几何空间上，使得空间的几何性质保持不变。例如，旋转群 
+\begin_inset Formula $SO(3)$
+\end_inset
+
+ 的元素可以看作是作用在三维欧几里得空间 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ 上的旋转，使得空间的欧几里得距离保持不变。
+\end_layout
+
+\begin_layout Standard
+在本文涉及的内容中，利用的李群对称表示性质，主要有以下几个方面:
+\end_layout
+
+\begin_layout Enumerate
+李群的伴随表示(
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+)：伴随表示是李群的一个重要表示，它的定义依赖于李群的对称性。对于李群 
+\begin_inset Formula $G$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $g$
+\end_inset
+
+，它的伴随表示 
+\begin_inset Formula $\mathrm{Ad}_{g}$
+\end_inset
+
+ 是一个从李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 到自身的线性映射，定义为：
+\begin_inset Formula 
+\[
+\mathrm{Ad}_{g}=\mathrm{d}(\mathrm{Int}_{g})
+\]
+
+\end_inset
+
+其中， 
+\begin_inset Formula $\mathrm{Int}_{g}$
+\end_inset
+
+ 是 
+\begin_inset Formula $g$
+\end_inset
+
+ 的内部自同构，它是一个从 
+\begin_inset Formula $G$
+\end_inset
+
+ 到 
+\begin_inset Formula $G$
+\end_inset
+
+ 的映射，定义为 
+\begin_inset Formula $\mathrm{Int}_{g}(h)=ghg^{-1}$
+\end_inset
+
+。内部自同构依赖于李群的对称性，它可以被看作是在 
+\begin_inset Formula $G$
+\end_inset
+
+ 上的一个 “转动”。
+\end_layout
+
+\begin_layout Enumerate
+李代数的伴随表示(
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+)：该伴随表示是李代数的一个表示，它可以从李群的伴随表示推导得出。对于李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 中的元素 
+\begin_inset Formula $X$
+\end_inset
+
+，它的李代数伴随表示 
+\begin_inset Formula $\mathrm{ad}_{X}$
+\end_inset
+
+ 是一个从 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 到自身的线性映射，定义为：
+\begin_inset Formula 
+\[
+\mathrm{ad}_{X}(Y)=[X,Y]
+\]
+
+\end_inset
+
+其中， 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 是李括号，它是李代数的一个基本运算。李代数的伴随表示依赖于李代数的对称性，它可以被看作是在 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 上的一个 “转动”。并且李代数的伴随表示(
+\begin_inset Formula $\mathrm{ad}$
+\end_inset
+
+)可以由李群的伴随表示(
+\begin_inset Formula $\mathrm{Ad}$
+\end_inset
+
+)导出，其定义如下：
+\begin_inset Formula 
+\[
+\mathrm{ad}_{X}=\frac{d}{dt}\left.\mathrm{Ad}_{\exp(tX)}\right|_{t=0}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\exp(tX)$
+\end_inset
+
+ 是李群的指数映射，
+\begin_inset Formula $\frac{d}{dt}$
+\end_inset
+
+ 是对参数 
+\begin_inset Formula $t$
+\end_inset
+
+ 的导数。这个公式体现了李群和李代数之间的联系，即指数映射和对数映射。
+\end_layout
+
+\begin_layout Enumerate
+伴随表示之间的关系式：李群和李代数的伴随表示之间通过指数映射有关系式
+\begin_inset Formula $\mathrm{Ad}_{\exp X}=\exp(\mathrm{ad}_{X})$
+\end_inset
+
+。这个关系依赖于指数映射所反映的李群对称表示的性质。它保证了局部线性结构和全局流形结构之间的表示一致性。
+\end_layout
+
+\begin_layout Enumerate
+李群上的指数映射：指数映射
+\begin_inset Formula $\exp:\mathfrak{g}\rightarrow G$
+\end_inset
+
+将李代数
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+映射到李群
+\begin_inset Formula $G$
+\end_inset
+
+。它使用了李群在其李代数上的对称表示的性质,因为指数映射是李群的对称表示(在单位元附近的线性逼近)对应的指数函数。从几何视角,指数映射基于切空间到流形的指数收敛
+,实现了局部线性结构到全局流形结构的映射。对数映射
+\begin_inset Formula $\log:G\rightarrow\mathfrak{g}$
+\end_inset
+
+定义为指数映射的反函数，将李群映射到李代数。这同样也是一种对称表示。
+\end_layout
+
+\begin_layout Standard
+从几何的角度来看，伴随表示可以被理解为李群的切向空间上的一个线性变换，它描述了如何通过李群的元素 “扭曲” 或 “旋转” 切向空间。这种 “扭曲”
+ 或 “旋转” 的效果可以通过左乘和右乘映射的相互作用来实现，这正是李群的对称性质的体现。对于李代数的伴随表示，可以把它理解为在 “无穷小” 的层面上描述这种
+ “扭曲” 或 “旋转” 的效果。
+\end_layout
+
+\begin_layout Standard
+更进一步的，它们之间还有一个公式 
+\begin_inset Formula $\mathrm{Ad}_{\exp X}=(T_{e}\exp)\circ(\mathrm{ad}_{X})\circ(T_{e}\log)$
+\end_inset
+
+，它描述了李群的伴随表示和李代数的伴随表示之间的关系，以及它们与李群的指数映射和对数映射之间的关系。这个公式的几何直觉可以理解为：通过李群的 “转动”(李群的伴
+随表示)和李代数的 “转动”(李代数的伴随表示)，我们可以从李代数 “移动” 到李群，然后再从李群 “移动” 回李代数。
+\end_layout
+
+\begin_layout Section
+参考资料
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "A micro Lie theory for state estimation in robotics"
+target "https://arxiv.org/abs/1812.01537"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Derivative of the Exponential Map"
+target "https://ethaneade.com/exp_diff.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "The Derivation of the Exponential Map of Matrices"
+target "https://www.cis.upenn.edu/~cis6100/deriv-exp.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Derivative of the exponential map"
+target "https://en.wikipedia.org/wiki/Derivative_of_the_exponential_map"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset href
+LatexCommand href
+name "Derivatives and Differentials"
+target "https://github.com/borglab/gtsam/blob/develop/doc/math.pdf"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
