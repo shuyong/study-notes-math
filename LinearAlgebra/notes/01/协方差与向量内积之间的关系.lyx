@@ -1,0 +1,971 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "协方差与向量内积之间的关系"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+协方差与向量内积之间的关系
+\end_layout
+
+\begin_layout Author
+Shuyong Chen
+\end_layout
+
+\begin_layout Section
+简介
+\end_layout
+
+\begin_layout Standard
+在下面的提问中
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.zhihu.com/question/616068948
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+提出了一个关于协方差和向量内积之间关系的问题。整理如下：
+\end_layout
+
+\begin_layout Standard
+我觉得协方差和向量内积都是那种两个集合按一定乘法规则遍历乘一遍然后求和的感觉。当然协方差的遍历规则的要求更低，内积需有亚标量的对应。就是这种“相乘”式的规则(是
+叫代数结构吗？)是不是哪个更高级的规则的一些特例呢？有没有专门研究“相乘”的数学领域？
+\end_layout
+
+\begin_layout Standard
+另外它们这种“相乘”之后导出的性质好像也有一些联系的感觉。比如协方差为
+\begin_inset Formula $0$
+\end_inset
+
+就是随机变量线性不相关，为
+\begin_inset Formula $\pm1$
+\end_inset
+
+就是几乎处处满足
+\begin_inset Formula $y=kx+b$
+\end_inset
+
+ (线性关系)；同时向量内积为零就是向量正交(比向量线性无关还强的性质)；还有就是想问下能从协方差和向量内积这两种计算规则的角度出发解释：向量的线性无关和随机变
+量的线性不相关之间的联系吗？或者介绍一下两者产生联系的一些场景？ 
+\end_layout
+
+\begin_layout Section
+问题的回答
+\end_layout
+
+\begin_layout Standard
+你的观察非常有趣，协方差和向量内积确实有一定的相似性。在回答你的问题之前，让我们先回顾一下协方差和向量内积的定义。
+\end_layout
+
+\begin_layout Standard
+协方差(Covariance)用于衡量两个随机变量的线性相关性，它的定义为： 
+\begin_inset Formula 
+\[
+\text{Cov}(X,Y)=E[(X-E[X])(Y-E[Y])]
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $E[X]$
+\end_inset
+
+ 和 
+\begin_inset Formula $E[Y]$
+\end_inset
+
+ 分别表示随机变量 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的期望。
+\end_layout
+
+\begin_layout Standard
+向量内积(Inner product)是一个二元运算，它将两个向量映射到一个标量。在欧几里得空间中，向量内积的定义为： 
+\begin_inset Formula 
+\[
+\mathbf{a}\cdot\mathbf{b}=\sum_{i=1}^{n}a_{i}b_{i}=|\mathbf{a}||\mathbf{b}|\cos\theta
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\mathbf{b}$
+\end_inset
+
+ 是两个 
+\begin_inset Formula $n$
+\end_inset
+
+ 维向量，
+\begin_inset Formula $\theta$
+\end_inset
+
+ 是它们之间的夹角。
+\end_layout
+
+\begin_layout Standard
+从定义上看，协方差和向量内积都可以看作是一种“相乘”操作，所提到的“遍历乘法运算后求和”的计算模式，在数学中被泛化为抽象代数中的双线性形式(Bilinear
+ Form)。它是线性代数中非常基础和重要的概念。但它们的背景和应用场景有很大不同。协方差主要用于描述随机变量之间的关系，而向量内积主要用于描述向量之间的关系。
+\end_layout
+
+\begin_layout Standard
+接下来，让我们从更高的观点来看待这两个概念。
+\end_layout
+
+\begin_layout Enumerate
+代数结构：协方差和向量内积都可以看作是某种代数结构的特例。在抽象代数中，有一种叫做双线性型(Bilinear form)的代数结构，它接受两个向量作为输入，输出
+一个标量。向量内积和协方差都可以看作是双线性型的特例。双线性型的定义为： 
+\begin_inset Formula 
+\[
+B(\mathbf{a},\mathbf{b})=\sum_{i=1}^{n}\sum_{j=1}^{n}a_{i}M_{ij}b_{j}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $M_{ij}$
+\end_inset
+
+ 是一个矩阵，对于向量内积，
+\begin_inset Formula $M_{ij}=\delta_{ij}$
+\end_inset
+
+ (克罗内克符号，当 
+\begin_inset Formula $i=j$
+\end_inset
+
+ 时为 
+\begin_inset Formula $1$
+\end_inset
+
+，否则为 
+\begin_inset Formula $0$
+\end_inset
+
+)；对于协方差，可以将随机变量 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 看作是两个向量，
+\begin_inset Formula $M_{ij}$
+\end_inset
+
+ 是协方差矩阵的元素。
+\end_layout
+
+\begin_layout Enumerate
+典型示例：很多线性代数中的运算，比如向量内积、叉积，都满足双线性形式的条件。而统计学中的协方差，也可以看作是随机变量构成的向量空间上定义的一种双线性形式。从几何
+的角度看，双线性形式定义了向量空间上的一个二次型，它刻画了空间中不同方向间的关系。当双线性形式等于零，表示对应方向上是正交的，即，零协方差表示随机变量线性无关，
+零向量内积表示正交。这些都反映了正交方向上两两之间独立的关系。
+\end_layout
+
+\begin_layout Enumerate
+几何直觉：向量内积可以用来描述向量之间的几何关系，例如夹角、正交性等。而协方差可以用来描述随机变量之间的线性关系，例如相关性、线性回归等。从这个角度看，它们的几
+何直觉是有联系的。当我们将随机变量看作是高维空间中的点时，协方差和向量内积之间的联系就更加明显了。
+\end_layout
+
+\begin_layout Enumerate
+线性无关与线性不相关：向量的线性无关是指一组向量不能通过线性组合表示成另一个向量。而随机变量的线性不相关是指两个随机变量之间没有线性关系。从概念上看，这两者有一
+定的联系。实际上，当我们将随机变量看作是高维空间中的点时，它们之间的线性关系可以通过协方差矩阵来描述。而协方差矩阵又和向量内积有一定的联系，因此可以说，线性无关
+和线性不相关之间存在一定的联系。
+\end_layout
+
+\begin_layout Standard
+总结一下，协方差和向量内积确实有一定的相似性，它们都可以看作是双线性型的特例，刻画了向量(或随机变量)空间中的正交关系，反映了线性相关性。从几何直觉的角度看，它
+们都可以用来描述空间中的关系，例如向量之间的夹角、正交性，以及随机变量之间的线性关系。从这个角度看，向量的线性无关和随机变量的线性不相关之间确实存在一定的联系。
+\end_layout
+
+\begin_layout Standard
+另外，判断向量线性相关的一个重要工具就是组成矩阵后计算并判断这个矩阵的秩。这也适用于判断随机变量的线性相关性。
+\end_layout
+
+\begin_layout Standard
+下面，我们将从二次型(Quadratic Forms)与主轴方面的特性进行扩展理解。
+\end_layout
+
+\begin_layout Section
+二次型矩阵优化定理
+\end_layout
+
+\begin_layout Theorem
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+在单位向量上优化二次型矩阵
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+设
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+与相应的二次型矩阵 
+\begin_inset Formula $\mathcal{Q}(\vec{x}):=\vec{x}^{\top}A\vec{x}$
+\end_inset
+
+ 对称。设置
+\begin_inset Formula $M=\max\left\{ \vec{x}^{\top}A\vec{x}:\left\Vert \vec{x}\right\Vert =1\right\} $
+\end_inset
+
+和
+\begin_inset Formula $m=\min\left\{ \vec{x}^{\top}A\vec{x}:\left\Vert \vec{x}\right\Vert =1\right\} $
+\end_inset
+
+。则
+\begin_inset Formula $M$
+\end_inset
+
+是
+\begin_inset Formula $A$
+\end_inset
+
+的最大特征值
+\begin_inset Formula $\lambda_{1}$
+\end_inset
+
+，
+\begin_inset Formula $m$
+\end_inset
+
+是
+\begin_inset Formula $A$
+\end_inset
+
+的最小特征值
+\begin_inset Formula $\lambda_{n}$
+\end_inset
+
+，这些值是通过将向量
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+设为相应的单位特征向量得到的。
+\end_layout
+
+\begin_layout Proof
+将
+\begin_inset Formula $A=PDP^{-1}$
+\end_inset
+
+正交对角化，并用
+\begin_inset Formula $P$
+\end_inset
+
+作为变量矩阵的变换，消除了在
+\begin_inset Formula $\mathcal{Q}$
+\end_inset
+
+中的交叉项，
+\begin_inset Formula $\vec{x}=P\vec{y}\Longrightarrow\vec{x}^{\top}A\vec{x}=\vec{y}^{\top}D\vec{y}$
+\end_inset
+
+。注意：
+\begin_inset Formula $\left\Vert \vec{x}\right\Vert =\vec{x}^{\top}\vec{x}=\left(P\vec{y}\right)^{\top}\left(P\vec{y}\right)\cdots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们可以将二次型矩阵
+\begin_inset Formula $\mathcal{Q}$
+\end_inset
+
+的其它特征值解释为关于附加约束的最大化
+\begin_inset Formula $\mathcal{Q}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Theorem
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+附加约束条件
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+设
+\begin_inset Formula $A\in\mathbb{R}^{n\times n}$
+\end_inset
+
+与相应的二次型矩阵 
+\begin_inset Formula $\mathcal{Q}(\vec{x}):=\vec{x}^{\top}A\vec{x}$
+\end_inset
+
+ 对称，并可正交对角化
+\begin_inset Formula $A=PDP^{-1}$
+\end_inset
+
+。不失一般性，
+\begin_inset Formula $D$
+\end_inset
+
+的对角项按降序排列
+\begin_inset Formula $\lambda_{1}\geq\lambda_{2}\geq\cdots\geq\lambda_{n}$
+\end_inset
+
+，所以
+\begin_inset Formula $P=\left[\vec{u}_{1}\cdots\vec{u}_{n}\right]$
+\end_inset
+
+，其中
+\begin_inset Formula $\vec{u}_{i}$
+\end_inset
+
+是对应于
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+的特征向量。则对于
+\begin_inset Formula $k=2,3,\ldots n$
+\end_inset
+
+，
+\begin_inset Formula $\mathcal{Q}(\vec{x}):=\vec{x}^{\top}A\vec{x}$
+\end_inset
+
+的最大值服从于
+\begin_inset Formula 
+\[
+\vec{x}^{\top}\vec{x}=1,\quad\vec{x}^{\top}\vec{u}_{1}=0,\quad\ldots,\quad\vec{x}^{\top}\vec{u}_{k-1}=0
+\]
+
+\end_inset
+
+条件的约束，即对于特征值
+\begin_inset Formula $\lambda_{k}$
+\end_inset
+
+，当
+\begin_inset Formula $\vec{x}=\vec{u}_{k}$
+\end_inset
+
+时获得。
+\end_layout
+
+\begin_layout Standard
+上述定理 1，描述的就是协方差矩阵，由
+\begin_inset Formula $P$
+\end_inset
+
+，也就是特征向量决定扩散方向，由
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+，也就是特征值决定各个方向的扩散大小。定理 2，描述的就是随机变量的线性不相关，但是以与特征向量的线性无关方式描述。
+\end_layout
+
+\begin_layout Section
+直观理解向量内积
+\end_layout
+
+\begin_layout Standard
+我们可以从柯西-施瓦兹不等式的向量形式直观理解向量内积。
+\end_layout
+
+\begin_layout Subsection
+定理证明
+\end_layout
+
+\begin_layout Paragraph
+柯西-施瓦兹不等式的向量形式：
+\end_layout
+
+\begin_layout Standard
+若有向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+，则
+\begin_inset Formula 
+\[
+\left|\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right|\leq\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert 
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-1\leq\dfrac{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}}{\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert }\leq1
+\]
+
+\end_inset
+
+当且仅当其中一个向量为
+\begin_inset Formula $\boldsymbol{0}$
+\end_inset
+
+，或一个向量为另外一个向量的倍数时，等号成立。
+\end_layout
+
+\begin_layout Paragraph
+证明：
+\end_layout
+
+\begin_layout Standard
+有向量
+\begin_inset Formula $\boldsymbol{\epsilon}=\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+，我们计算它的范数为：
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left\Vert \boldsymbol{\epsilon}\right\Vert ^{2} & \geq0\\
+\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right)^{\mathrm{T}}\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right) & \geq0\\
+\left(\boldsymbol{x}^{\mathrm{T}}-\lambda\boldsymbol{y}^{\mathrm{T}}\right)\left(\boldsymbol{x}-\lambda\boldsymbol{y}\right) & \geq0\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}-\boldsymbol{x}^{\mathrm{T}}\lambda\boldsymbol{y}-\lambda\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}+\lambda^{2}\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y} & \geq0\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}-\lambda\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)+\lambda^{2}\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y} & \geq0\\
+\text{Let}\;a=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y},\;b=\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right),\;c=\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}\\
+a\lambda^{2}-b\lambda+c & \geq0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对下式求极值
+\begin_inset Formula 
+\[
+a\lambda^{2}-b\lambda+c=0
+\]
+
+\end_inset
+
+这是开口向上的抛物线函数，有极值
+\begin_inset Formula 
+\begin{align*}
+2a\lambda-b & =0\\
+\lambda & =\dfrac{b}{2a}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+将
+\begin_inset Formula $\lambda$
+\end_inset
+
+代入上式得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+a\left(\dfrac{b}{2a}\right)^{2}-b\left(\dfrac{b}{2a}\right)+c & \geq0\\
+\dfrac{b^{2}}{4a}-\dfrac{b^{2}}{2a}+c & \geq0\\
+c & \geq\dfrac{b^{2}}{4a}
+\end{align*}
+
+\end_inset
+
+根据向量的内积公式，我们有
+\begin_inset Formula $\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}$
+\end_inset
+
+，并且向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的欧几里德范数为：
+\begin_inset Formula $\left\Vert \boldsymbol{x}\right\Vert =\sqrt{\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}}$
+\end_inset
+
+。将上述数值代回公式得
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}+\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{2}}{4\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+ & \because\;\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}=\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\\
+\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x} & \geq\dfrac{4\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}}{4\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\\
+\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{x}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right) & \geq\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}\\
+\left\Vert \boldsymbol{x}\right\Vert ^{2}\left\Vert \boldsymbol{y}\right\Vert ^{2} & \geq\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)^{2}\\
+\left\Vert \boldsymbol{x}\right\Vert \left\Vert \boldsymbol{y}\right\Vert  & \geq\left\Vert \boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right\Vert 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们还有
+\begin_inset Formula 
+\begin{align*}
+\lambda & =\dfrac{b}{2a}\\
+ & =\left(\boldsymbol{x}^{\mathrm{T}}\boldsymbol{y}\right)\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}\\
+ & =\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}
+\end{align*}
+
+\end_inset
+
+同时向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的向量投影(vector projection) 
+\begin_inset Formula $\boldsymbol{p}$
+\end_inset
+
+ 为
+\begin_inset Formula 
+\[
+\boldsymbol{p}=\dfrac{\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}}{\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}}\boldsymbol{y}=\lambda\boldsymbol{y}
+\]
+
+\end_inset
+
+可以看到，
+\begin_inset Formula $\lambda$
+\end_inset
+
+是向量的投影系数。
+\end_layout
+
+\begin_layout Subsection
+几何解释
+\end_layout
+
+\begin_layout Standard
+从几何上，有向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+，
+\begin_inset Formula $\lambda$
+\end_inset
+
+代表比例因子，
+\begin_inset Formula $\boldsymbol{\epsilon}=\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+则代表从
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+指向
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的向量。柯西-施瓦兹不等式的含义是调整
+\begin_inset Formula $\lambda$
+\end_inset
+
+的大小，找到向量
+\begin_inset Formula $\boldsymbol{x}-\lambda\boldsymbol{y}$
+\end_inset
+
+的最小范数，就是向量
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+到向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的最短距离。当向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+和向量
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+共线时，该距离为
+\begin_inset Formula $0$
+\end_inset
+
+。而
+\begin_inset Formula $\lambda=\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{x}\right)^{\mathrm{T}}\left(\boldsymbol{y}^{\mathrm{T}}\boldsymbol{y}\right)^{-1}$
+\end_inset
+
+，则意味着当
+\begin_inset Formula $\lambda\boldsymbol{y}$
+\end_inset
+
+为向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+到
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+的向量投影时(
+\begin_inset Formula $\boldsymbol{\epsilon}\bot\boldsymbol{y}$
+\end_inset
+
+)，
+\begin_inset Formula $\boldsymbol{\epsilon}$
+\end_inset
+
+有最小范数。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../02/Schwarz-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+直观理解协方差矩阵
+\end_layout
+
+\begin_layout Standard
+协方差矩阵为实对称半正定矩阵，有很多相关特性。最重要的特性就是协方差矩阵是可正交对角化的。
+\end_layout
+
+\begin_layout Standard
+协方差矩阵正交对角化形式为
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{R}\boldsymbol{\Sigma}^{2}\boldsymbol{R}^{\mathrm{T}}
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+是以特征向量为列向量构成的正交矩阵，并且有特性
+\begin_inset Formula $\boldsymbol{R}^{-1}=\boldsymbol{R}^{\mathrm{T}},\ \boldsymbol{R}\boldsymbol{R}^{\mathrm{T}}=\boldsymbol{I},\ \det\left(\boldsymbol{R}\right)=1$
+\end_inset
+
+，因此
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+实际上是
+\begin_inset Formula $\mathrm{SO}(n)$
+\end_inset
+
+的旋转矩阵；
+\begin_inset Formula $\boldsymbol{\Sigma}^{2}$
+\end_inset
+
+是由特征值，在这里是方差
+\begin_inset Formula $\sigma_{1}^{2},\ldots,\sigma_{n}^{2}$
+\end_inset
+
+构成的对角矩阵，一般从大到小排列。
+\end_layout
+
+\begin_layout Standard
+当协方差矩阵只有变量自身的方差而无变量之间的协方差时，矩阵可表示为
+\begin_inset Formula 
+\[
+\mathrm{K}_{\mathbf{X}\mathbf{X}}=\boldsymbol{I}\boldsymbol{\Sigma}^{2}\boldsymbol{I}^{\mathrm{T}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果我们有高斯白色数据集合，表示为一个圆或一个球，
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-01.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+经过上式的线性变换，圆或球被拉伸为椭圆或椭球，数据在各轴的缩放程度由各轴的方差
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+决定。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-02.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果协方差矩阵变量之间的协方差不为零，则椭圆或椭球发生了旋转，因为
+\begin_inset Formula $\det\left(\boldsymbol{R}\right)=1$
+\end_inset
+
+，所以各个数据点到椭圆或椭球的中心的距离不会发生改变，也就是椭圆或椭球的形状不会发生改变。
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename covariance-matrix-03.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于高斯白色数据，协方差矩阵中的变量方差将圆拉伸为椭圆，变量协方差将椭圆旋转到新的方向，
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+中的列向量为新坐标系的正交基，
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+就是新坐标系相对于旧坐标系的姿态，类似于向量夹角关系。最终的椭圆的形状，由
+\begin_inset Formula $\boldsymbol{R}$
+\end_inset
+
+，也就是特征向量决定扩散方向，由
+\begin_inset Formula $\sigma_{i}^{2}$
+\end_inset
+
+，也就是特征值决定扩散大小。
+\end_layout
+
+\begin_layout Section
+总结
+\end_layout
+
+\begin_layout Standard
+首先，你的观察非常独到。协方差和向量内积确实有一些相似之处，它们都可以看作是某种形式的"相乘"并求和。这种操作在数学中被称为"内积"，并且是线性代数中的重要概念
+。
+\end_layout
+
+\begin_layout Standard
+内积可以定义在任何向量空间上，其中向量可以是实数、复数、函数、随机变量等等。内积给出了向量空间中向量的几何结构，它可以用来定义长度(范数)、角度(夹角)和正交性
+。
+\end_layout
+
+\begin_layout Standard
+协方差和向量内积都可以看作是特殊的内积。协方差是随机变量向量空间中的内积，它衡量的是两个随机变量之间的线性关系。向量内积则是欧几里得空间中的内积，它衡量的是两个
+向量之间的几何关系。
+\end_layout
+
+\begin_layout Standard
+协方差为
+\begin_inset Formula $0$
+\end_inset
+
+意味着随机变量线性无关，这与向量内积为
+\begin_inset Formula $0$
+\end_inset
+
+ (向量正交) 的含义相似。但是，这两种无关性是不同的。向量的线性无关是指没有线性关系，而随机变量的线性无关是指没有线性相关性。这是因为随机变量的线性关系是指存
+在一种确定的关系，而向量的线性关系是指存在一种可能的关系。
+\end_layout
+
+\begin_layout Standard
+你提到的"相乘"的规则(代数结构)在数学中被称为"环"或"域"。环是一个包含加法和乘法两种运算的代数结构，域则进一步要求乘法还满足除法。实数、复数、矩阵、函数等
+都可以构成环或域。
+\end_layout
+
+\begin_layout Standard
+关于你的最后一个问题，向量的线性无关和随机变量的线性无关之间的联系，我认为一个可能的联系是：它们都可以通过某种内积(协方差或向量内积)来判定。如果一组向量的任意
+两个向量都正交(内积为
+\begin_inset Formula $0$
+\end_inset
+
+)，那么这组向量就是线性无关的；如果一组随机变量的任意两个变量都不相关(协方差为
+\begin_inset Formula $0$
+\end_inset
+
+)，那么这组随机变量就是线性无关的。这是因为在这两种情况下，没有一个向量(或随机变量)可以表示为其他向量(或随机变量)的线性组合。
+\end_layout
+
+\end_body
+\end_document
