@@ -4180,7 +4180,16 @@ name "subsec:一维磁罗盘航向测量融合方程"
 \begin_inset Formula $\psi$
 \end_inset
 
-，其测量值可由磁力计测量值
+。本节算法的一个重要假设是在上一时刻为零偏航角。然后在当前时刻，分别计算偏航角的测量值和预测值，再求残差。不过因为零偏航角假设与当前实际偏航角相差太大，因此该算
+法不太准确。
+\end_layout
+
+\begin_layout Standard
+既然假设偏航角为零偏航角，我们也可以假设偏航角与磁偏角
+\begin_inset Formula $\psi^{DECLINATION}$
+\end_inset
+
+方向重合，则其测量值就可由磁力计测量值
 \begin_inset Formula $\boldsymbol{M}_{meas}$
 \end_inset
 
@@ -4241,7 +4250,7 @@ M_{Z}
 \begin_inset Formula $\left[T\right]_{B}^{N}$
 \end_inset
 
-，也就是由状态向量
+，即由状态向量
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
@@ -4268,7 +4277,19 @@ M_{Z}
 \end_layout
 
 \begin_layout Standard
-磁偏角的观测相对于状态向量
+\noindent
+\align center
+\begin_inset Graphics
+	filename Heading.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+航向角的观测相对于状态向量
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
@@ -4294,7 +4315,7 @@ M_{Z}
 \begin_inset Formula $\boldsymbol{H}_{q}^{\psi}$
 \end_inset
 
-为磁偏角的观测相对于姿态四元数
+为航向角的观测相对于姿态四元数
 \begin_inset Formula $q$
 \end_inset
 
@@ -4339,7 +4360,7 @@ M_{Z}
 \end_layout
 
 \begin_layout Standard
-简单的一维偏航角融合，虽然结果不太准确，但其受地球磁场畸变的影响较小。它的适用于俯仰角在
+简单的一维偏航角融合，虽然结果不太准确，但其受地球磁场畸变的影响较小。它适用于俯仰角在
 \begin_inset Formula $-60^{\circ}<\theta<+60^{\circ}$
 \end_inset
 
@@ -4956,7 +4977,7 @@ V_{wind_{E}}\\
 \end_layout
 
 \begin_layout Standard
-则真实风速的预测值
+则真空速的预测值
 \begin_inset Formula $V_{pred}^{TAS}$
 \end_inset
 
@@ -4972,7 +4993,7 @@ V_{pred}^{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right
 \end_layout
 
 \begin_layout Standard
-当只使用风速估计而不使用合成侧滑时，真实风速的观测相对于状态向量
+当只使用风速估计而不使用合成侧滑时，真空速的观测相对于状态向量
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
@@ -4999,7 +5020,7 @@ V_{pred}^{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right
 \begin_inset Formula $\boldsymbol{H}_{V_{NED}}^{V_{pred}^{TAS}}$
 \end_inset
 
-为真实风速相对于速度的
+为真空速相对于速度的
 \begin_inset Formula $1\times3$
 \end_inset
 
@@ -5019,7 +5040,7 @@ V_{pred}^{TAS}=\sqrt{\left(V_{EAS_{N}}^{2}+V_{EAS_{E}}^{2}+V_{EAS_{D}}^{2}\right
 \begin_inset Formula $\boldsymbol{H}_{V_{wind}}^{V_{pred}^{TAS}}$
 \end_inset
 
-为真实风速相对于风速的
+为真空速相对于风速的
 \begin_inset Formula $1\times2$
 \end_inset
 
