@@ -2030,7 +2030,11 @@ IMU 的速度
 \begin_inset Formula $\,$
 \end_inset
 
-北，东，地(NED)(m/s) 
+北，东，地(NED) 
+\begin_inset Formula $(m/s)$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2042,7 +2046,11 @@ IMU 的位置
 \begin_inset Formula $\,$
 \end_inset
 
-北，东，地(NED)(m) 
+北，东，地(NED) 
+\begin_inset Formula $(m)$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2066,11 +2074,15 @@ IMU 增量角度偏差估计
 \begin_inset Formula $Z$
 \end_inset
 
-(rad) 
+ 
+\begin_inset Formula $(\mathrm{rad})$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-IMU 增量速度偏差估计
+IMU 加速度偏差估计
 \begin_inset Formula $\,$
 \end_inset
 
@@ -2090,7 +2102,11 @@ IMU 增量速度偏差估计
 \begin_inset Formula $Z$
 \end_inset
 
-(m/s) 
+ 
+\begin_inset Formula $(m/s^{2})$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2102,7 +2118,11 @@ IMU 增量速度偏差估计
 \begin_inset Formula $\,$
 \end_inset
 
-北，东，地(NED)(gauss) 
+北，东，地(NED) 
+\begin_inset Formula $(\mathrm{gauss})$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2126,7 +2146,11 @@ IMU 增量速度偏差估计
 \begin_inset Formula $Z$
 \end_inset
 
-(gauss) 
+ 
+\begin_inset Formula $(\mathrm{gauss})$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2138,7 +2162,11 @@ IMU 增量速度偏差估计
 \begin_inset Formula $\,$
 \end_inset
 
-北, 东(NE)(m/s)
+北, 东(NE) 
+\begin_inset Formula $(m/s)$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2162,7 +2190,7 @@ status open
 \begin_inset Formula 
 \[
 \boldsymbol{x}=\left[\begin{array}{cccccccc}
-q^{\mathrm{T}} & \boldsymbol{V}_{NED}^{\mathrm{T}} & \boldsymbol{P}_{NED}^{\mathrm{T}} & \boldsymbol{\Delta\theta}_{b}^{\mathrm{T}} & \boldsymbol{\Delta V}_{b}^{\mathrm{T}} & \boldsymbol{M}_{I}^{\mathrm{T}} & \boldsymbol{M}_{B}^{\mathrm{T}} & \boldsymbol{V}_{wind}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}
+q^{\mathrm{T}} & \boldsymbol{V}_{NED}^{\mathrm{T}} & \boldsymbol{P}_{NED}^{\mathrm{T}} & \boldsymbol{\Delta\theta}_{b}^{\mathrm{T}} & \boldsymbol{\Delta a}_{b}^{\mathrm{T}} & \boldsymbol{M}_{I}^{\mathrm{T}} & \boldsymbol{M}_{B}^{\mathrm{T}} & \boldsymbol{V}_{wind}^{\mathrm{T}}\end{array}\right]^{\mathrm{T}}
 \]
 
 \end_inset
@@ -2306,7 +2334,7 @@ P_{D}
 \end_inset
 
 
-\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+\begin_inset Formula $\boldsymbol{\Delta a}_{b}$
 \end_inset
 
 表示在
@@ -2321,16 +2349,16 @@ P_{D}
 \begin_inset Formula $Z$
 \end_inset
 
-机体坐标系的增量速度偏差(bias)，
+机体坐标系的加速度偏差(bias)，
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\boldsymbol{\Delta V}_{b}=\left[\begin{array}{c}
-\Delta V_{b_{X}}\\
-\Delta V_{b_{Y}}\\
-\Delta V_{b_{Z}}
+\boldsymbol{\Delta a}_{b}=\left[\begin{array}{c}
+\Delta a_{b_{X}}\\
+\Delta a_{b_{Y}}\\
+\Delta a_{b_{Z}}
 \end{array}\right]
 \]
 
@@ -2589,7 +2617,7 @@ IMU传感器定时采样，采样间隔时间为
 数据。所以我们得到增量角度的测量值为
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\Delta\theta}_{meas}=\boldsymbol{\omega}\Delta t\label{eq:6}
+\boldsymbol{\Delta\theta}_{meas}=\boldsymbol{\omega}\cdot\Delta t\label{eq:6}
 \end{equation}
 
 \end_inset
@@ -2597,7 +2625,7 @@ IMU传感器定时采样，采样间隔时间为
 还有增量速度的测量值为
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\Delta V}_{meas}=\boldsymbol{a}\Delta t\label{eq:7}
+\boldsymbol{\Delta V}_{meas}=\boldsymbol{a}\cdot\Delta t\label{eq:7}
 \end{equation}
 
 \end_inset
@@ -2617,15 +2645,15 @@ IMU传感器定时采样，采样间隔时间为
 。所以我们有增量角度的测量方差为
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}=\boldsymbol{\sigma}_{gyro}^{2}\Delta t^{2}\label{eq:8}
+\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}=\boldsymbol{\sigma}_{gyro}^{2}\cdot\Delta t^{2}\label{eq:8}
 \end{equation}
 
 \end_inset
 
-还有增量速度的测量方差为
+还有加速度的测量方差为
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}=\boldsymbol{\sigma}_{accel}^{2}\Delta t^{2}\label{eq:9}
+\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}=\boldsymbol{\sigma}_{accel}^{2}\cdot\Delta t^{2}\label{eq:9}
 \end{equation}
 
 \end_inset
@@ -2731,8 +2759,8 @@ q_{3}\Delta q_{0}-q_{2}\Delta q_{1}+q_{1}\Delta q_{2}+q_{0}\Delta q_{3}
 \begin_inset Formula $\boldsymbol{\Delta V}_{meas}$
 \end_inset
 
-和增量速度偏差
-\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+和加速度偏差
+\begin_inset Formula $\boldsymbol{\Delta a}_{b}$
 \end_inset
 
 计算出真增量速度
@@ -2745,7 +2773,7 @@ q_{3}\Delta q_{0}-q_{2}\Delta q_{1}+q_{1}\Delta q_{2}+q_{0}\Delta q_{3}
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\Delta V}_{truth}=\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\label{eq:13}
+\boldsymbol{\Delta V}_{truth}=\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta a}_{b}\cdot\Delta t\label{eq:13}
 \end{equation}
 
 \end_inset
@@ -2830,13 +2858,13 @@ IMU传感器的偏差、磁场和风速状态均采用静态过程模型：
 \begin{equation}
 \left[\begin{array}{c}
 \boldsymbol{\Delta\theta}_{b}\\
-\boldsymbol{\Delta V}_{b}\\
+\boldsymbol{\Delta a}_{b}\\
 \boldsymbol{M}_{I}\\
 \boldsymbol{M}_{B}\\
 \boldsymbol{V}_{wind}
 \end{array}\right]_{k+1}=\left[\begin{array}{c}
 \boldsymbol{\Delta\theta}_{b}\\
-\boldsymbol{\Delta V}_{b}\\
+\boldsymbol{\Delta a}_{b}\\
 \boldsymbol{M}_{I}\\
 \boldsymbol{M}_{B}\\
 \boldsymbol{V}_{wind}
@@ -2879,22 +2907,22 @@ noprefix "false"
 \[
 \boldsymbol{u}=\left[\begin{array}{c}
 \boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
-\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}
+\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}
 \end{array}\right]
 \]
 
 \end_inset
 
-它是由惯性测量单元(IMU)的增量角度和增量速度的测量方差，
+它是由惯性测量单元(IMU)的增量角度和加速度的测量方差，
 \begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}$
 \end_inset
 
 和
-\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}$
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}$
 \end_inset
 
-所定义。在状态变量中消除偏差影响后，假设惯性解中的误差增长是由增量角度和增量速度中的“噪声”驱动的。这种方案是可行的，因为在状态方程中考虑了传感器偏差，将其消除
-后即为零偏差，并且因为该位姿估计系统是基于运动方程进行设计，所以惯性解中的误差增长，即状态方程中的控制项，则由IMU的“噪声”驱动。方程(
+所定义。在状态变量中消除偏差影响后，假设惯性解中的误差增长是由增量角度和加速度中的“噪声”驱动的。这种方案是可行的，因为在状态方程中考虑了传感器偏差，将其消除后
+即为零偏差，并且因为该位姿估计系统是基于运动方程进行设计，所以惯性解中的误差增长，即状态方程中的控制项，则由IMU的“噪声”驱动。方程(
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:2"
@@ -2916,7 +2944,7 @@ noprefix "false"
 \begin{align*}
 \boldsymbol{Q}_{6\times6} & =\mathrm{diag}\left(\left[\begin{array}{c}
 \boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
-\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}
+\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}
 \end{array}\right]\right)
 \end{align*}
 
@@ -3037,7 +3065,7 @@ noprefix "false"
 \boldsymbol{F} & =\dfrac{\partial\boldsymbol{x}_{k+1}}{\partial\boldsymbol{x}_{k}}\\
  & =\left[\begin{array}{cccccccc}
 \boldsymbol{F}_{q_{k}}^{q_{k+1}} & 0_{4\times3} & 0_{4\times3} & \boldsymbol{F}_{\Delta\theta_{b}^{k}}^{q_{k+1}} & 0_{4\times3} & 0_{4\times3} & 0_{4\times3} & 0_{4\times2}\\
-\boldsymbol{F}_{q_{k}}^{V_{k+1}} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
+\boldsymbol{F}_{q_{k}}^{V_{k+1}} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{F}_{\Delta a_{b}^{k}}^{V_{k+1}} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
 0_{3\times4} & \boldsymbol{F}_{V_{k}}^{P_{k+1}} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
 0_{3\times4} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
 0_{3\times4} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & \boldsymbol{I}_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\\
@@ -3066,7 +3094,7 @@ noprefix "false"
 \end_inset
 
 、
-\begin_inset Formula $\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}}$
+\begin_inset Formula $\boldsymbol{F}_{\Delta a_{b}^{k}}^{V_{k+1}}$
 \end_inset
 
 这5个分块矩阵见下面的推导。
@@ -3393,10 +3421,10 @@ q_{0}\boldsymbol{I}_{3\times3}+\left[\boldsymbol{q}\times\right]
 \end_layout
 
 \begin_layout Enumerate
-\begin_inset Formula $\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}}$
+\begin_inset Formula $\boldsymbol{F}_{\Delta a_{b}^{k}}^{V_{k+1}}$
 \end_inset
 
-为速度关于增量速度偏差的状态转移矩阵，即
+为速度关于加速度偏差的状态转移矩阵，即
 \begin_inset Formula $k+1$
 \end_inset
 
@@ -3404,7 +3432,7 @@ q_{0}\boldsymbol{I}_{3\times3}+\left[\boldsymbol{q}\times\right]
 \begin_inset Formula $k$
 \end_inset
 
-时刻增量速度偏差的 Jacobian ，大小为
+时刻加速度偏差的 Jacobian ，大小为
 \begin_inset Formula $3\times3$
 \end_inset
 
@@ -3431,9 +3459,9 @@ noprefix "false"
 )可得：
 \begin_inset Formula 
 \begin{align*}
-\boldsymbol{F}_{\Delta V_{b}^{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{b}\right)_{k}}\\
- & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{b}\right)_{k}}\\
- & =-\left[T\right]_{B}^{N}
+\boldsymbol{F}_{\Delta a_{b}^{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta a}_{b}\right)_{k}}\\
+ & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta a}_{b}\cdot\Delta t\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta a}_{b}\right)_{k}}\\
+ & =-\left[T\right]_{B}^{N}\cdot\Delta t
 \end{align*}
 
 \end_inset
@@ -3459,7 +3487,7 @@ status open
 \begin_inset Formula $\boldsymbol{G}$
 \end_inset
 
-需要对增量角度和增量速度的测量值求偏导，因为测量值中包含有噪声。它是一个
+需要对增量角度和增量速度的测量值求偏导，因为测量值中包含有增量角度噪声和加速度噪声。它是一个
 \begin_inset Formula $24\times6$
 \end_inset
 
@@ -3577,7 +3605,7 @@ noprefix "false"
 \begin_inset Formula $\boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}}$
 \end_inset
 
-为速度关于增量速度噪声的控制输入矩阵，即
+为速度关于加速度噪声的控制输入矩阵，即
 \begin_inset Formula $k+1$
 \end_inset
 
@@ -3585,7 +3613,7 @@ noprefix "false"
 \begin_inset Formula $k$
 \end_inset
 
-时刻增量速度噪声的协方差矩阵，大小为
+时刻加速度噪声的协方差矩阵，大小为
 \begin_inset Formula $3\times3$
 \end_inset
 
@@ -3613,7 +3641,7 @@ noprefix "false"
 \begin_inset Formula 
 \begin{align*}
 \boldsymbol{G}_{\Delta V_{meas}^{k}}^{V_{k+1}} & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\boldsymbol{\Delta V}_{truth}+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
- & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
+ & =\dfrac{\partial\left(\left(\boldsymbol{V}_{NED}\right)_{k}+\left[T\right]_{B}^{N}\cdot\left(\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta a}_{b}\cdot\Delta t\right)+\boldsymbol{g}_{D}\cdot\Delta t\right)}{\partial\left(\boldsymbol{\Delta V}_{meas}\right)_{k}}\\
  & =\left[T\right]_{B}^{N}
 \end{align*}
 
@@ -3678,7 +3706,7 @@ noprefix "false"
 0_{3\times1}\\
 0_{3\times1}\\
 \boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}\\
-\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}\\
+\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}\\
 \boldsymbol{\sigma}_{\boldsymbol{M}_{I}}^{2}\\
 \boldsymbol{\sigma}_{\boldsymbol{M}_{B}}^{2}\\
 \boldsymbol{\sigma}_{\boldsymbol{V}_{wind}}^{2}
@@ -3687,12 +3715,12 @@ noprefix "false"
 
 \end_inset
 
-其中，增量角度偏差和增量速度偏差的过程噪声方差，同样采用增量角度的测量方差
+其中，增量角度偏差和加速度偏差的过程噪声方差，同样采用增量角度的测量方差
 \begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta\theta}}^{2}$
 \end_inset
 
-和增量速度的测量方差
-\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{\Delta V}}^{2}$
+和加速度的测量方差
+\begin_inset Formula $\boldsymbol{\sigma}_{\boldsymbol{a}}^{2}$
 \end_inset
 
 。地球磁场
@@ -5338,18 +5366,26 @@ V_{D}
 \end_layout
 
 \begin_layout Standard
-根据IMU测得的加速度
+将前面计算得到的增量速度
+\begin_inset Formula $\boldsymbol{\Delta V}_{meas}$
+\end_inset
+
+将其假设为加速度测量值
 \begin_inset Formula $\boldsymbol{a}_{meas}$
 \end_inset
 
-计算阻力比力
+，减去加速度偏差
+\begin_inset Formula $\boldsymbol{\Delta a}_{b}$
+\end_inset
+
+得到阻力比力
 \begin_inset Formula $\mathrm{drag}$
 \end_inset
 
 ：
 \begin_inset Formula 
 \[
-\mathrm{drag}=\boldsymbol{a}_{meas}-\boldsymbol{\Delta V}_{b}/\Delta t
+\mathrm{drag}=\boldsymbol{a}_{meas}-\boldsymbol{\Delta a}_{b}
 \]
 
 \end_inset
@@ -5582,6 +5618,158 @@ noprefix "false"
 \end_layout
 
 \begin_layout Subsection
+重力融合方程
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:重力融合方程"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+本算法以重力向量为观测向量进行估计。它假设机体加速度不大，接近零，则测量得到的加速度测量值大部分是重力向量，因此它在静止状态下比较准确。
+\end_layout
+
+\begin_layout Standard
+首先从增量速度方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)计算测量加速度
+\begin_inset Formula $\boldsymbol{a}_{meas}$
+\end_inset
+
+：
+\begin_inset Formula 
+\[
+\boldsymbol{a}_{meas}=\boldsymbol{\Delta V}_{meas}/\Delta t-\boldsymbol{\Delta a}_{b}
+\]
+
+\end_inset
+
+该加速度向量包含机体加速度和重力，在此假设机体加速度不大。重力测量噪声
+\begin_inset Formula $\boldsymbol{\sigma}_{gravity}^{2}$
+\end_inset
+
+由用户设置。
+\end_layout
+
+\begin_layout Standard
+其次，因为重力观测向量为一个向上的向量，则当前时刻的预测值可将其旋转到机体坐标系中计算出来：
+\begin_inset Formula 
+\[
+\boldsymbol{a}_{pred}=\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left[\begin{array}{c}
+0\\
+0\\
+-g
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+接着计算新息：
+\begin_inset Formula 
+\begin{align*}
+\mathrm{gravity\_innov} & =\boldsymbol{a}_{pred}-g\cdot\boldsymbol{a}_{meas}/\left\Vert \boldsymbol{a}_{meas}\right\Vert 
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+重力的观测相对于状态向量
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+的观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{\boldsymbol{a}}$
+\end_inset
+
+，即对应的观测矩阵 Jacobian ，为
+\begin_inset Formula $3\times24$
+\end_inset
+
+稀疏矩阵：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{\boldsymbol{a}} & =\dfrac{\partial\boldsymbol{a}_{pred}}{\partial\boldsymbol{x}}\\
+ & =\left[\begin{array}{cccccccc}
+\boldsymbol{H}_{q}^{\boldsymbol{a}} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times3} & 0_{3\times2}\end{array}\right]
+\end{align*}
+
+\end_inset
+
+其中，
+\begin_inset Formula $\boldsymbol{H}_{q}^{\boldsymbol{a}}$
+\end_inset
+
+为重力的观测相对于姿态四元数的观测矩阵，即重力相对于旋转的 Jacobian，大小为
+\begin_inset Formula $3\times4$
+\end_inset
+
+：
+\begin_inset Formula 
+\begin{align*}
+\boldsymbol{H}_{q}^{\boldsymbol{a}} & =\dfrac{\partial\boldsymbol{a}_{pred}}{\partial q}\\
+ & =\dfrac{\partial\left(\left(\left[T\right]_{B}^{N}\right)^{\mathrm{T}}\left[\begin{array}{c}
+0\\
+0\\
+-g
+\end{array}\right]\right)}{\partial q}\\
+ & =\dfrac{\partial\left(\left[\begin{array}{ccc}
+q_{0}^{2}+q_{1}^{2}-q_{2}^{2}-q_{3}^{2} & 2\left(q_{1}q_{2}+q_{0}q_{3}\right) & 2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{1}q_{2}-q_{0}q_{3}\right) & q_{0}^{2}-q_{1}^{2}+q_{2}^{2}-q_{3}^{2} & 2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+2\left(q_{1}q_{3}+q_{0}q_{2}\right) & 2\left(q_{2}q_{3}-q_{0}q_{1}\right) & q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}
+\end{array}\right]\left[\begin{array}{c}
+0\\
+0\\
+-g
+\end{array}\right]\right)}{\partial q}\\
+ & =\dfrac{\partial\left(-g\left[\begin{array}{c}
+2\left(q_{1}q_{3}-q_{0}q_{2}\right)\\
+2\left(q_{2}q_{3}+q_{0}q_{1}\right)\\
+\left(q_{0}^{2}-q_{1}^{2}-q_{2}^{2}+q_{3}^{2}\right)
+\end{array}\right]\right)}{\partial q}\\
+ & =-2g\left[\begin{array}{cccc}
+-q_{2} & +q_{3} & -q_{0} & +q_{1}\\
++q_{1} & +q_{0} & +q_{3} & +q_{2}\\
++q_{0} & -q_{1} & -q_{2} & +q_{3}
+\end{array}\right]\\
+ & =-2g\cdot\Phi_{3}^{\mathrm{T}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意，为适应MCU设备内存紧张的环境，在实际的代码里，重力观测矩阵
+\begin_inset Formula $\boldsymbol{H}_{\boldsymbol{a}}$
+\end_inset
+
+分为 
+\begin_inset Formula $X/Y/Z$
+\end_inset
+
+三个方向分别进行观测。
+\end_layout
+
+\begin_layout Subsection
 外部视觉融合方程
 \begin_inset CommandInset label
 LatexCommand label
@@ -5749,8 +5937,8 @@ IMU偏差的自校正
 \begin_inset Formula $\boldsymbol{\Delta\theta}_{b}$
 \end_inset
 
-和增量速度偏差
-\begin_inset Formula $\boldsymbol{\Delta V}_{b}$
+和加速度偏差
+\begin_inset Formula $\boldsymbol{\Delta a}_{b}$
 \end_inset
 
 。这两者是通过校正后的姿态四元数
@@ -5762,7 +5950,7 @@ IMU偏差的自校正
 \end_inset
 
 ，以及各传感器的噪声一起影响在EKF中计算出来的，这种方法被称为传感器的自校正。但是因为没有测量值对其进行直接校正，这两个偏差有可能发散，所以需要对其进行限制，
-\begin_inset Formula $\left|\boldsymbol{\Delta\theta}_{b}\right|<20^{\circ}/s\cdot\Delta t,\ \left|\boldsymbol{\Delta V}_{b}\right|<0.4m/s^{2}\cdot\Delta t$
+\begin_inset Formula $\left|\boldsymbol{\Delta\theta}_{b}\right|<20^{\circ}/s\cdot\Delta t,\ \left|\boldsymbol{\Delta a}_{b}\right|<0.4m/s^{2}\cdot\Delta t$
 \end_inset
 
 。
@@ -6475,7 +6663,7 @@ GSF权重在单个EKF滤波器之前收敛。
 
 \begin_layout Standard
 EKF-GSF算法是一个很新奇也很有创意的算法。不论是在KF方面还是在传感器方面，以及无人机的运动特性方面，设计者在技术方面和工程方面都已经炉火纯青、游刃有余。
-虽然该算法在数学方面还有说不清的地方，但是KF同样擅长在相关性领域工作，建模不一定要因果关系。
+该算法基于动力学方程设计，虽然在数学方面还有说不清的地方，但是KF同样擅长在相关性领域工作，建模不一定要因果关系。
 \end_layout
 
 \begin_layout Standard
@@ -6639,7 +6827,7 @@ AHRS倾斜对准
 \end_layout
 
 \begin_layout Standard
-就是如何从增量速度计算旋转矩阵。旋转矩阵直接从加速度测量中构造，对于所有模型都是相同的，因此只需计算一次。其假设是：
+倾斜对准就是考虑如何从增量速度计算旋转矩阵。旋转矩阵直接从加速度测量中构造，对于所有模型都是相同的，因此只需计算一次。其假设是：
 \end_layout
 
 \begin_layout Enumerate
@@ -9145,22 +9333,10 @@ name "subsec:计算姿态补偿"
 \end_layout
 
 \begin_layout Standard
-使用频率差异计算增量角度的偏差缩放系数
+为在EKF融合时间范围内跟踪的四元数状态所需的增量角度进行校正
 \begin_inset Formula 
 \[
-S_{\mathrm{d}t}=\mathrm{d}t_{\mathrm{imu}}/\mathrm{d}t_{\mathrm{ekf}}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-为在EKF融合时间范围内跟踪的四元数状态所需的增量角进行校正
-\begin_inset Formula 
-\[
-\boldsymbol{\Delta\theta}_{truth}=\boldsymbol{\Delta\theta}_{meas}-\boldsymbol{\Delta\theta}_{b}\cdot S_{\mathrm{d}t}+\boldsymbol{\Delta\theta}_{correct}
+\boldsymbol{\Delta\theta}_{truth}=\boldsymbol{\Delta\theta}_{meas}-\boldsymbol{\Delta\theta}_{b}\cdot\mathrm{d}t_{\boldsymbol{\theta}}+\boldsymbol{\Delta\theta}_{correct}
 \]
 
 \end_inset
@@ -9234,7 +9410,7 @@ noprefix "false"
 使用低通滤波计算偏航变化率(偏航角导数)
 \begin_inset Formula 
 \[
-\dot{\psi}=\left(1-\alpha\right)\dot{\psi}+\alpha\cdot\Delta\psi_{I}/\mathrm{d}t_{\mathrm{imu}}
+\dot{\psi}=\left(1-\alpha\right)\dot{\psi}+\alpha\cdot\Delta\psi_{I}/\mathrm{d}t_{\boldsymbol{\theta}}
 \]
 
 \end_inset
@@ -9294,10 +9470,10 @@ name "subsec:计算当前加速度、速度和位置"
 \end_layout
 
 \begin_layout Standard
-用速度偏差校正机体坐标系的增量速度
+用加速度偏差校正机体坐标系的增量速度
 \begin_inset Formula 
 \[
-\boldsymbol{\Delta V}_{truth}^{B}=\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta V}_{b}\cdot S_{\mathrm{d}t}
+\boldsymbol{\Delta V}_{truth}^{B}=\boldsymbol{\Delta V}_{meas}-\boldsymbol{\Delta a}_{b}\cdot\mathrm{d}t_{\boldsymbol{a}}
 \]
 
 \end_inset
@@ -10947,6 +11123,20 @@ noprefix "false"
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:高度融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节。
+\end_layout
+
+\begin_layout Enumerate
+重力融合，参见第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:重力融合方程"
 plural "false"
 caps "false"
 noprefix "false"
