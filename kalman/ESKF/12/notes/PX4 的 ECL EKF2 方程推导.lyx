@@ -4388,7 +4388,7 @@ M_{Z}
 \end_layout
 
 \begin_layout Standard
-简单的一维偏航角融合，虽然结果不太准确，但其受地球磁场畸变的影响较小。它适用于俯仰角在
+简单的一维偏航角融合，其实也可以称为偏航角去除偏差后再应用EKF的自平滑算法，虽然结果不太准确，但其受地球磁场畸变的影响较小。它适用于俯仰角在
 \begin_inset Formula $-60^{\circ}<\theta<+60^{\circ}$
 \end_inset
 
@@ -4785,11 +4785,11 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-设置测量噪声方差
+测量噪声方差
 \begin_inset Formula $R_{yaw}$
 \end_inset
 
-，目前复用磁力计的数值。
+，设置为GPS航向噪声的数值，如果没有也可用磁力计的噪声数值应急。
 \end_layout
 
 \begin_layout Standard
@@ -5629,7 +5629,7 @@ name "subsec:重力融合方程"
 \end_layout
 
 \begin_layout Standard
-本算法以重力向量为观测向量进行估计。它假设机体加速度不大，接近零，则测量得到的加速度测量值大部分是重力向量，因此它在静止状态下比较准确。
+本算法以重力向量为观测向量对姿态进行校正。它假设机体加速度不大，接近零，则IMU测量得到的加速度测量值大部分是重力向量，因此它在静止状态下比较准确。
 \end_layout
 
 \begin_layout Standard
@@ -5885,7 +5885,11 @@ name "subsec:虚拟位置融合方程"
 \begin_layout Standard
 当没有一种水平面的位置和速度的测量值以校正用IMU数据进行的水平面位置推算时，则需要使用合成位置观测来防止惯性导航系统(Inertial Navigation
  System, INS)状态的无约束漂移。其方法是在最后一个已知位置进行虚拟位置测量，并且设置特别的位置方差，以限制漂移。为提高效率，虚拟位置测量最小融合频率
-为5Hz。
+为
+\begin_inset Formula $5~\mathrm{Hz}$
+\end_inset
+
+。
 \end_layout
 
 \begin_layout Standard
@@ -10849,7 +10853,165 @@ noprefix "false"
 
 \begin_layout Standard
 ECL EKF的核心算法部分为了可移植性，没有采用C++语言的高级功能，基本上是C语言的过程模型，并且它们也没有调用OS或外部模块的特殊函数(注意，这个原则已经
-被打破，最新的版本已经依赖uORB消息接口)，基本上都是数学公式的代码，所以可以比较方便地移植到其它项目中。后面简单讨论核心算法的流程以及传感器数据的流向。
+被打破，最新的版本已经依赖uORB消息接口)，基本上都是数学公式的代码，所以可以比较方便地移植到其它项目中。后面简单讨论核心算法的设计和运行流程，以及传感器数据
+的流向。
+\end_layout
+
+\begin_layout Subsection
+算法设计
+\end_layout
+
+\begin_layout Standard
+24-EKF核心算法是基于运动学方程的设计，并且是基于传感器误差噪声的设计。因为这种选择可以规避动力学建模。经过多年的工程实践，人们发现：
+\end_layout
+
+\begin_layout Itemize
+基于实际环境的动力学模型很难建立；
+\end_layout
+
+\begin_layout Itemize
+建立起来的模型很复杂、状态量很大，当外界环境变化则动力学模型也需要跟着变化；
+\end_layout
+
+\begin_layout Itemize
+就算能精确建模，因此增加的复杂性并不总是产生预期的结果；
+\end_layout
+
+\begin_layout Itemize
+并且外界环境有许多未知因素无法建模。
+\end_layout
+
+\begin_layout Standard
+因此，基于运动学方程、基于传感器误差噪声的设计，是一种提高估计精度的有效设计，因为这种设计需要的状态量少，并且传感器误差噪声可以内部精确测量，不易受到外界干扰，
+未知因素少。因此这种设计成了近二十年来流行的方案。
+\end_layout
+
+\begin_layout Standard
+在第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:ECL-EKF-时间更新方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章的预测(先验)估计状态方程中：
+\begin_inset Formula 
+\[
+\boldsymbol{x}_{k+1}=\boldsymbol{F}\boldsymbol{x}_{k}+\boldsymbol{G}\boldsymbol{u}_{k}+\boldsymbol{w}_{k}
+\]
+
+\end_inset
+
+我们假定在上一迭代中的状态
+\begin_inset Formula $\boldsymbol{x}_{k}$
+\end_inset
+
+ 已是最优估计，其中包含测量偏差值的最优估计，因此经过状态转移矩阵
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+变换得到的是时间更新的理想值。这时我们假定惯性解中的误差增长是由增量角度和加速度中的“噪声”驱动的，即由IMU的测量噪声驱动。这可以用控制矩阵
+\begin_inset Formula $\boldsymbol{G}$
+\end_inset
+
+来表达，而控制向量
+\begin_inset Formula $\boldsymbol{u}$
+\end_inset
+
+则由IMU的测量噪声构成。因此整个方程自然分解成两个部份：标称量
+\begin_inset Formula $\boldsymbol{F}\boldsymbol{x}_{k}$
+\end_inset
+
+和误差量
+\begin_inset Formula $\boldsymbol{G}\boldsymbol{u}_{k}+\boldsymbol{w}_{k}$
+\end_inset
+
+。这也体现这样的思想：一个总的变化可以分解成个体本身的变化和背景的变化两部分。个体本身的变化用分量导数描述，背景变化用对偶空间上的算子描述。
+\end_layout
+
+\begin_layout Standard
+但是，基于动力学方程的设计也是可以工作的。第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:使用IMU和GPS进行偏航对准"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章的算法本质上就是基于动力学方程的设计。已知外力和扭矩的公式为
+\begin_inset Formula $F=ma,\tau=I\alpha$
+\end_inset
+
+，当质量
+\begin_inset Formula $m$
+\end_inset
+
+和代表质量分布的惯性矩
+\begin_inset Formula $I$
+\end_inset
+
+很难实时精确测量时，就很难得到精确的状态估计值。但是当我们假设质量
+\begin_inset Formula $m$
+\end_inset
+
+和惯性矩
+\begin_inset Formula $I$
+\end_inset
+
+在短时间内没有大的变化时，测量得到的线性加速度
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+和角速度
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+就与所要估计的状态量有一个近似线性关系。这就是 EKF-GSF 算法的基本假设。并且因为与24-EKF算法的原理不同，EKF-GSF 算法因此也可以对24-EK
+F算法进行校验。
+\end_layout
+
+\begin_layout Standard
+此外，为使状态估计更准确且抗干扰，就需要更多的传感器测量值进行校验，要“榨干”每一个测量值内含的信息，如第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:ECL-EKF-测量更新方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 章的内容所见。其中最典型的是第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:重力融合方程"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节重力融合方程的算法。IMU的加速度
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+的测量值由线性加速度和重力组成。在前面的预测(先验)估计状态方程中，我们实际上过滤掉了重力。因此后面还可以用重力向量做为观测向量对机体姿态进行校正。原本对机体姿
+态的校正严重依赖于第 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:磁力计融合"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 节的磁力计融合算法，而地磁测量值本身很容易被干扰。如今多了一个重力融合的算法，则机体姿态的估计值抗干扰能力更强。
 \end_layout
 
 \begin_layout Subsection
@@ -11559,12 +11721,12 @@ D_{M}^{2}\left(\boldsymbol{z},\boldsymbol{x}\right)=\left(\boldsymbol{z}_{k}-h\l
 \end_layout
 
 \begin_layout Standard
-PX4/ECL项目采用一种更直观的度量，即测试率(test ratio)，以表示各个输入测量值的质量状况。测试率将测量向量的各维数据拆开单独计算NIS，用比率直
-观判断该维数据的质量，其中新息协方差矩阵
+PX4/ECL项目采用一种更直观的度量，即测试率(test ratio)，以表示各个输入测量值的质量状况。测试率将测量向量的各维数据拆开单独计算
+ NIS，用比率直观判断该维数据的质量，其中新息协方差矩阵
 \begin_inset Formula $\boldsymbol{S}$
 \end_inset
 
-中的相应对角线元素被称为该维数据的新息方差：
+中的相应对角项元素称为该维数据的新息方差(因为非对角项对扩散无影响)：
 \begin_inset Formula 
 \begin{align*}
 \tilde{\boldsymbol{y}}_{k} & =\boldsymbol{z}_{k}-h\left(\hat{\boldsymbol{x}}_{k\mid k-1}\right)\\
@@ -11917,7 +12079,7 @@ yaw_test_ratio
 \family default
 )进行掉落选择。其中对于GPS的数据质量检查得最多，因为其最重要。但是因为成本的原因，在大多数情况下，飞行器只有磁力计这一个易受外界干扰的偏航角数据源。例如，地
 面磁场异常足以影响磁力计，当飞行器飞离地面一定高度后(
-\begin_inset Formula $1.5m$
+\begin_inset Formula $1.5\ m$
 \end_inset
 
 )，需要重置偏航角，以便从地面磁干扰中恢复。
@@ -12154,7 +12316,11 @@ H_{true}=\begin{cases}
 \begin_inset Formula $\alpha=0.1$
 \end_inset
 
-，代表着在最小5Hz的采样时间内，高度不会有太大的变化。后面两节内容将讨论高度偏差估计器的设计和应用。
+，代表着在最小
+\begin_inset Formula $5~\mathrm{Hz}$
+\end_inset
+
+的采样时间内，高度不会有太大的变化。后面两节内容将讨论高度偏差估计器的设计和应用。
 \end_layout
 
 \begin_layout Subsection
@@ -12166,7 +12332,11 @@ H_{true}=\begin{cases}
 \begin_inset Formula $P_{D}$
 \end_inset
 
-的偏移(offset)。我们假定机体在短时间内，即在最小5Hz的采样率下，偏差没有大的变化，因此采用固定模型，并且认为偏差由噪声驱动。
+的偏移(offset)。我们假定机体在短时间内，即在最小
+\begin_inset Formula $5~\mathrm{Hz}$
+\end_inset
+
+的采样率下，偏差没有大的变化，因此采用固定模型，并且认为偏差由噪声驱动。
 \end_layout
 
 \begin_layout Standard
@@ -12239,7 +12409,7 @@ P_{k|k-1} & =P_{k-1|k-1}+G\cdot Q\cdot\mathrm{d}t\\
 \end_inset
 
 ，或者新息的正负符号在一段时间内(
-\begin_inset Formula $10s$
+\begin_inset Formula $10\ s$
 \end_inset
 
 )始终相同，则估计值存在大的偏差。
