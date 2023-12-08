@@ -1,0 +1,2505 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+theorems-ams-extended-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "李导数"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+李导数
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+30 October 2023
+\end_layout
+
+\begin_layout Standard
+在微分几何中，
+\series bold
+李导数
+\series default
+(
+\series bold
+Lie derivative
+\series default
+ (/li:/ LEE))由Władysław Ślebodziński [1][2] 以Sophus Lie的名字命名，它用于评估一个张量场(包括标量函数、向
+量场和一元形式)沿另一个向量场定义的流的变化。这种变化是坐标不变的，因此在任意可变流形上都可以定义李导数。
+\end_layout
+
+\begin_layout Standard
+函数、张量场以及它们的形式可以相对于向量场进行微分。如果 
+\begin_inset Formula $T$
+\end_inset
+
+ 是一个张量场，并且 
+\begin_inset Formula $X$
+\end_inset
+
+ 是一个向量场，则 
+\begin_inset Formula $T$
+\end_inset
+
+ 相对于 
+\begin_inset Formula $X$
+\end_inset
+
+ 的李导数标志为 
+\begin_inset Formula $\mathcal{L}_{X}T$
+\end_inset
+
+。微分算子 
+\begin_inset Formula $T\mapsto\mathcal{L}_{X}T$
+\end_inset
+
+ 是底层流形张量场代数的一个导子 (derivation)。
+\end_layout
+
+\begin_layout Standard
+李导数与收回(contraction)和外导数(exterior derivative)在微分形式(diﬀerential forms)上交换。
+\end_layout
+
+\begin_layout Standard
+尽管微分几何中有许多求导的概念，但当被微分的表达式是一个函数或标量场时，它们都是一致的。因此，在这种情况下，“Lie”一词被去掉，人们只说函数的导数。
+\end_layout
+
+\begin_layout Standard
+一个向量场 
+\begin_inset Formula $Y$
+\end_inset
+
+ 相对于另一向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 的李导数称为 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的“李括号(Lie bracket)”，通常标志为 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 以替代 
+\begin_inset Formula $\mathcal{L}_{X}Y$
+\end_inset
+
+。向量场的空间形成相对于这个李括号的李代数。李导数构成了这个李代数的无穷维李代数李代数表示，是由于以下恒等式
+\begin_inset Formula 
+\[
+\mathcal{L}_{[X,Y]}T=\mathcal{L}_{X}\mathcal{L}_{Y}T-\mathcal{L}_{Y}\mathcal{L}_{X}T,
+\]
+
+\end_inset
+
+适用于任意向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 以及任意张量场 
+\begin_inset Formula $T$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+考虑到向量场是在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的无穷小流的生成元(即一维微分同胚群)，李导数是张量场上微分同胚群表示的微分，类似于李群论中与群表示相关的无穷小表示的李代数表示。
+\end_layout
+
+\begin_layout Standard
+对于旋量场，带有一个连通的纤维丛，以及向量-值微分形式，都存在李导数的扩展。
+\end_layout
+
+\begin_layout Section
+动机 
+\end_layout
+
+\begin_layout Standard
+要定义张量场相对于向量场的导数，一种“幼稚”尝试是取张量场的分量，并取每个分量相对于向量场的方向导数(directional derivative)。但是，这种
+定义是不可取的，因为它在坐标系统变化时并不是不变的，例如，用极坐标或球面坐标表达的幼稚导数与用笛卡尔坐标表达的分量的幼稚导数是不同的。在抽象的流形上，这样的定义
+是没有意义且定义不清的。在微分几何中，张量场的微分有三种主要的坐标无关的表示法：李导数，相对于连通的导数，以及完全反对称协变张量的外导数，即微分形式。李导数和相
+对于连通的导数之间的主要区别在于，后者是张量场相对于切向量的的导数。它是定义良好的，即使没有指定如何将切向量扩展到向量场。但是，一个连通需要在流形上选择额外的几
+何结构(例如一个黎曼度量或仅是一个抽象连通)。相反，当取一个李导数时，流形上不需要额外的结构，但不可能讨论张量场相对于单个切向量的李导数，因为张量场相对于向量场
+ 
+\begin_inset Formula $X$
+\end_inset
+
+ 在点 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的李导数的值还取决于 
+\begin_inset Formula $p$
+\end_inset
+
+ 的邻域中 
+\begin_inset Formula $X$
+\end_inset
+
+ 的值，而不仅仅是 
+\begin_inset Formula $p$
+\end_inset
+
+ 本身的值。最后，微分形式的外导数不需要任何额外的选择，但仅是一个微分形式(包括函数)的定义良好的导数。
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+李导数可以用几种等价的方法定义。为了简单起见，我们先定义作用于标量函数和向量场的李导数，然后再定义一般张量的李导数。
+\end_layout
+
+\begin_layout Subsection
+函数的(Lie)导数
+\end_layout
+
+\begin_layout Standard
+定义在一个流形上的一个函数 
+\begin_inset Formula $f:M\rightarrow\mathbb{R}$
+\end_inset
+
+ 的导数是个问题，因为当位移 
+\begin_inset Formula $x+h$
+\end_inset
+
+ 未定义时，无法确定其差分商
+\begin_inset Formula $(f(x+h)-f(x))/h$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+一个函数 
+\begin_inset Formula $f:M\rightarrow\mathbb{R}$
+\end_inset
+
+ 相对于一个向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 在一点 
+\begin_inset Formula $p\in M$
+\end_inset
+
+ 处的李导数是函数
+\begin_inset Formula 
+\[
+\left(\mathcal{L}_{X}f\right)(p)=\left.\frac{d}{dt}\right|_{t=0}\left(f\circ\Phi_{X}^{t}\right)(p)=\lim_{t\rightarrow0}\frac{f\left(\Phi_{X}^{t}(p)\right)-f(p)}{t}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\Phi_{X}^{t}(p)$
+\end_inset
+
+ 由向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 定义的流所到达的点，在时间瞬间
+\begin_inset Formula $t$
+\end_inset
+
+它映射到点 
+\begin_inset Formula $p$
+\end_inset
+
+。 在
+\begin_inset Formula $t=0$
+\end_inset
+
+附近，
+\begin_inset Formula $\Phi_{X}^{t}(p)$
+\end_inset
+
+是一阶自治(即与时间无关)微分方程的系统的唯一解 
+\begin_inset Formula 
+\[
+\left.\frac{d}{dt}\right|_{t}\Phi_{X}^{t}(p)=X\left(\Phi_{X}^{t}(p)\right),
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\Phi_{X}^{0}(p)=p$
+\end_inset
+
+ 。
+\end_layout
+
+\begin_layout Standard
+设置 
+\begin_inset Formula $\mathcal{L}_{X}f=\nabla_{X}f$
+\end_inset
+
+ 以识别一个带有方向导数的函数的李导数。
+\end_layout
+
+\begin_layout Subsection
+向量场的李导数
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 都是向量场，则 
+\begin_inset Formula $Y$
+\end_inset
+
+ 相对于 
+\begin_inset Formula $X$
+\end_inset
+
+ 的李导数也被称为 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的李括号，有时标志为 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+。定义李 括号有几种方法，它们都是等价的。在这里我们列出两个定义，对应于上面给出的向量场的两个定义：
+\end_layout
+
+\begin_layout Itemize
+在局部坐标中， 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 在 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的李括号由以下公式给出
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}Y(p)=[X,Y](p)=\partial_{X}Y(p)-\partial_{Y}X(p),
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\partial_{X}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\partial_{Y}$
+\end_inset
+
+ 分别标志取相对于 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+的方向导数的运算。在这里我们把
+\begin_inset Formula $n$
+\end_inset
+
+维空间中的向量看作
+\begin_inset Formula $n$
+\end_inset
+
+元组，因此它的方向导数就是由它的坐标的方向导数组成的元组。尽管在这个定义中出现的最终表达式不取决于局部坐标的选择，但单个项 
+\begin_inset Formula $\partial_{X}Y(p)$
+\end_inset
+
+ 和 
+\begin_inset Formula $\partial_{Y}X(p)$
+\end_inset
+
+ 确实取决于坐标的选择。
+\end_layout
+
+\begin_layout Itemize
+根据第二种定义，如果 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+是在一个流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的向量场，则算子 
+\begin_inset Formula $\mathcal{L}_{X}Y=[X,Y]$
+\end_inset
+
+ 由以下公式定义
+\begin_inset Formula 
+\[
+\begin{aligned}[][X,Y] & {:C^{\infty}(M)\rightarrow C^{\infty}(M)}\\{}
+[X,Y] & {(f)=X(Y(f))-Y(X(f))}
+\end{aligned}
+\]
+
+\end_inset
+
+是
+\begin_inset Formula $M$
+\end_inset
+
+的光滑函数代数的一个零阶导数，即根据第二种定义，该算子是一个向量场。
+\end_layout
+
+\begin_layout Subsection
+张量场的李导数
+\end_layout
+
+\begin_layout Subsubsection
+根据流来定义
+\end_layout
+
+\begin_layout Standard
+李导数是张量场由流引起的空间形变作用下的变化速度。
+\end_layout
+
+\begin_layout Standard
+形式上，在一个光滑流形
+\begin_inset Formula $M$
+\end_inset
+
+上给定一个可微(与时间无关)向量场
+\begin_inset Formula $X$
+\end_inset
+
+，设 
+\begin_inset Formula $\Phi_{X}^{t}:M\rightarrow M$
+\end_inset
+
+ 为相应的局部流。由于 
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+ 对每一个
+\begin_inset Formula $t$
+\end_inset
+
+都是一个局部微分同构，它因此产生了张量场的一个回拉(pullback)。对于协变张量，这只是回拉映射的多线性扩展
+\begin_inset Formula 
+\[
+\left(\Phi_{X}^{t}\right)_{p}^{*}:T_{\Phi_{X}^{t}(p)}^{*}M\rightarrow T_{p}^{*}M,\quad\left(\Phi_{X}^{t}\right)_{p}^{*}\alpha(X)=\alpha\left(T_{p}\Phi_{X}^{t}(X)\right),\quad\alpha\in T_{\Phi_{X}^{t}(p)}^{*}M,X\in T_{p}M
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于逆变张量，人们可以扩展微分
+\begin_inset Formula $T_{p}\Phi_{X}^{t}$
+\end_inset
+
+的逆为
+\begin_inset Formula 
+\[
+\left(T_{p}\Phi_{X}^{t}\right)^{-1}:T_{\Phi_{X}^{t}(p)}M\rightarrow T_{p}M,
+\]
+
+\end_inset
+
+因此，对于每一个
+\begin_inset Formula $t$
+\end_inset
+
+，都有一个与
+\begin_inset Formula $T$
+\end_inset
+
+类型相同的张量场
+\begin_inset Formula $\left(\Phi_{X}^{t}\right)^{*}T$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $T$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $(r,0)$
+\end_inset
+
+ 或 
+\begin_inset Formula $(0,s)$
+\end_inset
+
+类型的张量场，则 
+\begin_inset Formula $T$
+\end_inset
+
+ 的李导数 
+\begin_inset Formula $\mathcal{L}_{X}T$
+\end_inset
+
+ 沿着一个向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 在点 
+\begin_inset Formula $p\in M$
+\end_inset
+
+ 处的定义为
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}T(p)=\left.\frac{d}{dt}\right|_{t=0}\left(\left(\Phi_{X}^{t}\right)^{*}T\right)_{p}=\left.\frac{d}{dt}\right|_{t=0}\left(\Phi_{X}^{t}\right)_{p}^{*}T_{\Phi_{X}^{t}(p)}=\lim_{t\rightarrow0}\frac{\left(\Phi_{X}^{t}\right)^{*}T_{\Phi_{X}^{t}(p)}-T_{p}}{t}.
+\]
+
+\end_inset
+
+得到的张量场 
+\begin_inset Formula $\mathcal{L}_{X}T$
+\end_inset
+
+ 与
+\begin_inset Formula $T$
+\end_inset
+
+的类型相同。
+\end_layout
+
+\begin_layout Standard
+更一般地说，对于每一个微分同胚的光滑的单参数族
+\begin_inset Formula $\Phi_{t}$
+\end_inset
+
+，它积分一个向量场
+\begin_inset Formula $X$
+\end_inset
+
+，即满足 
+\begin_inset Formula $\left.\frac{d}{dt}\right|_{t=0}\Phi_{t}=X\circ\Phi_{0}$
+\end_inset
+
+，人们有
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}T=\left(\Phi_{0}^{-1}\right)^{*}\left.\frac{d}{dt}\right|_{t=0}\Phi_{t}^{*}T=-\left.\frac{d}{dt}\right|_{t=0}\left(\Phi_{t}^{-1}\right)^{*}\Phi_{0}^{*}T.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+代数定义
+\end_layout
+
+\begin_layout Standard
+我们现在给出一个代数定义。张量场李导数的代数定义遵循以下四个公理：
+\end_layout
+
+\begin_layout Axiom
+函数的李导数等价于函数的方向导数。这一事实通常用以下公式表达为
+\begin_inset Formula 
+\[
+\mathcal{L}_{Y}f=Y(f)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+relax
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Axiom
+李导数遵循莱布尼茨规则(Leibniz's rule)的以下版本：对于任意张量场
+\begin_inset Formula $S$
+\end_inset
+
+ 和 
+\begin_inset Formula $T$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+\mathcal{L}_{Y}(S\otimes T)=\left(\mathcal{L}_{Y}S\right)\otimes T+S\otimes\left(\mathcal{L}_{Y}T\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+relax
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Axiom
+李导数遵循相对于收回(contraction)的莱布尼茨规则：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}\left(T\left(Y_{1},\ldots,Y_{n}\right)\right)=\left(\mathcal{L}_{X}T\right)\left(Y_{1},\ldots,Y_{n}\right)+T\left(\left(\mathcal{L}_{X}Y_{1}\right),\ldots,Y_{n}\right)+\cdots+T\left(Y_{1},\ldots,\left(\mathcal{L}_{X}Y_{n}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+relax
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Axiom
+李导数与函数的外导数交换：
+\begin_inset Formula 
+\[
+\left[\mathcal{L}_{X},d\right]=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果这些公理都成立，那么把李导数
+\begin_inset Formula $\mathcal{L}_{X}$
+\end_inset
+
+应用于关系
+\begin_inset Formula $df(Y)=Y(f)$
+\end_inset
+
+，就会发现
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}Y(f)=X(Y(f))-Y(X(f)),
+\]
+
+\end_inset
+
+这是李括号的标准定义之一。
+\end_layout
+
+\begin_layout Standard
+李导数在一个微分形式上的作用是内积(interior product)与外导数的反对易子(anticommutator)。因此，如果 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 是一个微分形式，
+\begin_inset Formula 
+\[
+\mathcal{L}_{Y}\alpha=i_{Y}d\alpha+di_{Y}\alpha.
+\]
+
+\end_inset
+
+这就很容易通过检查表达式是否与外导数交换、是否是一个导子(作为分级导数的反对易子)，以及是否对函数做了正确的操作来实现。
+\end_layout
+
+\begin_layout Standard
+显式地，设 
+\begin_inset Formula $T$
+\end_inset
+
+ 为
+\begin_inset Formula $(p,q)$
+\end_inset
+
+型张量场。考虑 
+\begin_inset Formula $T$
+\end_inset
+
+ 是一个可微的多线性映射，作用于余切丛 
+\begin_inset Formula $T^{*}M$
+\end_inset
+
+ 的光滑截面 
+\begin_inset Formula $\alpha^{1},\alpha^{2},\ldots,\alpha^{p}$
+\end_inset
+
+，以及正切丛 
+\begin_inset Formula $TM$
+\end_inset
+
+ 的截面 
+\begin_inset Formula $X_{1},X_{2},\ldots,X_{\mathrm{q}}$
+\end_inset
+
+，记作 
+\begin_inset Formula $T\left(\alpha^{1},\alpha^{2},\ldots,X_{1},X_{2},\ldots\right)$
+\end_inset
+
+，其结果是实数 
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+。通过公式定义
+\begin_inset Formula $T$
+\end_inset
+
+沿着
+\begin_inset Formula $Y$
+\end_inset
+
+的李导数为
+\begin_inset Formula 
+\[
+\begin{aligned} & \left(\mathcal{L}_{Y}T\right)\left(\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)=Y\left(T\left(\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)\right)\\
+ & \quad-T\left(\mathcal{L}_{Y}\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)-T\left(\alpha_{1},\mathcal{L}_{Y}\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)-\ldots\\
+ & \quad-T\left(\alpha_{1},\alpha_{2},\ldots,\mathcal{L}_{Y}X_{1},X_{2},\ldots\right)-T\left(\alpha_{1},\alpha_{2},\ldots,X_{1},\mathcal{L}_{Y}X_{2},\ldots\right)-\ldots
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用前推的性质和微分的莱布尼兹规则，可以证明解析定义和代数定义是等价的。李导数与收回交换。
+\end_layout
+
+\begin_layout Subsection
+微分形式的李导数
+\end_layout
+
+\begin_layout Standard
+张量场的一个特别重要的类型是微分形式。李导数对微分形式空间的限制与外导数密切相关。李导数和外导数都试图以不同的方式捕捉导数的概念。这些差异可以通过引入内积(in
+terior product)的概念来弥合，这之后，这些关系就会以一种称为 
+\series bold
+Cartan 公式
+\series default
+(
+\series bold
+Cartan's formula
+\series default
+)的形式出现。Cartan 公式也可用作微分形式空间上的李导数的定义。
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $M$
+\end_inset
+
+ 是一个流形，并且
+\begin_inset Formula $X$
+\end_inset
+
+是在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一个向量场。设 
+\begin_inset Formula $\omega\in\Lambda^{k+1}(M)$
+\end_inset
+
+ 是一个
+\begin_inset Formula $(k+1)$
+\end_inset
+
+形式，即对于每一个
+\begin_inset Formula $p\in M$
+\end_inset
+
+，
+\begin_inset Formula $\omega(p)$
+\end_inset
+
+是一个从
+\begin_inset Formula $\left(T_{p}M\right)^{k+1}$
+\end_inset
+
+到实数的交替多线性映射。
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $\omega$
+\end_inset
+
+的内积是一个
+\begin_inset Formula $k$
+\end_inset
+
+形式
+\begin_inset Formula $i_{X}\omega$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\[
+\left(i_{X}\omega\right)\left(X_{1},\ldots,X_{k}\right)=\omega\left(X,X_{1},\ldots,X_{k}\right)
+\]
+
+\end_inset
+
+微分形式
+\begin_inset Formula $i_{X}\omega$
+\end_inset
+
+也称为
+\begin_inset Formula $\omega$
+\end_inset
+
+对
+\begin_inset Formula $X$
+\end_inset
+
+的
+\series bold
+收回
+\series default
+(
+\series bold
+contraction
+\series default
+)，并且
+\begin_inset Formula 
+\[
+i_{X}:\Lambda^{k+1}(M)\rightarrow\Lambda^{k}(M)
+\]
+
+\end_inset
+
+是一个
+\begin_inset Formula $\wedge$
+\end_inset
+
+反导子(antiderivation)，其中 
+\begin_inset Formula $\wedge$
+\end_inset
+
+ 是微分形式的楔积。也就是，
+\begin_inset Formula $i_{X}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+-线性的，并且
+\begin_inset Formula 
+\[
+i_{X}(\omega\wedge\eta)=\left(i_{X}\omega\right)\wedge\eta+(-1)^{k}\omega\wedge\left(i_{X}\eta\right)
+\]
+
+\end_inset
+
+对于 
+\begin_inset Formula $\omega\in\Lambda^{k}(M)$
+\end_inset
+
+ 和
+\begin_inset Formula $\eta$
+\end_inset
+
+是另一种微分形式。同样，对于一个函数
+\begin_inset Formula $f\in\Lambda^{0}(M)$
+\end_inset
+
+，即在
+\begin_inset Formula $M$
+\end_inset
+
+上的实值函数或复值函数，人们有
+\begin_inset Formula 
+\[
+i_{fX}\omega=fi_{X}\omega
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $fX$
+\end_inset
+
+标志
+\begin_inset Formula $f$
+\end_inset
+
+和
+\begin_inset Formula $X$
+\end_inset
+
+的乘积。外导数和李导数之间的关系可总结如下。首先，由于一个函数
+\begin_inset Formula $f$
+\end_inset
+
+相对于一个向量场
+\begin_inset Formula $X$
+\end_inset
+
+的李导数与方向导数
+\begin_inset Formula $X(f)$
+\end_inset
+
+相同，因此它也与
+\begin_inset Formula $f$
+\end_inset
+
+对
+\begin_inset Formula $X$
+\end_inset
+
+的外导数的收回相同：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}f=i_{X}df
+\]
+
+\end_inset
+
+对于一般微分形式，考虑到
+\begin_inset Formula $X$
+\end_inset
+
+的变化，李导数同样是一种收回：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}\omega=i_{X}d\omega+d\left(i_{X}\omega\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个恒等式被称为 
+\series bold
+Cartan 公式
+\series default
+(
+\series bold
+Cartan formula
+\series default
+)，
+\series bold
+Cartan 同伦公式
+\series default
+(
+\series bold
+Cartan homotopy formula
+\series default
+)或 
+\series bold
+Cartan 魔法公式
+\series default
+(
+\series bold
+Cartan's magic formula
+\series default
+)。详情参见
+\begin_inset CommandInset href
+LatexCommand href
+name "内积资料"
+target "https://en.wikipedia.org/wiki/Interior_product"
+literal "false"
+
+\end_inset
+
+。Cartan 公式可用作一个微分形式的李导数的一个定义。Cartan 公式特别表明
+\begin_inset Formula 
+\[
+d\mathcal{L}_{X}\omega=\mathcal{L}_{X}(d\omega).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+李导数还满足关系
+\begin_inset Formula 
+\[
+\mathcal{L}_{fX}\omega=f\mathcal{L}_{X}\omega+df\wedge i_{X}\omega.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+坐标表达式
+\end_layout
+
+\begin_layout Standard
+在局部坐标符号中，对于一个
+\begin_inset Formula $(r,s)$
+\end_inset
+
+型张量场
+\begin_inset Formula $T$
+\end_inset
+
+，沿着
+\begin_inset Formula $X$
+\end_inset
+
+的李导数为
+\begin_inset Formula 
+\[
+\begin{aligned}({\mathcal{L}}_{X}T)^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}={} & X^{c}(\partial_{c}T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}})\\
+ & {}-{}(\partial_{c}X^{a_{1}})T^{ca_{2}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}-\ldots-(\partial_{c}X^{a_{r}})T^{a_{1}\ldots a_{r-1}c}{}_{b_{1}\ldots b_{s}}\\
+ & +(\partial_{b_{1}}X^{c})T^{a_{1}\ldots a_{r}}{}_{cb_{2}\ldots b_{s}}+\ldots+(\partial_{b_{s}}X^{c})T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s-1}c}
+\end{aligned}
+\]
+
+\end_inset
+
+这里，符号
+\begin_inset Formula $\partial_{a}=\frac{\partial}{\partial x^{a}}$
+\end_inset
+
+是指相对于坐标
+\begin_inset Formula $x^{a}$
+\end_inset
+
+取偏导数。或者，如果我们使用无扭连通(例如，Levi Civita 连通)，则偏导数 
+\begin_inset Formula $\partial_{a}$
+\end_inset
+
+ 可以被协变导数替代，也就是将 
+\begin_inset Formula $\partial_{a}X^{b}$
+\end_inset
+
+ (通过滥用符号)替换为 
+\begin_inset Formula $\nabla_{a}X^{b}=X_{;a}^{b}:=(\nabla X)_{a}^{b}=\partial_{a}X^{b}+\Gamma_{ac}^{b}X^{c}$
+\end_inset
+
+，其中 
+\begin_inset Formula $\Gamma_{bc}^{a}=\Gamma_{cb}^{a}$
+\end_inset
+
+ 是Christoffel系数(Christoﬀel coeﬃcients)。
+\end_layout
+
+\begin_layout Standard
+张量的李导数是同一类型的另一个张量，也就是，即使表达式中的单个项取决于坐标系统的选择，表达式作为一个整体也会产生一个张量
+\begin_inset Formula 
+\[
+\left({\mathcal{L}}_{X}T\right)^{{a_{1}\ldots a_{r}}}{}_{{b_{1}\ldots b_{s}}}\partial_{{a_{1}}}\otimes\cdots\otimes\partial_{{a_{r}}}\otimes dx^{{b_{1}}}\otimes\cdots\otimes dx^{{b_{s}}}
+\]
+
+\end_inset
+
+它独立于任意坐标系统，并且类型与
+\begin_inset Formula $T$
+\end_inset
+
+相同。
+\end_layout
+
+\begin_layout Standard
+该定义可以进一步扩展到张量密度。如果
+\begin_inset Formula $T$
+\end_inset
+
+是某个实值权重
+\begin_inset Formula $w$
+\end_inset
+
+的张量密度(例如权重为
+\begin_inset Formula $1$
+\end_inset
+
+的体积密度)，则其李导数是同类型且同权重的张量密度。
+\begin_inset Formula 
+\[
+\begin{aligned}({\mathcal{L}}_{X}T)^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}={} & X^{c}(\partial_{c}T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}})-(\partial_{c}X^{a_{1}})T^{ca_{2}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}-\ldots-(\partial_{c}X^{a_{r}})T^{a_{1}\ldots a_{r-1}c}{}_{b_{1}\ldots b_{s}}+\\
+ & +(\partial_{b_{1}}X^{c})T^{a_{1}\ldots a_{r}}{}_{cb_{2}\ldots b_{s}}+\ldots+(\partial_{b_{s}}X^{c})T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s-1}c}+w(\partial_{c}X^{c})T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}
+\end{aligned}
+\]
+
+\end_inset
+
+请注意表达式末尾处的新项。
+\end_layout
+
+\begin_layout Standard
+对于一个线性连通
+\begin_inset Formula $\Gamma=\left(\Gamma_{bc}^{a}\right)$
+\end_inset
+
+，沿着
+\begin_inset Formula $X$
+\end_inset
+
+的李导数为 [3]
+\begin_inset Formula 
+\[
+\left(\mathcal{L}_{X}\Gamma\right)_{bc}^{a}=X^{d}\partial_{d}\Gamma_{bc}^{a}+\partial_{b}\partial_{c}X^{a}-\Gamma_{bc}^{d}\partial_{d}X^{a}+\Gamma_{dc}^{a}\partial_{b}X^{d}+\Gamma_{bd}^{a}\partial_{c}X^{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+示例
+\end_layout
+
+\begin_layout Standard
+为清楚起见，我们现在用局部坐标符号展示以下示例。
+\end_layout
+
+\begin_layout Standard
+对于一个标量场
+\begin_inset Formula $\phi\left(x^{c}\right)\in\mathcal{F}(M)$
+\end_inset
+
+，我们有： 
+\begin_inset Formula 
+\[
+\left(\mathcal{L}_{X}\phi\right)=X(\phi)=X^{a}\partial_{a}\phi.
+\]
+
+\end_inset
+
+因此，对于标量场
+\begin_inset Formula $\phi(x,y)=x^{2}-\sin(y)$
+\end_inset
+
+和向量场
+\begin_inset Formula $X=\sin(x)\partial_{y}-y^{2}\partial_{x}$
+\end_inset
+
+，相应的李导数变为
+\begin_inset Formula 
+\[
+\begin{aligned}\mathcal{L}_{X}\phi & =\left(\sin(x)\partial_{y}-y^{2}\partial_{x}\right)\left(x^{2}-\sin(y)\right)\\
+ & =\sin(x)\partial_{y}\left(x^{2}-\sin(y)\right)-y^{2}\partial_{x}\left(x^{2}-\sin(y)\right)\\
+ & =-\sin(x)\cos(y)-2xy^{2}
+\end{aligned}
+\]
+
+\end_inset
+
+对于一个更高秩的微分形式的示例，考虑
+\begin_inset Formula $2$
+\end_inset
+
+-形式
+\begin_inset Formula $\omega=\left(x^{2}+y^{2}\right)dx\wedge dz$
+\end_inset
+
+，以及来自上一示例的向量场
+\begin_inset Formula $X$
+\end_inset
+
+。则，
+\begin_inset Formula 
+\[
+\begin{aligned}\mathcal{L}_{X}\omega & =d\left(i_{\sin(x)\partial_{y}-y^{2}\partial_{x}}\left(\left(x^{2}+y^{2}\right)dx\wedge dz\right)\right)+i_{\sin(x)\partial_{y}-y^{2}\partial_{x}}\left(d\left(\left(x^{2}+y^{2}\right)dx\wedge dz\right)\right)\\
+ & =d\left(-y^{2}\left(x^{2}+y^{2}\right)dz\right)+i_{\sin(x)\partial_{y}-y^{2}\partial_{x}}(2ydy\wedge dx\wedge dz)\\
+ & =\left(-2xy^{2}dx+\left(-2yx^{2}-4y^{3}\right)dy\right)\wedge dz+\left(2y\sin(x)dx\wedge dz+2y^{3}dy\wedge dz\right)\\
+ & =\left(-2xy^{2}+2y\sin(x)\right)dx\wedge dz+\left(-2yx^{2}-2y^{3}\right)dy\wedge dz
+\end{aligned}
+\]
+
+\end_inset
+
+一些更抽象的例子。
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}\left(dx^{b}\right)=di_{X}\left(dx^{b}\right)=dX^{b}=\partial_{a}X^{b}dx^{a}.
+\]
+
+\end_inset
+
+因此，对于一个协向量场，即一个微分形式，
+\begin_inset Formula $A=A_{a}\left(x^{b}\right)dx^{a}$
+\end_inset
+
+，我们有：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}A=X\left(A_{a}\right)dx^{a}+A_{b}\mathcal{L}_{X}\left(dx^{b}\right)=\left(X^{b}\partial_{b}A_{a}+A_{b}\partial_{a}\left(X^{b}\right)\right)dx^{a}
+\]
+
+\end_inset
+
+最后一个表达式的系数是李导数的局部坐标表达式。
+\end_layout
+
+\begin_layout Standard
+对于一个协变秩 
+\begin_inset Formula $2$
+\end_inset
+
+ 张量场
+\begin_inset Formula $T=T_{ab}\left(x^{c}\right)dx^{a}\otimes dx^{b}$
+\end_inset
+
+，我们有：
+\begin_inset Formula 
+\[
+\begin{aligned}\left(\mathcal{L}_{X}T\right) & =\left(\mathcal{L}_{X}T\right)_{ab}dx^{a}\otimes dx^{b}\\
+ & =X\left(T_{ab}\right)dx^{a}\otimes dx^{b}+T_{cb}\mathcal{L}_{X}\left(dx^{c}\right)\otimes dx^{b}+T_{ac}dx^{a}\otimes\mathcal{L}_{X}\left(dx^{c}\right)\\
+ & =\left(X^{c}\partial_{c}T_{ab}+T_{cb}\partial_{a}X^{c}+T_{ac}\partial_{b}X^{c}\right)dx^{a}\otimes dx^{b}
+\end{aligned}
+\]
+
+\end_inset
+
+如果
+\begin_inset Formula $T=g$
+\end_inset
+
+是对称度量张量，它相对于Levi-Civita连通(又称协变导数)是平行的，并且使用该连通会产生结果。这具有用协变导数替换所有导数的效果，给出
+\begin_inset Formula 
+\[
+\left(\mathcal{L}_{X}g\right)=\left(X^{c}g_{ab;c}+g_{cb}X_{;a}^{c}+g_{ac}X_{;b}^{c}\right)dx^{a}\otimes dx^{b}=\left(X_{b;a}+X_{a;b}\right)dx^{a}\otimes dx^{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+性质
+\end_layout
+
+\begin_layout Standard
+李导数具有许多性质。设
+\begin_inset Formula $\mathcal{F}(M)$
+\end_inset
+
+为定义在流形
+\begin_inset Formula $M$
+\end_inset
+
+上的函数的代数。则
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}:\mathcal{F}(M)\rightarrow\mathcal{F}(M)
+\]
+
+\end_inset
+
+是一个在代数
+\begin_inset Formula $\mathcal{F}(M)$
+\end_inset
+
+上的导数。也就是，
+\begin_inset Formula $\mathcal{L}_{X}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+-线性的，并且
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}(fg)=\left(\mathcal{L}_{X}f\right)g+f\mathcal{L}_{X}g.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类似地，它是一个在
+\begin_inset Formula $\mathcal{F}(M)\times\mathcal{X}(M)$
+\end_inset
+
+上的导数，其中
+\begin_inset Formula $\mathcal{X}(M)$
+\end_inset
+
+是在
+\begin_inset Formula $M$
+\end_inset
+
+上的向量场集合(参见文章中的定理 6： Nichita, F.F.
+ Unification Theories: New Results and Examples.
+ Axioms 2019, 8, 60)：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}(fY)=\left(\mathcal{L}_{X}f\right)Y+f\mathcal{L}_{X}Y
+\]
+
+\end_inset
+
+这也可以用等价符号写为
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}(f\otimes Y)=\left(\mathcal{L}_{X}f\right)\otimes Y+f\otimes\mathcal{L}_{X}Y
+\]
+
+\end_inset
+
+这里使用张量乘积符号
+\begin_inset Formula $\otimes$
+\end_inset
+
+来强调一个函数与一个向量场的乘积是在整个流形之上进行的。
+\end_layout
+
+\begin_layout Standard
+其它附加性质与李括号的一致。因此，例如，考虑做为在一个向量场上的一个导子，
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}[Y,Z]=\left[\mathcal{L}_{X}Y,Z\right]+\left[Y,\mathcal{L}_{X}Z\right]
+\]
+
+\end_inset
+
+人们会发现上述公式就是雅可比恒等式(Jacobi identity)。因此，人们就有一个重要的结果，在
+\begin_inset Formula $M$
+\end_inset
+
+之上的向量场空间，配备李括号，就形成一个李代数。
+\end_layout
+
+\begin_layout Standard
+当作用于微分形式时，李导数也具有重要性质。设
+\begin_inset Formula $\alpha$
+\end_inset
+
+和
+\begin_inset Formula $\beta$
+\end_inset
+
+是在
+\begin_inset Formula $M$
+\end_inset
+
+上的两个微分形式，并设
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+是两个向量场。则
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathcal{L}_{X}(\alpha\wedge\beta)=\left(\mathcal{L}_{X}\alpha\right)\wedge\beta+\alpha\wedge\left(\mathcal{L}_{X}\beta\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left[\mathcal{L}_{X},\mathcal{L}_{Y}\right]\alpha:=\mathcal{L}_{X}\mathcal{L}_{Y}\alpha-\mathcal{L}_{Y}\mathcal{L}_{X}\alpha=\mathcal{L}_{[X,Y]}\alpha$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\left[\mathcal{L}_{X},i_{Y}\right]\alpha=\left[i_{X},\mathcal{L}_{Y}\right]\alpha=i_{[X,Y]}\alpha$
+\end_inset
+
+, 其中
+\begin_inset Formula $i$
+\end_inset
+
+标志上面定义的内积，并且这很清楚，
+\begin_inset Formula $[\cdot,\cdot]$
+\end_inset
+
+标志的即是对易子也是向量场的李括号。
+\end_layout
+
+\begin_layout Section
+推广
+\end_layout
+
+\begin_layout Standard
+李导数的各种推广在微分几何中起着重要作用。
+\end_layout
+
+\begin_layout Subsection
+旋量场的李导数
+\end_layout
+
+\begin_layout Standard
+在一般(伪)黎曼流形上沿着一般时空向量场(不一定是Killing场)旋量的Lie导数的定义，在1971年已经由Yvette Kosmann提出。[4]
+ 后来，有人提供了一个几何框架，证明她在纤维丛上的李导数的一般框架内的特殊规定是正确的[5]，在规范自然丛的显式上下文中，规范自然丛被证明是(规范变分)场理论的
+最合适的领域。[6]
+\end_layout
+
+\begin_layout Standard
+在一个给定的旋量流形中，也就是在一个容许旋量结构的黎曼流形
+\begin_inset Formula $(M,g)$
+\end_inset
+
+中，一个旋量场
+\begin_inset Formula $\psi$
+\end_inset
+
+的李导数可首先通过局部表达式相对于无穷小等距变换(Killing向量场)来定义，该定义由André Lichnerowicz在1963年首次给出：[7]
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}\psi:=X^{a}\nabla_{a}\psi-\frac{1}{4}\nabla_{a}X_{b}\gamma^{a}\gamma^{b}\psi,
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\nabla_{a}X_{b}=\nabla_{[a}X_{b]}$
+\end_inset
+
+，假设
+\begin_inset Formula $X=X^{a}\partial_{a}$
+\end_inset
+
+是Killing向量场 ，并且
+\begin_inset Formula $\gamma^{a}$
+\end_inset
+
+是狄拉克矩阵。
+\end_layout
+
+\begin_layout Standard
+然后，通过保留Lichnerowicz对于一个一般向量场
+\begin_inset Formula $X$
+\end_inset
+
+的局部表达式，但仅显式地取
+\begin_inset Formula $\nabla_{a}X_{b}$
+\end_inset
+
+的反对称部分，就可以将Lichnerowicz的定义扩展到所有向量场(一般无穷小变换)。[4]更明确地说，在1972年给出的Kosmann局部表达式为：[4]
+\begin_inset Formula 
+\[
+{\mathcal{L}}_{X}\psi:=X^{a}\nabla_{a}\psi-{\frac{1}{8}}\nabla_{[a}X_{b]}\left[\gamma^{a},\gamma^{b}\right]\psi\,=\nabla_{X}\psi-{\frac{1}{4}}(dX^{\flat})\cdot\psi\,,
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\left[\gamma^{a},\gamma^{b}\right]=\gamma^{a}\gamma^{b}-\gamma^{b}\gamma^{a}$
+\end_inset
+
+是对易子，
+\begin_inset Formula $d$
+\end_inset
+
+是外导数，
+\begin_inset Formula $X^{\flat}=g(X,-)$
+\end_inset
+
+是对应于
+\begin_inset Formula $X$
+\end_inset
+
+在度量(即指数降低)下的对偶
+\begin_inset Formula $1$
+\end_inset
+
+-形式，并且
+\begin_inset Formula $\cdot$
+\end_inset
+
+是Cliﬀord乘法。
+\end_layout
+
+\begin_layout Standard
+值得注意的是，旋量李导数与度量无关，并因此也与连通无关。从Kosmann局部表达式的右侧看，这一点并不明显，因为右侧似乎通过旋量连通(协变导数)、向量场的对偶化
+(降低指数)以及在旋量丛上的Cliﬀord乘法依赖于度量。情况并非如此：Kosmann局部表达式右侧的量合并，使得所有与度量和连通相关项都被消除了。
+\end_layout
+
+\begin_layout Standard
+为了更好地理解长期争论不休的旋量场李导数的概念，可以参考原始文献[8][9]，其中旋量场李导数的定义被置于纤维丛截面李导数理论的更一般框架中，并且Y.
+ Kosmann对旋量情形的直接方法被推广到被称为Kosmann提升(
+\begin_inset CommandInset href
+LatexCommand href
+name "Kosmann lift"
+target "https://en.wikipedia.org/wiki/Kosmann_lift"
+literal "false"
+
+\end_inset
+
+)的新几何概念的形式规范自然丛。
+\end_layout
+
+\begin_layout Subsection
+协变李导数
+\end_layout
+
+\begin_layout Standard
+如果我们在流形
+\begin_inset Formula $\mathrm{M}$
+\end_inset
+
+之上有一个以
+\begin_inset Formula $\mathrm{G}$
+\end_inset
+
+为结构群的主丛，并且我们选择
+\begin_inset Formula $\mathrm{X}$
+\end_inset
+
+作为主丛切空间截面的协变向量场(即它有水平和垂直分量)，则协变李导数就是在主丛之上相对于
+\begin_inset Formula $\mathrm{X}$
+\end_inset
+
+的李导数。
+\end_layout
+
+\begin_layout Standard
+现在，如果我们在 
+\begin_inset Formula $M$
+\end_inset
+
+ 之上给定一个向量场 
+\begin_inset Formula $Y$
+\end_inset
+
+ (但不是主丛)，但我们在主丛之上也有一个连通，我们就可以在主丛之上定义一个向量场
+\begin_inset Formula $\mathrm{X}$
+\end_inset
+
+，使其水平分量与 
+\begin_inset Formula $Y$
+\end_inset
+
+ 匹配，垂直分量与连通一致。这就是协变李导数。
+\end_layout
+
+\begin_layout Standard
+详情参见连通形式(
+\begin_inset CommandInset href
+LatexCommand href
+name "connection form"
+target "https://en.wikipedia.org/wiki/Connection_form"
+literal "false"
+
+\end_inset
+
+)。
+\end_layout
+
+\begin_layout Subsection
+Nijenhuis-Lie 导数
+\end_layout
+
+\begin_layout Standard
+另一种推广，由Albert Nijenhuis提出，允许我们定义沿着在正切丛中具有值的微分形式的任意丛 
+\begin_inset Formula $\Omega^{k}(M,\mathrm{T}M)$
+\end_inset
+
+ 的截面的微分形式的李导数。如果 
+\begin_inset Formula $K\in\Omega^{k}(M,\mathrm{T}M)$
+\end_inset
+
+，并且 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 是一个微分 
+\begin_inset Formula $p$
+\end_inset
+
+-形式，那么可以定义 
+\begin_inset Formula $K$
+\end_inset
+
+ 和 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 的内积 
+\begin_inset Formula $i_{K}\alpha$
+\end_inset
+
+。Nijenhuis-Lie导数则是内积和外导数的反对易子：
+\begin_inset Formula 
+\[
+\mathcal{L}_{K}\alpha=\left[d,i_{K}\right]\alpha=di_{K}\alpha-(-1)^{k-1}i_{K}d\alpha
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+历史
+\end_layout
+
+\begin_layout Standard
+在1931年，Władysław Ślebodziński引入了一种新的微分算子，后来被David van Dantzig称为李导数，它可以应用于标量、向量、张
+量和仿射联络，并在自同构群研究中证明了其强大的作用。
+\end_layout
+
+\begin_layout Standard
+一般几何对象(即自然纤维丛的截面)的李导数由A.
+ Nijenhuis、Y.
+ Tashiro和K.
+ Yano进行了研究。
+\end_layout
+
+\begin_layout Standard
+很长一段时间以来，物理学家一直在使用李导数，而没有参考数学家的工作。在1940年，Léon Rosenfeld [10] — 以及在他之前(在1921年[11]
+)的Wolfgang Pauli [12] — 引入了他所称的几何对象
+\begin_inset Formula $A$
+\end_inset
+
+的“局部变分” 
+\begin_inset Formula $\delta^{*}A$
+\end_inset
+
+，该变分是由一个向量场
+\begin_inset Formula $X$
+\end_inset
+
+生成的坐标的无穷小变换约化而成。人们可以很容易地证明他的
+\begin_inset Formula $\delta^{*}A$
+\end_inset
+
+就是
+\begin_inset Formula $\mathcal{L}_{X}(A)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Covariant derivative"
+target "https://en.wikipedia.org/wiki/Covariant_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Connection (mathematics)"
+target "https://en.wikipedia.org/wiki/Connection_(mathematics)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Frölicher-Nijenhuis bracket"
+target "https://en.wikipedia.org/wiki/Fr%C3%B6licher%E2%80%93Nijenhuis_bracket"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Geodesic"
+target "https://en.wikipedia.org/wiki/Geodesic"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Killing field"
+target "https://en.wikipedia.org/wiki/Killing_vector_field"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Derivative of the exponential map"
+target "https://en.wikipedia.org/wiki/Derivative_of_the_exponential_map"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Notes
+\end_layout
+
+\begin_layout Enumerate
+Trautman, A.
+ (2008).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Remarks on the history of the notion of Lie differentiation
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ In Krupková, O.; Saunders, D.
+ J.
+ (eds.).
+ Variations, Geometry and Physics: In honour of Demeter Krupka's sixty-fifth
+ birthday.
+ New York: Nova Science.
+ pp.
+ 297-302.
+ ISBN 978-1-60456-920-9.
+\end_layout
+
+\begin_layout Enumerate
+Ślebodziński, W.
+ (1931).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Sur les équations de Hamilton
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ Bull.
+ Acad.
+ Roy.
+ D.
+ Belg.
+ 17 (5): 864-870.
+\end_layout
+
+\begin_layout Enumerate
+Yano, K.
+ (1957).
+ The Theory of Lie Derivatives and its Applications (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://archive.org/details/theoryofliederiv029601mbp
+\end_layout
+
+\end_inset
+
+).
+ North-Holland.
+ p.8 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://archive.org/details/theoryofliederiv029601mbp/page/n25
+\end_layout
+
+\end_inset
+
+).
+ ISBN 978-0-7204-2104-0.
+\end_layout
+
+\begin_layout Enumerate
+Kosmann, Y.
+ (1971).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Dérivées de Lie des spineurs
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ Ann.
+ Mat.
+ Pura Appl.
+ 91 (4): 317-395.
+ doi:10.1007/BF02428822 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://doi.org/10.1007
+\backslash
+%2FBF02428822
+\end_layout
+
+\end_inset
+
+).
+ S2CID 121026516 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://api.semanticscholar.org/CorpusID:121026516
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Trautman, A.
+ (1972).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Invariance of Lagrangian Systems
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ In O'Raifeartaigh, L.
+ (ed.).
+ General Relativity: Papers in honour of J.
+ L.
+ Synge.
+ Oxford: Clarenden Press.
+ p.
+ 85.
+ ISBN 0-19-851126-4.
+\end_layout
+
+\begin_layout Enumerate
+Fatibene, L.; Francaviglia, M.
+ (2003).
+ Natural and Gauge Natural Formalism for Classical Field Theories.
+ Dordrecht: Kluwer Academic.
+\end_layout
+
+\begin_layout Enumerate
+Lichnerowicz, A.
+ (1963).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Spineurs harmoniques
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ C.
+ R.
+ Acad.
+ Sci.
+ Paris.
+ 257: 7-9.
+\end_layout
+
+\begin_layout Enumerate
+Fatibene, L.; Ferraris, M.; Francaviglia, M.; Godina, M.
+ (1996).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+A geometric definition of Lie derivative for Spinor Fields
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ In Janyska, J.; Kolár̆, l.; Slovák, J.
+ (eds.).
+ Proceedings of the 6th International Conference on Differential Geometry
+ and Applications, August 28th-September 1st 1995 (Brno, Czech Republic).
+ Brno: Masaryk University.
+ pp.
+ 549-558.
+ arXiv:gr-qc/9608003v1 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://arxiv.org/abs/gr-qc/9608003v1
+\end_layout
+
+\end_inset
+
+).
+ Bibcode:1996gr.qc....8003F (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://ui.adsabs.harvard.edu/abs/1996gr.qc.....8003F
+\end_layout
+
+\end_inset
+
+).
+ ISBN 80-210-13699.
+\end_layout
+
+\begin_layout Enumerate
+Godina, M.; Matteucci, P.
+ (2003).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Reductive G-structures and Lie derivatives
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ Journal of Geometry and Physics.
+ 47 (1): 66-86.
+ arXiv:math/0201235 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://arxiv.org/abs/math/0201235
+\end_layout
+
+\end_inset
+
+).
+ Bibcode:2003JGP...47...66G (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://ui.adsabs.harvard.edu/abs/2003JGP...47...66G
+\end_layout
+
+\end_inset
+
+).
+ doi:10.1016/S0393-0440(02)00174-2 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://doi.org/10.1016
+\backslash
+%2FS0393-0440
+\backslash
+%2802
+\backslash
+%2900174-2
+\end_layout
+
+\end_inset
+
+).
+ S2CID 16408289 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://api.semanticscholar.org/CorpusID:16408289
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Rosenfeld, L.
+ (1940).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Sur le tenseur d'impulsion-énergie
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ Mémoires Acad.
+ Roy.
+ D.
+ Belg.
+ 18 (6): 1-30.
+\end_layout
+
+\begin_layout Enumerate
+Pauli's book on relativity.
+\end_layout
+
+\begin_layout Enumerate
+Pauli, W.
+ (1981) [1921].
+ Theory of Relativity (First ed.).
+ New York: Dover.
+ ISBN 978-0-486-64152-2.
+ See section 23
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+Abraham, Ralph; Marsden, Jerrold E.
+ (1978).
+ Foundations of Mechanics.
+ London: Benjamin-Cummings.
+ ISBN 0-8053-0102-X.
+ See section 2.2.
+\end_layout
+
+\begin_layout Itemize
+Bleecker, David (1981).
+ Gauge Theory and Variational Principles (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://archive.org/details/gaugetheoryvaria00blee
+\backslash
+_0
+\end_layout
+
+\end_inset
+
+).
+ Addison-Wesley.
+ ISBN 0-201-10096-7.
+ See Chapter 0.
+\end_layout
+
+\begin_layout Itemize
+Jost, Jürgen (2002).
+ Riemannian Geometry and Geometric Analysis.
+ Berlin: Springer.
+ ISBN 3-54042627-2.
+ See section 1.6.
+\end_layout
+
+\begin_layout Itemize
+Kolář, l.; Michor, P.; Slovák, J.
+ (1993).
+ Natural operations in differential geometry (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.emis.de/monographs/KSM/index.html
+\end_layout
+
+\end_inset
+
+).
+ Springer-Verlag.
+ ISBN 9783662029503.
+ Extensive discussion of Lie brackets, and the general theory of Lie derivatives.
+\end_layout
+
+\begin_layout Itemize
+Lang, S.
+ (1995).
+ Differential and Riemannian manifolds.
+ Springer-Verlag.
+ ISBN 978-0-387-94338-1.
+ For generalizations to infinite dimensions.
+\end_layout
+
+\begin_layout Itemize
+Lang, S.
+ (1999).
+ Fundamentals of Differential Geometry.
+ Springer-Verlag.
+ ISBN 978-0-387-98593-0.
+ For generalizations to infinite dimensions.
+\end_layout
+
+\begin_layout Itemize
+Yano, K.
+ (1957).
+ The Theory of Lie Derivatives and its Applications (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://archive.org/details/theoryofliederiv029601mbp
+\end_layout
+
+\end_inset
+
+).
+ North-Holland.
+ ISBN 978-0-7204-2104-0.
+ Classical approach using coordinates.
+\end_layout
+
+\begin_layout Section*
+External links
+\end_layout
+
+\begin_layout Itemize
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Lie derivative
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Lie
+\backslash
+_derivative
+\end_layout
+
+\end_inset
+
+), Encyclopedia of Mathematics, EMS Press, 2001 [1994] 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+译注
+\end_layout
+
+\begin_layout Standard
+在微分几何中，"in"、"on"和"over"的使用通常与流形
+\begin_inset Formula $M$
+\end_inset
+
+的概念一起引入，因此理解这些术语的含义和用法需要理解流形的基本性质。在微分几何中，"流形"被视为允许进行微积分运算的空间。
+\end_layout
+
+\begin_layout Enumerate
+在...中 (...
+ in 
+\begin_inset Formula $M$
+\end_inset
+
+)：通常指的是点、向量或其他对象存在于流形"
+\begin_inset Formula $M$
+\end_inset
+
+"的内部。例如，当我们说函数定义在流形"
+\begin_inset Formula $M$
+\end_inset
+
+"中时，我们的意思是函数的定义域包括"
+\begin_inset Formula $M$
+\end_inset
+
+"中的所有点。
+\end_layout
+
+\begin_layout Enumerate
+在...上 (...
+ on 
+\begin_inset Formula $M$
+\end_inset
+
+)：这个术语通常用于描述在流形"
+\begin_inset Formula $M$
+\end_inset
+
+"上定义的对象，例如向量场、张量场或函数。这些对象在"
+\begin_inset Formula $M$
+\end_inset
+
+"的每一点都有定义。例如，当我们说在"
+\begin_inset Formula $M$
+\end_inset
+
+"上定义了一个向量场时，我们的意思是在"
+\begin_inset Formula $M$
+\end_inset
+
+"的每一点都定义了一个向量。
+\end_layout
+
+\begin_layout Enumerate
+在...之上 (...
+ over 
+\begin_inset Formula $M$
+\end_inset
+
+)：这个术语一般用于描述在流形"
+\begin_inset Formula $M$
+\end_inset
+
+"上定义的纤维丛结构，例如正切向量丛或余切向量丛。"在...之上"强调了这些对象是在"
+\begin_inset Formula $M$
+\end_inset
+
+"的每一点上存在的，并且每一点都有一个与之关联的空间(例如，切空间)。例如，当我们说一个向量场定义在"
+\begin_inset Formula $M$
+\end_inset
+
+"之上时，我们是指在"
+\begin_inset Formula $M$
+\end_inset
+
+"的每一点上都有一个切向量。
+\end_layout
+
+\begin_layout Standard
+这些术语都用于描述在给定流形上定义的各种数学对象。虽然这些术语在日常语言中可能有相似的用法，但在微分几何中，它们具有特定的含义和用法。
+\end_layout
+
+\end_body
+\end_document

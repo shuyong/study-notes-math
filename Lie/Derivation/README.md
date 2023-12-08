@@ -7,5 +7,8 @@
 1. [Adjoint Representations and the Derivative of exp - 2023](https://www.cis.upenn.edu/~cis6100/cis610-23-sl3.pdf)
 1. [Derivative of the exponential map](https://en.wikipedia.org/wiki/Derivative_of_the_exponential_map)
 1. [Adjoint representation](https://en.wikipedia.org/wiki/Adjoint_representation)
-
+1. [Lie derivative](https://en.wikipedia.org/wiki/Lie_derivative)
+1. [Lie bracket of vector fields](https://en.wikipedia.org/wiki/Lie_bracket_of_vector_fields)
+1. [Pushforward (differential)](https://en.wikipedia.org/wiki/Pushforward_(differential))
+1. [Tangent space](https://en.wikipedia.org/wiki/Tangent_space)
 

@@ -1,0 +1,893 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "向量场的李括号"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+向量场的李括号
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+27 October 2023
+\end_layout
+
+\begin_layout Standard
+在微分拓扑的数学领域中，
+\series bold
+向量场的李括号
+\series default
+(
+\series bold
+Lie bracket of vector fields
+\series default
+)，也称为
+\series bold
+雅可比李括号
+\series default
+(
+\series bold
+Jacobi-Lie bracket
+\series default
+)或
+\series bold
+向量场的对易子
+\series default
+(
+\series bold
+commutator of vector fields
+\series default
+)，是一个算子，它将在光滑流形
+\begin_inset Formula $M$
+\end_inset
+
+上的任意两个向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+赋给第三个向量场，其标志为
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+从概念上讲，李括号 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 是
+\begin_inset Formula $Y$
+\end_inset
+
+沿着由
+\begin_inset Formula $X$
+\end_inset
+
+生成的流的导数，有时标志为
+\begin_inset Formula $\mathcal{L}_{X}Y$
+\end_inset
+
+ (“
+\begin_inset Formula $Y$
+\end_inset
+
+沿着
+\begin_inset Formula $X$
+\end_inset
+
+的李导数”)。这推广到任意张量场沿着
+\begin_inset Formula $X$
+\end_inset
+
+生成的流的李导数。
+\end_layout
+
+\begin_layout Standard
+李括号是一个
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+双线性运算，它将在流形
+\begin_inset Formula $M$
+\end_inset
+
+上所有光滑向量场的集合转化为(无限维的)李代数。
+\end_layout
+
+\begin_layout Standard
+李括号在微分几何和微分拓扑中起着重要作用，如Frobenius可积定理，也是非线性控制系统几何理论的基础。 [1]
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+定义李括号有三种概念上不同但等效的方法：
+\end_layout
+
+\begin_layout Subsection
+向量场作为导子
+\end_layout
+
+\begin_layout Standard
+每个在流形
+\begin_inset Formula $M$
+\end_inset
+
+上的平滑向量场
+\begin_inset Formula $X:M\rightarrow TM$
+\end_inset
+
+，当我们定义
+\begin_inset Formula $X(f)$
+\end_inset
+
+为另一个函数，其在一个点
+\begin_inset Formula $p$
+\end_inset
+
+处的值为
+\begin_inset Formula $f$
+\end_inset
+
+在点
+\begin_inset Formula $p$
+\end_inset
+
+处沿着方向
+\begin_inset Formula $X(p)$
+\end_inset
+
+的方向导数(directional derivative)时，可视为一个微分算子(differential operator)，它作用在光滑函数
+\begin_inset Formula $f(p)$
+\end_inset
+
+ (其中
+\begin_inset Formula $p\in M$
+\end_inset
+
+并且
+\begin_inset Formula $f$
+\end_inset
+
+为
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+级)上。这样，每个光滑向量场
+\begin_inset Formula $X$
+\end_inset
+
+就成为在
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+上的导子(derivation)。此外，在
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+上的任意导子都来自于唯一的光滑向量场
+\begin_inset Formula $X$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+通常，任意两个导子
+\begin_inset Formula $\delta_{1}$
+\end_inset
+
+和
+\begin_inset Formula $\delta_{2}$
+\end_inset
+
+的对易子(commutator) 
+\begin_inset Formula $\delta_{1}\circ\delta_{2}-\delta_{2}\circ\delta_{1}$
+\end_inset
+
+ 也是一个导子，其中
+\begin_inset Formula $\circ$
+\end_inset
+
+标志算子的分量。这可用于将李括号定义为对应于对易子导数的向量场：
+\begin_inset Formula 
+\[
+[X,Y](f)=X(Y(f))-Y(X(f))\text{ for all }f\in C^{\infty}(M).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+流与极限
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\Phi_{t}^{X}$
+\end_inset
+
+是与向量场
+\begin_inset Formula $X$
+\end_inset
+
+相关联的流(flow)，并设 
+\begin_inset Formula $\mathrm{D}$
+\end_inset
+
+ 为标志切映射的导数算子。则
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+在点 
+\begin_inset Formula $x\in M$
+\end_inset
+
+ 处的李括号可定义为李导数(Lie derivative)：
+\begin_inset Formula 
+\[
+[X,Y]_{x}=\left(\mathcal{L}_{X}Y\right)_{x}:=\lim_{t\rightarrow0}\frac{\left(\mathrm{D}\Phi_{-t}^{X}\right)Y_{\Phi_{t}^{X}(x)}-Y_{x}}{t}=\left.\frac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\left(\mathrm{D}\Phi_{-t}^{X}\right)Y_{\Phi_{t}^{X}(x)}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这也会测量在连续方向
+\begin_inset Formula $X,Y,-X,-Y$
+\end_inset
+
+中的流返回到点 
+\begin_inset Formula $x$
+\end_inset
+
+ 的失败：
+\begin_inset Formula 
+\[
+[X,Y]_{x}=\left.\frac{1}{2}\frac{\mathrm{d}^{2}}{\mathrm{~d}t^{2}}\right|_{t=0}\left(\Phi_{-t}^{Y}\circ\Phi_{-t}^{X}\circ\Phi_{t}^{Y}\circ\Phi_{t}^{X}\right)(x)=\left.\frac{\mathrm{d}}{\mathrm{d}t}\right|_{t=0}\left(\Phi_{-\sqrt{t}}^{Y}\circ\Phi_{-\sqrt{t}}^{X}\circ\Phi_{\sqrt{t}}^{Y}\circ\Phi_{\sqrt{t}}^{X}\right)(x).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+在坐标中
+\end_layout
+
+\begin_layout Standard
+尽管上述李括号的定义是内在的(不依赖在流形
+\begin_inset Formula $M$
+\end_inset
+
+上的坐标的选择)，但在实践中，人们通常希望根据特定的坐标系统
+\begin_inset Formula $\left\{ x^{i}\right\} $
+\end_inset
+
+来计算括号。对于关联的切丛的局部基，我们写为
+\begin_inset Formula $\partial_{i}=\frac{\partial}{\partial x^{i}}$
+\end_inset
+
+，以使得对于光滑函数
+\begin_inset Formula $X^{i},Y^{i}:M\rightarrow\mathbb{R}$
+\end_inset
+
+，一般向量场可以写为
+\begin_inset Formula $X=\sum_{i=1}^{n}X^{i}\partial_{i}$
+\end_inset
+
+和
+\begin_inset Formula $Y=\sum_{i=1}^{n}Y^{i}\partial_{i}$
+\end_inset
+
+。则李括号可计算为：
+\begin_inset Formula 
+\[
+[X,Y]:=\sum_{i=1}^{n}\left(X\left(Y^{i}\right)-Y\left(X^{i}\right)\right)\partial_{i}=\sum_{i=1}^{n}\sum_{j=1}^{n}\left(X^{j}\partial_{j}Y^{i}-Y^{j}\partial_{j}X^{i}\right)\partial_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $M$
+\end_inset
+
+ 是
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+的(一个开子集)，则向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+可以写为形式
+\begin_inset Formula $X:M\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+和
+\begin_inset Formula $Y:M\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+的光滑映射，并且李括号
+\begin_inset Formula $[X,Y]:M\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+给出为：
+\begin_inset Formula 
+\[
+[X,Y]:=J_{Y}X-J_{X}Y
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $J_{Y}$
+\end_inset
+
+ 和 
+\begin_inset Formula $J_{X}$
+\end_inset
+
+ 是 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ 雅可比矩阵(
+\begin_inset Formula $\partial_{j}Y^{i}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\partial_{j}X^{i}$
+\end_inset
+
+ 分别使用索引表示法)乘以 
+\begin_inset Formula $n\times1$
+\end_inset
+
+ 列向量 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Section
+性质
+\end_layout
+
+\begin_layout Standard
+向量场的李括号等价于在
+\begin_inset Formula $M$
+\end_inset
+
+上的所有向量场的实向量空间 
+\begin_inset Formula $V=\Gamma(TM)$
+\end_inset
+
+ (即切丛 
+\begin_inset Formula $TM\rightarrow M$
+\end_inset
+
+ 的光滑截面)，它们带有一个李代数的结构，这意味 
+\begin_inset Formula $[\cdot,\cdot]$
+\end_inset
+
+ 是一个映射
+\begin_inset Formula $V\times V\rightarrow V$
+\end_inset
+
+，具有性质：
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathbf{R}$
+\end_inset
+
+双线性性
+\end_layout
+
+\begin_layout Itemize
+反对称， 
+\begin_inset Formula $[X,Y]=-[Y,X]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+雅可比恒等式， 
+\begin_inset Formula $[X,[Y,Z]]+[Z,[X,Y]]+[Y,[Z,X]]=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+第二个性质的直接结果是，对于任意
+\begin_inset Formula $X$
+\end_inset
+
+， 
+\begin_inset Formula $[X,X]=0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+此外，对于李括号还有一个“乘积规则”。给定在
+\begin_inset Formula $M$
+\end_inset
+
+上的一个光滑(标量值)函数
+\begin_inset Formula $f$
+\end_inset
+
+和在
+\begin_inset Formula $M$
+\end_inset
+
+上的一个向量场
+\begin_inset Formula $Y$
+\end_inset
+
+，通过在每个点
+\begin_inset Formula $x∈M$
+\end_inset
+
+处将向量 
+\begin_inset Formula $Y_{x}$
+\end_inset
+
+ 乘以标量 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ 得到一个新的向量场 
+\begin_inset Formula $fY$
+\end_inset
+
+。 则：
+\begin_inset Formula 
+\[
+[X,fY]=X(f)Y+f[X,Y],
+\]
+
+\end_inset
+
+其中，我们将标量函数 
+\begin_inset Formula $X(f)$
+\end_inset
+
+ 与向量场
+\begin_inset Formula $Y$
+\end_inset
+
+相乘，将标量函数
+\begin_inset Formula $f$
+\end_inset
+
+与向量场
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+相乘。这会将带有李括号的向量场转化为李代数胚(Lie algebroid)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李括号消失意味着跟随在这些方向中的流定义了一个嵌入在
+\begin_inset Formula $M$
+\end_inset
+
+中的表面，其中
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+为坐标向量场：
+\end_layout
+
+\begin_layout Theorem*
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+ 当且仅当
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流在局部可交换时，意味着
+\begin_inset Formula $\left(\Phi_{t}^{Y}\Phi_{s}^{X}\right)(x)=\left(\Phi_{s}^{X}\Phi_{t}^{Y}\right)(x)$
+\end_inset
+
+对于所有 
+\begin_inset Formula $x\in M$
+\end_inset
+
+ 和足够小的 
+\begin_inset Formula $s,t$
+\end_inset
+
+成立。 
+\end_layout
+
+\begin_layout Standard
+这是Frobenius可积定理的一个特例。
+\end_layout
+
+\begin_layout Section
+示例
+\end_layout
+
+\begin_layout Standard
+对于一个李群
+\begin_inset Formula $G$
+\end_inset
+
+，对应的李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 是在恒等式
+\begin_inset Formula $T_{e}G$
+\end_inset
+
+处的切空间，其可用
+\begin_inset Formula $G$
+\end_inset
+
+上的左不变向量场的向量空间来识别。两个左不变向量场的李括号也是左不变的，其定义了Jacobi李括号运算 
+\begin_inset Formula $[\cdot,\cdot]:\mathfrak{g}\times\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+对于元素为矩阵
+\begin_inset Formula $g\in G\subset M_{n\times n}(\mathbb{R})$
+\end_inset
+
+的一个矩阵李群，每个切空间可以表示为矩阵：
+\begin_inset Formula $T_{g}G=g\cdot T_{I}G\subset M_{n\times n}(\mathbb{R})$
+\end_inset
+
+，其中 
+\begin_inset Formula $\cdot$
+\end_inset
+
+ 表示矩阵乘法，并且
+\begin_inset Formula $I$
+\end_inset
+
+表示单位矩阵。由
+\begin_inset Formula $X_{g}=g\cdot X\in T_{g}G$
+\end_inset
+
+给出了
+\begin_inset Formula $X\in\mathfrak{g}=T_{I}G$
+\end_inset
+
+对应的不变向量场，并且计算表明在 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+ 上的李括号对应于矩阵的一般对易子： 
+\begin_inset Formula 
+\[
+[X,Y]=X\cdot Y-Y\cdot X.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+推广
+\end_layout
+
+\begin_layout Standard
+如上所述，李导数可以看作是李括号的推广。李括号(向量-值微分形式)的另一个推广是 Frölicher-Nijenhuis 括号。
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Isaiah 2009, pp.
+ 20-21, nonholonomic systems; Khalil 2002, pp.
+ 523-530, feedback linearization.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Lie bracket
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Lie_bracket
+\end_layout
+
+\end_inset
+
+), 
+\begin_inset Newline newline
+\end_inset
+
+Encyclopedia of Mathematics, EMS Press, 2001 [1994]
+\end_layout
+
+\begin_layout Enumerate
+Isaiah, Pantelis (2009), "Controlled parking [Ask the experts]", IEEE Control
+ Systems Magazine, 29 (3): 17-21, 132, doi:10.1109/MCS.2009.932394 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://doi.org/10.1109
+\backslash
+%2FMCS.2009.932394
+\end_layout
+
+\end_inset
+
+), S2CID 42908664 (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://api.semanticscholar.org/CorpusID:42908664
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+Khalil, H.K.
+ (2002), Nonlinear Systems (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.egr.msu.edu/khalil/NonlinearSystems/
+\end_layout
+
+\end_inset
+
+) (3rd ed.), Upper Saddle River, NJ: Prentice Hall, ISBN 0-13-067389-7
+\end_layout
+
+\begin_layout Enumerate
+Kolár̆, I., Michor, P., and Slovák, J.
+ (1993), Natural operations in differential geometry (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.emis.de/monographs/KSM/index.html
+\end_layout
+
+\end_inset
+
+), Berlin, Heidelberg, New York: Springer-Verlag, ISBN 3-540-56235-4 Extensive
+ discussion of Lie brackets, and the general theory of Lie derivatives.
+\end_layout
+
+\begin_layout Enumerate
+Lang, S.
+ (1995), Differential and Riemannian manifolds, Springer-Verlag, ISBN 978-0-3879
+4338-1 For generalizations to infinite dimensions.
+\end_layout
+
+\begin_layout Enumerate
+Lewis, Andrew D., Notes on (Nonlinear) Control Theory (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://penelope.mast.queensu.ca/math890-03/ps/math890.pdf
+\end_layout
+
+\end_inset
+
+) (PDF)
+\end_layout
+
+\begin_layout Enumerate
+Warner, Frank (1983) [1971], Foundations of differentiable manifolds and
+ Lie groups, New York-Berlin: Springer-Verlag, ISBN 0-387-90894-3
+\end_layout
+
+\end_body
+\end_document
