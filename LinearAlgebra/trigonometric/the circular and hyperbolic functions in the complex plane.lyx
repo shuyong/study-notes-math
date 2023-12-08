@@ -1,0 +1,1424 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "What's the intuition behind the identities cos(z)=cosh(iz) and sin(z)=-isinh(iz) ?"
+\pdf_author "Mark S."
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+What's the intuition behind the identities
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Formula $\cos(z)=\cosh(iz)$
+\end_inset
+
+ and 
+\begin_inset Formula $\sin(z)=-i\sinh(iz)$
+\end_inset
+
+ ?
+\end_layout
+
+\begin_layout Author
+Mark S.
+\end_layout
+
+\begin_layout Date
+Apr 16, 2016
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset href
+LatexCommand href
+name "Question"
+target "https://math.stackexchange.com/questions/1736068/whats-the-intuition-behind-the-identities-cosz-coshiz-and-sinz-i"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I'm trying to understand in an intuitive manner the relationship between
+ the circular and hyperbolic functions in the complex plane, i.e.:
+\begin_inset Formula 
+\begin{align*}
+\cos(z) & =\cosh(iz)\\
+\sin(z) & =-i\sinh(iz)
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $z$
+\end_inset
+
+ is a complex number.
+\end_layout
+
+\begin_layout Standard
+From a geometric point of view, what I understand is that 
+\begin_inset Formula $\cos$
+\end_inset
+
+ is the composition of a rotation through 
+\begin_inset Formula $\frac{\pi}{2}$
+\end_inset
+
+, followed by 
+\begin_inset Formula $\cosh$
+\end_inset
+
+, and 
+\begin_inset Formula $\sin$
+\end_inset
+
+ is the composition of a rotation through 
+\begin_inset Formula $\frac{\pi}{2}$
+\end_inset
+
+, followed by 
+\begin_inset Formula $\sinh$
+\end_inset
+
+, followed by a rotation through 
+\begin_inset Formula $-\frac{\pi}{2}$
+\end_inset
+
+ (where 
+\begin_inset Formula $\sin,\cos,\sinh,\cosh$
+\end_inset
+
+ are defined as complex functions).
+\end_layout
+
+\begin_layout Standard
+Where does this connection come from? Is there some way it can be visualized
+ in terms of complex mappings? (I'm not asking for a proof of the identities,
+ I already know one).
+\end_layout
+
+\begin_layout Section
+General comments
+\end_layout
+
+\begin_layout Subsection
+Disclaimer
+\end_layout
+
+\begin_layout Standard
+Before I get into my best efforts at motivating these identities/drawing
+ on some geometric intuition, I want to explain why I believe there won't
+ be a very satisfying answer posted.
+\end_layout
+
+\begin_layout Standard
+Certainly, things like multiplication by 
+\begin_inset Formula $i$
+\end_inset
+
+ and the unit circle and the unit hyperbola have geometric interpretations,
+ but the trig functions (both 
+\begin_inset CommandInset href
+LatexCommand href
+name "circular"
+target "https://en.wikipedia.org/wiki/Trigonometric_functions#Unit-circle_definitions"
+literal "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset href
+LatexCommand href
+name "hyperbolic"
+target "https://en.wikipedia.org/wiki/Hyperbolic_function"
+literal "false"
+
+\end_inset
+
+) are only really defined geometrically for real inputs.
+ They (and the closely related 
+\begin_inset CommandInset href
+LatexCommand href
+name "exponential function"
+target "https://en.wikipedia.org/wiki/Exponential_function#Formal_definition"
+literal "false"
+
+\end_inset
+
+) are extended to non-real inputs via 
+\begin_inset CommandInset href
+LatexCommand href
+name "analytic continuation"
+target "https://en.wikipedia.org/wiki/Analytic_continuation"
+literal "false"
+
+\end_inset
+
+: essentially, declaring by fiat that a power series or a differential equation
+ will serve as the definition for nonreal inputs as well.
+ Because that step isn't terribly geometric, I don't think there can be
+ a tidy story that lies only in the realm of geometry.
+ However, we can use geometry to think about the circular trig functions
+ or the hyperbolic ones (but not both simultaneously), and then connect
+ the sides of the equation with the exponential function (or similar).
+\end_layout
+
+\begin_layout Subsection
+A complex picture
+\end_layout
+
+\begin_layout Standard
+Since the question said “Is there some way it can be visualized in terms
+ of complex mappings?”, I want to point out that there are relevant 4D pictures
+ where these sorts of things live.
+ Unfortunately, we can only look at 3D slices, but you can still sort of
+ see a related relationship.
+ Note that, assuming the identities in the equation, we have the following:
+ 
+\begin_inset Formula $\cos\left(x+iy\right)=\dfrac{e^{i\left(x+iy\right)}+e^{-i\left(x+iy\right)}}{2}=\dfrac{e^{ix-y}+e^{-ix+y}}{2}$
+\end_inset
+
+.
+ This expands to 
+\begin_inset Formula $\dfrac{e^{-y}\left(\cos x+i\sin x\right)+e^{y}\left(\cos x-i\sin x\right)}{2}=\cosh y\cos x-i\sinh y\sin x$
+\end_inset
+
+.
+ For real 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+, we can say that the real part of 
+\begin_inset Formula $\cos\left(x+iy\right)=\cosh y\cos x$
+\end_inset
+
+ and the imaginary part is 
+\begin_inset Formula $-\sinh y\sin x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This yields pictures like the following:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Nbvf5.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{re}(\cos(x+iy))$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows 
+\begin_inset Formula $\cosh y\cos x$
+\end_inset
+
+.
+ You can see a similar graph 
+\begin_inset CommandInset href
+LatexCommand href
+name "on Wolfram|Alpha"
+target "http://www.wolframalpha.com/input/?i=Re%5BCos%5Bx%2BI*y%5D%5D,%7Bx,-2Pi,2Pi%7D,%7By,-2,2%7D"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename G1QnS.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathrm{im}(\cos(x+iy))$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows 
+\begin_inset Formula $-\sinh y\sin x$
+\end_inset
+
+.
+ You can see a similar graph 
+\begin_inset CommandInset href
+LatexCommand href
+name "on Wolfram|Alpha"
+target "http://www.wolframalpha.com/input/?i=Im%5BCos%5Bx%2BI*y%5D%5D,%7Bx,-2Pi,2Pi%7D,%7By,-2,2%7D"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Very similar pictures related to the other identity can be obtained from
+ 
+\begin_inset Formula $\sin\left(x+iy\right)=\sin x\cosh y+i\cos x\sinh y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+"Half-geometric" arguments
+\end_layout
+
+\begin_layout Subsection
+Circular Geometry
+\end_layout
+
+\begin_layout Standard
+Since the question is “not asking for a proof”, I will only focus on the
+ case when 
+\begin_inset Formula $z$
+\end_inset
+
+ is a real number 
+\begin_inset Formula $\theta$
+\end_inset
+
+ here.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\cos$
+\end_inset
+
+ and 
+\begin_inset Formula $\cosh$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In geometric terms, 
+\begin_inset Formula $\cos\theta$
+\end_inset
+
+ is the 
+\begin_inset Formula $x$
+\end_inset
+
+-coordinate of the point on the unit circle that's a counterclockwise rotation
+ of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ (radians) from the positive 
+\begin_inset Formula $x$
+\end_inset
+
+-axis (“at an angle of 
+\begin_inset Formula $\theta$
+\end_inset
+
+”).
+ It helps to think of 
+\begin_inset Formula $\cos\theta+0i$
+\end_inset
+
+ as a vector in the complex plane.
+ Now, 
+\begin_inset Formula $\cosh\left(i\theta\right)=\dfrac{e^{i\theta}+e^{-i\theta}}{2}=\dfrac{e^{i\theta}+e^{i\left(-\theta\right)}}{2}$
+\end_inset
+
+.
+ So we have to argue that 
+\begin_inset Formula $2\cos\theta=e^{i\theta}+e^{i\left(-\theta\right)}$
+\end_inset
+
+.
+ But for real 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ (including 
+\begin_inset Formula $\varphi=\pm\theta$
+\end_inset
+
+), 
+\begin_inset Formula $e^{i\varphi}$
+\end_inset
+
+ is the point on the unit circle at an angle of 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ (see appendix).
+ I sketched a picture in my notebook connecting these two expressions geometrica
+lly, but it came out essentially the same as what I found in 
+\begin_inset CommandInset href
+LatexCommand href
+name "the preview of the text Visual Complex Analysis by Tristan Needham"
+target "https://books.google.com/books?id=ogz5FjmiqlQC&hl=en"
+literal "false"
+
+\end_inset
+
+ (specifically in II.4): 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename tsxcV.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\cos$
+\end_inset
+
+ image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows that when you add the vectors for 
+\begin_inset Formula $e^{i\theta}$
+\end_inset
+
+ and 
+\begin_inset Formula $e^{i\left(-\theta\right)}$
+\end_inset
+
+, you get twice the horizontal component: 
+\begin_inset Formula $2\cos\theta$
+\end_inset
+
+, since the horizontal components for a counterclockwise rotation by 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and a clockwise one are the same.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\sin$
+\end_inset
+
+ and 
+\begin_inset Formula $\sinh$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is a very analogous story for the other identity.
+ 
+\begin_inset Formula $\sin\theta$
+\end_inset
+
+ is the 
+\begin_inset Formula $y$
+\end_inset
+
+-coordinate at angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+, and 
+\begin_inset Formula $-i\sinh\left(i\theta\right)=-i\dfrac{e^{i\theta}-e^{-i\theta}}{2}$
+\end_inset
+
+.
+ Since 
+\begin_inset Formula $-i=\dfrac{1}{i}$
+\end_inset
+
+, we just have to argue why 
+\begin_inset Formula $2i\sin\theta=e^{i\theta}-e^{i\left(-\theta\right)}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $i\sin\theta$
+\end_inset
+
+ is the vertical vector for the 
+\begin_inset Formula $y$
+\end_inset
+
+-coordinate of a point at angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+, and vector subtraction makes the following picture relevant (again from
+ II.4 of Visual Complex Analysis):
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename l6H27.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sin$
+\end_inset
+
+ image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows that when you subtract the vectors for 
+\begin_inset Formula $e^{i\theta}$
+\end_inset
+
+ and 
+\begin_inset Formula $e^{i\left(-\theta\right)}$
+\end_inset
+
+, you get twice the vertical component: 
+\begin_inset Formula $2i\sin\theta$
+\end_inset
+
+, since the vertical components for a counterclockwise and a clockwise rotation
+ by the same angle are equal in magnitude and opposite in direction.
+\end_layout
+
+\begin_layout Subsection
+Hyperbolic Geometry
+\end_layout
+
+\begin_layout Standard
+Since the question is “not asking for a proof”, I will only focus on the
+ case when 
+\begin_inset Formula $z$
+\end_inset
+
+ is a “pure imaginary” number (
+\begin_inset Formula $ir$
+\end_inset
+
+ for some real 
+\begin_inset Formula $r$
+\end_inset
+
+) here.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\cos$
+\end_inset
+
+ and 
+\begin_inset Formula $\cosh$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $z=-i\alpha$
+\end_inset
+
+, the first identity becomes “
+\begin_inset Formula $\cos\left(-i\alpha\right)=\cosh\left(\alpha\right)$
+\end_inset
+
+”.
+ Let 
+\begin_inset Formula $f\left(w\right)=\cosh\left(w\right)+i\sinh\left(w\right)$
+\end_inset
+
+ giving the points on the unit hyperbola (parametrized by twice the signed
+ area subtended by a segment from the origin), analogous to 
+\begin_inset Formula $\cos w+i\sin w=e^{iw}$
+\end_inset
+
+ giving points on the unit circle.
+ Then 
+\begin_inset Formula $\cos w=\dfrac{f\left(iw\right)+f\left(-iw\right)}{2}$
+\end_inset
+
+ (this at least holds for real 
+\begin_inset Formula $w$
+\end_inset
+
+ by the circle geometry arguments above).
+ So we have 
+\begin_inset Formula $\cos\left(-i\alpha\right)=\dfrac{f\left(\alpha\right)+f\left(-\alpha\right)}{2}$
+\end_inset
+
+, and must argue that 
+\begin_inset Formula $f\left(\alpha\right)+f\left(-\alpha\right)=2\cosh\left(\alpha\right)$
+\end_inset
+
+.
+ The picture is very similar to the one for cosine:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename WvM9N.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\cosh$
+\end_inset
+
+ image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows that when you add the vectors for 
+\begin_inset Formula $f\left(\alpha\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $f\left(-\alpha\right)$
+\end_inset
+
+, you get twice the horizontal component: 
+\begin_inset Formula $2\cosh\alpha$
+\end_inset
+
+, since the horizontal components for an area of 
+\begin_inset Formula $\left|\dfrac{\alpha}{2}\right|$
+\end_inset
+
+ above the horizontal axis and an area of 
+\begin_inset Formula $\left|\dfrac{\alpha}{2}\right|$
+\end_inset
+
+ below the horizontal axis are the same.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Formula $\sin$
+\end_inset
+
+ and 
+\begin_inset Formula $\sinh$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is a very analogous story for the other identity.
+ If 
+\begin_inset Formula $z=-i\alpha$
+\end_inset
+
+, the second identity becomes “
+\begin_inset Formula $\sin\left(-i\alpha\right)=-i\sinh\left(\alpha\right)$
+\end_inset
+
+”.
+ With 
+\begin_inset Formula $f$
+\end_inset
+
+ as above, we have 
+\begin_inset Formula $\sin w=\dfrac{f\left(iw\right)-f\left(-iw\right)}{-2}$
+\end_inset
+
+ (this at least holds for real 
+\begin_inset Formula $w$
+\end_inset
+
+ by the circle geometry arguments above), yielding 
+\begin_inset Formula $\sin\left(-i\alpha\right)=\dfrac{f\left(\alpha\right)-f\left(-\alpha\right)}{-2}$
+\end_inset
+
+, so we must argue 
+\begin_inset Formula $f\left(\alpha\right)-f\left(-\alpha\right)=2i\sinh\alpha$
+\end_inset
+
+.
+ Vector subtraction makes the following picture relevant:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename BmijX.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sinh$
+\end_inset
+
+ image
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This shows that when you subtract the vectors for 
+\begin_inset Formula $f\left(\alpha\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $f\left(-\alpha\right)$
+\end_inset
+
+, you get twice the vertical component: 
+\begin_inset Formula $2i\sinh\alpha$
+\end_inset
+
+, since the vertical components for an area of 
+\begin_inset Formula $\left|\dfrac{\alpha}{2}\right|$
+\end_inset
+
+ above the horizontal axis and an area of 
+\begin_inset Formula $\left|\dfrac{\alpha}{2}\right|$
+\end_inset
+
+ below the horizontal axis are equal in magnitude and opposite in direction.
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Appendix: The exponential function
+\end_layout
+
+\begin_layout Standard
+The “half-geometric” arguments above relied on the connection between the
+ geometric meanings of 
+\begin_inset Formula $\sin$
+\end_inset
+
+, 
+\begin_inset Formula $\cos$
+\end_inset
+
+, 
+\begin_inset Formula $\sinh$
+\end_inset
+
+, 
+\begin_inset Formula $\cosh$
+\end_inset
+
+ of real inputs, and the exponential function.
+ Here I expand on those connections.
+\end_layout
+
+\begin_layout Subsection
+The Unit Circle
+\end_layout
+
+\begin_layout Standard
+There are a number of arguments as to why 
+\begin_inset Formula $e^{i\theta}$
+\end_inset
+
+ should equal 
+\begin_inset Formula $\cos\theta+i\sin\theta$
+\end_inset
+
+.
+ One of my favorite lines of reasoning is based on a vector function and
+ derivatives.
+ Consider a particle moving counterclockwise around the unit circle in the
+ complex plane (starting at 
+\begin_inset Formula $1+0i$
+\end_inset
+
+) at unit speed.
+ By the definition of radians and sine and cosine, its position in the complex
+ plane at time 
+\begin_inset Formula $t$
+\end_inset
+
+ is given by 
+\begin_inset Formula $\mathbf{s}\left(t\right)=\cos\theta+i\sin\theta$
+\end_inset
+
+.
+ Since a tangent to a circle forms a right angle and multiplication by 
+\begin_inset Formula $i$
+\end_inset
+
+ rotates things counterclockwise by a right angle (
+\begin_inset Formula $x+iy$
+\end_inset
+
+ is sent to 
+\begin_inset Formula $-y+ix$
+\end_inset
+
+) we have 
+\begin_inset Formula $\mathbf{s}'\left(t\right)=ki\mathbf{s}\left(t\right)$
+\end_inset
+
+ for some positive real number 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ Since it's going at unit speed, we have 
+\begin_inset Formula $\left|\mathbf{s}'\left(t\right)\right|=1$
+\end_inset
+
+ so that 
+\begin_inset Formula $k=1$
+\end_inset
+
+ as 
+\begin_inset Formula $\left|\mathbf{s}\left(t\right)\right|=\sqrt{\cos^{2}t+\sin^{2}t}=1$
+\end_inset
+
+.
+ Now we just need to find a complex function where 
+\begin_inset Formula $\mathbf{s}\left(0\right)=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{s}'\left(t\right)=i\mathbf{s}\left(t\right)$
+\end_inset
+
+.
+ Since the exponential function is its own derivative, the chain rule for
+ differentiation tells us we can use 
+\begin_inset Formula $\mathbf{s}\left(t\right)=e^{it}$
+\end_inset
+
+.
+ This argument is discussed in slightly more detail in II.2 “Moving Particle
+ Argument” in 
+\begin_inset CommandInset href
+LatexCommand href
+name "Visual Complex Analysis"
+target "https://books.google.com/books?id=ogz5FjmiqlQC&hl=en"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+The Unit Hyperbola
+\end_layout
+
+\begin_layout Standard
+There may be a number of arguments as to why 
+\begin_inset Formula $\left(\cosh a,\sinh a\right)$
+\end_inset
+
+ is the point on the unit hyperbola subtending an area of 
+\begin_inset Formula $a/2$
+\end_inset
+
+, but I don't know of any extremely tidy ones.
+ One straightforward but very tedious method is to just set up the area
+ as an integral and churn through several trigonometric integrals, as at
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.mathed.soe.vt.edu/Undergraduates/EulersIdentity/HyperbolicTrig.pdf
+\end_layout
+
+\end_inset
+
+.
+ However, this can be done in a slightly more clever way by first rotating
+ it to be in the first quadrant and making some observations.
+ The following is closely modeled after Dr.
+ James B.
+ Calvert's treatment under “Hyperbolic Fucntions” at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://mysite.du.edu/~jcalvert/math/hyperb.htm
+\end_layout
+
+\end_inset
+
+ with some editorial changes; I did not arrive at this approach independently:
+\end_layout
+
+\begin_layout Standard
+The unit hyperbola satisfies 
+\begin_inset Formula $x^{2}-y^{2}=1$
+\end_inset
+
+ and we are interested in the branch with 
+\begin_inset Formula $x>0$
+\end_inset
+
+.
+ We can rotate this by 
+\begin_inset Formula $\dfrac{\tau}{8}=\dfrac{\pi}{4}$
+\end_inset
+
+ with the substitution 
+\begin_inset Formula $x-y=z\sqrt{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $x+y=w\sqrt{2}$
+\end_inset
+
+.
+ The equation then becomes 
+\begin_inset Formula $zw=1/2$
+\end_inset
+
+ and we are interested in the branch with 
+\begin_inset Formula $z,w>0$
+\end_inset
+
+.
+ Consider the following diagram, where 
+\begin_inset Formula $\overrightarrow{OQ}$
+\end_inset
+
+ is the positive 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, 
+\begin_inset Formula $A$
+\end_inset
+
+ is the point 
+\begin_inset Formula $\left(z,w\right)=\left(\dfrac{1}{\sqrt{2}},\dfrac{1}{\sqrt{2}}\right)$
+\end_inset
+
+ (so that 
+\begin_inset Formula $\left(x,y\right)=\left(1,0\right)$
+\end_inset
+
+), 
+\begin_inset Formula $P$
+\end_inset
+
+ is some arbitrary point with 
+\begin_inset Formula $\left(z,w\right)=\left(p_{1},p_{2}\right)$
+\end_inset
+
+, 
+\begin_inset Formula $B$
+\end_inset
+
+ is the point with 
+\begin_inset Formula $\left(z,w\right)=\left(\dfrac{1}{\sqrt{2}},0\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $Q$
+\end_inset
+
+ is the point 
+\begin_inset Formula $\left(z,w\right)=\left(p_{1},0\right)$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename cmcl8.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+diagram as described
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The area of 
+\begin_inset Formula $OAP$
+\end_inset
+
+ we seek is the difference 
+\begin_inset Formula $\text{area}OAPQ-\text{area}\triangle OPQ$
+\end_inset
+
+.
+ Now, 
+\begin_inset Formula $\triangle OPQ$
+\end_inset
+
+ has area 
+\begin_inset Formula $\dfrac{1}{2}p_{1}p_{2}$
+\end_inset
+
+.
+ But since 
+\begin_inset Formula $P$
+\end_inset
+
+ lies on the hyperbola, 
+\begin_inset Formula $p_{1}p_{2}=\dfrac{1}{2}$
+\end_inset
+
+ and so the area of 
+\begin_inset Formula $\triangle OPQ$
+\end_inset
+
+ is 
+\begin_inset Formula $\dfrac{1}{4}$
+\end_inset
+
+.
+ Note that this is also the area of 
+\begin_inset Formula $\triangle OAB$
+\end_inset
+
+, since that triangle has base and height equal to 
+\begin_inset Formula $\dfrac{1}{\sqrt{2}}$
+\end_inset
+
+.
+ Therefore, we just need to find 
+\begin_inset Formula $\text{area}OAPQ-\text{area}\triangle OAB$
+\end_inset
+
+, which is a straightforward integral in the 
+\begin_inset Formula $zw$
+\end_inset
+
+-plane: 
+\begin_inset Formula $\int_{1/\sqrt{2}}^{p_{1}}\dfrac{1}{2z}\,\mathrm{d}z=\dfrac{1}{2}\left(\ln\left|p_{1}\right|-\ln\left|\dfrac{1}{\sqrt{2}}\right|\right)=\dfrac{1}{2}\ln\left(\sqrt{2}p_{1}\right)$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $P$
+\end_inset
+
+'s 
+\begin_inset Formula $xy$
+\end_inset
+
+-coordinates are 
+\begin_inset Formula $\left(x,y\right)$
+\end_inset
+
+, then 
+\begin_inset Formula $\sqrt{2}p_{1}=x+y$
+\end_inset
+
+, and we find that the area is 
+\begin_inset Formula $\dfrac{1}{2}\ln\left(x+y\right)=\dfrac{1}{2}\ln\left(\sqrt{1+y^{2}}+y\right)=\dfrac{1}{2}\sinh^{-1}y$
+\end_inset
+
+ when 
+\begin_inset Formula $\sinh t$
+\end_inset
+
+ is defined to be 
+\begin_inset Formula $\dfrac{e^{t}-e^{-t}}{2}$
+\end_inset
+
+, which is exactly what we were looking for.
+ Once we have that 
+\begin_inset Formula $\sinh t$
+\end_inset
+
+ is correct, we can solve for 
+\begin_inset Formula $\cosh t$
+\end_inset
+
+ using 
+\begin_inset Formula $x^{2}-y^{2}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $x>0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+I find it interesting that what comes out is the inverse 
+\begin_inset Formula $\sinh$
+\end_inset
+
+.
+ I vaguely recall reading a number of years ago about inverse 
+\begin_inset Formula $\sin$
+\end_inset
+
+ coming up naturally.
+ And, of course, there are the elliptic functions, where the inverse functions
+ appear more naturally.
+ that area fact is a reason they're called hyperbolic 
+\begin_inset Formula $\sin$
+\end_inset
+
+ and 
+\begin_inset Formula $\cos$
+\end_inset
+
+.
+ The same property is true of areas of sectors of the unit circle with 
+\begin_inset Formula $\sin$
+\end_inset
+
+ and 
+\begin_inset Formula $\cos$
+\end_inset
+
+, it's just that with the circle, the arc length is twice the area so we
+ usually think of radian angles instead.
+\end_layout
+
+\end_body
+\end_document

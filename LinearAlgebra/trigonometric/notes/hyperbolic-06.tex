@@ -1,0 +1,79 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows}
+\usetikzlibrary{quotes,angles}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=3.0]
+
+% Draw x and y axis lines
+\draw [->,>=latex] (-0.5,0) -- (2.00,0) node [below] {$\mathrm{Re}$};
+\draw [->,>=latex] (0,-1.2) -- (0,1.50) node [left ] {$\mathrm{Im}$};
+\node[above left] at (-0.2, 0.1) {complex plane};
+\filldraw[black] (1,0) circle (0.5pt) node[above left ] {$1$} node[below right] {$A$} ;
+\filldraw[black] (0,1) circle (0.5pt) node[above right] {$j$} ;
+\filldraw[black] (0,0) circle (0.5pt) node[below left ] {$O$} ;
+\node[above] at (0.0,1.65) {Visualization of hyperbolic functions : $\tanh(\alpha)=\tan(\varphi)$ for $\varphi$ corresponding to $\alpha$.};
+
+% Draw a circle at the origin of radius 1
+%\draw (0,0) circle (1);
+\draw [very thin, dashed] ({cos(-30)},{sin(-30)}) arc (-30:30:1) ;
+
+%\draw [very thin, dashed] (-1.5,-1.5) -- ( 1.5, 1.5) node[above] {$y=x$} ;
+%\draw [very thin, dashed] (-1.5, 1.5) -- ( 1.5,-1.5) ;
+
+\pgfmathsetmacro{\angle}{1.1}
+\pgfmathsetmacro{\length}{\angle}
+\pgfmathsetmacro{\dangle}{0.2}
+\pgfmathsetmacro{\anglevarphi}{atan(tanh(\angle))}
+
+\filldraw[black] ({ cosh(\angle)}, { sinh(\angle)}) circle (0.5pt) node[right] {$P'$} ;
+\filldraw[black] ({ cosh(\angle)}, {-sinh(\angle)}) circle (0.5pt) ;
+\filldraw[black] ({ cosh(\angle-\dangle)}, { sinh(\angle-\dangle)}) circle (0.5pt) node[right] {$P$} ;
+\filldraw[black] ({ cosh(\angle-\dangle)}, {-sinh(\angle-\dangle)}) circle (0.5pt) ;
+
+\draw [very thin, dashed] ( 0.0, { sinh(\angle)}) -- node[above] {$\cosh(\alpha)$}  ({ cosh(\angle)}, { sinh(\angle)}) ;
+\draw [very thin, dashed] ( { cosh(\angle)}, 0.0) -- node[above, rotate=90] {$\sinh(\alpha)$}  ( { cosh(\angle)}, { sinh(\angle)}) ;
+
+\draw[very thick] (0,0) -- ({ cosh(\angle)}, { sinh(\angle)}) ;
+\draw[very thick] (0,0) -- ({ cosh(\angle)}, {-sinh(\angle)}) ;
+\draw[very thick] (0,0) -- ({ cosh(\angle-\dangle)}, { sinh(\angle-\dangle)}) ;
+\draw[very thick] (0,0) -- ({ cosh(\angle-\dangle)}, {-sinh(\angle-\dangle)}) ;
+
+
+% 画双曲线
+\draw[very thick,smooth,variable=\x, teal] plot[domain=-\angle-0.1:\angle+0.1] ({ cosh(\x)}, {sinh(\x)}) ;
+\node[below right, teal] at ({ cosh(\angle-0.1)}, {-sinh(\angle+0.1)}) {$\cosh^2(\alpha) - \sinh^2(\alpha) = 1$} ;
+%\draw[very thick,smooth,variable=\x, teal] plot[domain=-1.2:1.2] ({-cosh(\x)}, {sinh(\x)}) ;
+
+\filldraw[very thick, draw=yellow,fill=yellow!50,opacity=0.5]
+[smooth,variable=\x] plot[domain=\angle-\dangle:\angle] ({ cosh(\x)}, {sinh(\x)})
+ -- ({ cosh(\angle)}, { sinh(\angle)}) -- (0,0) -- ({ cosh(\angle-\dangle)}, { sinh(\angle-\dangle)})
+;
+
+\node[above=4pt ] at (0.6, 0) {$\;\;\:\dfrac{\alpha}{2}$} ;
+\node[below=4pt ] at (0.6, 0) {$ -\dfrac{\alpha}{2}$} ;
+\node[below right] at (1.8, 1.2) {$
+\begin{aligned}
+\left|\overline{AC}\right| & =\tanh(\alpha)=\tan(\varphi)\\
+\left|\overline{OP}\right| & =\sqrt{\cosh^{2}(\alpha)+\sinh^{2}(\alpha)}\\
+\text{Area}\ d\,\alpha/2 & =\frac{1}{2}\left|\overline{OP}\right|^{2}d\varphi\ \text{(to first order)}
+\end{aligned}
+$};
+
+\draw [very thin, dashed] (1, 0)  -- (1, { tanh(\angle)+0.1}) ;
+\filldraw[black] ( 1, { tanh(\angle)}) circle (0.5pt) node[left ] {$C'$} ;
+\filldraw[black] ( 1, { tanh(\angle-\dangle)}) circle (0.5pt) node[right] {$C$} ;
+\draw [very thin, ->] (0.8, 1.1) node[above ] {$\tan(\varphi) = \tanh(\alpha)$} (1.0, 1.14) to [out=280,in=80] ( 1, { tanh(\angle) + 0.05}) ;
+\draw [very thin, ->] (0.60, 1.12) to [out=260,in=30] (0.20, 0.06) ;
+\draw [very thin, ->] (1.90, 0.65) to [out=135,in=30] (1.44, 1.10) ;
+
+
+\end{tikzpicture}
+
+\end{document}

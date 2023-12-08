@@ -1,0 +1,120 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{intersections}
+\usetikzlibrary{arrows}
+\usetikzlibrary{quotes,angles}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{comment}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=2.5]
+
+% Draw x and y axis lines
+\draw [->,>=latex] (-0.5,0) -- (3.00,0) node [below] {$\mathrm{Re}$};
+\draw [->,>=latex] (0,-0.5) -- (0,3.00) node [left ] {$\mathrm{Im}$};
+\node[above left] at (-0.2, 0.1) {complex plane};
+\filldraw[black] ( 0.0, 0.0) circle (0.5pt) node[below right] {$O$} ;
+\filldraw[black] ( 0.0, 1.0) circle (0.5pt) node[left  ] {$B$} ;
+\filldraw[black] ( 1.0, 0.0) circle (0.5pt) node[below ] {$B^*$} ;
+\filldraw[black] ( 1.0, 1.0) circle (0.5pt) node[above ] {$A$} ;
+\filldraw[black] ( 0.5, 2.0) circle (0.5pt) node[right ] {$P$} ;
+\filldraw[black] ( 2.0, 0.5) circle (0.5pt) node[above ] {$P^*$} ;
+\filldraw[black] ( 0.0, 2.0) circle (0.5pt) node[left  ] {$Q$} ;
+\filldraw[black] ( 2.0, 0.0) circle (0.5pt) node[below ] {$Q^*$} ;
+\node[above] at (0.0,3.2) {Visualization of hyperbolic functions : reciprocal curve $y\cdot x = 1$};
+
+% Draw a circle at the origin of radius 1
+%\draw (0,0) circle (1);
+
+\draw [very thin, dashed] (-0.2,-0.2) -- ( 2.0, 2.0) node[above] {$y=x$} ;
+%\draw [very thin, dashed] (-0.1, 0.1) -- ( 1.5,-1.5) ;
+
+%\draw [very thin, dashed] ( 1, 0) -- ( 1, 1) -- ( 0, 1) ;
+
+\draw [thick, draw=gray,fill=gray!50,opacity=0.5] ( 0.0, 0.0) -- ( 0.5, 2.0) -- ( 0.0, 2.0) -- ( 0.0, 0.0) ;
+\draw [thick, draw=gray,fill=gray!50,opacity=0.5] ( 0.0, 0.0) -- ( 1.0, 1.0) -- ( 1.0, 0.0) -- ( 0.0, 0.0) ;
+\node [scale=1.5] at ( 0.15, 1.5) {$v$} ;
+\node [scale=1.5] at ( 0.65, 0.3) {$v$} ;
+
+\draw [thick,smooth, draw=yellow,fill=yellow!50,opacity=0.5]  plot[domain=1/2:1.0] (\x, 1/\x) -- ( 0.0, 0.0) -- ( 0.5, 2.0) ;
+\draw [thick,smooth, draw=yellow,fill=yellow!50,opacity=0.5]  plot[domain=1.0:2.0] (\x, 1/\x) -- ( 2.0, 0.0) -- ( 1.0, 0.0) -- ( 1.0, 1.0) ;
+\node [scale=1.5] at ( 0.50, 1.0) {$u$} ;
+\node [scale=1.5] at ( 1.50, 0.3) {$u$} ;
+
+\draw [very thick ] ( 0.0, 0.0) -- ( 0.5, 2.0) -- ( 0.0, 2.0) -- ( 0.0, 0.0) ;
+\draw [very thick ] ( 0.0, 0.0) -- ( 1.0, 0.0) -- node[left  ] {$1$} ( 1.0, 1.0) -- ( 0.0, 0.0) ;
+\draw [very thick ] ( 0.0, 0.0) -- ( 2.0, 0.0) -- ( 2.0, 0.5) ;
+
+% 画倒数曲线
+\draw[very thick,smooth,variable=\x, teal] plot[domain=1/3:3.0] (\x, 1/\x) node[below right] {$y\cdot x = 1$} ;
+
+\node [below right] at ( 0.30,-0.2) {
+$
+\begin{aligned}
+\left|\overline{OQ}\right|\cdot\left|\overline{QP}\right|\equiv1 & \rightarrow v=\frac{1}{2}\\
+\left|\overline{OQ}\right|\cdot\left|\overline{QP}\right|\equiv1 & \rightarrow u=\int_{1}^{\left|\overline{OQ}\right|}\frac{1}{t}\,dt=\ln\left|\overline{OQ}\right|
+\end{aligned}
+$} ;
+
+
+\begin{scope}[xshift=150]
+% Draw x and y axis lines
+\draw [->,>=latex] (-0.5,0) -- (2.00,0) node [below] {$\mathrm{Re}$};
+\draw [->,>=latex] (0,-1.2) -- (0,1.50) node [left ] {$\mathrm{Im}$};
+\node[above left] at (-0.2, 0.1) {complex plane};
+\filldraw[black] (1,0) circle (0.5pt) node[below right] {$1$} ;
+\filldraw[black] (0,1) circle (0.5pt) node[above right] {$j$} ;
+%\node[above] at (0.0,1.65) {Visualization of hyperbolic functions : $x^2 - y^2 = 2$};
+
+% Draw a circle at the origin of radius 1
+%\draw (0,0) circle (1);
+
+\draw [very thin, dashed] (-0.0,-0.0) -- ( 2.0, 2.0) node[above] {$y=x$} ;
+\draw [very thin, dashed] (-0.2, 0.2) -- ( 2.0,-2.0) ;
+
+\pgfmathsetmacro{\angle}{1.0}
+\pgfmathsetmacro{\length}{\angle}
+\pgfmathsetmacro{\scale}{sqrt(2)}
+
+\filldraw[black] ( 0.0, 0.0) circle (0.5pt) node[below left] {$O$} ;
+\filldraw[black] ( 0.5*\scale, 0.5*\scale) circle (0.5pt) node[above=2pt ] {$B$} ;
+\filldraw[black] ( 0.5*\scale,-0.5*\scale) circle (0.5pt) node[below=4pt ] {$B^*$} ;
+\filldraw[black] (\scale, 0) circle (0.5pt) node[below right] {$A$} ;
+\filldraw[black] ({ 2.5/\scale}, { 1.5/\scale}) circle (0.5pt) node[right ] {$P$} ;
+\filldraw[black] ({ 2.5/\scale}, {-1.5/\scale}) circle (0.5pt) node[right ] {$P^*$} ;
+\filldraw[black] ({ 1.0*\scale}, { 1.0*\scale}) circle (0.5pt) node[above=2pt ] {$Q$} ;
+\filldraw[black] ({ 1.0*\scale}, {-1.0*\scale}) circle (0.5pt) node[below=4pt ] {$Q^*$} ;
+
+\draw [thick, draw=gray,fill=gray!50,opacity=0.5] ( 0.0, 0.0) -- ( 1.0*\scale, 1.0*\scale) -- ({ 2.5/\scale}, { 1.5/\scale}) -- ( 0.0, 0.0) -- ({ 2.5/\scale}, { 1.5/\scale}) ;
+\draw [thick, draw=gray,fill=gray!50,opacity=0.5] ( 0.0, 0.0) -- ( \scale, 0.0) -- ( 0.5*\scale,-0.5*\scale) -- ( 0.0, 0.0) -- ( 0.5*\scale,-0.5*\scale) ;
+\node [scale=1.5] at ( 1.30, 1.00) {$v$} ;
+\node [scale=1.5] at ( 0.70,-0.30) {$v$} ;
+
+\draw[very thick,smooth, draw=yellow,fill=yellow!50,opacity=0.5, variable=\x] plot[domain= 0.5*\scale:0] ({ cosh(\x)*\scale}, {sinh(\x)*\scale}) -- ( 0.0, 0.0) ;
+\draw[very thick,smooth, draw=yellow,fill=yellow!50,opacity=0.5, variable=\x] plot[domain=-0.5*\scale:0] ({ cosh(\x)*\scale}, {sinh(\x)*\scale}) -- ( 0.5*\scale,-0.5*\scale) -- ({ 1.0*\scale}, {-1.0*\scale}) ;
+\node [scale=1.5] at ( 1.05, 0.30) {$u$} ;
+\node [scale=1.5] at ( 1.30,-0.80) {$u$} ;
+
+\draw[very thick] (0,0) -- ({ 1.0*\scale}, { 1.0*\scale}) -- ({ 2.5/\scale}, { 1.5/\scale}) -- (0,0) ;
+
+\draw[very thick] (0,0) -- (\scale, 0) -- ({ 0.5*\scale}, {-0.5*\scale}) ;
+\draw[very thick] (0,0) -- ({ 1.0*\scale}, {-1.0*\scale}) ;
+\draw[very thick] ({ 1.0*\scale}, {-1.0*\scale}) -- ({ 2.5/\scale}, {-1.5/\scale}) ;
+
+\filldraw[black] ({ cosh(\angle)*\scale}, { sinh(\angle)*\scale}) circle (0.5pt) ;
+\filldraw[black] ({ cosh(\angle)*\scale}, {-sinh(\angle)*\scale}) circle (0.5pt) ;
+
+% 画双曲线
+\draw[very thick,smooth,variable=\x, teal] plot[domain=-\angle-0.1:\angle+0.1] ({ cosh(\x)*\scale}, {sinh(\x)*\scale}) ;
+\node[below right, teal] at ({ cosh(\angle-0.1)*\scale}, {-sinh(\angle+0.1)*\scale}) {$\cosh^2(\alpha) - \sinh^2(\alpha) = 2$} ;
+
+\draw [very thin, ->] (1.8, 2.2) to [out=150,in=30] node[above ] {rotate $45^{\circ}$}  (-3.0, 2.2);
+
+\end{scope}
+
+\end{tikzpicture}
+
+\end{document}
