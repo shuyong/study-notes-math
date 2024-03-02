@@ -1,0 +1,1184 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "流(数学)"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+流(数学)
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+25 October 2023
+\end_layout
+
+\begin_layout Standard
+在数学中，一个
+\series bold
+流
+\series default
+(
+\series bold
+flow
+\series default
+)形式化了粒子在流体中运动的概念。流在科学中无处不在，包括工程和物理。流的概念是研究常微分方程的基础。非正式地说，流可以被视为点随时间的连续运动。更正式地说，流
+是在一个集合上的实数的一个群作用。
+\end_layout
+
+\begin_layout Standard
+一个向量流的概念，即由一个向量场确定的流，出现在微分拓扑、黎曼几何和李群等领域。向量流的具体例子包括测地线流、哈密顿流、Ricci流、平均曲率流和Anosov流
+。流也可以定义为随机变量系统和随机过程系统，并出现在遍历动力系统的研究中。其中最著名的也许是伯努利流。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename PenduleEspaceDesPhases.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+由摆的微分方程规定的相空间中的流。在水平轴上，摆锤的位置，在垂直轴上，摆锤的速度。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+形式定义
+\end_layout
+
+\begin_layout Standard
+在一个集合
+\begin_inset Formula $X$
+\end_inset
+
+上的一个
+\series bold
+流
+\series default
+(
+\series bold
+flow
+\series default
+)是在
+\begin_inset Formula $X$
+\end_inset
+
+上的实数加法群的一个群作用。更明确地说，一个流是一个映射
+\begin_inset Formula 
+\[
+\varphi:X\times\mathbb{R}\rightarrow X
+\]
+
+\end_inset
+
+使得，对于所有
+\begin_inset Formula $x\in X$
+\end_inset
+
+和所有实数
+\begin_inset Formula $S$
+\end_inset
+
+和
+\begin_inset Formula $t$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\begin{aligned} & \varphi(x,0)=x;\\
+ & \varphi(\varphi(x,t),s)=\varphi(x,s+t).
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通常用
+\begin_inset Formula $\varphi^{t}(x)$
+\end_inset
+
+代替
+\begin_inset Formula $\varphi(x,t)$
+\end_inset
+
+，这样上述方程可以表达为
+\begin_inset Formula $\varphi^{0}=\mathrm{Id}$
+\end_inset
+
+ (恒等函数)和
+\begin_inset Formula $\varphi^{s}\circ\varphi^{t}=\varphi^{s+t}$
+\end_inset
+
+ (群定律)。则，对于所有
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+，映射
+\begin_inset Formula $\varphi^{t}:X\rightarrow X$
+\end_inset
+
+是具有逆
+\begin_inset Formula $\varphi^{-t}:X\rightarrow X$
+\end_inset
+
+的一个双射。根据上述定义，实数参数
+\begin_inset Formula $t$
+\end_inset
+
+可被视为在函数迭代中的广义泛函幂。
+\end_layout
+
+\begin_layout Standard
+流通常要求与在集合
+\begin_inset Formula $X$
+\end_inset
+
+上提供的结构兼容。特别是，如果
+\begin_inset Formula $X$
+\end_inset
+
+配备有拓扑结构，则
+\begin_inset Formula $\varphi$
+\end_inset
+
+通常要求是连续的。如果
+\begin_inset Formula $X$
+\end_inset
+
+具有可微结构，则
+\begin_inset Formula $\varphi$
+\end_inset
+
+通常要求是可微的。在这些情况下，流分别形成了同胚和微分同胚的单参数群。
+\end_layout
+
+\begin_layout Standard
+在某些情况下，还可以考虑仅在某些子集中定义的
+\series bold
+局部流
+\series default
+(
+\series bold
+local flows
+\series default
+)
+\begin_inset Formula 
+\[
+\mathrm{dom}(\varphi)=\left\{ (x,t)\mid t\in\left[a_{x},b_{x}\right],a_{x}<0<b_{x},x\in X\right\} \subset X\times\mathbb{R}
+\]
+
+\end_inset
+
+称为
+\begin_inset Formula $\varphi$
+\end_inset
+
+的
+\series bold
+流域
+\series default
+(
+\series bold
+flow domain
+\series default
+)。向量场的流通常就是这种情况。
+\end_layout
+
+\begin_layout Subsection
+备选符号
+\end_layout
+
+\begin_layout Standard
+在许多领域，包括工程、物理和微分方程的研究中，使用一种使流隐式的符号是非常常见的。因此，将
+\begin_inset Formula $\varphi^{t}\left(x_{0}\right)$
+\end_inset
+
+写为
+\begin_inset Formula $x(t)$
+\end_inset
+
+，并且可以说变量
+\begin_inset Formula $x$
+\end_inset
+
+取决于时间
+\begin_inset Formula $t$
+\end_inset
+
+和初始条件
+\begin_inset Formula $x=x_{0}$
+\end_inset
+
+。示例在下面给出。
+\end_layout
+
+\begin_layout Standard
+在一个光滑流形
+\begin_inset Formula $X$
+\end_inset
+
+上的一个向量场
+\begin_inset Formula $V$
+\end_inset
+
+的一个流，通常用它的生成元显式标志。例如，
+\begin_inset Formula 
+\[
+\Phi_{V}:X\times\mathbb{R}\rightarrow X;\quad(x,t)\mapsto\Phi_{V}^{t}(x).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+轨道
+\end_layout
+
+\begin_layout Standard
+给定在
+\begin_inset Formula $X$
+\end_inset
+
+中的
+\begin_inset Formula $x$
+\end_inset
+
+，集合
+\begin_inset Formula $\{\varphi(x,t):t\in\mathbb{R}\}$
+\end_inset
+
+称为在
+\begin_inset Formula $\varphi$
+\end_inset
+
+之下
+\begin_inset Formula $x$
+\end_inset
+
+的轨道。非正式地说，它可以被认为是一个粒子的轨迹，最初定位在
+\begin_inset Formula $x$
+\end_inset
+
+处。如果流是由向量场产生的，则它的轨道是其被积曲线的象。
+\end_layout
+
+\begin_layout Section
+示例
+\end_layout
+
+\begin_layout Subsection
+代数方程
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $f:\mathbb{R}\rightarrow X$
+\end_inset
+
+是一个与时间相关的轨迹，它是一个双射函数。则流可以定义为
+\begin_inset Formula 
+\[
+\varphi(x,t)=f\left(t+f^{-1}(x)\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+自治常微分方程组
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\boldsymbol{F}:\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+是一个(与时间无关的)向量场，并且
+\begin_inset Formula $\boldsymbol{x}:\mathbb{R}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+初值问题的解为
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{x}}(t)=\boldsymbol{F}(\boldsymbol{x}(t)),\quad\boldsymbol{x}(0)=\boldsymbol{x}_{0}.
+\]
+
+\end_inset
+
+则
+\begin_inset Formula $\varphi\left(\boldsymbol{x}_{0},t\right)=\boldsymbol{x}(t)$
+\end_inset
+
+是
+\series bold
+向量场
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+的流
+\series default
+。它是良好定义的局部流，如果向量场
+\begin_inset Formula $\boldsymbol{F}:\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+是Lipschitz连续的。则
+\begin_inset Formula $\varphi:\mathbb{R}^{n}\times\mathbb{R}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+也是Lipschitz连续的。通常很难证明流
+\begin_inset Formula $\varphi$
+\end_inset
+
+是全局定义的，但一个简单的判据是向量场
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+是紧支撑的。
+\end_layout
+
+\begin_layout Subsection
+含时常微分方程组
+\end_layout
+
+\begin_layout Standard
+对于含时向量场
+\begin_inset Formula $\boldsymbol{F}:\mathbb{R}^{n}\times\mathbb{R}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+，我们标志
+\begin_inset Formula $\varphi^{t,t_{0}}\left(\boldsymbol{x}_{0}\right)=\boldsymbol{x}\left(t+t_{0}\right)$
+\end_inset
+
+, 其中
+\begin_inset Formula $\boldsymbol{x}:\mathbb{R}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+是如下方程的解
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{x}}(t)=\boldsymbol{F}(\boldsymbol{x}(t),t),\quad\boldsymbol{x}\left(t_{0}\right)=\boldsymbol{x}_{0}.
+\]
+
+\end_inset
+
+则
+\begin_inset Formula $\varphi^{t,t_{0}}\left(\boldsymbol{x}_{0}\right)$
+\end_inset
+
+是
+\begin_inset Formula $\boldsymbol{F}$
+\end_inset
+
+随时间变化的流。根据上面的定义，它不是一个“流”，但通过重新排列它的参数，可以很容易地将其视为一个流。即映射
+\begin_inset Formula 
+\[
+\varphi:\left(\mathbb{R}^{n}\times\mathbb{R}\right)\times\mathbb{R}\rightarrow\mathbb{R}^{n}\times\mathbb{R};\quad\varphi\left(\left(\boldsymbol{x}_{0},t_{0}\right),t\right)=\left(\varphi^{t,t_{0}}\left(\boldsymbol{x}_{0}\right),t+t_{0}\right)
+\]
+
+\end_inset
+
+对于上一个变量，它确实满足群定律：
+\begin_inset Formula 
+\[
+\begin{aligned}\varphi\left(\varphi\left(\left(\boldsymbol{x}_{0},t_{0}\right),t\right),s\right) & =\varphi\left(\left(\varphi^{t,t_{0}}\left(\boldsymbol{x}_{0}\right),t+t_{0}\right),s\right)\\
+ & =\left(\varphi^{s,t+t_{0}}\left(\varphi^{t,t_{0}}\left(\boldsymbol{x}_{0}\right)\right),s+t+t_{0}\right)\\
+ & =\left(\varphi^{s,t+t_{0}}\left(\boldsymbol{x}\left(t+t_{0}\right)\right),s+t+t_{0}\right)\\
+ & =\left(\boldsymbol{x}\left(s+t+t_{0}\right),s+t+t_{0}\right)\\
+ & =\left(\varphi^{s+t,t_{0}}\left(\boldsymbol{x}_{0}\right),s+t+t_{0}\right)\\
+ & =\varphi\left(\left(\boldsymbol{x}_{0},t_{0}\right),s+t\right).
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过下面的技巧，我们可以把向量场的时间相关流看作时间无关流的特例。定义
+\begin_inset Formula 
+\[
+\boldsymbol{G}(\boldsymbol{x},t):=(\boldsymbol{F}(\boldsymbol{x},t),1),\quad\boldsymbol{y}(t):=\left(\boldsymbol{x}\left(t+t_{0}\right),t+t_{0}\right).
+\]
+
+\end_inset
+
+则
+\begin_inset Formula $y(t)$
+\end_inset
+
+是“时间无关”初值问题的解
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{y}}(s)=\boldsymbol{G}(\boldsymbol{y}(s)),\quad\boldsymbol{y}(0)=\left(\boldsymbol{x}_{0},t_{0}\right)
+\]
+
+\end_inset
+
+当且仅当
+\begin_inset Formula $\boldsymbol{x}(t)$
+\end_inset
+
+是原含时初值问题的解。此外，映射
+\begin_inset Formula $\varphi$
+\end_inset
+
+正是“时间无关”向量场
+\begin_inset Formula $\boldsymbol{G}$
+\end_inset
+
+的流。
+\end_layout
+
+\begin_layout Subsection
+流形上向量场的流
+\end_layout
+
+\begin_layout Standard
+在光滑流形上定义与时间无关的和与时间相关的向量场流，其定义与在欧几里得空间
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的定义完全相同，且其局部行为相同。然而，一个光滑流形的全局拓扑结构主要体现在它能支持什么样的全局向量场，而在光滑流形上的向量场流是微分拓扑的重要工具。动力系统
+的研究大多是在光滑流形上进行的，光滑流形在应用中被认为是“参数空间”。
+\end_layout
+
+\begin_layout Standard
+形式上：设
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+是一个可微流形。设
+\begin_inset Formula $\mathrm{T}_{p}\mathcal{M}$
+\end_inset
+
+标志一个点
+\begin_inset Formula $p\in\mathcal{M}$
+\end_inset
+
+的切空间，设
+\begin_inset Formula $\mathrm{T}\mathcal{M}$
+\end_inset
+
+为完全切流形；即
+\begin_inset Formula $\mathrm{T}\mathcal{M}=\cup_{p\in\mathcal{M}}\mathrm{T}_{p}\mathcal{M}$
+\end_inset
+
+。设
+\begin_inset Formula 
+\[
+f:\mathbb{R}\times\mathcal{M}\rightarrow\mathrm{T}\mathcal{M}
+\]
+
+\end_inset
+
+是在
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+上的时间相关的向量场；即
+\begin_inset Formula $f$
+\end_inset
+
+是一个光滑映射，使得对于每个
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+和
+\begin_inset Formula $p\in\mathcal{M}$
+\end_inset
+
+，我们有
+\begin_inset Formula $f(t,p)\in\mathrm{T}_{p}\mathcal{M}$
+\end_inset
+
+；也就是说，映射
+\begin_inset Formula $x\mapsto f(t,x)$
+\end_inset
+
+将每个点映射到其自身切空间的元素。对于包含
+\begin_inset Formula $0$
+\end_inset
+
+ 的适当间隔
+\begin_inset Formula $I\subseteq\mathbb{R}$
+\end_inset
+
+，
+\begin_inset Formula $f$
+\end_inset
+
+的流是一个函数
+\begin_inset Formula $\phi:I\times\mathcal{M}\rightarrow\mathcal{M}$
+\end_inset
+
+ ，满足
+\begin_inset Formula 
+\[
+\begin{aligned}\phi\left(0,x_{0}\right) & =x_{0} & \forall x_{0}\in\mathcal{M}\\
+\left.\frac{\mathrm{d}}{\mathrm{d}t}\right|_{t=t_{0}}\phi\left(t,x_{0}\right) & =f\left(t_{0},\phi\left(t_{0},x_{0}\right)\right) & \forall x_{0}\in\mathcal{M},t_{0}\in I
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+热方程的解
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\Omega$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ (其中
+\begin_inset Formula $n$
+\end_inset
+
+为整数)的子域(有界或无界)。用
+\begin_inset Formula $\Gamma$
+\end_inset
+
+标志其边界(假定光滑)。在
+\begin_inset Formula $\Omega\times(0,T)$
+\end_inset
+
+上考虑以下热方程，对于
+\begin_inset Formula $T>0$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\begin{array}{rl}
+u_{t}-\Delta u=0 & \text{ in }\Omega\times(0,T),\\
+u=0 & \text{ on }\Gamma\times(0,T),
+\end{array}
+\]
+
+\end_inset
+
+具有以下初始值条件，在
+\begin_inset Formula $\Omega$
+\end_inset
+
+中
+\begin_inset Formula $u(0)=u^{0}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $\Gamma\times(0,T)$
+\end_inset
+
+上的方程
+\begin_inset Formula $u=0$
+\end_inset
+
+对应于齐次Dirichlet边界条件。这个问题的数学背景可以是半群方法。为了使用这个工具，我们引入在
+\begin_inset Formula $L^{2}(\Omega)$
+\end_inset
+
+上定义的无界算子
+\begin_inset Formula $\Delta_{D}$
+\end_inset
+
+，其域为
+\begin_inset Formula 
+\[
+D\left(\Delta_{D}\right)=H^{2}(\Omega)\cap H_{0}^{1}(\Omega)
+\]
+
+\end_inset
+
+(参见经典的Sobolev空间，其中
+\begin_inset Formula $H^{k}(\Omega)=W^{k,2}(\Omega)$
+\end_inset
+
+，并且
+\begin_inset Formula 
+\[
+H_{0}^{1}(\Omega)={\overline{C_{0}^{\infty}(\Omega)}}^{H^{1}(\Omega)}
+\]
+
+\end_inset
+
+是对于
+\begin_inset Formula $H^{1}(\Omega)$
+\end_inset
+
+-模在
+\begin_inset Formula $\Omega$
+\end_inset
+
+ 中具有紧支撑的无穷可微函数的闭包)。
+\end_layout
+
+\begin_layout Standard
+对于任意
+\begin_inset Formula $v\in D\left(\Delta_{D}\right)$
+\end_inset
+
+，我们有
+\begin_inset Formula 
+\[
+\Delta_{D}v=\Delta v=\sum_{i=1}^{n}\frac{\partial^{2}}{\partial x_{i}^{2}}v.
+\]
+
+\end_inset
+
+利用该算子，热方程变为
+\begin_inset Formula $u^{\prime}(t)=\Delta_{D}u(t)$
+\end_inset
+
+和
+\begin_inset Formula $u(0)=u^{0}$
+\end_inset
+
+。因此，对应于该方程的流为(见上述符号说明)
+\begin_inset Formula 
+\[
+\varphi\left(u^{0},t\right)=\mathrm{e}^{t\Delta_{D}}u^{0},
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\exp\left(t\Delta_{D}\right)$
+\end_inset
+
+是由
+\begin_inset Formula $\Delta_{D}$
+\end_inset
+
+生成的(解析)半群。
+\end_layout
+
+\begin_layout Subsection
+波动方程的解
+\end_layout
+
+\begin_layout Standard
+再一次，设
+\begin_inset Formula $\Omega$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ (其中
+\begin_inset Formula $n$
+\end_inset
+
+为整数)的子域(有界或无界)。我们用
+\begin_inset Formula $\Gamma$
+\end_inset
+
+标志它的边界(假定光滑)。考虑以下波动方程
+\begin_inset Formula $\Omega\times(0,T)$
+\end_inset
+
+ (对于
+\begin_inset Formula $T>0$
+\end_inset
+
+ )，
+\begin_inset Formula 
+\[
+\begin{aligned}u_{tt}-\Delta u & =0 & \text{ in }\Omega\times(0,T)\text{, }\\
+u & =0 & \text{ on }\Gamma\times(0,T),
+\end{aligned}
+\]
+
+\end_inset
+
+具有以下初始条件，在
+\begin_inset Formula $\Omega$
+\end_inset
+
+中
+\begin_inset Formula $u(0)=u^{1,0}$
+\end_inset
+
+，并且在
+\begin_inset Formula $\Omega$
+\end_inset
+
+中 
+\begin_inset Formula $u_{t}(0)=u^{2,0}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+使用与上述热方程相同的半群方法。通过引入下列无界算子，我们将波动方程写为一阶时间偏微分方程，
+\begin_inset Formula 
+\[
+\mathcal{A}=\left(\begin{array}{cc}
+0 & \mathrm{Id}\\
+\Delta_{D} & 0
+\end{array}\right)
+\]
+
+\end_inset
+
+其具有在
+\begin_inset Formula $H=H_{0}^{1}(\Omega)\times L^{2}(\Omega)$
+\end_inset
+
+上的域
+\begin_inset Formula $D(\mathcal{A})=H^{2}(\Omega)\cap H_{0}^{1}(\Omega)\times H_{0}^{1}(\Omega)$
+\end_inset
+
+ (该算子
+\begin_inset Formula $\Delta_{D}$
+\end_inset
+
+在上一示例中定义)。
+\end_layout
+
+\begin_layout Standard
+我们引入列向量
+\begin_inset Formula 
+\[
+U=\left(\begin{array}{l}
+u^{1}\\
+u^{2}
+\end{array}\right)
+\]
+
+\end_inset
+
+(其中
+\begin_inset Formula $u^{1}=u$
+\end_inset
+
+ 和 
+\begin_inset Formula $u^{2}=u_{t}$
+\end_inset
+
+) 以及
+\begin_inset Formula 
+\[
+U^{0}=\left(\begin{array}{l}
+u^{1,0}\\
+u^{2,0}
+\end{array}\right).
+\]
+
+\end_inset
+
+利用这些概念，波动方程变成
+\begin_inset Formula $U^{\prime}(t)=\mathcal{A}U(t)$
+\end_inset
+
+和
+\begin_inset Formula $U(0)=U^{0}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+因此，对应于该方程的流为
+\begin_inset Formula 
+\[
+\varphi\left(U^{0},t\right)=\mathrm{e}^{t\mathcal{A}}U^{0}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathrm{e}^{t\mathcal{A}}$
+\end_inset
+
+是由
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+生成的(酉)半群。
+\end_layout
+
+\begin_layout Subsection
+伯努利流
+\end_layout
+
+\begin_layout Standard
+遍历动力系统，即具有随机性的系统，也具有流的特性。其中最著名的也许是伯努利流。Ornstein同构定理指出，对于任意给定的熵
+\begin_inset Formula $H$
+\end_inset
+
+，存在一个称为伯努利流的流
+\begin_inset Formula $\varphi(x,t)$
+\end_inset
+
+，使得在
+\begin_inset Formula $t=1$
+\end_inset
+
+时的流，即
+\begin_inset Formula $\varphi(x,1)$
+\end_inset
+
+是一个伯努利位移。
+\end_layout
+
+\begin_layout Standard
+此外，这个流在时间的常数缩放下是唯一的。也就是说，如果
+\begin_inset Formula $\psi(x,t)$
+\end_inset
+
+是另一个具有相同熵的流，则对于某些常数
+\begin_inset Formula $c$
+\end_inset
+
+，
+\begin_inset Formula $\psi(x,t)=\varphi(x,t)$
+\end_inset
+
+。在这里，唯一性和同构的概念是指动力系统的同构。许多动力系统，包括西奈台球和阿诺索夫流，都与伯努利位移同构。
+\end_layout
+
+\begin_layout Section*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Abel equation"
+target "https://en.wikipedia.org/wiki/Abel_equation"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Iterated function"
+target "https://en.wikipedia.org/wiki/Iterated_function"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Schröder's equation"
+target "https://en.wikipedia.org/wiki/Schr%C3%B6der%27s_equation"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Infinite compositions of analytic functions"
+target "https://en.wikipedia.org/wiki/Infinite_compositions_of_analytic_functions"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+D.V.
+ Anosov (2001) [1994], 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Continuous flow
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Continuous_flow
+\end_layout
+
+\end_inset
+
+), Encyclopedia of Mathematics, EMS Press 
+\end_layout
+
+\begin_layout Itemize
+D.V.
+ Anosov (2001) [1994], 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Measureable flow
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Measureable_flow
+\end_layout
+
+\end_inset
+
+), Encyclopedia of Mathematics, EMS Press 
+\end_layout
+
+\begin_layout Itemize
+D.V.
+ Anosov (2001) [1994], 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Special flow
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Special_flow
+\end_layout
+
+\end_inset
+
+), Encyclopedia of Mathematics, EMS Press 
+\end_layout
+
+\begin_layout Itemize
+This article incorporates material from Flow on PlanetMath, which is licensed
+ under the Creative Commons Attribution/Share-Alike License.
+ 
+\end_layout
+
+\end_body
+\end_document

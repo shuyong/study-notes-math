@@ -1,0 +1,1294 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "拉回(微分几何)"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+拉回(微分几何)
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+28 August 2023
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\phi:M\rightarrow N$
+\end_inset
+
+是在光滑流形
+\begin_inset Formula $M$
+\end_inset
+
+与
+\begin_inset Formula $N$
+\end_inset
+
+之间的一个光滑映射。然后，从在
+\begin_inset Formula $N$
+\end_inset
+
+上的
+\begin_inset Formula $1$
+\end_inset
+
+-形式的空间(余切丛截面的线性空间)到在
+\begin_inset Formula $M$
+\end_inset
+
+上的
+\begin_inset Formula $1$
+\end_inset
+
+-形式的空间存在一个相关联的线性映射。这种线性映射被称为(通过
+\begin_inset Formula $\phi$
+\end_inset
+
+的)
+\series bold
+拉回
+\series default
+(
+\series bold
+pullback
+\series default
+)，并且通常由
+\begin_inset Formula $\phi^{*}$
+\end_inset
+
+标志。更一般地，在
+\begin_inset Formula $N$
+\end_inset
+
+上的任意协变张量场 — 特别是任意微分形式 — 可以使用
+\begin_inset Formula $\phi$
+\end_inset
+
+拉回到
+\begin_inset Formula $M$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+当映射
+\begin_inset Formula $\phi$
+\end_inset
+
+是一个微分同胚时，拉回与推前(
+\begin_inset CommandInset href
+LatexCommand href
+name "pushforward"
+target "https://en.wikipedia.org/wiki/Pushforward_(differential)"
+literal "false"
+
+\end_inset
+
+)一起，可用于将任意张量场从
+\begin_inset Formula $N$
+\end_inset
+
+变换为
+\begin_inset Formula $M$
+\end_inset
+
+，反之亦然。特别是，如果
+\begin_inset Formula $\phi$
+\end_inset
+
+是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的开放子集之间的一个微分同胚，被视为坐标的变化(可能是在一个流形
+\begin_inset Formula $M$
+\end_inset
+
+上不同图表(charts)之间的变化)，则拉回和推前描述了在更传统(坐标相关)的主题方法中使用的协变和逆变张量的变换特性。
+\end_layout
+
+\begin_layout Standard
+拉回背后的思想本质上是将一个函数与另一个函数预复合(precomposition)的概念。但是，通过将此思想结合到多个不同的上下文中，可以构造非常复杂的拉回操作
+。本文从最简单的操作开始，然后使用它们构造更复杂的操作。粗略地说，拉回机制(使用预复合)将微分几何中的若干构造转化为逆变函子。
+\end_layout
+
+\begin_layout Section
+光滑函数与光滑映射的拉回
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\phi:M\rightarrow N$
+\end_inset
+
+是(光滑)流形
+\begin_inset Formula $M$
+\end_inset
+
+与
+\begin_inset Formula $N$
+\end_inset
+
+之间的一个光滑映射，并设
+\begin_inset Formula $f:N\rightarrow\mathbb{R}$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+上的一个光滑函数。则
+\begin_inset Formula $f$
+\end_inset
+
+通过
+\begin_inset Formula $\phi$
+\end_inset
+
+的
+\series bold
+拉回
+\series default
+(
+\series bold
+pullback
+\series default
+)是在
+\begin_inset Formula $M$
+\end_inset
+
+上的光滑函数
+\begin_inset Formula $\phi^{*}f$
+\end_inset
+
+，定义为
+\begin_inset Formula $\left(\phi^{*}f\right)(x)=f(\phi(x))$
+\end_inset
+
+。类似地，如果
+\begin_inset Formula $f$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+中的一个开集
+\begin_inset Formula $U$
+\end_inset
+
+上的一个光滑函数，则相同的公式定义在
+\begin_inset Formula $\phi^{-1}(U)$
+\end_inset
+
+中的开集
+\begin_inset Formula $f$
+\end_inset
+
+上的一个光滑函数。(在层论语言中，拉回定义从在
+\begin_inset Formula $N$
+\end_inset
+
+上的光滑函数层到在
+\begin_inset Formula $M$
+\end_inset
+
+上通过
+\begin_inset Formula $\phi$
+\end_inset
+
+的光滑函数层的直接象的一个态射。)
+\end_layout
+
+\begin_layout Standard
+更一般地说，如果
+\begin_inset Formula $f:N\rightarrow A$
+\end_inset
+
+是从
+\begin_inset Formula $N$
+\end_inset
+
+到任意其他流形
+\begin_inset Formula $A$
+\end_inset
+
+的一个光滑映射 ，则
+\begin_inset Formula $\left(\phi^{*}f\right)(x)=f(\phi(x))$
+\end_inset
+
+是从
+\begin_inset Formula $M$
+\end_inset
+
+到
+\begin_inset Formula $A$
+\end_inset
+
+的一个光滑映射。
+\end_layout
+
+\begin_layout Section
+丛与截面的拉回
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $E$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+之上的一个向量丛(或任意纤维丛)并且
+\begin_inset Formula $\phi:M\rightarrow N$
+\end_inset
+
+是一个光滑映射，则
+\series bold
+拉回丛
+\series default
+(
+\series bold
+pullback bundle
+\series default
+) 
+\begin_inset Formula $\phi^{*}E$
+\end_inset
+
+是在
+\begin_inset Formula $M$
+\end_inset
+
+之上的一个向量丛(或纤维丛)，其在
+\begin_inset Formula $M$
+\end_inset
+
+中的
+\begin_inset Formula $x$
+\end_inset
+
+之上的纤维给出为
+\begin_inset Formula $\left(\phi^{*}E\right)_{x}=E_{\phi(x)}$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+在这种情况下，预复合在
+\begin_inset Formula $E$
+\end_inset
+
+的截面上定义一个拉回操作：如果
+\begin_inset Formula $s$
+\end_inset
+
+是
+\begin_inset Formula $E$
+\end_inset
+
+在
+\begin_inset Formula $N$
+\end_inset
+
+之上的一个截面，则
+\series bold
+拉回截面
+\series default
+(
+\series bold
+pullback section
+\series default
+) 
+\begin_inset Formula $\phi^{*}s=s\circ\phi$
+\end_inset
+
+是
+\begin_inset Formula $\phi^{*}E$
+\end_inset
+
+在
+\begin_inset Formula $M$
+\end_inset
+
+之上的一个截面。
+\end_layout
+
+\begin_layout Section
+多线性形式的拉回
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\Phi:V\rightarrow W$
+\end_inset
+
+是向量空间
+\begin_inset Formula $V$
+\end_inset
+
+和
+\begin_inset Formula $W$
+\end_inset
+
+之间的一个线性映射(即
+\begin_inset Formula $\Phi$
+\end_inset
+
+是
+\begin_inset Formula $L(V,W)$
+\end_inset
+
+的一个元素，也标志为
+\begin_inset Formula $\mathrm{Hom}(V,W)$
+\end_inset
+
+)，并设
+\begin_inset Formula 
+\[
+F:W\times W\times\cdots\times W\rightarrow\mathbf{R}
+\]
+
+\end_inset
+
+是在
+\begin_inset Formula $W$
+\end_inset
+
+上的多线性形式(也称为秩
+\begin_inset Formula $(0,s)$
+\end_inset
+
+的一个张量，不要与张量场混淆，其中
+\begin_inset Formula $s$
+\end_inset
+
+是在乘积中
+\begin_inset Formula $W$
+\end_inset
+
+的因子数)。则
+\begin_inset Formula $\Phi$
+\end_inset
+
+对
+\begin_inset Formula $F$
+\end_inset
+
+的拉回
+\begin_inset Formula $\Phi^{*}F$
+\end_inset
+
+是在
+\begin_inset Formula $V$
+\end_inset
+
+上的多线性形式，通过将
+\begin_inset Formula $F$
+\end_inset
+
+与
+\begin_inset Formula $\Phi$
+\end_inset
+
+预复合来定义。更精确地说，给定在
+\begin_inset Formula $V$
+\end_inset
+
+中的向量
+\begin_inset Formula $v_{1},v_{2},\ldots,v_{s}$
+\end_inset
+
+，
+\begin_inset Formula $\Phi^{*}F$
+\end_inset
+
+由公式定义为
+\begin_inset Formula 
+\[
+\left(\Phi^{*}F\right)\left(v_{1},v_{2},\ldots,v_{s}\right)=F\left(\Phi\left(v_{1}\right),\Phi\left(v_{2}\right),\ldots,\Phi\left(v_{s}\right)\right),
+\]
+
+\end_inset
+
+这是在
+\begin_inset Formula $V$
+\end_inset
+
+上的一个多线性形式。因此
+\begin_inset Formula $\Phi^{*}$
+\end_inset
+
+是从在
+\begin_inset Formula $W$
+\end_inset
+
+上的多线性形式到在
+\begin_inset Formula $V$
+\end_inset
+
+上的多线性形式的一个(线性)算子。作为特例，注意如果
+\begin_inset Formula $F$
+\end_inset
+
+是在
+\begin_inset Formula $W$
+\end_inset
+
+上的一个线性形式(或
+\begin_inset Formula $(0,1)$
+\end_inset
+
+-张量)，使得
+\begin_inset Formula $F$
+\end_inset
+
+是
+\begin_inset Formula $W^{*}$
+\end_inset
+
+的一个元素，
+\begin_inset Formula $W$
+\end_inset
+
+的对偶空间，则
+\begin_inset Formula $\Phi^{*}F$
+\end_inset
+
+是
+\begin_inset Formula $V^{*}$
+\end_inset
+
+的一个元素，并因此
+\begin_inset Formula $\Phi$
+\end_inset
+
+的拉回定义对偶空间之间的一个线性映射，其作用方向与线性映射
+\begin_inset Formula $\Phi$
+\end_inset
+
+自身相反：
+\begin_inset Formula 
+\[
+\Phi:V\rightarrow W,\quad\Phi^{*}:W^{*}\rightarrow V^{*}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+从张量的观点出发，很自然地尝试将拉回的概念推广到任意秩的张量，即对于在
+\begin_inset Formula $W$
+\end_inset
+
+上的多线性映射取
+\begin_inset Formula $W$
+\end_inset
+
+的
+\begin_inset Formula $r$
+\end_inset
+
+个拷贝的张量积值，即
+\begin_inset Formula $W\otimes W\otimes\cdots\otimes W$
+\end_inset
+
+。然而，这种张量积的元素并不能自然地拉回：相反，这有一个从
+\begin_inset Formula $V\otimes V\otimes\cdots\otimes V$
+\end_inset
+
+到
+\begin_inset Formula $W\otimes W\otimes\cdots\otimes W$
+\end_inset
+
+的推前操作，给出为
+\begin_inset Formula 
+\[
+\Phi_{*}\left(v_{1}\otimes v_{2}\otimes\cdots\otimes v_{r}\right)=\Phi\left(v_{1}\right)\otimes\Phi\left(v_{2}\right)\otimes\cdots\otimes\Phi\left(v_{r}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+尽管如此，由此可以得出，如果
+\begin_inset Formula $\Phi$
+\end_inset
+
+是可逆的，则可以通过逆函数
+\begin_inset Formula $\Phi^{-1}$
+\end_inset
+
+的推前来定义拉回。结合这两种构造，对于任意秩
+\begin_inset Formula $(r,s)$
+\end_inset
+
+的张量，沿着可逆线性映射产生一个推前操作。
+\end_layout
+
+\begin_layout Section
+余切向量的拉回与
+\begin_inset Formula $1$
+\end_inset
+
+-形式
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\phi:M\rightarrow N$
+\end_inset
+
+是光滑流形之间的一个光滑映射。则，
+\begin_inset Formula $\phi$
+\end_inset
+
+的微分，写为
+\begin_inset Formula $\phi_{*},d\phi$
+\end_inset
+
+或
+\begin_inset Formula $D\phi$
+\end_inset
+
+，是从
+\begin_inset Formula $M$
+\end_inset
+
+的切丛
+\begin_inset Formula $TM$
+\end_inset
+
+到拉回丛
+\begin_inset Formula $\phi^{*}TN$
+\end_inset
+
+的一个向量丛态射(在
+\begin_inset Formula $M$
+\end_inset
+
+之上)。因此，
+\begin_inset Formula $\phi_{*}$
+\end_inset
+
+的转置是从
+\begin_inset Formula $\phi^{*}T^{*}N$
+\end_inset
+
+到
+\begin_inset Formula $T^{*}M$
+\end_inset
+
+的一个丛映射，即
+\begin_inset Formula $M$
+\end_inset
+
+的余切丛。
+\end_layout
+
+\begin_layout Standard
+现在假设
+\begin_inset Formula $\alpha$
+\end_inset
+
+是
+\begin_inset Formula $T^{*}N$
+\end_inset
+
+的一个截面(在
+\begin_inset Formula $N$
+\end_inset
+
+上的一个
+\begin_inset Formula $1$
+\end_inset
+
+-形式)，并将
+\begin_inset Formula $\alpha$
+\end_inset
+
+与
+\begin_inset Formula $\phi$
+\end_inset
+
+预复合以获得
+\begin_inset Formula $\phi^{*}T^{*}N$
+\end_inset
+
+的一个拉回截面。将上述丛映射(逐点)应用于该截面，产生
+\begin_inset Formula $\alpha$
+\end_inset
+
+通过
+\begin_inset Formula $\phi$
+\end_inset
+
+的
+\series bold
+拉回
+\series default
+(
+\series bold
+pullback
+\series default
+)，即在
+\begin_inset Formula $M$
+\end_inset
+
+上的
+\begin_inset Formula $1$
+\end_inset
+
+-形式
+\begin_inset Formula $\phi^{*}\alpha$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\[
+\left(\phi^{*}\alpha\right)_{x}(X)=\alpha_{\phi(x)}\left(d\phi_{x}(X)\right)
+\]
+
+\end_inset
+
+对于在
+\begin_inset Formula $M$
+\end_inset
+
+中的
+\begin_inset Formula $x$
+\end_inset
+
+和在
+\begin_inset Formula $T_{x}M$
+\end_inset
+
+中的
+\begin_inset Formula $X$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Section
+(协变)张量场的拉回
+\end_layout
+
+\begin_layout Standard
+上一节的构造直接推广到任意自然数
+\begin_inset Formula $s$
+\end_inset
+
+的秩
+\begin_inset Formula $(0,s)$
+\end_inset
+
+的张量丛：在一个流形
+\begin_inset Formula $N$
+\end_inset
+
+上的一个
+\begin_inset Formula $(0,s)$
+\end_inset
+
+张量场是在
+\begin_inset Formula $N$
+\end_inset
+
+上张量丛的一个截面，其纤维在
+\begin_inset Formula $N$
+\end_inset
+
+中的
+\begin_inset Formula $y$
+\end_inset
+
+处是多线性
+\begin_inset Formula $s$
+\end_inset
+
+-形式的空间
+\begin_inset Formula 
+\[
+F:T_{y}N\times\cdots\times T_{y}N\rightarrow\mathbb{R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+通过取
+\begin_inset Formula $\phi$
+\end_inset
+
+等价于从
+\begin_inset Formula $M$
+\end_inset
+
+到
+\begin_inset Formula $N$
+\end_inset
+
+的一个光滑映射
+\begin_inset Formula $\phi$
+\end_inset
+
+的(逐点)微分，可以将多线性形式的拉回与截面的拉回结合起来，以产生在
+\begin_inset Formula $M$
+\end_inset
+
+上的一个拉回
+\begin_inset Formula $(0,s)$
+\end_inset
+
+张量场。更精确地说，如果
+\begin_inset Formula $S$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+上的一个
+\begin_inset Formula $(0,s)$
+\end_inset
+
+-张量场，则
+\begin_inset Formula $\phi$
+\end_inset
+
+对
+\begin_inset Formula $S$
+\end_inset
+
+的
+\series bold
+拉回
+\series default
+(
+\series bold
+pullback
+\series default
+)是在
+\begin_inset Formula $M$
+\end_inset
+
+上的
+\begin_inset Formula $(0,s)$
+\end_inset
+
+-张量场
+\begin_inset Formula $\phi^{*}S$
+\end_inset
+
+，定义为
+\begin_inset Formula 
+\[
+\left(\phi^{*}S\right)_{x}\left(X_{1},\ldots,X_{s}\right)=S_{\phi(x)}\left(d\phi_{x}\left(X_{1}\right),\ldots,d\phi_{x}\left(X_{s}\right)\right)
+\]
+
+\end_inset
+
+对于在
+\begin_inset Formula $M$
+\end_inset
+
+中的
+\begin_inset Formula $x$
+\end_inset
+
+和在
+\begin_inset Formula $T_{x}M$
+\end_inset
+
+中的
+\begin_inset Formula $X_{j}$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Section
+微分形式的拉回
+\end_layout
+
+\begin_layout Standard
+协变张量场拉回的一个特别重要的例子是微分形式的拉回。如果
+\begin_inset Formula $\alpha$
+\end_inset
+
+是一个微分
+\begin_inset Formula $k$
+\end_inset
+
+-形式，即在
+\begin_inset Formula $TN$
+\end_inset
+
+上(纤维方向)交替
+\begin_inset Formula $k$
+\end_inset
+
+-形式的外丛
+\begin_inset Formula $\Lambda^{k}\left(T^{*}N\right)$
+\end_inset
+
+的一个截面，则
+\begin_inset Formula $\alpha$
+\end_inset
+
+的拉回是在
+\begin_inset Formula $M$
+\end_inset
+
+上的微分
+\begin_inset Formula $k$
+\end_inset
+
+-形式，定义公式与上一节相同：
+\begin_inset Formula 
+\[
+\left(\phi^{*}\alpha\right)_{x}\left(X_{1},\ldots,X_{k}\right)=\alpha_{\phi(x)}\left(d\phi_{x}\left(X_{1}\right),\ldots,d\phi_{x}\left(X_{k}\right)\right)
+\]
+
+\end_inset
+
+对于在
+\begin_inset Formula $M$
+\end_inset
+
+中的
+\begin_inset Formula $x$
+\end_inset
+
+和在
+\begin_inset Formula $T_{x}M$
+\end_inset
+
+中的
+\begin_inset Formula $X_{j}$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Standard
+微分形式的拉回有两个性质，这使得它非常有用。
+\end_layout
+
+\begin_layout Enumerate
+它与楔积相容，因为对于在
+\begin_inset Formula $N$
+\end_inset
+
+上的微分形式
+\begin_inset Formula $\alpha$
+\end_inset
+
+和
+\begin_inset Formula $\beta$
+\end_inset
+
+，
+\begin_inset Formula 
+\[
+\phi^{*}(\alpha\wedge\beta)=\phi^{*}\alpha\wedge\phi^{*}\beta.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+它与外导数
+\begin_inset Formula $d$
+\end_inset
+
+相容：如果
+\begin_inset Formula $\alpha$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+上的一个微分形式，则
+\begin_inset Formula 
+\[
+\phi^{*}(d\alpha)=d\left(\phi^{*}\alpha\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+通过微分同胚的拉回
+\end_layout
+
+\begin_layout Standard
+当流形之间的映射
+\begin_inset Formula $\phi$
+\end_inset
+
+是一个微分同胚，即它有一个光滑的逆，则可以为向量场和
+\begin_inset Formula $1$
+\end_inset
+
+-形式定义拉回，从而通过推广，为在流形上的任意混合张量场定义拉回。这个线性映射
+\begin_inset Formula 
+\[
+\Phi=d\phi_{x}\in\mathrm{GL}\left(T_{x}M,T_{\phi(x)}N\right)
+\]
+
+\end_inset
+
+可以求逆以给出
+\begin_inset Formula 
+\[
+\Phi^{-1}=\left(d\phi_{x}\right)^{-1}\in\mathrm{GL}\left(T_{\phi(x)}N,T_{x}M\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+然后，一个一般混合张量场将根据张量丛的张量积分解为
+\begin_inset Formula $TN$
+\end_inset
+
+和
+\begin_inset Formula $T^{*}N$
+\end_inset
+
+的副本，使用
+\begin_inset Formula $\Phi$
+\end_inset
+
+和
+\begin_inset Formula $\Phi^{-1}$
+\end_inset
+
+进行转换。当
+\begin_inset Formula $M=N$
+\end_inset
+
+时，拉回和推前描述在流形
+\begin_inset Formula $M$
+\end_inset
+
+上一个张量的变换性质。传统意义上，拉回描述张量的协变指数的变换性质；相比之下，张量的逆变指标的变换由一个推前给出。
+\end_layout
+
+\begin_layout Section
+通过自同构的拉回
+\end_layout
+
+\begin_layout Standard
+当
+\begin_inset Formula $\phi$
+\end_inset
+
+是从流形
+\begin_inset Formula $M$
+\end_inset
+
+到其自身的一个微分同胚时，上一节的构造具有表示理论解释。在这种情况下，导数
+\begin_inset Formula $d\phi$
+\end_inset
+
+是
+\begin_inset Formula $\mathrm{GM}\left(TM,\phi^{*}TM\right)$
+\end_inset
+
+的一个截面。这通过一般线性群
+\begin_inset Formula $\mathrm{GM}(m)$
+\end_inset
+
+ (其中
+\begin_inset Formula $m=\mathrm{dim}M$
+\end_inset
+
+)的表示，在与
+\begin_inset Formula $M$
+\end_inset
+
+的帧丛
+\begin_inset Formula $\mathrm{GM}(m)$
+\end_inset
+
+相关联的任意丛的截面上诱导一个拉回作用。
+\end_layout
+
+\begin_layout Section
+拉回与李导数
+\end_layout
+
+\begin_layout Standard
+参见李导数(
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie derivative"
+target "https://en.wikipedia.org/wiki/Lie_derivative"
+literal "false"
+
+\end_inset
+
+)。将上述思想应用于由在
+\begin_inset Formula $M$
+\end_inset
+
+上的向量场定义的局部微分同胚单参数群，并对其参数进行微分，获得在任意相关丛上的李导数的概念。
+\end_layout
+
+\begin_layout Section
+连通的拉回(协变导数)
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\nabla$
+\end_inset
+
+是在
+\begin_inset Formula $N$
+\end_inset
+
+之上一个向量丛
+\begin_inset Formula $E$
+\end_inset
+
+上的一个连通(或协变导数)，并且
+\begin_inset Formula $\phi$
+\end_inset
+
+是从
+\begin_inset Formula $M$
+\end_inset
+
+到
+\begin_inset Formula $N$
+\end_inset
+
+的一个光滑映射，则在
+\begin_inset Formula $M$
+\end_inset
+
+之上的
+\begin_inset Formula $\phi^{*}E$
+\end_inset
+
+上有一个拉回连通
+\begin_inset Formula $\phi^{*}\nabla$
+\end_inset
+
+，它由以下条件唯一确定
+\begin_inset Formula 
+\[
+\left(\phi^{*}\nabla\right)_{X}\left(\phi^{*}s\right)=\phi^{*}\left(\nabla_{d\phi(X)}s\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Pushforward (differential)"
+target "https://en.wikipedia.org/wiki/Pushforward_(differential)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Pullback bundle"
+target "https://en.wikipedia.org/wiki/Pullback_bundle"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Pullback (category theory)"
+target "https://en.wikipedia.org/wiki/Pullback_(category_theory)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+Jost, Jürgen (2002).
+ Riemannian Geometry and Geometric Analysis.
+ Berlin: Springer-Verlag.
+ ISBN 3-540-42627-2.
+ See sections 1.5 and 1.6.
+\end_layout
+
+\begin_layout Itemize
+Abraham, Ralph; Marsden, Jerrold E.
+ (1978).
+ Foundations of Mechanics.
+ London: BenjaminCummings.
+ ISBN 0-8053-0102-X.
+ See section 1.7 and 2.3.
+\end_layout
+
+\end_body
+\end_document
