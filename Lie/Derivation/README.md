@@ -16,4 +16,7 @@
 1. [Tangent space](https://en.wikipedia.org/wiki/Tangent_space)
 1. [Cotangent space](https://en.wikipedia.org/wiki/Cotangent_space)
 1. [Flow_(mathematics)](https://en.wikipedia.org/wiki/Flow_(mathematics))
+1. [Tangent bundle](https://en.wikipedia.org/wiki/Tangent_bundle)
+1. [Cotangent bundle](https://en.wikipedia.org/wiki/Cotangent_bundle)
+1. [Section (fiber bundle)](https://en.wikipedia.org/wiki/Section_(fiber_bundle))
 
