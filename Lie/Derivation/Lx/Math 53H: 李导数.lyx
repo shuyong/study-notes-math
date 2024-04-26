@@ -1,0 +1,2216 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage[all]{xy}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+theorems-std
+theorems-sec
+eqs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Math 53H: 李导数"
+\pdf_author "Yakov Eliashberg"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Math 53H: 李导数
+\end_layout
+
+\begin_layout Author
+Yakov Eliashberg
+\end_layout
+
+\begin_layout Date
+May 19, 2011
+\end_layout
+
+\begin_layout Section
+微分形式的李导数
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $A$
+\end_inset
+
+是在一个域
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+上定义的一个光滑向量场(更一般地，我们可以假设
+\begin_inset Formula $U$
+\end_inset
+
+是任意
+\begin_inset Formula $n$
+\end_inset
+
+维流形)。给定一个函数
+\begin_inset Formula $f:U\rightarrow\mathbb{R}$
+\end_inset
+
+，我们可以定义函数
+\begin_inset Formula $f$
+\end_inset
+
+沿着
+\begin_inset Formula $A$
+\end_inset
+
+的方向导数(
+\shape italic
+directional derivative
+\shape default
+) 
+\begin_inset Formula $L_{A}f$
+\end_inset
+
+： 
+\begin_inset Formula 
+\begin{equation}
+L_{A}f=\lim_{s\rightarrow0}\frac{f(x+tX)-f(x)}{t}.\label{eq:1.1}
+\end{equation}
+
+\end_inset
+
+方向导数有许多其他表示方法：
+\begin_inset Formula $D_{A}(f),\frac{\partial f}{\partial A},df(A),\ldots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们通过
+\begin_inset Formula $A^{t}:U\rightarrow U$
+\end_inset
+
+, 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+, 标志向量场
+\begin_inset Formula $A$
+\end_inset
+
+的相流。
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+注意，相流不一定全局定义，可能并非对所有
+\begin_inset Formula $t$
+\end_inset
+
+都有定义。然而，本节的所有考虑都是局部的，并且根据常微分方程的存在性和唯一性定理，流总是局部定义的。因此，为了简化符号，我们不会在局部和全局之间进行这种区分。
+\end_layout
+
+\end_inset
+
+ 我们可以观察到，方向导数也可以通过以下公式定义： 
+\begin_inset Formula 
+\begin{equation}
+L_{A}f=\left.\frac{d}{ds}f\circ A^{s}\right|_{s=0}.\label{eq:1.2}
+\end{equation}
+
+\end_inset
+
+事实证明，公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以被推广，以便为微分形式和向量场定义一个方向导数的类比，这就是李导数(
+\shape italic
+Lie derivative
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $\omega$
+\end_inset
+
+为一个微分
+\begin_inset Formula $k$
+\end_inset
+
+-形式。我们定义
+\begin_inset Formula $\omega$
+\end_inset
+
+沿着
+\begin_inset Formula $A$
+\end_inset
+
+的李导数
+\begin_inset Formula $L_{A}\omega$
+\end_inset
+
+为 
+\begin_inset Formula 
+\begin{equation}
+L_{A}\omega=\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}.\label{eq:1.3}
+\end{equation}
+
+\end_inset
+
+注意，如果 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是一个
+\begin_inset Formula $0$
+\end_inset
+
+-形式，即一个函数
+\begin_inset Formula $f$
+\end_inset
+
+，则 
+\begin_inset Formula $\left(A^{s}\right)^{*}f=f\circ A^{s}$
+\end_inset
+
+，并因此，在这种情况下，定义公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是相同的，并因此对于函数来说，李导数与方向导数是相同的。 
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-1.1"
+
+\end_inset
+
+以下恒等式成立
+\end_layout
+
+\begin_layout Proposition
+1.
+ 
+\begin_inset Formula $L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proposition
+2.
+ 
+\begin_inset Formula $L_{A}(d\omega)=d\left(L_{A}\omega\right)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+1.
+ 
+\begin_inset Formula 
+\begin{align*}
+L_{A}\left(\omega_{1}\wedge\omega_{2}\right) & =\left.\frac{d}{ds}\left(A^{s}\right)^{*}\left(\omega_{1}\wedge\omega_{2}\right)\right|_{s=0}=\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{1}\wedge\left(A^{s}\right)^{*}\omega_{2}\right)\right|_{s=0}\\
+ & =\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{1}\right)\right|_{s=0}\wedge\omega_{2}+\left.\omega_{1}\wedge\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{2}\right)\right|_{s=0}=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+2.
+ 
+\begin_inset Formula $L_{A}(d\omega)=\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}d\omega\right)\right|_{s=0}=\left.\frac{d}{ds}\left(d\left(A^{s}\right)^{*}\omega\right)\right|_{s=0}=d\left(\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}\right)=d\left(L_{A}\omega\right).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Eli Cartan的以下公式为计算微分形式的李导数提供了一种有效的方法。 
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "thm:Theorem-1.2"
+
+\end_inset
+
+设 
+\begin_inset Formula $A$
+\end_inset
+
+ 是一个向量场，并且 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是一个微分 
+\begin_inset Formula $k$
+\end_inset
+
+-形式。则 
+\begin_inset Formula 
+\begin{equation}
+L_{A}\omega=d(A\lrcorner\omega)+A\lrcorner d\omega.\label{eq:1.4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+首先假设 
+\begin_inset Formula $\omega=f$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式。则 
+\begin_inset Formula $L_{A}f=df(A)=A\lrcorner df$
+\end_inset
+
+, 这等价于公式 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，因为在这种情况下，公式中的第一项等于 
+\begin_inset Formula $0$
+\end_inset
+
+ 。然后，使用命题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-1.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们得到 
+\begin_inset Formula 
+\[
+L_{A}df=dL_{A}f=d(df(A))=d(A\lrcorner df),
+\]
+
+\end_inset
+
+这再次等价于 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，因为这种情况下 
+\begin_inset Formula $ddf=0$
+\end_inset
+
+.
+ 接下来我们注意到，如果公式 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 对 
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\omega_{2}$
+\end_inset
+
+ 成立，则它对 
+\begin_inset Formula $\omega_{1}\wedge\omega_{2}$
+\end_inset
+
+ 也成立。 事实上，通过 
+\begin_inset Formula $d_{1},d_{2}$
+\end_inset
+
+ 标志形式 
+\begin_inset Formula $\omega_{1},\omega_{2}$
+\end_inset
+
+ 的阶数。 则我们有 
+\begin_inset Formula 
+\[
+\begin{aligned}(\star) & L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}\\
+ & =\left(A\lrcorner d\omega_{1}+d(A\lrcorner\omega_{1})\right)\wedge\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}+d(A\lrcorner\omega_{2})\right)\\
+ & =(A\lrcorner d\omega_{1})\wedge\omega_{2}+\omega_{1}\wedge(A\lrcorner d\omega_{2})+d(A\lrcorner\omega_{1})\wedge\omega_{2}+\omega_{1}\wedge d(A\lrcorner\omega_{2})\\
+ & \text{On the other hand}\\
+(\star\star) & A\lrcorner d\left(\omega_{1}\wedge\omega_{2}\right)+d\left(A\lrcorner\left(\omega_{1}\wedge\omega_{2}\right)\right)\\
+ & =A\lrcorner\left(d\omega_{1}\wedge\omega_{2}+(-1)^{d_{1}}\omega_{1}\wedge d\omega_{2}\right)+d\left(\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}}\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)\right)\\
+ & =\left(A\lrcorner d\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}+1}d\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)+(-1)^{d_{1}}\left(A\lrcorner\omega_{1}\right)\wedge d\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}\right)\\
+ & +d\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}+1}A\lrcorner\omega_{1}\wedge d\omega_{2}+(-1)^{d_{1}}d\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)+\omega_{1}\wedge\left(d\left(A\lrcorner\omega_{2}\right)\right)\\
+ & =\left(A\lrcorner d\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}\right)+d\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge d\left(A\lrcorner\omega_{2}\right).
+\end{aligned}
+\]
+
+\end_inset
+
+比较在
+\begin_inset Formula $(\star)$
+\end_inset
+
+和
+\begin_inset Formula $(\star\star)$
+\end_inset
+
+中的计算，我们得出结论 
+\begin_inset Formula 
+\[
+L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=A\lrcorner d\left(\omega_{1}\wedge\omega_{2}\right)+d\left(A\lrcorner\left(\omega_{1}\wedge\omega_{2}\right)\right).
+\]
+
+\end_inset
+
+通过归纳，我们可以证明任意阶数的形式的外积的类似公式。
+\end_layout
+
+\begin_layout Proof
+最后，我们观察到任意微分
+\begin_inset Formula $k$
+\end_inset
+
+-形式
+\begin_inset Formula $\omega$
+\end_inset
+
+都可以在坐标中写为
+\begin_inset Formula $\sum_{1\leq i_{1}<\cdots<i_{k}\leq n}f_{i_{1}\ldots i_{k}}(x)dx_{i_{1}}\wedge\cdots\wedge dx_{i_{k}}$
+\end_inset
+
+，即
+\begin_inset Formula $\omega$
+\end_inset
+
+是函数(
+\begin_inset Formula $0$
+\end_inset
+
+-形式)和精确
+\begin_inset Formula $1$
+\end_inset
+
+-形式的外积之和，因此 Cartan 公式成立。 
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-1.3"
+
+\end_inset
+
+我们有 
+\begin_inset Formula 
+\[
+L_{A}\omega=0\Longleftrightarrow\left(A^{s}\right)^{*}\omega=\omega\text{ for all }s\in\mathbb{R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+如果
+\begin_inset Formula $\left(A^{s}\right)^{*}\omega\equiv\omega$
+\end_inset
+
+，则
+\begin_inset Formula $L_{A}\omega=\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}=0$
+\end_inset
+
+。为了证明逆命题，我们注意到 
+\begin_inset Formula 
+\[
+\begin{aligned}\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=s_{0}} & =\lim_{t\rightarrow0}\frac{\left(A^{s_{0}+t}\right)^{*}\omega-\left(A^{s_{0}}\right)^{*}\omega}{t}=\left(A^{s_{0}}\right)^{*}\left(\lim_{t\rightarrow0}\frac{\left(A^{t}\right)^{*}\omega-\omega}{t}\right)\\
+ & =\left(A^{s_{0}}\right)^{*}\left(L_{A}\omega\right),
+\end{aligned}
+\]
+
+\end_inset
+
+并因此，如果
+\begin_inset Formula $L_{a}\omega=0$
+\end_inset
+
+，则
+\begin_inset Formula $\left(A^{s}\right)^{*}\omega=\omega$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Section
+向量场上微分同胚的作用
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+ 为在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+中的一个域，并且
+\begin_inset Formula $f:U\rightarrow V$
+\end_inset
+
+ 为 
+\begin_inset Formula $U$
+\end_inset
+
+ 的一个微分同胚，它盖射到另一个域 
+\begin_inset Formula $V\subset\mathbb{R}^{n}$
+\end_inset
+
+。我们定义推前(
+\shape italic
+push-forward
+\shape default
+)算子 
+\begin_inset Formula $f_{*}:\mathrm{Vect}(U)\rightarrow\mathrm{Vect}(V)$
+\end_inset
+
+，它通过以下公式将在 
+\begin_inset Formula $U$
+\end_inset
+
+ 上的向量场映射到在 
+\begin_inset Formula $V$
+\end_inset
+
+ 上的向量场： 
+\begin_inset Formula 
+\begin{equation}
+f_{*}(A)(f(x))=df_{x}(A(x)),\quad A\in\mathrm{Vect}(U),x\in U.\label{eq:2.1}
+\end{equation}
+
+\end_inset
+
+等效地， 
+\begin_inset Formula 
+\[
+f_{*}(A)(y)=df_{f^{-1}(y)}\left(A\left(f^{-1}(y)\right)\right),\quad y\in V.
+\]
+
+\end_inset
+
+假设我们在
+\begin_inset Formula $U$
+\end_inset
+
+中给定一个坐标系统
+\begin_inset Formula $\left(x_{1},\ldots,x_{n}\right)$
+\end_inset
+
+。则 
+\begin_inset Formula 
+\[
+f_{*}\left(\frac{\partial}{\partial x_{j}}\right)=\frac{\partial f}{\partial x_{j}},j=1,\ldots,n,
+\]
+
+\end_inset
+
+或者更准确地说 
+\begin_inset Formula 
+\[
+f_{*}\left(\frac{\partial}{\partial x_{j}}\right)(y)=\frac{\partial f}{\partial x_{j}}\left(f^{-1}(y)\right),y\in V.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+还可以通过公式 
+\begin_inset Formula $f^{*}=\left(f^{-1}\right)_{*}$
+\end_inset
+
+ 定义拉回(
+\shape italic
+pull-back
+\shape default
+)算子 
+\begin_inset Formula $f^{*}:\mathrm{Vect}(V)\rightarrow\mathrm{Vect}(U)$
+\end_inset
+
+。换句话说，拉回就是逆微分同胚下的推前。更明确地说，我们可以写出 
+\begin_inset Formula 
+\begin{equation}
+f^{*}(B)(x)=d\left(f^{-1}\right)(f(x))\left(B(f(x))\right)=\left(df_{x}\right)^{-1}\left(B(f(x))\right),\quad B\in\mathrm{Vect}(V),x\in U.\label{eq:2.2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+让我们指出为什么对于微分形式来说，拉回算子 
+\begin_inset Formula $f^{*}$
+\end_inset
+
+ 是为一个
+\series bold
+任意光滑映射 
+\begin_inset Formula $f$
+\end_inset
+
+
+\series default
+ 定义的，而对于向量场的情况，这两个算子 
+\begin_inset Formula $f_{*}$
+\end_inset
+
+ 和 
+\begin_inset Formula $f^{*}$
+\end_inset
+
+ 仅针对微分同胚 (
+\shape italic
+diffeomorphisms
+\shape default
+) 定义。
+\end_layout
+
+\begin_layout Section
+向量场的李括号
+\end_layout
+
+\begin_layout Standard
+设
+\begin_inset Formula $A,B\in\mathrm{Vect}(U)$
+\end_inset
+
+是定义在一个域
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+上的两个向量场。如52H所示，存在一个向量场
+\begin_inset Formula $C\in\mathrm{Vect}(V)$
+\end_inset
+
+，称为向量场
+\begin_inset Formula $A$
+\end_inset
+
+和
+\begin_inset Formula $B$
+\end_inset
+
+的李括号(
+\shape italic
+Lie bracket
+\shape default
+)，并标志为
+\begin_inset Formula $C=[A,B]$
+\end_inset
+
+，它由如下性质表征：
+\series bold
+对于任意光滑函数
+\begin_inset Formula $\phi:U\rightarrow\mathbb{R}$
+\end_inset
+
+，我们有
+\series default
+ 
+\begin_inset Formula 
+\[
+L_{C}\phi=\left(L_{A}L_{B}-L_{B}L_{A}\right)\phi.
+\]
+
+\end_inset
+
+这里有一个令人惊讶的事实，尽管这个方程的右侧看起来像是二阶微分算子，但左侧是一个一阶算子，所以右侧的二阶导数相互抵消。
+\end_layout
+
+\begin_layout Standard
+回想一下，括号 
+\begin_inset Formula $[A,B]$
+\end_inset
+
+ 具有以下性质 
+\end_layout
+
+\begin_layout Itemize
+李括号是一个双线性运算； 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[A,B]=-[B,A]$
+\end_inset
+
+ (斜对称性)； 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[[A,B]C]+[[B,C],A]+[[C,A],B]=0$
+\end_inset
+
+ (雅可比恒等式)； 
+\end_layout
+
+\begin_layout Itemize
+如果 
+\begin_inset Formula $A=\sum_{1}^{n}a_{j}\frac{\partial}{\partial x_{j}}$
+\end_inset
+
+ 和 
+\begin_inset Formula $B=\sum_{1}^{n}b_{j}\frac{\partial}{\partial x_{j}}$
+\end_inset
+
+ 则 
+\begin_inset Formula 
+\begin{equation}
+[A,B]=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}a_{j}\frac{\partial b_{i}}{\partial x_{j}}-b_{j}\frac{\partial a_{i}}{\partial x_{j}}\right)\frac{\partial}{\partial x_{i}}.\label{eq:3.1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在本节中，我们将对李括号
+\begin_inset Formula $[A,B]$
+\end_inset
+
+给出一个新解释。
+\end_layout
+
+\begin_layout Standard
+我们定义向量场
+\begin_inset Formula $B$
+\end_inset
+
+沿着向量场
+\begin_inset Formula $A$
+\end_inset
+
+的李导数(
+\shape italic
+Lie derivative
+\shape default
+) 
+\begin_inset Formula $L_{A}B$
+\end_inset
+
+，其方式与我们在前面节 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中定义的一个微分形式的李导数的方式相似。即 
+\begin_inset Formula 
+\begin{equation}
+L_{A}B=\left.\frac{d\left(A^{s}\right)^{*}B}{ds}\right|_{s=0}.\label{eq:3.2}
+\end{equation}
+
+\end_inset
+
+更明确地说， 
+\begin_inset Formula 
+\[
+L_{A}B(x)=\lim_{s\rightarrow0}\frac{d_{A^{s}(x)}\left(A^{-s}\right)\left(B\left(A^{s}(x)\right)-B(x)\right)}{s}.
+\]
+
+\end_inset
+
+同样地，对于命题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-1.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+，我们有 
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-3.1"
+
+\end_inset
+
+
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+L_{A}B=0\Longleftrightarrow\left(A^{s}\right)^{*}B\equiv B\text{ for all }s\in\mathbb{R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+我们有 
+\begin_inset Formula 
+\[
+\begin{aligned}\left.\frac{d\left(A^{s}\right)^{*}B}{ds}\right|_{s=s_{0}} & =\lim_{s\rightarrow0}\frac{\left(A^{s+s_{0}}\right)^{*}B-\left(A^{s_{0}}\right)^{*}B}{s}\\
+ & =\lim_{s\rightarrow0}\left(A^{s_{0}}\right)^{*}\left(\frac{\left(A^{s}\right)^{*}B-B}{s}\right)=\left(A^{s_{0}}\right)^{*}\left(\lim_{s\rightarrow0}\frac{\left(A^{s}\right)^{*}B-B}{s}\right)\\
+ & =\left(A^{s_{0}}\right)^{*}\left(L_{A}B\right).
+\end{aligned}
+\]
+
+\end_inset
+
+因此，如果
+\begin_inset Formula $L_{A}B=0$
+\end_inset
+
+，则对于所有
+\begin_inset Formula $s$
+\end_inset
+
+，
+\begin_inset Formula $\frac{d\left(A^{s}\right)^{*}B}{ds}$
+\end_inset
+
+，并因此
+\begin_inset Formula $\left(A^{s}\right)^{*}B=\left(A^{0}\right)^{*}B=B$
+\end_inset
+
+。反之亦然。 
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "thm:Theorem-3.2"
+
+\end_inset
+
+对于任意两个向量场 
+\begin_inset Formula $A,B\in\mathrm{Vect}(U)$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+L_{A}B=[A,B].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+注意这个，
+\begin_inset Formula $A^{s}(x)=x+sA(x)+o(s)$
+\end_inset
+
+。因此，我们可以写出 
+\begin_inset Formula 
+\[
+d_{y}A^{-s}=\mathrm{Id}-sd_{y}A+o(s),
+\]
+
+\end_inset
+
+这里我们视
+\begin_inset Formula $A$
+\end_inset
+
+为一个映射
+\begin_inset Formula $\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+。此外，代入
+\begin_inset Formula $y=A^{s}(x)$
+\end_inset
+
+，我们得到 
+\begin_inset Formula 
+\[
+d_{A^{s}(x)}A^{-s}=\mathrm{Id}-sd_{x}A+o(s),
+\]
+
+\end_inset
+
+因为 
+\begin_inset Formula $s\left(d_{y}A-d_{x}A\right)=o(s)$
+\end_inset
+
+。我们还有 
+\begin_inset Formula $B\left(A^{s}(x)\right)=B(x+sA(x)+o(x))=B(x)+sd_{x}B(A(x))+o(s)$
+\end_inset
+
+。因此，忽略 
+\begin_inset Formula $o(s)$
+\end_inset
+
+ 项，我们得到 
+\begin_inset Formula 
+\[
+\begin{aligned}L_{A}B & =\lim_{s\rightarrow0}\frac{1}{s}\left(d_{A^{s}(x)}\left(A^{-s}\right)\left(B\left(A^{s}(x)\right)\right)-B(x)\right)\\
+ & =\lim_{s\rightarrow0}\frac{1}{s}\left(\left(\mathrm{Id}-sd_{x}A\right)\right)\left(B(x)+sd_{x}B(A(x))-B(x)\right)\\
+ & =\lim_{s\rightarrow0}\frac{1}{s}\left(B(x)-sd_{x}A(B)+sd_{x}B(A)-B(x)\right)=d_{x}B(A)-d_{x}A(B).
+\end{aligned}
+\]
+
+\end_inset
+
+但是，在坐标中的右侧表达式具有形式 
+\begin_inset Formula 
+\[
+d_{x}B(A)-d_{x}A(B)=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}a_{j}\frac{\partial b_{i}}{\partial x_{j}}-b_{j}\frac{\partial a_{i}}{\partial x_{j}}\right)\frac{\partial}{\partial x_{i}}
+\]
+
+\end_inset
+
+这与李括号表达式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)一致。 
+\end_layout
+
+\begin_layout Exercise
+\begin_inset CommandInset label
+LatexCommand label
+name "exer:Exercise-3.3"
+
+\end_inset
+
+证明对于任意光滑函数
+\begin_inset Formula $\phi$
+\end_inset
+
+，我们有 
+\begin_inset Formula 
+\[
+L_{[A,B]}\phi=\frac{\partial^{2}\left(\phi\circ A^{s}\circ B^{t}\right)}{\partial s\partial t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+一阶积分
+\end_layout
+
+\begin_layout Standard
+假设我们给定一个微分方程 
+\begin_inset Formula 
+\begin{equation}
+\dot{x}=A(x),\label{eq:4.1}
+\end{equation}
+
+\end_inset
+
+其中 
+\begin_inset Formula $A$
+\end_inset
+
+ 是在域 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+ 上的一个向量场。一个函数 
+\begin_inset Formula $\phi:U\rightarrow\mathbb{R}$
+\end_inset
+
+ 被称为一阶积分(
+\shape italic
+first integral
+\shape default
+)，或者简称为方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的积分，如果它在该方程的解上恒定，或者等价地，在向量场 
+\begin_inset Formula $A$
+\end_inset
+
+ 的积分曲线上恒定。
+\end_layout
+
+\begin_layout Standard
+显然，
+\begin_inset Formula $\phi$
+\end_inset
+
+为一个积分的必要且充分条件是满足方程
+\begin_inset Formula $L_{A}\phi=0$
+\end_inset
+
+。其中，
+\begin_inset Formula $L_{A}\phi$
+\end_inset
+
+标志
+\begin_inset Formula $\phi$
+\end_inset
+
+沿着
+\begin_inset Formula $A$
+\end_inset
+
+的方向导数。
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\phi$
+\end_inset
+
+是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的积分，则解包含在函数
+\begin_inset Formula $\phi$
+\end_inset
+
+的水平集中，因此，这允许我们将方程的阶数减少
+\begin_inset Formula $1$
+\end_inset
+
+。如果方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)有两个积分
+\begin_inset Formula $\phi_{1},\phi_{2}$
+\end_inset
+
+，则解位于水平集
+\begin_inset Formula $\left\{ \phi_{1}=c_{1}\right\} $
+\end_inset
+
+和
+\begin_inset Formula $\left\{ \phi_{2}=c_{2}\right\} $
+\end_inset
+
+的交集中，
+\begin_inset Formula $c_{1},c_{2}\in\mathbb{R}$
+\end_inset
+
+。因此，如果这些水平集相互正交(这意味着微分
+\begin_inset Formula $d\phi_{1}$
+\end_inset
+
+和
+\begin_inset Formula $d\phi_{2}$
+\end_inset
+
+在交集的每个点处都是线性无关的)，则解位于
+\begin_inset Formula $\left\{ \phi_{1}=c_{1}\right\} \cap\left\{ \phi_{2}=c_{2}\right\} $
+\end_inset
+
+中，这允许进一步降低系统的阶数。如果阶数减少到
+\begin_inset Formula $1$
+\end_inset
+
+，则方程可以在数值积分中明确地积分。这样的系统被称为完全可积的(
+\shape italic
+completely intregrable
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+下一节将讨论来自力学的积分的一些重要例子。
+\end_layout
+
+\begin_layout Section
+哈密顿向量场
+\end_layout
+
+\begin_layout Standard
+考虑向量空间 
+\begin_inset Formula $\mathbb{R}^{2n}$
+\end_inset
+
+，具有坐标 
+\begin_inset Formula $\left(p_{1},\ldots,p_{n},q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+，并有一个封闭的微分
+\begin_inset Formula $2$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega=\sum_{1}^{n}dp_{i}\wedge dq_{i}$
+\end_inset
+
+。我们将写出 
+\begin_inset Formula $p=\left(p_{1},\ldots,p_{n}\right)$
+\end_inset
+
+ 和 
+\begin_inset Formula $q=\left(q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+。给定一个函数 
+\begin_inset Formula $H:\mathbb{R}^{2n}\rightarrow\mathbb{R}$
+\end_inset
+
+，我们将标志 
+\begin_inset Formula 
+\[
+\frac{\partial H}{\partial q}:=\left(\frac{\partial H}{\partial q_{1}},\ldots,\frac{\partial H}{\partial q_{n}}\right),\quad\frac{\partial H}{\partial p}:=\left(\frac{\partial H}{\partial p_{1}},\ldots,\frac{\partial H}{\partial p_{n}}\right).
+\]
+
+\end_inset
+
+注意，这个形式是非退化的，即它的矩阵在每个点处都是非退化的。因此，由公式
+\begin_inset Formula $X\mapsto X\lrcorner\omega$
+\end_inset
+
+给出的映射
+\begin_inset Formula $J:\mathrm{Vect}\left(\mathbb{R}^{2n}\right)\rightarrow\Omega^{1}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+是向量场空间 
+\begin_inset Formula $\mathrm{Vect}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+ 与在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的微分
+\begin_inset Formula $1$
+\end_inset
+
+-形式的空间 
+\begin_inset Formula $\Omega^{1}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+ 之间的一个同构。在坐标中，映射 
+\begin_inset Formula $J$
+\end_inset
+
+ 将向量场 
+\begin_inset Formula $\left(P_{1},\ldots,P_{n},Q_{1},\ldots,Q_{n}\right)$
+\end_inset
+
+ 关联到微分形式 
+\begin_inset Formula $\sum_{1}^{n}Q_{i}dp_{i}-P_{i}dq_{i}$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.1"
+
+\end_inset
+
+给定在 
+\begin_inset Formula $\mathbb{R}^{2n}$
+\end_inset
+
+ 上的一个向量场 
+\begin_inset Formula $A$
+\end_inset
+
+，微分 
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula $J(A)=A\lrcorner\omega$
+\end_inset
+
+ 是封闭的，当且仅当 
+\begin_inset Formula $L_{A}\omega=0$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Proof
+事实上，根据Cartan公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们有
+\begin_inset Formula $L_{A}\omega=d(A\lrcorner\omega)=dJ(A)$
+\end_inset
+
+，因为
+\begin_inset Formula $\omega$
+\end_inset
+
+是封闭的。 
+\end_layout
+
+\begin_layout Standard
+给定一个函数
+\begin_inset Formula $H:\mathbb{R}^{2n}\rightarrow\mathbb{R}$
+\end_inset
+
+，我们用
+\begin_inset Formula $X_{H}$
+\end_inset
+
+标志向量场
+\begin_inset Formula $-J^{-1}(dH)$
+\end_inset
+
+。通过这种构造获得的向量场称为哈密顿量(
+\shape italic
+Hamiltonian
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+为了找到
+\begin_inset Formula $X_{H}$
+\end_inset
+
+的坐标表达式，我们写出
+\begin_inset Formula $X_{H}=\sum_{1}^{n}a_{i}\frac{\partial}{\partial p_{i}}+b_{i}\frac{\partial}{\partial q_{i}}$
+\end_inset
+
+。则 
+\begin_inset Formula 
+\[
+X_{H}\lrcorner\omega=\left(\sum_{1}^{n}a_{i}\frac{\partial}{\partial p_{i}}+b_{i}\frac{\partial}{\partial q_{i}}\right)\lrcorner\sum_{1}^{n}dp_{i}\wedge dq_{i}=\sum_{1}^{n}-b_{i}dp_{i}+a_{i}dq_{i}.
+\]
+
+\end_inset
+
+因此，方程 
+\begin_inset Formula 
+\[
+X_{H}\lrcorner\omega=-dH=-\sum_{1}^{n}\frac{\partial H}{d}p_{i}+\frac{\partial H}{\partial q_{i}}dq_{i}
+\]
+
+\end_inset
+
+意味着
+\begin_inset Formula $a_{i}=-\frac{\partial H}{\partial q_{i}},b_{i}=\frac{\partial H}{\partial p_{i}},i=1,\ldots,n$
+\end_inset
+
+。因此 
+\begin_inset Formula 
+\[
+X_{H}=\sum_{1}^{n}-\frac{\partial H}{\partial q_{i}}\frac{\partial}{\partial p_{i}}+\frac{\partial H}{\partial p_{i}}\frac{\partial}{\partial q_{i}}.
+\]
+
+\end_inset
+
+在一个缩写形式中，省略指标后，我们将写成 
+\begin_inset Formula 
+\[
+X_{H}=-\frac{\partial H}{\partial q}\frac{\partial}{\partial p}+\frac{\partial H}{\partial p}\frac{\partial}{\partial q}.
+\]
+
+\end_inset
+
+因此，对应于向量场
+\begin_inset Formula $X_{H}$
+\end_inset
+
+的微分方程系统具有形式 
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\dot{p} & =-\frac{\partial H}{\partial q}\\
+\dot{q} & =\frac{\partial H}{\partial p}.
+\end{aligned}
+\label{eq:5.1}
+\end{equation}
+
+\end_inset
+
+这些方程在力学中起着重要作用，被称为哈密顿正则方程组(
+\shape italic
+Hamilton canonical equations
+\shape default
+)。它们描述了力学系统的相流。这里的坐标 
+\begin_inset Formula $q=\left(q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+ 确定了系统的一个位置，或在力学系统的配置空间(
+\shape italic
+configuration space
+\shape default
+)中的一个点。坐标 
+\begin_inset Formula $p=\left(p_{1},\ldots,p_{n}\right)$
+\end_inset
+
+ 被称为动量(
+\shape italic
+momenta
+\shape default
+)，并且可以看作是到配置空间的余切丛的向量。函数 
+\begin_inset Formula $H$
+\end_inset
+
+ 是通过坐标和动量表达的系统总能量。
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.2"
+
+\end_inset
+
+函数
+\begin_inset Formula $H$
+\end_inset
+
+是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的一阶积分，即
+\begin_inset Formula $L_{X_{H}}H=0$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Proof
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\[
+L_{X_{H}}H=dH\left(X_{H}\right)=-\frac{\partial H}{\partial p}\frac{\partial H}{\partial q}+\frac{\partial H}{\partial q}\frac{\partial H}{\partial p}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-5.3"
+
+\end_inset
+
+考虑牛顿方程 
+\begin_inset Formula 
+\[
+\ddot{q}_{i}=-\frac{\partial U}{\partial q_{i}},i=1,\ldots,n,
+\]
+
+\end_inset
+
+或以简写符号表示为 
+\begin_inset Formula 
+\[
+\ddot{q}=-\frac{\partial U}{\partial q}=-\nabla U.
+\]
+
+\end_inset
+
+将其简化为一阶方程系统，我们得到 
+\begin_inset Formula 
+\begin{align}
+\dot{p} & =-\frac{\partial U}{\partial q}\label{eq:5.2}\\
+\dot{q} & =p.\label{eq:5.3}
+\end{align}
+
+\end_inset
+
+考虑总能量(
+\shape italic
+full energy
+\shape default
+) 
+\begin_inset Formula $H(p,q)=\sum_{1}^{n}\frac{p_{i}^{2}}{2}+U(q)=\frac{1}{2}p^{2}+U(q)$
+\end_inset
+
+。则
+\begin_inset Formula $\frac{\partial H}{\partial q}=\frac{\partial U}{\partial q}$
+\end_inset
+
+并且
+\begin_inset Formula $\frac{\partial H}{\partial p}=p$
+\end_inset
+
+，并因此方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)采用这个哈密顿函数
+\begin_inset Formula $H$
+\end_inset
+
+的形式方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。引理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Lemma-5.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 是能量守恒定律。 
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.4"
+
+\end_inset
+
+设
+\begin_inset Formula $X_{H}$
+\end_inset
+
+为哈密顿向量场，并且
+\begin_inset Formula $X_{H}^{s}$
+\end_inset
+
+是它产生的相流。则对于所有的
+\begin_inset Formula $s\in\mathbb{R}$
+\end_inset
+
+，
+\begin_inset Formula $\left(X_{H}^{s}\right)^{*}\omega=\omega$
+\end_inset
+
+。换句话说，一个哈密顿向量场的流保持了形式 
+\begin_inset Formula $\omega$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+这证明
+\begin_inset Formula $L_{X_{H}}\omega=0$
+\end_inset
+
+就足够了。使用定理 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "thm:Theorem-1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+，我们得到 
+\begin_inset Formula 
+\[
+L_{X_{H}}\omega=d\left(X_{H}\lrcorner\omega\right)+X_{H}\lrcorner d\omega.
+\]
+
+\end_inset
+
+但是因为 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是封闭的，并因此 
+\begin_inset Formula $d\omega=0$
+\end_inset
+
+，而 
+\begin_inset Formula $X_{H}\lrcorner\omega=dH$
+\end_inset
+
+。 因此，
+\begin_inset Formula $L_{X_{H}}\omega=ddH=0$
+\end_inset
+
+。 
+\end_layout
+
+\begin_layout Section
+正则变换
+\end_layout
+
+\begin_layout Standard
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)被称为是正则的，因为它们相对于相空间的一大组变换是不变的。如果一个微分同胚
+\begin_inset Formula $f:\mathbb{R}^{2n}\rightarrow\mathbb{R}^{2n}$
+\end_inset
+
+保持形式
+\begin_inset Formula $\omega$
+\end_inset
+
+，则称其为辛同胚(
+\shape italic
+symplectomorphism
+\shape default
+) (或者正则变换(
+\shape italic
+canonical transformation
+\shape default
+))。则它也保持方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的形式。事实上，假设
+\begin_inset Formula $f(p,q)=(\widetilde{p},\widetilde{q})$
+\end_inset
+
+。则
+\begin_inset Formula $f^{*}(\omega)=f^{*}(dp\wedge dq)=d\widetilde{p}\wedge d\widetilde{q}=\omega=dp\wedge dq$
+\end_inset
+
+。因此，如果我们通过坐标
+\begin_inset Formula $\widetilde{p},\widetilde{q}$
+\end_inset
+
+表达函数
+\begin_inset Formula $H(p,q)$
+\end_inset
+
+，
+\begin_inset Formula $H(p,q)=\widetilde{H}(\widetilde{p},\widetilde{q})$
+\end_inset
+
+，则方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)在坐标
+\begin_inset Formula $(\widetilde{p},\widetilde{q})$
+\end_inset
+
+中将以相同的形式表达： 
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\dot{\tilde{p}} & =-\frac{\partial\widetilde{H}}{\partial\widetilde{q}}\\
+\dot{\widetilde{q}} & =\frac{\partial\widetilde{H}}{\partial\widetilde{p}}.
+\end{aligned}
+\label{eq:6.1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+以下命题提供了一类重要的正则变换， 
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-6.1"
+
+\end_inset
+
+考虑在两个域 
+\begin_inset Formula $U,V\subset\mathbb{R}^{2n}$
+\end_inset
+
+ 之间的任意微分同胚 
+\begin_inset Formula $f:U\rightarrow V$
+\end_inset
+
+。设 
+\begin_inset Formula $Df$
+\end_inset
+
+ 为映射 
+\begin_inset Formula $U$
+\end_inset
+
+ 的雅可比矩阵。则映射 
+\begin_inset Formula 
+\[
+(p,q)\mapsto\left(\left(\left(Df\right)^{-1}\right)^{T}p,f(q)\right)
+\]
+
+\end_inset
+
+是域 
+\begin_inset Formula $\widehat{U}=\left\{ p\in\mathbb{R}^{n},q\in U\right\} $
+\end_inset
+
+ 到域 
+\begin_inset Formula $\widehat{V}=\left\{ p\in\mathbb{R}^{n},q\in V\right\} $
+\end_inset
+
+ 的一个辛同胚
+\begin_inset Formula $\widehat{f}$
+\end_inset
+
+。 这里 
+\begin_inset Formula $\left(\left(Df\right)^{-1}\right)^{T}$
+\end_inset
+
+ 是雅可比矩阵 
+\begin_inset Formula $Df$
+\end_inset
+
+ 的逆矩阵的转置。 
+\end_layout
+
+\begin_layout Standard
+换句话说，
+\series bold
+
+\begin_inset Formula $q$
+\end_inset
+
+-坐标的任意变换都会扩展为
+\begin_inset Formula $p,q$
+\end_inset
+
+-坐标的正则变换
+\series default
+。 
+\end_layout
+
+\begin_layout Proof
+让我们用
+\begin_inset Formula $g_{ij},i,j=1,\ldots,n$
+\end_inset
+
+标志矩阵
+\begin_inset Formula $(Df)^{-1}$
+\end_inset
+
+的元素。因此，
+\begin_inset Formula $\sum_{i}^{n}g_{ji}\frac{\partial f_{i}}{\partial q_{k}}=\delta_{jk},\delta_{jk}=1$
+\end_inset
+
+如果
+\begin_inset Formula $j=k$
+\end_inset
+
+，并且
+\begin_inset Formula $\delta_{jk}=0$
+\end_inset
+
+如果
+\begin_inset Formula $j\neq k$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Proof
+让我们计算
+\begin_inset Formula $\widehat{f^{*}}(pdq)=\widehat{f^{*}}\left(\sum_{1}^{n}p_{i}dq_{i}\right)$
+\end_inset
+
+。我们有 
+\begin_inset Formula 
+\[
+\widehat{f}\left(p_{1},\ldots,p_{n},q_{1},\ldots,q_{n}\right)=\left(\sum_{1}^{n}g_{j1}p_{j},\ldots,\sum_{1}^{n}g_{jn}p_{j},f_{1}(q),\ldots,f_{n}(q)\right).
+\]
+
+\end_inset
+
+因此， 
+\begin_inset Formula 
+\[
+\begin{aligned}\widehat{f^{*}}(pdq) & =\widehat{f^{*}}\left(\sum_{1}^{n}p_{i}dq_{i}\right)=\sum_{i=1}^{n}\sum_{j=1}^{n}g_{ji}p_{j}df_{i}\\
+ & =\sum_{i,j,k=1}^{n}g_{ji}\frac{\partial f_{i}}{\partial q_{k}}p_{j}dq_{k}=\sum_{j,k=1}^{n}\delta_{jk}p_{j}dq_{k}\\
+ & =\sum_{1}^{n}p_{k}dq_{k}=pdq.
+\end{aligned}
+\]
+
+\end_inset
+
+因此， 
+\begin_inset Formula 
+\[
+\widehat{f^{*}}\omega=\widehat{f^{*}}dp\wedge dq=d\left(\widehat{f^{*}}(pdq)\right)=d(pdq)=dp\wedge dq=\omega.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Corollary
+\begin_inset CommandInset label
+LatexCommand label
+name "cor:Corollary-6.2"
+
+\end_inset
+
+假设存在一个坐标变换 
+\begin_inset Formula $\widetilde{q}=f(q)$
+\end_inset
+
+，使得在新的坐标中，哈密顿函数 
+\begin_inset Formula $H$
+\end_inset
+
+ 与坐标 
+\begin_inset Formula $\widetilde{q}_{1}$
+\end_inset
+
+ 无关。则
+\begin_inset Formula $\widetilde{p}_{1}=\sum_{1}^{n}g_{j1}p_{j}$
+\end_inset
+
+是系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的一阶积分。这里的符号
+\begin_inset Formula $g_{ij}$
+\end_inset
+
+表示矩阵
+\begin_inset Formula $(Df)^{-1}$
+\end_inset
+
+的元素。 
+\end_layout
+
+\begin_layout Proof
+让我们将坐标变换
+\begin_inset Formula $q\mapsto\widetilde{q}=f(q)$
+\end_inset
+
+扩展为如命题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 中所述的坐标变换
+\begin_inset Formula $(p,q)\mapsto(\widetilde{p},\widetilde{q})=\widetilde{f}(p,q)$
+\end_inset
+
+。则在新坐标
+\begin_inset Formula $(\widetilde{p},\widetilde{q})$
+\end_inset
+
+中的方程也具有正则哈密顿形式方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)。则
+\begin_inset Formula $\dot{\widetilde{p}}_{1}=\frac{\partial H}{\partial\widetilde{q}_{1}}=0$
+\end_inset
+
+，因为假设哈密顿量与坐标
+\begin_inset Formula $\widetilde{q}_{1}$
+\end_inset
+
+无关。因此
+\begin_inset Formula $\widetilde{p}_{1}=\sum_{1}^{n}g_{j1}p_{j}$
+\end_inset
+
+沿着轨迹是恒定的，即它是一个一阶积分。 
+\end_layout
+
+\begin_layout Section
+示例：角动量
+\end_layout
+
+\begin_layout Standard
+考虑一个牛顿方程 
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}=-\nabla U(q),\quad q\in\mathbb{R}^{3},\label{eq:7.1}
+\end{equation}
+
+\end_inset
+
+它描述了质量为 
+\begin_inset Formula $1$
+\end_inset
+
+ 的一个粒子在具有一个势能函数 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ 的场中的运动。假设在 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ 中存在一条轴线 
+\begin_inset Formula $l$
+\end_inset
+
+，使得函数 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ 相对于围绕 
+\begin_inset Formula $l$
+\end_inset
+
+ 的旋转保持不变。
+\end_layout
+
+\begin_layout Standard
+系统方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以重写为哈密顿形式方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，其中哈密顿函数为
+\begin_inset Formula $H=\frac{p^{2}}{2}+U(q)=\frac{p_{1}^{2}}{2}+\frac{p_{2}^{2}}{2}+\frac{p_{3}^{2}}{2}+U\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+。为了简单起见，假设
+\begin_inset Formula $q_{3}$
+\end_inset
+
+-轴与轴
+\begin_inset Formula $l$
+\end_inset
+
+重合。
+\end_layout
+
+\begin_layout Standard
+让我们将坐标
+\begin_inset Formula $\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+变换为柱面坐标
+\begin_inset Formula $(\phi,r,z)$
+\end_inset
+
+： 
+\begin_inset Formula 
+\[
+q_{1}=r\cos\phi,q_{2}=r\sin\phi,q_{3}=z.
+\]
+
+\end_inset
+
+等效地， 
+\begin_inset Formula 
+\[
+\phi=\arctan\frac{q_{2}}{q_{1}},r=\sqrt{q_{1}^{2}+q_{2}^{2}},z=q_{3}.
+\]
+
+\end_inset
+
+计算雅可比矩阵
+\begin_inset Formula $\frac{D(\phi,r,z)}{D\left(q_{1},q_{2},q_{3}\right)}$
+\end_inset
+
+，我们得到 
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccc}
+\frac{\partial\phi}{\partial q_{1}} & \frac{\partial\phi}{\partial q_{2}} & \frac{\partial\phi}{\partial q_{3}}\\
+\frac{\partial r}{\partial q_{1}} & \frac{\partial r}{\partial q_{2}} & \frac{\partial r}{\partial q_{3}}\\
+\frac{\partial z}{\partial q_{1}} & \frac{\partial z}{\partial q_{2}} & \frac{\partial z}{\partial q_{3}}
+\end{array}\right)=\left(\begin{array}{ccc}
+-\frac{q_{2}}{q_{1}^{2}+q_{2}^{2}} & \frac{q_{1}}{q_{1}^{2}+q_{2}^{2}} & 0\\
+\frac{q_{1}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & \frac{q_{2}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+0 & 0 & 1
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+则逆矩阵等于 
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccc}
+-q_{2} & \frac{q_{1}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+q_{1} & \frac{q_{2}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+0 & 0 & 1
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+当然，在这种情况下，计算映射
+\begin_inset Formula $(\phi,r,z)\rightarrow\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+的雅可比矩阵，然后改变结果中的坐标会更容易。但是，我们在这里精确地遵循命题 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 提供的方案。
+\end_layout
+
+\end_inset
+
+让我们将坐标变换
+\begin_inset Formula $(r,\phi,z)\mapsto\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+扩展为正则坐标变换 
+\begin_inset Formula 
+\[
+\left(q_{1},q_{2},q_{3},p_{1},p_{2},p_{3}\right)\mapsto\left(\phi,r,q_{3},p_{\phi},p_{r},p_{z}\right)
+\]
+
+\end_inset
+
+其中，我们用
+\begin_inset Formula $p_{r},p_{\phi},p_{z}$
+\end_inset
+
+标志对应于新坐标
+\begin_inset Formula $(r,\phi,z)$
+\end_inset
+
+的动量变量。事实上，我们只需要坐标
+\begin_inset Formula $p_{\phi}$
+\end_inset
+
+，它由
+\begin_inset Formula $p_{\phi}=-p_{1}q_{2}+q_{1}p_{2}$
+\end_inset
+
+给出。因此，函数
+\begin_inset Formula $-p_{1}q_{2}+p_{2}q_{1}$
+\end_inset
+
+是一阶积分。它被称为
+\series bold
+围绕
+\begin_inset Formula $q_{3}$
+\end_inset
+
+-轴的角动量
+\series default
+。 
+\end_layout
+
+\end_body
+\end_document

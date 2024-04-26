@@ -1,0 +1,2725 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage[all]{xy}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams-chap-bytype
+theorems-ams-extended-chap-bytype
+theorems-named
+enumitem
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_title "The Lie Derivative"
+\pdf_author "Charles Daly"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle empty
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+The Lie Derivative
+\end_layout
+
+\begin_layout Author
+Charles Daly
+\end_layout
+
+\begin_layout Date
+2021.09.16
+\end_layout
+
+\begin_layout Abstract
+These notes are dedicated to some thoughts I've had on the Lie derivative.
+ A while back when I first saw the definition of the Lie derivative and
+ understood nearly nothing about it, William Goldman told me one of those
+ facts that just stuck with me.
+ Specifically that the Lie derivative of vector fields 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ may be thought of as the double derivative of the commutator of their respectiv
+e flows.
+ This seems to be one of those well known facts of differential geometry,
+ but I haven't quite found a resource that has the proof in full, so I thought
+ I would write it up just in case anyone else out there was just as hopelessly
+ lost as I was when I first saw the Lie derivative.
+ 
+\end_layout
+
+\begin_layout Section
+Motivation
+\end_layout
+
+\begin_layout Standard
+First and foremost, everything which follows is assumed to smooth unless
+ otherwise stated.
+ Let 
+\begin_inset Formula $M$
+\end_inset
+
+ and 
+\begin_inset Formula $N$
+\end_inset
+
+ be a smooth manifolds of dimension 
+\begin_inset Formula $m$
+\end_inset
+
+ and 
+\begin_inset Formula $n$
+\end_inset
+
+ respectively.
+ Given a smooth map 
+\begin_inset Formula $F:M\longrightarrow N$
+\end_inset
+
+, we may associate to 
+\begin_inset Formula $F$
+\end_inset
+
+ a bundle homomorphism 
+\begin_inset Formula $dF:TM\longrightarrow TN$
+\end_inset
+
+.
+ This map is sometimes referred to as the 
+\shape italic
+global differential of 
+\begin_inset Formula $F$
+\end_inset
+
+
+\shape default
+.
+ It is the manifold analogue of the standard differential of a smooth map
+ 
+\begin_inset Formula $G:\mathbb{R}^{m}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+, and consequently may be thought of as the derivative of 
+\begin_inset Formula $F$
+\end_inset
+
+.
+ The global differential makes its appearance almost immediately in any
+ introductory differential geometry course.
+\end_layout
+
+\begin_layout Standard
+When I first saw the global differential it kind of felt like a power-up
+ in a video game.
+ Suddenly I could start taking derivatives of any maps I wanted and make
+ perfectly good sense of them.
+ While to some extent this is true, I remember spending hours upon hours
+ trying to reconcile the following question.
+ 
+\shape italic
+What is the derivative of a vector field?
+\shape default
+ This seemingly innocuous question leads to a wealth of very interesting
+ mathematics including the notion of 
+\shape italic
+connections on manifolds
+\shape default
+ and 
+\shape italic
+Ehresmann connections
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+Surely given a smooth vector field 
+\begin_inset Formula $Y$
+\end_inset
+
+ on 
+\begin_inset Formula $M$
+\end_inset
+
+, it enjoys the property of being a smooth map 
+\begin_inset Formula $Y:M\longrightarrow TM$
+\end_inset
+
+ so that 
+\begin_inset Formula $\pi\circ Y=\mathrm{id}$
+\end_inset
+
+ where 
+\begin_inset Formula $\pi:TM\longrightarrow M$
+\end_inset
+
+ is the standard tangent bundle projection.
+ Consequently the derivative of a vector field makes perfectly good sense,
+ and its global differential is given by 
+\begin_inset Formula $dY:TM\longrightarrow T(TM)$
+\end_inset
+
+.
+ And perhaps now you can see some technical difficulties here.
+ In particular, if we let 
+\begin_inset Formula $p\in M$
+\end_inset
+
+, then 
+\begin_inset Formula $dY_{p}:T_{p}M\longrightarrow T_{Y_{p}}(TM)$
+\end_inset
+
+ is a linear map from the tangent space of the 
+\shape italic
+manifold
+\shape default
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ at 
+\begin_inset Formula $p$
+\end_inset
+
+ to the tangent space of the 
+\shape italic
+tangent bundle of 
+\begin_inset Formula $M$
+\end_inset
+
+
+\shape default
+ at 
+\begin_inset Formula $Y_{p}$
+\end_inset
+
+.
+ While this is all theoretically correct, for each 
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+, we would like 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ to be an element of 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ as well.
+ This way for we could for example, make some comparisons between 
+\begin_inset Formula $v$
+\end_inset
+
+ and 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+I think it's well worth exploring several potential `work arounds' before
+ simply giving up and calling it a day.
+ For example, perhaps one could take the vector 
+\begin_inset Formula $dY_{p}(v)\in T_{Y_{p}}(TM)$
+\end_inset
+
+ and identify it with its image under 
+\begin_inset Formula $d\pi_{Y_{p}}:T_{Y_{p}}(TM)\longrightarrow T_{p}M$
+\end_inset
+
+.
+ This is after all the space we would like 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ to have been in anyways.
+ But note that by the chain rule 
+\begin_inset Formula 
+\begin{equation}
+d\pi_{Y_{p}}\left(dY_{p}(v)\right)=d(\pi\circ Y)_{p}(v)=d(\mathrm{id})_{p}(v)=v.\label{eq:1}
+\end{equation}
+
+\end_inset
+
+We can see that in our attempt to identify 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ with a vector in the tangent space via the projection map, we've essentially
+ disregarded all the data about 
+\begin_inset Formula $Y$
+\end_inset
+
+ itself.
+ This shouldn't come as too much as a surprise though.
+ If you think of derivatives in terms of directions and curves for example,
+ we may take a smooth path 
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+ representing 
+\begin_inset Formula $v$
+\end_inset
+
+, wherein 
+\begin_inset Formula $\gamma(0)=p$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma^{\prime}(0)=v$
+\end_inset
+
+.
+ In so doing, 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ is represented by 
+\begin_inset Formula $(Y\circ\gamma)^{\prime}(0)$
+\end_inset
+
+.
+ Note that this may be thought of as taking the time derivative of the vector
+ field along 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ given by 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+.
+ I think this perspective provides some insight into the difficulties here.
+ Specifically, 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+ may be thought of as a lift of 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ to the tangent bundle.
+ In terms of commutative diagrams, 
+\begin_inset Formula 
+\begin{equation}
+\xymatrix{ & TM\ar[d]^{\pi}\\
+I\ar[ur]^{Y_{\gamma}}\ar[r]_{\gamma} & M
+}
+\label{eq:2}
+\end{equation}
+
+\end_inset
+
+Now note that as 
+\begin_inset Formula $t$
+\end_inset
+
+ varies, 
+\begin_inset Formula $Y_{\gamma(t)}\in T_{\gamma(t)}M$
+\end_inset
+
+ for each 
+\begin_inset Formula $t\in I$
+\end_inset
+
+.
+ That said, if we think about 
+\begin_inset Formula $TM$
+\end_inset
+
+ as a bundle over 
+\begin_inset Formula $M$
+\end_inset
+
+, we can see the difficulty in differentiation.
+ The curve 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+ is changing fibres of 
+\begin_inset Formula $\pi:TM\longrightarrow M$
+\end_inset
+
+ as 
+\begin_inset Formula $t$
+\end_inset
+
+ varies which translates to 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+ lying in different tangent spaces for different 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Ideally, one would like to try and define 
+\begin_inset Formula 
+\begin{equation}
+dY_{p}(v):=\lim_{t\rightarrow0}\frac{1}{t}\left(Y_{\gamma(t)}-Y_{p}\right).\label{eq:3}
+\end{equation}
+
+\end_inset
+
+But notice, that 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+ and 
+\begin_inset Formula $Y_{p}$
+\end_inset
+
+ lie in different tangent spaces, and thus it makes no sense to subtract
+ them.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ below illustrates this difficulty.
+ Moreover, when we compose 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+ with the projection map, we simply end up with 
+\begin_inset Formula $\pi\left(Y_{\gamma(t)}\right)=\gamma(t)$
+\end_inset
+
+, thus eliminating all information pertaining the vector field in question.
+ The vector field 
+\begin_inset Formula $Y$
+\end_inset
+
+ tells us what vectors to assign each value of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $t$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+, whereas the curve 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ corresponding to 
+\begin_inset Formula $v$
+\end_inset
+
+ tells us which direction along the manifold we're evaluating 
+\begin_inset Formula $Y$
+\end_inset
+
+ in.
+ This sort of mode of thought helps lead to the notion of an 
+\shape italic
+Ehresmann connection
+\shape default
+, which is in essence a way to split 
+\begin_inset Formula $T(TM)$
+\end_inset
+
+ into two bundles, one a vertical bundle corresponding the kernel of the
+ map 
+\begin_inset Formula $d\pi:T(TM)\longrightarrow TM$
+\end_inset
+
+, and a horizontal bundle complementary to the vertical bundle.
+ The vertical bundle is well defined independent of the connection, whereas
+ the horizontal bundle is a choice that in essence allows us to decompose
+ 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ into a vertical and horizontal component.
+ More details about this can be found in some excellent notes by Timothy
+ Goldberg, 
+\shape italic
+What is a Connection, and What is is Good For?
+\shape default
+ [1]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure1.jpg
+	scale 30
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-1"
+
+\end_inset
+
+Note here on the sphere 
+\begin_inset Formula $M=S^{2}$
+\end_inset
+
+ there are two points 
+\begin_inset Formula $p,q\in M$
+\end_inset
+
+ and their tangent spaces 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{q}M$
+\end_inset
+
+ are illustrated in pink.
+ The vectors 
+\begin_inset Formula $v$
+\end_inset
+
+ and 
+\begin_inset Formula $w$
+\end_inset
+
+ cannot be naturally subtracted as they live in different tangent spaces.
+ This difficulty arises because there's no natural isomorphism between 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{q}M$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To conclude this section, I would like to point out there are situations
+ where these difficulties do not arise.
+ Specifically, in the case of 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+, we have the tangent bundle naturally identifies with 
+\begin_inset Formula $\mathbb{R}^{n}\times\mathbb{R}^{n}$
+\end_inset
+
+.
+ The first factor may be thought of as the manifold component, whereas the
+ second factor may be thought of as the tangent space component.
+ In this situation, a vector field 
+\begin_inset Formula $Y$
+\end_inset
+
+ on 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ is a map 
+\begin_inset Formula $Y:\mathbb{R}^{n}\longrightarrow T\left(\mathbb{R}^{n}\right)\simeq\mathbb{R}^{n}\times\mathbb{R}^{n}$
+\end_inset
+
+ such that 
+\begin_inset Formula $\pi_{1}\circ Y=\mathrm{id}$
+\end_inset
+
+ where 
+\begin_inset Formula $\pi_{1}:\mathbb{R}^{n}\times\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+ is projection onto the first factor.
+ Consequently the first factor of 
+\begin_inset Formula $Y$
+\end_inset
+
+ is the identify, and that said, we may as well identify 
+\begin_inset Formula $Y$
+\end_inset
+
+ as map 
+\begin_inset Formula $Y:\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+, corresponding to the second factor.
+\end_layout
+
+\begin_layout Standard
+Now to each tangent vector 
+\begin_inset Formula $v\in T_{p}\mathbb{R}^{n}\simeq\mathbb{R}^{n}$
+\end_inset
+
+, we may take the derivative of 
+\begin_inset Formula $Y$
+\end_inset
+
+ in the direction of 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ Motivated by Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), let us represent 
+\begin_inset Formula $v$
+\end_inset
+
+ by the curve 
+\begin_inset Formula $\gamma(t)=\left(\gamma^{1}(t),\ldots,\gamma^{n}(t)\right)$
+\end_inset
+
+ so that 
+\begin_inset Formula $\gamma(0)=p$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma^{\prime}(0)=v$
+\end_inset
+
+.
+ Similarly, let us express 
+\begin_inset Formula $Y$
+\end_inset
+
+ in coordinates by 
+\begin_inset Formula $Y(q)=$
+\end_inset
+
+ 
+\begin_inset Formula $\left(Y^{1}(q),\ldots,Y^{n}(q)\right)$
+\end_inset
+
+.
+ Returning to Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) we have 
+\begin_inset Formula 
+\begin{align}
+dY_{p}(v) & =\lim_{t\rightarrow0}\frac{1}{t}\left(Y_{\gamma(t)}-Y_{p}\right)=\lim_{t\rightarrow0}\frac{1}{t}\left(Y^{i}(\gamma(t))-Y^{i}(p)\right)e_{i}=\frac{\partial Y^{i}}{\partial x^{j}}(\gamma(0))\frac{d\gamma^{j}}{dt}(0)e_{i}\nonumber \\
+ & =\left(\frac{\partial Y^{1}}{\partial x^{j}}(p)\frac{d\gamma^{j}}{dt}(0),\ldots,\frac{\partial Y^{n}}{\partial x^{j}}(p)\frac{d\gamma^{j}}{dt}(0)\right),\label{eq:4}
+\end{align}
+
+\end_inset
+
+where the third equation in the top row follows by the chain rule applied
+ to the composition 
+\begin_inset Formula $Y\circ\gamma$
+\end_inset
+
+.
+ Note that Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) provides us with a notion of a derivative of a vector field in 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+, and moreover, it's kind of what anyone would guess, namely just differentiate
+ the components.
+ At face value, this really just appears to be an exercise in coordinate
+ expansions.
+ In fact, it's worth trying to see how this translates over in the general
+ case of a manifold.
+\end_layout
+
+\begin_layout Standard
+For an arbitrary manifold, we no longer enjoy the ability to have a global
+ trivialization of the tangent bundle, i.e.
+ 
+\begin_inset Formula $TM$
+\end_inset
+
+ is not necessarily identified with 
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+.
+ Nevertheless, we still enjoy local trivializations of the tangent bundle.
+ So that said, for a point 
+\begin_inset Formula $p\in M$
+\end_inset
+
+, pick a chart 
+\begin_inset Formula $(U,\phi)$
+\end_inset
+
+ about it where 
+\begin_inset Formula $\phi:U\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+ is a diffeomorphism onto some open subset of 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+.
+ This induces a local frame for the tangent bundle given by 
+\begin_inset Formula $\left\{ \partial/\partial x^{i}\right\} $
+\end_inset
+
+, so we may express a vector field, at least locally about 
+\begin_inset Formula $p$
+\end_inset
+
+, as 
+\begin_inset Formula $\left.Y\right|_{q}=Y^{i}(q)\left.\partial/\partial x^{i}\right|_{q}$
+\end_inset
+
+ for all 
+\begin_inset Formula $q\in U$
+\end_inset
+
+.
+ In addition if we pick a 
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+, we may express it in terms of this frame as 
+\begin_inset Formula $v=v^{j}\left.\partial/\partial x^{j}\right|_{p}$
+\end_inset
+
+.
+ That said, we may try and define 
+\begin_inset Formula 
+\begin{equation}
+dY_{p}(v):=\left.v^{j}\frac{\partial Y^{i}}{\partial x^{j}}(p)\frac{\partial}{\partial x^{i}}\right|_{p},\label{eq:5}
+\end{equation}
+
+\end_inset
+
+just as we did in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) where each 
+\begin_inset Formula $v^{j}$
+\end_inset
+
+ corresponds to 
+\begin_inset Formula $d\gamma^{j}/dt(0)$
+\end_inset
+
+.
+ As with most constructions on manifolds, we would ideally like to ensure
+ this quantity is well defined independent of coordinate patch.
+ To this end, if 
+\begin_inset Formula $(V,\psi)$
+\end_inset
+
+ is another coordinate patch, with coordinates 
+\begin_inset Formula $\tilde{x}^{k}$
+\end_inset
+
+, we note that have the equations 
+\begin_inset Formula $\left.Y\right|_{q}=Y^{i}(q)\left.\partial/\partial x^{i}\right|_{q}=\tilde{Y}^{k}(q)\left.\partial/\partial\tilde{x}^{k}\right|_{q}$
+\end_inset
+
+ and 
+\begin_inset Formula $v=v^{j}\left.\partial/\partial x^{j}\right|_{p}=\tilde{v}^{l}\left.\partial/\partial\tilde{x}^{l}\right|_{p}$
+\end_inset
+
+.
+ Their coordinates are related by 
+\begin_inset Formula 
+\begin{equation}
+Y^{i}(q)=\tilde{Y}^{k}(q)\frac{\partial x^{i}}{\partial\tilde{x}^{k}}(q)\text{ and }v^{j}=\tilde{v}^{l}\frac{\partial x^{j}}{\partial\tilde{x}^{l}}(p).\label{eq:6}
+\end{equation}
+
+\end_inset
+
+Differentiating the first equation for 
+\begin_inset Formula $Y^{i}(q)$
+\end_inset
+
+ and suppressing the evaluation at at 
+\begin_inset Formula $p$
+\end_inset
+
+ yields 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial Y^{i}}{\partial x^{j}}=\frac{\partial}{\partial x^{j}}\left(\tilde{Y}^{k}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\right)=\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial}{\partial\tilde{x}^{m}}\left(\tilde{Y}^{k}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\right)=\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}+\tilde{Y}^{k}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}.\label{eq:7}
+\end{equation}
+
+\end_inset
+
+Substituting Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) back into Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) with the change of coordinate for 
+\begin_inset Formula $v^{j}$
+\end_inset
+
+ in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) yields 
+\begin_inset Formula 
+\begin{align}
+dY_{p}(v) & =\tilde{v}^{l}\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\left(\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}+\tilde{Y}^{k}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\right)\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\left(\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\right)\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\left(\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\right)+\tilde{v}^{l}\tilde{Y}^{k}\left(\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\right)\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\delta_{l}^{m}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial}{\partial\tilde{x}^{k}}+\tilde{v}^{l}\widetilde{Y}^{k}\delta_{l}^{m}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{l}}\frac{\partial}{\partial\tilde{x}^{k}}+\tilde{v}^{l}\tilde{Y}^{k}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{l}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}.\label{eq:8}
+\end{align}
+
+\end_inset
+
+While these calculations are quite lengthy, they do provide some insight
+ into what goes wrong in our definition.
+ If we compare Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) with Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), we see precisely what goes wrong.
+ In particular, the presence of this second term in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is an obstruction to this quantity being well defined independent of coordinat
+e chart.
+\end_layout
+
+\begin_layout Standard
+That said, we should take the time to consider why this works in the case
+ of 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ and not a general manifold.
+ Note that in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), if we hypothetically had our manifold 
+\begin_inset Formula $M$
+\end_inset
+
+ covered with a coordinate atlas 
+\begin_inset Formula $\left\{ \left(U_{\alpha},\phi_{\alpha}\right)\right\} $
+\end_inset
+
+ such that the change of coordinates had vanishing Hessian, then Equation
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is well defined, and this derivative is dependent on the coordinate atlas.
+ In fact a very natural class of manifolds to look at for which this works
+ are 
+\shape italic
+affine manifolds
+\shape default
+.
+ Affine manifolds are a class of manifolds whose change of coordinates are
+ locally affine maps, namely maps from 
+\begin_inset Formula $\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+ of the form 
+\begin_inset Formula $F(x)=Ax+b$
+\end_inset
+
+, where 
+\begin_inset Formula $A\in\mathrm{GL}(n,\mathbb{R})$
+\end_inset
+
+ and 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+.
+ For those of you familiar with connections, it's worth verifying this derivativ
+e corresponds to the pullback connection of the standard connection on 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Another case where we may define the derivative of a vector field without
+ necessarily deferring to the machinery of a connection is in the case where
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ is parallelizable, that is, there's a bundle isomorphism between 
+\begin_inset Formula $TM$
+\end_inset
+
+ and 
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+.
+ As per consequence a vector field on 
+\begin_inset Formula $M$
+\end_inset
+
+ as a smooth map 
+\begin_inset Formula $Y:M\longrightarrow TM$
+\end_inset
+
+ is the same a having a smooth map 
+\begin_inset Formula $Y:M\longrightarrow M\times\mathbb{R}^{n}$
+\end_inset
+
+ where 
+\begin_inset Formula $Y$
+\end_inset
+
+ is the identity on the first component.
+ Consequently, the data of a vector field is really just a map 
+\begin_inset Formula $Y:M\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+.
+ We may now define 
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+ to be as in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), where the difference 
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+ makes sense now as per consequence of the global trivialization of the
+ tangent bundle.
+ Certainly we may always trivialize locally, as we attempted to in Equation
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ But it seems unreasonable to have this difference quotient depend on local
+ identifications, whereas it's far more palatable for it to depend on a
+ single fixed identification.
+ That said, it is perhaps again worth emphasizing that such a definition
+ is indeed still relying on a choice, in particular, here we are relying
+ on an identification between 
+\begin_inset Formula $TM$
+\end_inset
+
+ and 
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+ and in general this identification is non-canonical.
+\end_layout
+
+\begin_layout Section
+Lie Derivative
+\end_layout
+
+\begin_layout Standard
+Given the above discussion, it may seem hopeless to define a meaningful
+ derivative of a vector field on a manifold.
+ One of the main issues is the inability to compare tangent spaces.
+ This is a fundamental difficulty of differential geometry and has been
+ studied extensively.
+ In fact, one will often find calculus problems about 
+\shape italic
+rolling without slipping
+\shape default
+ which are intimately related to notions of identifying tangents spaces
+ at different points via a construction known as 
+\shape italic
+parallel transport
+\shape default
+.
+ The idea is parallel transport provides us a means of identifying tangent
+ spaces at different points via curves on the manifold.
+ Certainly how one travels along the manifold, will in general, impact these
+ identifications.
+ Take for example the two curves on the sphere and in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure2.jpg
+	scale 30
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-2"
+
+\end_inset
+
+Here the vector 
+\begin_inset Formula $v$
+\end_inset
+
+ in red located at the north pole 
+\begin_inset Formula $p\in M$
+\end_inset
+
+ in orange is parallel transported along two curves.
+ The first is the vertical circle or prime meridian.
+ Note that upon returning the point 
+\begin_inset Formula $p$
+\end_inset
+
+, the vector 
+\begin_inset Formula $v$
+\end_inset
+
+ returns to its original position.
+ Contrast this with the situation where halfway down when the curve hits
+ the first purple point, then starts to transport the vector around the
+ equator which is labeled in green.
+ After going around half the equator until the second purple point, the
+ vector is then transported back along the prime meridian.
+ The resulting vector in green returns original tangent space, but is in
+ fact equal to the 
+\begin_inset Formula $-v$
+\end_inset
+
+.
+ This is evidence that the sphere is not flat.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Motivated by this idea of looking at identifications between tangent spaces,
+ one is perhaps led to consider the diffeomorphism group of a manifold.
+ If we want to make sense of the quantity 
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+, we need some way of identifying tangent spaces.
+ Diffeomorphisms certainly provide this.
+ In particular, if 
+\begin_inset Formula $F$
+\end_inset
+
+ is a diffeomorphism of 
+\begin_inset Formula $M$
+\end_inset
+
+ taking a point 
+\begin_inset Formula $p$
+\end_inset
+
+ to another point 
+\begin_inset Formula $q$
+\end_inset
+
+, then the differential 
+\begin_inset Formula $dF_{p}:T_{p}M\longrightarrow T_{q}M$
+\end_inset
+
+ is an isomorphism between vector spaces.
+ Now let's say we have a path of diffeomorphisms, 
+\begin_inset Formula $F_{t}$
+\end_inset
+
+, such that 
+\begin_inset Formula $F_{t}(p)=\gamma(t)$
+\end_inset
+
+.
+ This provides us with identifications of 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{\gamma(t)}M$
+\end_inset
+
+ via 
+\begin_inset Formula $d\left(F_{t}\right)_{p}$
+\end_inset
+
+.
+ Under the circumstances we can't necessarily make sense of 
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+, but it seems then natural to consider the quantity 
+\begin_inset Formula 
+\begin{equation}
+\left(d\left(F_{t}\right)_{p}\right)^{-1}\left(Y_{\gamma(t)}\right)-Y_{p}.\label{eq:9}
+\end{equation}
+
+\end_inset
+
+Before proceeding, let's make sure this is a reasonable quantity.
+ Certainly 
+\begin_inset Formula $Y_{\gamma(t)}\in T_{\gamma(t)}M$
+\end_inset
+
+.
+ On the other hand, since 
+\begin_inset Formula $d\left(F_{t}\right)_{p}:T_{p}M\longrightarrow T_{\gamma(t)}M$
+\end_inset
+
+, we know the inverse map, which is well defined as 
+\begin_inset Formula $F_{t}$
+\end_inset
+
+ is a diffeomorphism, takes 
+\begin_inset Formula $T_{\gamma(t)}M$
+\end_inset
+
+ to 
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+.
+ Thus, the quantity in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) does indeed make sense.
+ Moreover, it is feasible that we could then take the limit 
+\begin_inset Formula 
+\begin{equation}
+\lim_{t\rightarrow0}\frac{1}{t}\left(\left(d\left(F_{t}\right)_{p}\right)^{-1}\left(Y_{\gamma(t)}\right)-Y_{p}\right).\label{eq:10}
+\end{equation}
+
+\end_inset
+
+For a general path of diffeomorphisms, one should not expect the above to
+ converge, as we have no control over what 
+\begin_inset Formula $d\left(F_{t}\right)_{p}$
+\end_inset
+
+ does at 
+\begin_inset Formula $t=0$
+\end_inset
+
+ for example, it's merely a map that fixed 
+\begin_inset Formula $p$
+\end_inset
+
+ under our current stipulations.
+ In addition, how does one obtain a path of diffeomorphisms 
+\begin_inset Formula $\left(F_{t}\right)_{p}=\gamma(t)$
+\end_inset
+
+ where 
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+ represents a vector 
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+ ?
+\end_layout
+
+\begin_layout Standard
+A very natural context to take into consideration is flows on a manifold.
+ Given a one parameter subgroup of a diffeomorphisms 
+\begin_inset Formula $F_{t}:\mathbb{R}\longrightarrow\mathrm{Diff}(M)$
+\end_inset
+
+, one knows that 
+\begin_inset Formula $F_{0}=\mathrm{id}$
+\end_inset
+
+, and thus the behavior at 
+\begin_inset Formula $t=0$
+\end_inset
+
+, and ideally locally about 
+\begin_inset Formula $t=0$
+\end_inset
+
+, must be reasonably controlled.
+\end_layout
+
+\begin_layout Standard
+Given the above observations, it's not entirely outlandish then then try
+ and differentiate a vector field with respect to another vector field as
+ vector fields define local flows.
+ That said, let 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ be vector fields on a manifold 
+\begin_inset Formula $M$
+\end_inset
+
+.
+ For the sake of simplicity, I'm just going to assume their corresponding
+ flows are indeed complete, though the following constructions and arguments
+ may be adapted to purely local arguments.
+\end_layout
+
+\begin_layout Standard
+As 
+\begin_inset Formula $Y$
+\end_inset
+
+ is the vector field we wish to differentiate, 
+\begin_inset Formula $X$
+\end_inset
+
+ is the vector field we intend to differentiate along, let 
+\begin_inset Formula $\theta:\mathbb{R}\times M\longrightarrow M$
+\end_inset
+
+ be the corresponding flow map of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $p\in M$
+\end_inset
+
+, and we wish to define the derivative of 
+\begin_inset Formula $Y$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $X$
+\end_inset
+
+ as 
+\begin_inset Formula $p$
+\end_inset
+
+, in a similar fashion to Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Denoting this derivative 
+\begin_inset Formula $\left.\mathcal{L}_{X}Y\right|_{p}$
+\end_inset
+
+ we define 
+\begin_inset Formula 
+\begin{align}
+\left.\mathcal{L}_{X}Y\right|_{p} & :=\lim_{t\rightarrow0}\frac{1}{t}\left(\left(d\left(\theta_{t}\right)_{p}\right)^{-1}\left(Y_{\theta_{t}(p)}\right)-Y_{p}\right)\nonumber \\
+ & =\lim_{t\rightarrow0}\frac{1}{t}\left(d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(Y_{\theta_{t}(p)}\right)-Y_{p}\right),\label{eq:11}
+\end{align}
+
+\end_inset
+
+where the second equality follows from the fact that 
+\begin_inset Formula $\theta_{t}^{-1}=\theta_{-t}$
+\end_inset
+
+.
+ Several facts need to be verified and will not be provided in these notes,
+ the most pressing being that this vector field is indeed well defined.
+ For those interested in further detail, and where much of the notation
+ and inspiration for these notes has been drawn from, I refer you to Jack
+ Lee's outstanding differential geometry text 
+\shape italic
+Introduction to Smooth Manifolds
+\shape default
+ [2].
+ This book is a really solid general reference for the material, and his
+ conversational writing style, thoroughly detailed arguments, and illustrations
+ make this one of those texts I just roundly recommend to everyone.
+\end_layout
+
+\begin_layout Standard
+Before continuing it worth pointing out the definition as in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is very different than the one provided in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Recall the method of identification relating 
+\begin_inset Formula $T_{\gamma(t)}\mathbb{R}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{p}\mathbb{R}^{n}$
+\end_inset
+
+ was via the identification induced by translation taking 
+\begin_inset Formula $p$
+\end_inset
+
+ to 
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+.
+ Here though the identification between 
+\begin_inset Formula $T_{\gamma(t)}\mathbb{R}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{p}\mathbb{R}^{n}$
+\end_inset
+
+ is induced by the flow of a vector field.
+ The following examples serve to illustrate this difference.
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-1"
+
+\end_inset
+
+Let 
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+ and define 
+\begin_inset Formula 
+\begin{equation}
+X=-y\frac{\partial}{\partial x}+x\frac{\partial}{\partial y}\text{ and }Y=\frac{\partial}{\partial x}.\label{eq:12}
+\end{equation}
+
+\end_inset
+
+Let 
+\begin_inset Formula $p=(x,y)$
+\end_inset
+
+ and let us calculate 
+\begin_inset Formula $\mathcal{L}_{X}Y$
+\end_inset
+
+.
+ Deferring to Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) we first calculate the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ In fact, one can show with relative ease that the corresponding system
+ of differential equations is given by 
+\begin_inset Formula 
+\[
+x^{\prime}=-y\text{ and }y^{\prime}=x\text{ where }(x(0),y(0))=(x,y)\Longrightarrow\theta_{t}(x,y)=\left(\begin{array}{cc}
+\cos(t) & -\sin(t)\\
+\sin(t) & \cos(t)
+\end{array}\right)\left(\begin{array}{c}
+x\\
+y
+\end{array}\right).
+\]
+
+\end_inset
+
+That said, 
+\begin_inset Formula $Y_{\theta_{t}(p)}=\left.\partial/\partial x\right|_{\theta_{t}(p)}$
+\end_inset
+
+ and so 
+\begin_inset Formula 
+\[
+d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(Y_{\theta_{t}(p)}\right)=d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(\left.\frac{\partial}{\partial x}\right|_{\theta_{t}(p)}\right)=\left.\cos(t)\frac{\partial}{\partial x}\right|_{p}-\left.\sin(t)\frac{\partial}{\partial y}\right|_{p}.
+\]
+
+\end_inset
+
+The minus sign is because we are using the inverse flow, 
+\begin_inset Formula $\theta_{-t}$
+\end_inset
+
+, and not 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+.
+ Plugging this result into Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) yields 
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}Y=\lim_{t\rightarrow0}\frac{1}{t}\left(\left.\cos(t)\frac{\partial}{\partial x}\right|_{p}-\left.\sin(t)\frac{\partial}{\partial y}\right|_{p}-\left.\frac{\partial}{\partial x}\right|_{p}\right)=\left.\lim_{t\rightarrow0}\frac{\cos(t)-1}{t}\frac{\partial}{\partial x}\right|_{p}-\left.\frac{\sin(t)}{t}\frac{\partial}{\partial y}\right|_{p}=-\left.\frac{\partial}{\partial y}\right|_{p}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+Again it's all too easy to get lost in the abstract calculations.
+ This example is intriguing for the following reason.
+ Generally speaking we think of the vector field 
+\begin_inset Formula $\partial/\partial x$
+\end_inset
+
+ as `constant.' It's invariant under the standard identification of 
+\begin_inset Formula $T_{p}\mathbb{R}^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{q}\mathbb{R}^{2}$
+\end_inset
+
+ induced by the translation taking 
+\begin_inset Formula $p$
+\end_inset
+
+ to 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ This though is not how we are identifying tangent spaces.
+ Here we are locally identifying tangent spaces in the same orbits of the
+ flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ via flow out map, namely 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+.
+ In our case these are circles.
+ Now as a vector travels along a circle, it seems reasonable that it indeed
+ may change its direction, and this is precisely what's happening and why
+ we're getting a non-trivial Lie derivative.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ illustrates this process.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure3.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-3"
+
+\end_inset
+
+Here the vector field 
+\begin_inset Formula $Y=\partial/\partial x$
+\end_inset
+
+ is illustrated in black.
+ The flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ at a point is depicted by the circle in light blue.
+ The vector field 
+\begin_inset Formula $Y_{\theta_{t}(p)}$
+\end_inset
+
+ is illustrated in light red.
+ Its pull back under the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ is illustrated in blue, which note, is different than 
+\begin_inset Formula $Y$
+\end_inset
+
+.
+ The difference quotient is illustrated in orange.
+ The left image is for 
+\begin_inset Formula $t=0.2$
+\end_inset
+
+ and the right is 
+\begin_inset Formula $t=0.1$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-2"
+
+\end_inset
+
+Let 
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+ and define 
+\begin_inset Formula 
+\begin{equation}
+X=-y\frac{\partial}{\partial x}+x\frac{\partial}{\partial y}\text{ and }Y=x\frac{\partial}{\partial x}+y\frac{\partial}{\partial y}.\label{eq:13}
+\end{equation}
+
+\end_inset
+
+In a similar fashion to the example above, one may do the calculations to
+ figure out that 
+\begin_inset Formula $Y$
+\end_inset
+
+ is invariant under the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ and thus the Lie derivative in this case is indeed 
+\begin_inset Formula $0$
+\end_inset
+
+ .
+ It is worth verifying these calculations, but a picture is provided below
+ to illustrate this.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure4.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-4"
+
+\end_inset
+
+Here the vector field 
+\begin_inset Formula $Y_{\theta_{t}(p)}$
+\end_inset
+
+ is illustrated in red and its pullback, under the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+, is illustrated in blue.
+ The original vector field 
+\begin_inset Formula $Y$
+\end_inset
+
+ is illustrated in black, but is obscured by the pullback in blue, as they
+ are equal.
+ The difference quotient is illustrated by the orange zero vectors.
+ The left image is for 
+\begin_inset Formula $t=0.2$
+\end_inset
+
+ and the right is 
+\begin_inset Formula $t=0.1$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-3"
+
+\end_inset
+
+Let 
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+ and define 
+\begin_inset Formula 
+\begin{equation}
+X=(x+y)\frac{\partial}{\partial x}+y\frac{\partial}{\partial y}\text{ and }Y=x\frac{\partial}{\partial y}.\label{eq:14}
+\end{equation}
+
+\end_inset
+
+Here is an example where the vector field 
+\begin_inset Formula $Y$
+\end_inset
+
+ vanishes along the line 
+\begin_inset Formula $x=0$
+\end_inset
+
+, but its derivative along the 
+\begin_inset Formula $Y$
+\end_inset
+
+ axis is generally non-zero.
+ Again, without too much difficulty one can verify that the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ is given by 
+\begin_inset Formula 
+\[
+\theta_{t}(x,y)=\left(\begin{array}{cc}
+e^{t} & te^{t}\\
+0 & e^{t}
+\end{array}\right)\left(\begin{array}{c}
+x\\
+y
+\end{array}\right)\Longrightarrow Y_{\theta_{t}(p)}=\left.\left(e^{t}x+te^{t}y\right)\frac{\partial}{\partial y}\right|_{\theta_{t}(p)}.
+\]
+
+\end_inset
+
+Calculating the limit of the difference quotient yields 
+\begin_inset Formula 
+\[
+\begin{aligned}\mathcal{L}_{X}Y & =\lim_{t\rightarrow0}\frac{1}{t}\left(\left(e^{t}x+te^{t}y\right)\left(-\left.te^{-t}\frac{\partial}{\partial x}\right|_{p}+\left.e^{-t}\frac{\partial}{\partial y}\right|_{p}\right)-\left.x\frac{\partial}{\partial y}\right|_{p}\right)\\
+ & =\lim_{t\rightarrow0}-\left.(x+ty)\frac{\partial}{\partial x}\right|_{p}+\left.ye^{-t}\frac{\partial}{\partial y}\right|_{p}=-\left.x\frac{\partial}{\partial x}\right|_{p}+\left.y\frac{\partial}{\partial y}\right|_{p},
+\end{aligned}
+\]
+
+\end_inset
+
+which note, indeed does not vanish on the line 
+\begin_inset Formula $x=0$
+\end_inset
+
+ except at the origin.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ below illustrates the calculation along two different integral curves of
+ 
+\begin_inset Formula $X$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure5.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-5"
+
+\end_inset
+
+The vector field 
+\begin_inset Formula $Y=x\partial/\partial y$
+\end_inset
+
+ is depicted in black along two integral curves of the vector field 
+\begin_inset Formula $X=(x+y)\partial/\partial x+y\partial/\partial y$
+\end_inset
+
+ one in cyan and another in magenta.
+ The vector field in light red is 
+\begin_inset Formula $Y$
+\end_inset
+
+ evaluated at 
+\begin_inset Formula $\theta_{t}(p)$
+\end_inset
+
+ and its pullback under the flow of 
+\begin_inset Formula $X$
+\end_inset
+
+ is depicted in blue.
+ The difference quotient is depicted in orange.
+ Note there's a place where the orange and blue vectors are scalar multiples
+ of each other.
+ This point corresponds to a point where 
+\begin_inset Formula $Y$
+\end_inset
+
+ vanishes, yet its Lie derivative is non-zero.
+ The left image is for 
+\begin_inset Formula $t=0.2$
+\end_inset
+
+ and the right is 
+\begin_inset Formula $t=0.1$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It should be mentioned there is yet another formulation of the Lie derivative
+ in terms of vector fields acting on the algebra of smooth real-valued functions
+ on a manifold 
+\begin_inset Formula $M$
+\end_inset
+
+.
+ Specifically, given two vectors 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ on a manifold 
+\begin_inset Formula $M$
+\end_inset
+
+, one may define the Lie-bracket of 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ to be the vector field which acts on the algebra of smooth real-valued
+ functions on 
+\begin_inset Formula $M$
+\end_inset
+
+ via 
+\begin_inset Formula $(XY-YX)f=X(Yf)-Y(Xf)$
+\end_inset
+
+ for all 
+\begin_inset Formula $f\in\mathrm{C}^{\infty}(M)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+While the following formulation of the Lie derivative is substantially more
+ computationally accessible, and theoretically advantageous to work with,
+ it suffers the serious draw back of not enjoying any `obvious' geometric
+ interpretation, at least to my knowledge.
+ In fact, that it the above even defines a vector field is far from obvious
+ in my opinion.
+ Nevertheless, it allows one to calculate Lie-derivatives with relative
+ ease and has a straightforward coordinate representation.
+ If 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ are locally given in coordinates by 
+\begin_inset Formula $X=X^{i}\partial/\partial x^{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $Y=Y^{j}\partial/\partial x^{j}$
+\end_inset
+
+, then the Lie-bracket of these two vector fields is given by 
+\begin_inset Formula 
+\begin{equation}
+\mathcal{L}_{X}Y=[X,Y]=\left(X^{i}\frac{\partial Y^{j}}{\partial x^{i}}-Y^{i}\frac{\partial X^{j}}{\partial x^{i}}\right)\frac{\partial}{\partial x^{j}}.\label{eq:15}
+\end{equation}
+
+\end_inset
+
+That this definition and the formulation in terms of derivatives of flows
+ agree is far from clear, but nevertheless one may find a proof of this
+ in Jack Lee's text [2].
+\end_layout
+
+\begin_layout Section
+Derivative of Commutator
+\end_layout
+
+\begin_layout Standard
+As promised in the summary, we conclude by providing a proof that the Lie
+ derivative of vector fields 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ on 
+\begin_inset Formula $M$
+\end_inset
+
+ is given by the second derivative of the commutator of their flows.
+ Let 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ have flows given by 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ Pick a point 
+\begin_inset Formula $p\in M$
+\end_inset
+
+, and a coordinate patch centered about 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $p$
+\end_inset
+
+,
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\begin_inset Formula $(V,\psi):V\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+.
+ Assume this coordinate patch is sufficiently small so that there's a box
+ of 
+\begin_inset Formula $(-\epsilon,\epsilon)^{2}$
+\end_inset
+
+ for which both 
+\begin_inset Formula $\theta$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ are defined everywhere in 
+\begin_inset Formula $V$
+\end_inset
+
+ about 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ This stipulation is to guarantee that the flows do not blow up in finite
+ time, and instead become undefined only in so far as they leave the open
+ set 
+\begin_inset Formula $V$
+\end_inset
+
+.
+ As this discussion is purely local, we may assume in fact identify 
+\begin_inset Formula $V$
+\end_inset
+
+ with an open subset of 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ centered at the origin.
+\end_layout
+
+\begin_layout Standard
+Consider the map 
+\begin_inset Formula $\left(\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}\right)(0):(-\epsilon,\epsilon)\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+.
+ If we Taylor expand both 
+\begin_inset Formula $\theta:(-\epsilon,\epsilon)\times$
+\end_inset
+
+ 
+\begin_inset Formula $V\longrightarrow V$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{t}:(-\epsilon,\epsilon)\times V\longrightarrow V$
+\end_inset
+
+ about the origin, we have the following 
+\begin_inset Formula 
+\begin{align}
+\theta(t,x)= & \theta(0,0)+\frac{\partial\theta}{\partial t}(0,0)t+\frac{\partial\theta}{\partial x}(0,0)x+\frac{1}{2}\left(\frac{\partial^{2}\theta}{\partial t^{2}}(0,0)t^{2}\right.\nonumber \\
+ & \left.+\frac{\partial^{2}\theta}{\partial t\partial x}(0,0)tx+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0)tx+x^{T}\frac{\partial^{2}\theta}{\partial x^{2}}(0,0)x\right)+\ldots\nonumber \\
+= & 0+\frac{\partial\theta}{\partial t}(0,0)t+\frac{\partial\theta}{\partial x}(0,0)x+\frac{1}{2}\frac{\partial^{2}\theta}{\partial t^{2}}(0,0)t^{2}+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0)tx+\frac{1}{2}x^{T}\frac{\partial^{2}\theta}{\partial x^{2}}(0,0)x+\ldots\label{eq:16}
+\end{align}
+
+\end_inset
+
+where here I'm being very abusive in notation.
+ In particular, the expression 
+\begin_inset Formula $\left(\partial^{2}\theta/\partial x^{2}\right)(0,0)$
+\end_inset
+
+ is supposed to denote the second derivative of a vector valued function
+ at the point 
+\begin_inset Formula $(0,0)$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\theta$
+\end_inset
+
+ took values in 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+, you get the standard Taylor expansion of a map from 
+\begin_inset Formula $\mathbb{R}^{m}\longrightarrow\mathbb{R}$
+\end_inset
+
+ and this quantity represents the Hessian matrix.
+ In our case though, this is a tensor quantity, which nevertheless can be
+ recovered by doing Taylor expansions on each 
+\begin_inset Formula $\theta^{i}$
+\end_inset
+
+ in the coordinate expansions of 
+\begin_inset Formula $\theta=\left(\theta^{1},\theta^{2},\ldots,\theta^{n}\right)$
+\end_inset
+
+.
+ Unfortunately I don't know if there's a standard notation for this, so
+ I just kind of made up my own, but if you need any convincing of what this
+ is, just consider the two by two case from 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+ to 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+ and write out the details to see exactly what it is.
+\end_layout
+
+\begin_layout Standard
+We may calculate the derivatives in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), as they reduce quite a bit.
+ Recall the first input of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is the time coordinate, whereas the second input is the spatial coordinate.
+\end_layout
+
+\begin_layout Standard
+We have the following equalities 
+\begin_inset Formula 
+\begin{align}
+\frac{\partial\theta}{\partial t}(0,0) & =\left.\frac{\partial}{\partial t}\right|_{t=0}\theta(t,0)=X(0),\label{eq:17}\\
+\frac{\partial\theta}{\partial x}(0,0) & =\left.\frac{\partial}{\partial x}\right|_{x=0}\theta(0,x)=\mathrm{id},\label{eq:18}\\
+\frac{\partial^{2}\theta}{\partial t^{2}}(0,0) & =\left.\frac{\partial^{2}}{\partial t^{2}}\right|_{t=0}\theta(t,0)=\left.\frac{\partial}{\partial t}\right|_{t=0}X_{\theta_{t}(0)}=\frac{\partial X}{\partial x}(0)X(0),\label{eq:19}\\
+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0) & =\left.\frac{\partial}{\partial x}\right|_{x=0}\left.\frac{\partial}{\partial t}\right|_{t=0}\theta(t,x)=\left.\frac{\partial}{\partial x}\right|_{x=0}X(x)=\frac{\partial X}{\partial x}(0),\label{eq:20}\\
+\frac{\partial^{2}\theta}{\partial x^{2}}(0,0) & =\left.\frac{\partial^{2}}{\partial x^{2}}\right|_{x=0}\theta(0,x)=\left.\frac{\partial^{2}}{\partial x^{2}}\right|_{x=0}x=0.\label{eq:21}
+\end{align}
+
+\end_inset
+
+Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) follow immediately from the relation between vector fields and the induced
+ flow, namely the flow differentiates in time to the vector field.
+ Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is a consequence of the fact that 
+\begin_inset Formula $\theta(0,x)$
+\end_inset
+
+ is the identity map on the space, so its derivative is the identity map
+ on tangent spaces.
+ Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is again a consequence of the properties of flows, but where the last
+ equality follows from the chain rule applied to 
+\begin_inset Formula $(X\circ\theta)(t,0)$
+\end_inset
+
+.
+ Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) is straight forward and follows more or less by definition.
+ Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) follows again by consequence of the fact that 
+\begin_inset Formula $\theta(0,x)$
+\end_inset
+
+ is the identity map on the space, so its second derivative vanishes.
+ To be convinced of Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) it helps to think of the array of second derivatives of the function 
+\begin_inset Formula $\left(x_{1},\ldots,x_{n}\right)\mapsto\left(x_{1},\ldots,x_{n}\right)$
+\end_inset
+
+.
+ The first derivative may be thought of as the identity matrix, and differentiat
+ing the components of a matrix with constant values should yield zero.
+ Combining the results of Equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) provides the second order Taylor expansion of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ at 
+\begin_inset Formula $(0,0)$
+\end_inset
+
+ below.
+ 
+\begin_inset Formula 
+\begin{equation}
+\theta(t,x)=x+t\left(X(0)+\frac{\partial X}{\partial x}(0)x\right)+\frac{t^{2}}{2}\frac{\partial X}{\partial x}(0)X(0)+\ldots\label{eq:22}
+\end{equation}
+
+\end_inset
+
+The same holds true for 
+\begin_inset Formula $\phi$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+\phi(t,y)=y+t\left(Y(0)+\frac{\partial Y}{\partial x}(0)y\right)+\frac{t^{2}}{2}\frac{\partial Y}{\partial x}(0)X(0)+\ldots\label{eq:23}
+\end{equation}
+
+\end_inset
+
+Composing Equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) we may calculate the commutator of the flows at 
+\begin_inset Formula $0\in V$
+\end_inset
+
+.
+ As these calculations are pretty intense, I used Mathematica, see Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ below for the exact code.
+ In particular, this yields 
+\begin_inset Formula 
+\begin{equation}
+\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}(0)=t^{2}\left(\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)\right)+\ldots\label{eq:24}
+\end{equation}
+
+\end_inset
+
+where the remaining terms are all of higher order in 
+\begin_inset Formula $t$
+\end_inset
+
+ and thus vanish for the second derivative evaluated at zero.
+ Differentiating and evaluating at 
+\begin_inset Formula $t=0$
+\end_inset
+
+ yields 
+\begin_inset Formula 
+\begin{equation}
+\left.\frac{d^{2}}{dt^{2}}\right|_{t=0}\left(\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}\right)(0)=2\left(\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)\right).\label{eq:25}
+\end{equation}
+
+\end_inset
+
+Up to the factor of two, the right hand side in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) in coordinates is 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)=\left(\frac{\partial Y^{j}}{\partial x^{i}}(0)X^{i}(0)-\frac{\partial X^{j}}{\partial x^{i}}(0)Y^{i}(0)\right)e_{j},\label{eq:26}
+\end{equation}
+
+\end_inset
+
+which is the form of Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) above.
+ This concludes the proof.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure6.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-6"
+
+\end_inset
+
+Mathematica code for calculating the second derivative of the commutator.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is perhaps worth noting that you may raise objections to this in so far
+ as we're taking second order derivatives.
+ Certainly the first derivative of a curve 
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+ lies in the tangent space 
+\begin_inset Formula $T_{\gamma(0)}M$
+\end_inset
+
+, but not the second.
+ The reason why we may consider the second derivative to be an element of
+ the tangent space is extremely subtle.
+ Let's say you have a curve 
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+ such that 
+\begin_inset Formula $\gamma^{\prime}(0)=0$
+\end_inset
+
+.
+ In general tangent vectors of curves act on the algebra of smooth functions
+ 
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+ via 
+\begin_inset Formula $\gamma^{\prime}(0)f=(f\circ\gamma)^{\prime}(0)$
+\end_inset
+
+ where 
+\begin_inset Formula $f\circ\gamma:I\longrightarrow\mathbb{R}$
+\end_inset
+
+ is a smooth function.
+ Because the first derivative vanishes, we may actually define an action
+ of 
+\begin_inset Formula $\gamma^{\prime\prime}(0)$
+\end_inset
+
+ on 
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+ via 
+\begin_inset Formula $\gamma^{\prime\prime}(0)f=(f\circ\gamma)^{\prime\prime}(0)$
+\end_inset
+
+.
+ In general this does not satisfy the criterion of being a derivation, but
+ because 
+\begin_inset Formula $\gamma^{\prime}(0)=0$
+\end_inset
+
+, it does.
+ It is worth writing out the technical details to ensure that this is so,
+ but once this is verified, we may indeed identify 
+\begin_inset Formula $\gamma^{\prime\prime}(0)\in T_{p}M$
+\end_inset
+
+.
+ In our case, one can see via Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) that this condition is satisfied, as the commutator possesses no first
+ order terms.
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+[1] Timothy Goldberg.
+ What is a connection and what is it good for? 2008.
+ URL 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pi.math.cornell.edu/~goldberg/Notes/AboutConnections.pdf
+\end_layout
+
+\end_inset
+
+ .
+\end_layout
+
+\begin_layout Itemize
+[2] John Lee.
+ Smooth Manifolds Second Edition.
+ pages 227-233, 2000.
+\end_layout
+
+\end_body
+\end_document

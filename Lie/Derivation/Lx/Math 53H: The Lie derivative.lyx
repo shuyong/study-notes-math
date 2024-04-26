@@ -1,0 +1,2287 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-std
+theorems-sec
+eqs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref true
+\pdf_title "Math 53H: The Lie derivative"
+\pdf_author "Yakov Eliashberg"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle empty
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Math 53H: The Lie derivative
+\end_layout
+
+\begin_layout Author
+Yakov Eliashberg
+\end_layout
+
+\begin_layout Date
+May 19, 2011
+\end_layout
+
+\begin_layout Section
+Lie derivative of a differential form
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $A$
+\end_inset
+
+ be a smooth vector field defined on a domain 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+ (more generally we can assume that 
+\begin_inset Formula $U$
+\end_inset
+
+ is any 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional manifold).
+ Given a function 
+\begin_inset Formula $f:U\rightarrow\mathbb{R}$
+\end_inset
+
+ we can define the 
+\shape italic
+directional derivative
+\shape default
+ 
+\begin_inset Formula $L_{A}f$
+\end_inset
+
+ of 
+\begin_inset Formula $f$
+\end_inset
+
+ along 
+\begin_inset Formula $A$
+\end_inset
+
+ : 
+\begin_inset Formula 
+\begin{equation}
+L_{A}f=\lim_{s\rightarrow0}\frac{f(x+tX)-f(x)}{t}.\label{eq:1.1}
+\end{equation}
+
+\end_inset
+
+The directional derivative has many other notation: 
+\begin_inset Formula $D_{A}(f),\frac{\partial f}{\partial A},df(A),\ldots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us denote by 
+\begin_inset Formula $A^{t}:U\rightarrow U$
+\end_inset
+
+, 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+, the phase flow of the vector field 
+\begin_inset Formula $A$
+\end_inset
+
+.
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Note that that the phase flow is not necessarily globally defined, and may
+ mot be defined for all 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ However all our considerations in this section will be local, and according
+ to the existence and uniqueness theorem for ODE, the flow is always locally
+ defined.
+ Hence, to simplify the notation, we will not be making this distinction
+ between the local and global.
+\end_layout
+
+\end_inset
+
+ Let us observe that the directional derivative can be also defined by the
+ formula 
+\begin_inset Formula 
+\begin{equation}
+L_{A}f=\left.\frac{d}{ds}f\circ A^{s}\right|_{s=0}.\label{eq:1.2}
+\end{equation}
+
+\end_inset
+
+It turns out that formula (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) can be generalized to define an analog of directional derivatives for
+ differential forms and vector fields, which is the 
+\shape italic
+Lie derivative
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\omega$
+\end_inset
+
+ be a differential 
+\begin_inset Formula $k$
+\end_inset
+
+-form.
+ We define the Lie derivative 
+\begin_inset Formula $L_{A}\omega$
+\end_inset
+
+ of 
+\begin_inset Formula $\omega$
+\end_inset
+
+ along 
+\begin_inset Formula $A$
+\end_inset
+
+ as
+\begin_inset Formula 
+\begin{equation}
+L_{A}\omega=\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}.\label{eq:1.3}
+\end{equation}
+
+\end_inset
+
+Note that for if 
+\begin_inset Formula $\omega$
+\end_inset
+
+ is a 
+\begin_inset Formula $0$
+\end_inset
+
+-form, i.e.
+ a function 
+\begin_inset Formula $f$
+\end_inset
+
+, then 
+\begin_inset Formula $\left(A^{s}\right)^{*}f=f\circ A^{s}$
+\end_inset
+
+, and hence, in this case definition formulas (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) coincide, and hence for functions the Lie derivative is the same as the
+ directional derivative.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-1.1"
+
+\end_inset
+
+The following identities hold
+\end_layout
+
+\begin_layout Proposition
+1.
+ 
+\begin_inset Formula $L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proposition
+2.
+ 
+\begin_inset Formula $L_{A}(d\omega)=d\left(L_{A}\omega\right)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+1.
+ 
+\begin_inset Formula 
+\begin{align*}
+L_{A}\left(\omega_{1}\wedge\omega_{2}\right) & =\left.\frac{d}{ds}\left(A^{s}\right)^{*}\left(\omega_{1}\wedge\omega_{2}\right)\right|_{s=0}=\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{1}\wedge\left(A^{s}\right)^{*}\omega_{2}\right)\right|_{s=0}\\
+ & =\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{1}\right)\right|_{s=0}\wedge\omega_{2}+\left.\omega_{1}\wedge\frac{d}{ds}\left(\left(A^{s}\right)^{*}\omega_{2}\right)\right|_{s=0}=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+2.
+ 
+\begin_inset Formula $L_{A}(d\omega)=\left.\frac{d}{ds}\left(\left(A^{s}\right)^{*}d\omega\right)\right|_{s=0}=\left.\frac{d}{ds}\left(d\left(A^{s}\right)^{*}\omega\right)\right|_{s=0}=d\left(\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}\right)=d\left(L_{A}\omega\right).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The following formula of Eli Cartan provides an effective way for computing
+ Lie derivative of differential form.
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "thm:Theorem-1.2"
+
+\end_inset
+
+Let 
+\begin_inset Formula $A$
+\end_inset
+
+ be a vector field and 
+\begin_inset Formula $\omega$
+\end_inset
+
+ a differential 
+\begin_inset Formula $k$
+\end_inset
+
+-form.
+ Then
+\begin_inset Formula 
+\begin{equation}
+L_{A}\omega=d(A\lrcorner\omega)+A\lrcorner d\omega.\label{eq:1.4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Suppose first that 
+\begin_inset Formula $\omega=f$
+\end_inset
+
+ is a 
+\begin_inset Formula $0$
+\end_inset
+
+-form.
+ Then 
+\begin_inset Formula $L_{A}f=df(A)=A\lrcorner df$
+\end_inset
+
+, which is equivalent to formula (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), because in this case the first term in the formula is equal to 
+\begin_inset Formula $0$
+\end_inset
+
+ .
+ Then, using Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-1.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) we get
+\begin_inset Formula 
+\[
+L_{A}df=dL_{A}f=d(df(A))=d(A\lrcorner df),
+\]
+
+\end_inset
+
+which is again equivalent to (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) because in this case 
+\begin_inset Formula $ddf=0$
+\end_inset
+
+.
+ Next we note that if the formula (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) holds for 
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\omega_{2}$
+\end_inset
+
+ then it holds also for 
+\begin_inset Formula $\omega_{1}\wedge\omega_{2}$
+\end_inset
+
+.
+ Indeed, denothe the degree of forms 
+\begin_inset Formula $\omega_{1},\omega_{2}$
+\end_inset
+
+ by 
+\begin_inset Formula $d_{1},d_{2}$
+\end_inset
+
+.
+ Then we have
+\begin_inset Formula 
+\[
+\begin{aligned}(\star) & L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=\left(L_{A}\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge L_{A}\omega_{2}\\
+ & =\left(A\lrcorner d\omega_{1}+d(A\lrcorner\omega_{1})\right)\wedge\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}+d(A\lrcorner\omega_{2})\right)\\
+ & =(A\lrcorner d\omega_{1})\wedge\omega_{2}+\omega_{1}\wedge(A\lrcorner d\omega_{2})+d(A\lrcorner\omega_{1})\wedge\omega_{2}+\omega_{1}\wedge d(A\lrcorner\omega_{2})\\
+ & \text{On the other hand}\\
+(\star\star) & A\lrcorner d\left(\omega_{1}\wedge\omega_{2}\right)+d\left(A\lrcorner\left(\omega_{1}\wedge\omega_{2}\right)\right)\\
+ & =A\lrcorner\left(d\omega_{1}\wedge\omega_{2}+(-1)^{d_{1}}\omega_{1}\wedge d\omega_{2}\right)+d\left(\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}}\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)\right)\\
+ & =\left(A\lrcorner d\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}+1}d\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)+(-1)^{d_{1}}\left(A\lrcorner\omega_{1}\right)\wedge d\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}\right)\\
+ & +d\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+(-1)^{d_{1}+1}A\lrcorner\omega_{1}\wedge d\omega_{2}+(-1)^{d_{1}}d\omega_{1}\wedge\left(A\lrcorner\omega_{2}\right)+\omega_{1}\wedge\left(d\left(A\lrcorner\omega_{2}\right)\right)\\
+ & =\left(A\lrcorner d\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge\left(A\lrcorner d\omega_{2}\right)+d\left(A\lrcorner\omega_{1}\right)\wedge\omega_{2}+\omega_{1}\wedge d\left(A\lrcorner\omega_{2}\right).
+\end{aligned}
+\]
+
+\end_inset
+
+Comparing the computation in 
+\begin_inset Formula $(\star)$
+\end_inset
+
+ and 
+\begin_inset Formula $(\star\star)$
+\end_inset
+
+ we conclude that
+\begin_inset Formula 
+\[
+L_{A}\left(\omega_{1}\wedge\omega_{2}\right)=A\lrcorner d\left(\omega_{1}\wedge\omega_{2}\right)+d\left(A\lrcorner\left(\omega_{1}\wedge\omega_{2}\right)\right).
+\]
+
+\end_inset
+
+By induction we can prove a similar formulas for an exterior product of
+ any number of forms.
+\end_layout
+
+\begin_layout Proof
+Finally we observe that any differential 
+\begin_inset Formula $k$
+\end_inset
+
+-form 
+\begin_inset Formula $\omega$
+\end_inset
+
+ can be written in coordinates as 
+\begin_inset Formula $\sum_{1\leq i_{1}<\cdots<i_{k}\leq n}f_{i_{1}\ldots i_{k}}(x)dx_{i_{1}}\wedge\cdots\wedge dx_{i_{k}}$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $\omega$
+\end_inset
+
+ is a sum of exterior products of functions (
+\begin_inset Formula $0$
+\end_inset
+
+-forms) and exact 
+\begin_inset Formula $1$
+\end_inset
+
+-forms, and hence Cartan's formula follows.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-1.3"
+
+\end_inset
+
+We have
+\begin_inset Formula 
+\[
+L_{A}\omega=0\Longleftrightarrow\left(A^{s}\right)^{*}\omega=\omega\text{ for all }s\in\mathbb{R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+If 
+\begin_inset Formula $\left(A^{s}\right)^{*}\omega\equiv\omega$
+\end_inset
+
+ then 
+\begin_inset Formula $L_{A}\omega=\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=0}=0$
+\end_inset
+
+.
+ To prove the converse we note that
+\begin_inset Formula 
+\[
+\begin{aligned}\left.\frac{d}{ds}\left(A^{s}\right)^{*}\omega\right|_{s=s_{0}} & =\lim_{t\rightarrow0}\frac{\left(A^{s_{0}+t}\right)^{*}\omega-\left(A^{s_{0}}\right)^{*}\omega}{t}=\left(A^{s_{0}}\right)^{*}\left(\lim_{t\rightarrow0}\frac{\left(A^{t}\right)^{*}\omega-\omega}{t}\right)\\
+ & =\left(A^{s_{0}}\right)^{*}\left(L_{A}\omega\right),
+\end{aligned}
+\]
+
+\end_inset
+
+and hence if 
+\begin_inset Formula $L_{a}\omega=0$
+\end_inset
+
+ then 
+\begin_inset Formula $\left(A^{s}\right)^{*}\omega=\omega$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Action of diffeomorphisms on vector fields
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+ be a domain in 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $f:U\rightarrow V$
+\end_inset
+
+ be a diffeomorphism of 
+\begin_inset Formula $U$
+\end_inset
+
+ onto another domain 
+\begin_inset Formula $V\subset\mathbb{R}^{n}$
+\end_inset
+
+.
+ We define the 
+\shape italic
+push-forward
+\shape default
+ operator 
+\begin_inset Formula $f_{*}:\mathrm{Vect}(U)\rightarrow\mathrm{Vect}(V)$
+\end_inset
+
+ which maps vector fields on 
+\begin_inset Formula $U$
+\end_inset
+
+ to vector fields on 
+\begin_inset Formula $V$
+\end_inset
+
+ by the formula:
+\begin_inset Formula 
+\begin{equation}
+f_{*}(A)(f(x))=df_{x}(A(x)),\quad A\in\mathrm{Vect}(U),x\in U.\label{eq:2.1}
+\end{equation}
+
+\end_inset
+
+Equivalently,
+\begin_inset Formula 
+\[
+f_{*}(A)(y)=df_{f^{-1}(y)}\left(A\left(f^{-1}(y)\right)\right),\quad y\in V.
+\]
+
+\end_inset
+
+Suppose we are given a coordinate system 
+\begin_inset Formula $\left(x_{1},\ldots,x_{n}\right)$
+\end_inset
+
+ in 
+\begin_inset Formula $U$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\[
+f_{*}\left(\frac{\partial}{\partial x_{j}}\right)=\frac{\partial f}{\partial x_{j}},j=1,\ldots,n,
+\]
+
+\end_inset
+
+or more precisely
+\begin_inset Formula 
+\[
+f_{*}\left(\frac{\partial}{\partial x_{j}}\right)(y)=\frac{\partial f}{\partial x_{j}}\left(f^{-1}(y)\right),y\in V.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can also define the 
+\shape italic
+pull-back
+\shape default
+ operator 
+\begin_inset Formula $f^{*}:\mathrm{Vect}(V)\rightarrow\mathrm{Vect}(U)$
+\end_inset
+
+ by the formula 
+\begin_inset Formula $f^{*}=\left(f^{-1}\right)_{*}$
+\end_inset
+
+ .
+ In other words, the pull-back is the push-forward by the inverse diffeomorphism.
+ More explicitly, we can write
+\begin_inset Formula 
+\begin{equation}
+f^{*}(B)(x)=d\left(f^{-1}\right)(f(x))\left(B(f(x))\right)=\left(df_{x}\right)^{-1}\left(B(f(x))\right),\quad B\in\mathrm{Vect}(V),x\in U.\label{eq:2.2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us point out that why for differential form the pull-back operator 
+\begin_inset Formula $f^{*}$
+\end_inset
+
+ is defined for an 
+\shape italic
+arbitrary smooth map
+\shape default
+ 
+\begin_inset Formula $f$
+\end_inset
+
+, for the case of vector fields both operators, 
+\begin_inset Formula $f_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $f^{*}$
+\end_inset
+
+ are defined only for 
+\shape italic
+diffeomorphisms
+\shape default
+.
+\end_layout
+
+\begin_layout Section
+Lie bracket of vector fields
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $A,B\in\mathrm{Vect}(U)$
+\end_inset
+
+ be two vector fields on a domain 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+.
+ As it was shown in 52H, there is a vector field 
+\begin_inset Formula $C\in\mathrm{Vect}(V)$
+\end_inset
+
+, called the 
+\shape italic
+Lie bracket
+\shape default
+ of the vector fields 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+ and denoted by 
+\begin_inset Formula $C=[A,B]$
+\end_inset
+
+, which is characterized by the following property: 
+\shape italic
+for any smooth function 
+\begin_inset Formula $\phi:U\rightarrow\mathbb{R}$
+\end_inset
+
+ one has
+\shape default
+
+\begin_inset Formula 
+\[
+L_{C}\phi=\left(L_{A}L_{B}-L_{B}L_{A}\right)\phi.
+\]
+
+\end_inset
+
+A surprising fact here is that though the right-hand side of this equation
+ seems to be the second order differential operator, the left-hand side
+ is the first order operator, so the second derivatives on the right side
+ cancel each other.
+\end_layout
+
+\begin_layout Standard
+Recall that the bracket 
+\begin_inset Formula $[A,B]$
+\end_inset
+
+ has the following properties
+\end_layout
+
+\begin_layout Itemize
+Lie bracket is a bilinear operation; 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[A,B]=-[B,A]$
+\end_inset
+
+ (skew-symmetricity); 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $[[A,B]C]+[[B,C],A]+[[C,A],B]=0$
+\end_inset
+
+ (Jacobi identity); 
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $A=\sum_{1}^{n}a_{j}\frac{\partial}{\partial x_{j}}$
+\end_inset
+
+ and 
+\begin_inset Formula $B=\sum_{1}^{n}b_{j}\frac{\partial}{\partial x_{j}}$
+\end_inset
+
+ then 
+\begin_inset Formula 
+\begin{equation}
+[A,B]=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}a_{j}\frac{\partial b_{i}}{\partial x_{j}}-b_{j}\frac{\partial a_{i}}{\partial x_{j}}\right)\frac{\partial}{\partial x_{i}}.\label{eq:3.1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section we will give a new interpretation of the Lie bracket 
+\begin_inset Formula $[A,B]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We define the 
+\shape italic
+Lie derivative
+\shape default
+ 
+\begin_inset Formula $L_{A}B$
+\end_inset
+
+ of the vector field 
+\begin_inset Formula $B$
+\end_inset
+
+ along the vector field 
+\begin_inset Formula $A$
+\end_inset
+
+ in a similar way as we defined in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ the Lie derivative of a differential form.
+ Namely,
+\begin_inset Formula 
+\begin{equation}
+L_{A}B=\left.\frac{d\left(A^{s}\right)^{*}B}{ds}\right|_{s=0}.\label{eq:3.2}
+\end{equation}
+
+\end_inset
+
+More explicitly,
+\begin_inset Formula 
+\[
+L_{A}B(x)=\lim_{s\rightarrow0}\frac{d_{A^{s}(x)}\left(A^{-s}\right)\left(B\left(A^{s}(x)\right)-B(x)\right)}{s}.
+\]
+
+\end_inset
+
+Similarly, to Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-1.3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-3.1"
+
+\end_inset
+
+
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+L_{A}B=0\Longleftrightarrow\left(A^{s}\right)^{*}B\equiv B\text{ for all }s\in\mathbb{R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+We have
+\begin_inset Formula 
+\[
+\begin{aligned}\left.\frac{d\left(A^{s}\right)^{*}B}{ds}\right|_{s=s_{0}} & =\lim_{s\rightarrow0}\frac{\left(A^{s+s_{0}}\right)^{*}B-\left(A^{s_{0}}\right)^{*}B}{s}\\
+ & =\lim_{s\rightarrow0}\left(A^{s_{0}}\right)^{*}\left(\frac{\left(A^{s}\right)^{*}B-B}{s}\right)=\left(A^{s_{0}}\right)^{*}\left(\lim_{s\rightarrow0}\frac{\left(A^{s}\right)^{*}B-B}{s}\right)\\
+ & =\left(A^{s_{0}}\right)^{*}\left(L_{A}B\right).
+\end{aligned}
+\]
+
+\end_inset
+
+Hence, if 
+\begin_inset Formula $L_{A}B=0$
+\end_inset
+
+ then 
+\begin_inset Formula $\frac{d\left(A^{s}\right)^{*}B}{ds}$
+\end_inset
+
+ for all 
+\begin_inset Formula $s$
+\end_inset
+
+ and hence 
+\begin_inset Formula $\left(A^{s}\right)^{*}B=\left(A^{0}\right)^{*}B=B$
+\end_inset
+
+.
+ The converse is obvious.
+\end_layout
+
+\begin_layout Theorem
+\begin_inset CommandInset label
+LatexCommand label
+name "thm:Theorem-3.2"
+
+\end_inset
+
+For any two vector fields 
+\begin_inset Formula $A,B\in\mathrm{Vect}(U)$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+L_{A}B=[A,B].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Note that 
+\begin_inset Formula $A^{s}(x)=x+sA(x)+o(s)$
+\end_inset
+
+.
+ Hence, we can write
+\begin_inset Formula 
+\[
+d_{y}A^{-s}=\mathrm{Id}-sd_{y}A+o(s),
+\]
+
+\end_inset
+
+where we view here 
+\begin_inset Formula $A$
+\end_inset
+
+ as a map 
+\begin_inset Formula $\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+.
+ Furthermore, plugging 
+\begin_inset Formula $y=A^{s}(x)$
+\end_inset
+
+ we get
+\begin_inset Formula 
+\[
+d_{A^{s}(x)}A^{-s}=\mathrm{Id}-sd_{x}A+o(s),
+\]
+
+\end_inset
+
+because 
+\begin_inset Formula $s\left(d_{y}A-d_{x}A\right)=o(s)$
+\end_inset
+
+.
+ We also have 
+\begin_inset Formula $B\left(A^{s}(x)\right)=B(x+sA(x)+o(x))=B(x)+sd_{x}B(A(x))+o(s)$
+\end_inset
+
+.
+ Thus, ignoring terms 
+\begin_inset Formula $o(s)$
+\end_inset
+
+-terms we get
+\begin_inset Formula 
+\[
+\begin{aligned}L_{A}B & =\lim_{s\rightarrow0}\frac{1}{s}\left(d_{A^{s}(x)}\left(A^{-s}\right)\left(B\left(A^{s}(x)\right)\right)-B(x)\right)\\
+ & =\lim_{s\rightarrow0}\frac{1}{s}\left(\left(\mathrm{Id}-sd_{x}A\right)\right)\left(B(x)+sd_{x}B(A(x))-B(x)\right)\\
+ & =\lim_{s\rightarrow0}\frac{1}{s}\left(B(x)-sd_{x}A(B)+sd_{x}B(A)-B(x)\right)=d_{x}B(A)-d_{x}A(B).
+\end{aligned}
+\]
+
+\end_inset
+
+But the right-hand-side expression written in coordinates has the form
+\begin_inset Formula 
+\[
+d_{x}B(A)-d_{x}A(B)=\sum_{i=1}^{n}\left(\sum_{j=1}^{n}a_{j}\frac{\partial b_{i}}{\partial x_{j}}-b_{j}\frac{\partial a_{i}}{\partial x_{j}}\right)\frac{\partial}{\partial x_{i}}
+\]
+
+\end_inset
+
+which coincides with the expression (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) for the Lie bracket.
+\end_layout
+
+\begin_layout Exercise
+\begin_inset CommandInset label
+LatexCommand label
+name "exer:Exercise-3.3"
+
+\end_inset
+
+Prove that for any smooth function 
+\begin_inset Formula $\phi$
+\end_inset
+
+ one has
+\begin_inset Formula 
+\[
+L_{[A,B]}\phi=\frac{\partial^{2}\left(\phi\circ A^{s}\circ B^{t}\right)}{\partial s\partial t}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+First integrals
+\end_layout
+
+\begin_layout Standard
+Suppose we are given a differential equation
+\begin_inset Formula 
+\begin{equation}
+\dot{x}=A(x),\label{eq:4.1}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $A$
+\end_inset
+
+ is a vector field on the domain 
+\begin_inset Formula $U\subset\mathbb{R}^{n}$
+\end_inset
+
+.
+ A function 
+\begin_inset Formula $\phi:U\rightarrow\mathbb{R}$
+\end_inset
+
+ is called a 
+\shape italic
+first integral
+\shape default
+, or simply an integral of equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) if it is constant on solutions of this equation, or equivalently on integral
+ curves of the vector field 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Clearly, a necessary and sufficient condition for 
+\begin_inset Formula $\phi$
+\end_inset
+
+ to be an integral is to satisfy the equation 
+\begin_inset Formula $L_{A}\phi=0$
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $L_{A}\phi$
+\end_inset
+
+ denotes the directional derivative of 
+\begin_inset Formula $\phi$
+\end_inset
+
+ along 
+\begin_inset Formula $A$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is an integral of equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) then the solutions are contained in the level sets of the function 
+\begin_inset Formula $\phi$
+\end_inset
+
+, and hence, this allows us to reduce the order of equation by 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ If equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) has two integrals 
+\begin_inset Formula $\phi_{1},\phi_{2}$
+\end_inset
+
+, then the solutions lie in the intersection of level sets 
+\begin_inset Formula $\left\{ \phi_{1}=c_{1}\right\} $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\{ \phi_{2}=c_{2}\right\} $
+\end_inset
+
+, 
+\begin_inset Formula $c_{1},c_{2}\in\mathbb{R}$
+\end_inset
+
+.
+ Hence, if these level sets transverse to each other (which means that the
+ differential 
+\begin_inset Formula $d\phi_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $d\phi_{2}$
+\end_inset
+
+ are linearly independent at every point of the intersection), then the
+ solutions lie in 
+\begin_inset Formula $\left\{ \phi_{1}=c_{1}\right\} \cap\left\{ \phi_{2}=c_{2}\right\} $
+\end_inset
+
+, which allows to further reduce the order of the system.
+ If the order is reduced to 
+\begin_inset Formula $1$
+\end_inset
+
+ then the equation can be explicitly integrated in quadratures.
+ Such systems are called 
+\shape italic
+completely intregrable
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+Some important examples of integrals which come from Mechanics are discussed
+ in the next section.
+\end_layout
+
+\begin_layout Section
+Hamiltonian vector fields
+\end_layout
+
+\begin_layout Standard
+Consider the vector space 
+\begin_inset Formula $\mathbb{R}^{2n}$
+\end_inset
+
+ with coordinates 
+\begin_inset Formula $\left(p_{1},\ldots,p_{n},q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+ and a closed differential 
+\begin_inset Formula $2$
+\end_inset
+
+-form 
+\begin_inset Formula $\omega=\sum_{1}^{n}dp_{i}\wedge dq_{i}$
+\end_inset
+
+.
+ We will wrote 
+\begin_inset Formula $p=\left(p_{1},\ldots,p_{n}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $q=\left(q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+.
+ Given a function 
+\begin_inset Formula $H:\mathbb{R}^{2n}\rightarrow\mathbb{R}$
+\end_inset
+
+ we will denote
+\begin_inset Formula 
+\[
+\frac{\partial H}{\partial q}:=\left(\frac{\partial H}{\partial q_{1}},\ldots,\frac{\partial H}{\partial q_{n}}\right),\quad\frac{\partial H}{\partial p}:=\left(\frac{\partial H}{\partial p_{1}},\ldots,\frac{\partial H}{\partial p_{n}}\right).
+\]
+
+\end_inset
+
+Note that this form is non-degenerate, i.e.
+ its matrix is non-degenerate at every point.
+ Therefore, the map 
+\begin_inset Formula $J:\mathrm{Vect}\left(\mathbb{R}^{2n}\right)\rightarrow\Omega^{1}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+ given by the formula 
+\begin_inset Formula $X\mapsto X\lrcorner\omega$
+\end_inset
+
+ is an isomorphism between the space 
+\begin_inset Formula $\mathrm{Vect}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+ of vector fields and the space 
+\begin_inset Formula $\Omega^{1}\left(\mathbb{R}^{2n}\right)$
+\end_inset
+
+ of differential 
+\begin_inset Formula $1$
+\end_inset
+
+-forms on 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+.
+ In coordinates the map 
+\begin_inset Formula $J$
+\end_inset
+
+ associates with a vector field 
+\begin_inset Formula $\left(P_{1},\ldots,P_{n},Q_{1},\ldots,Q_{n}\right)$
+\end_inset
+
+ the differential form 
+\begin_inset Formula $\sum_{1}^{n}Q_{i}dp_{i}-P_{i}dq_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.1"
+
+\end_inset
+
+Given a vector field 
+\begin_inset Formula $A$
+\end_inset
+
+ on 
+\begin_inset Formula $\mathbb{R}^{2n}$
+\end_inset
+
+ the differential 
+\begin_inset Formula $1$
+\end_inset
+
+-form 
+\begin_inset Formula $J(A)=A\lrcorner\omega$
+\end_inset
+
+ is closed if and only if 
+\begin_inset Formula $L_{A}\omega=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Indeed, according to Cartan's formula (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1.4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) we have 
+\begin_inset Formula $L_{A}\omega=d(A\lrcorner\omega)=dJ(A)$
+\end_inset
+
+ because 
+\begin_inset Formula $\omega$
+\end_inset
+
+ is closed.
+\end_layout
+
+\begin_layout Standard
+Given a function 
+\begin_inset Formula $H:\mathbb{R}^{2n}\rightarrow\mathbb{R}$
+\end_inset
+
+ we denote by 
+\begin_inset Formula $X_{H}$
+\end_inset
+
+ the vector field 
+\begin_inset Formula $-J^{-1}(dH)$
+\end_inset
+
+.
+ Vector fields obtained by this construction are called 
+\shape italic
+Hamiltonian
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+To find a coordinate expression for 
+\begin_inset Formula $X_{H}$
+\end_inset
+
+ we write 
+\begin_inset Formula $X_{H}=\sum_{1}^{n}a_{i}\frac{\partial}{\partial p_{i}}+b_{i}\frac{\partial}{\partial q_{i}}$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\[
+X_{H}\lrcorner\omega=\left(\sum_{1}^{n}a_{i}\frac{\partial}{\partial p_{i}}+b_{i}\frac{\partial}{\partial q_{i}}\right)\lrcorner\sum_{1}^{n}dp_{i}\wedge dq_{i}=\sum_{1}^{n}-b_{i}dp_{i}+a_{i}dq_{i}.
+\]
+
+\end_inset
+
+Hence, the equation
+\begin_inset Formula 
+\[
+X_{H}\lrcorner\omega=-dH=-\sum_{1}^{n}\frac{\partial H}{d}p_{i}+\frac{\partial H}{\partial q_{i}}dq_{i}
+\]
+
+\end_inset
+
+implies 
+\begin_inset Formula $a_{i}=-\frac{\partial H}{\partial q_{i}},b_{i}=\frac{\partial H}{\partial p_{i}},i=1,\ldots,n$
+\end_inset
+
+.
+ Thus,
+\begin_inset Formula 
+\[
+X_{H}=\sum_{1}^{n}-\frac{\partial H}{\partial q_{i}}\frac{\partial}{\partial p_{i}}+\frac{\partial H}{\partial p_{i}}\frac{\partial}{\partial q_{i}}.
+\]
+
+\end_inset
+
+In a shorter form, omitting indices we will write
+\begin_inset Formula 
+\[
+X_{H}=-\frac{\partial H}{\partial q}\frac{\partial}{\partial p}+\frac{\partial H}{\partial p}\frac{\partial}{\partial q}.
+\]
+
+\end_inset
+
+Thus the system of differential equations corresponding to the vector field
+ 
+\begin_inset Formula $X_{H}$
+\end_inset
+
+ has the form
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\dot{p} & =-\frac{\partial H}{\partial q}\\
+\dot{q} & =\frac{\partial H}{\partial p}.
+\end{aligned}
+\label{eq:5.1}
+\end{equation}
+
+\end_inset
+
+These equations play an important role in Mechanics, and called 
+\shape italic
+Hamilton canonical equations
+\shape default
+.
+ They describe the phase flow of a mechanical system.
+ Here the coordinates 
+\begin_inset Formula $q=\left(q_{1},\ldots,q_{n}\right)$
+\end_inset
+
+ determine a position of the system, or a point in the 
+\shape italic
+configuration space
+\shape default
+ of the mechanical system.
+ The coordinates 
+\begin_inset Formula $p=\left(p_{1},\ldots,p_{n}\right)$
+\end_inset
+
+ are called 
+\shape italic
+momenta
+\shape default
+ and can be viewed as vectors of the cotangent bundle to the configuration
+ space.
+ The function 
+\begin_inset Formula $H$
+\end_inset
+
+ is the full energy of the system expressed through coordinates and momenta.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.2"
+
+\end_inset
+
+The function 
+\begin_inset Formula $H$
+\end_inset
+
+ is a first integral of the equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), i.e.
+ 
+\begin_inset Formula $L_{X_{H}}H=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\[
+L_{X_{H}}H=dH\left(X_{H}\right)=-\frac{\partial H}{\partial p}\frac{\partial H}{\partial q}+\frac{\partial H}{\partial q}\frac{\partial H}{\partial p}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-5.3"
+
+\end_inset
+
+Consider Newton equations
+\begin_inset Formula 
+\[
+\ddot{q}_{i}=-\frac{\partial U}{\partial q_{i}},i=1,\ldots,n,
+\]
+
+\end_inset
+
+or in shorter notation
+\begin_inset Formula 
+\[
+\ddot{q}=-\frac{\partial U}{\partial q}=-\nabla U.
+\]
+
+\end_inset
+
+Reducing it to a system of first order equation we get
+\begin_inset Formula 
+\begin{align}
+\dot{p} & =-\frac{\partial U}{\partial q}\label{eq:5.2}\\
+\dot{q} & =p.\label{eq:5.3}
+\end{align}
+
+\end_inset
+
+Consider the 
+\shape italic
+full energy
+\shape default
+ 
+\begin_inset Formula $H(p,q)=\sum_{1}^{n}\frac{p_{i}^{2}}{2}+U(q)=\frac{1}{2}p^{2}+U(q)$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $\frac{\partial H}{\partial q}=\frac{\partial U}{\partial q}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\partial H}{\partial p}=p$
+\end_inset
+
+, and hence equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) takes the form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) with this Hamiltonian function 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ Lemma 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lem:Lemma-5.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is the law of conservation law of energy.
+\end_layout
+
+\begin_layout Lemma
+\begin_inset CommandInset label
+LatexCommand label
+name "lem:Lemma-5.4"
+
+\end_inset
+
+Let 
+\begin_inset Formula $X_{H}$
+\end_inset
+
+ be a Hamiltonian vector field and 
+\begin_inset Formula $X_{H}^{s}$
+\end_inset
+
+, the phase flow it generates.
+ Then 
+\begin_inset Formula $\left(X_{H}^{s}\right)^{*}\omega=\omega$
+\end_inset
+
+ for all 
+\begin_inset Formula $s\in\mathbb{R}$
+\end_inset
+
+.
+ In other words, the flow of a Hamiltonian vector field preserves the form
+ 
+\begin_inset Formula $\omega$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+It is sufficient to prove that 
+\begin_inset Formula $L_{X_{H}}\omega=0$
+\end_inset
+
+.
+ Using Theorem 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "thm:Theorem-1.2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we get
+\begin_inset Formula 
+\[
+L_{X_{H}}\omega=d\left(X_{H}\lrcorner\omega\right)+X_{H}\lrcorner d\omega.
+\]
+
+\end_inset
+
+But 
+\begin_inset Formula $\omega$
+\end_inset
+
+ is closed, and hence 
+\begin_inset Formula $d\omega=0$
+\end_inset
+
+, while 
+\begin_inset Formula $X_{H}\lrcorner\omega=dH$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $L_{X_{H}}\omega=ddH=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Canonical transformations
+\end_layout
+
+\begin_layout Standard
+The equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) are called canonical because they are invariant with respect to a large
+ group of transformation of the phase space.
+ Let us call a diffeomorphism 
+\begin_inset Formula $f:\mathbb{R}^{2n}\rightarrow\mathbb{R}^{2n}$
+\end_inset
+
+ a 
+\shape italic
+symplectomorphism
+\shape default
+ (or alternatively a 
+\shape italic
+canonical transformation
+\shape default
+) if it preserves the form 
+\begin_inset Formula $\omega$
+\end_inset
+
+.
+ Then it preserves also the form of the equations (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Indeed, suppose 
+\begin_inset Formula $f(p,q)=(\widetilde{p},\widetilde{q})$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $f^{*}(\omega)=f^{*}(dp\wedge dq)=d\widetilde{p}\wedge d\widetilde{q}=\omega=dp\wedge dq$
+\end_inset
+
+.
+ Thus if we express the function 
+\begin_inset Formula $H(p,q)$
+\end_inset
+
+ through the coordinates 
+\begin_inset Formula $\widetilde{p},\widetilde{q}$
+\end_inset
+
+, 
+\begin_inset Formula $H(p,q)=\widetilde{H}(\widetilde{p},\widetilde{q})$
+\end_inset
+
+ then the equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) will take the same form in coordinates 
+\begin_inset Formula $(\widetilde{p},\widetilde{q})$
+\end_inset
+
+ :
+\begin_inset Formula 
+\begin{equation}
+\begin{aligned}\dot{\tilde{p}} & =-\frac{\partial\widetilde{H}}{\partial\widetilde{q}}\\
+\dot{\widetilde{q}} & =\frac{\partial\widetilde{H}}{\partial\widetilde{p}}.
+\end{aligned}
+\label{eq:6.1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following proposition provides an important class of canonical transformatio
+ns,
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:Proposition-6.1"
+
+\end_inset
+
+Consider any diffeomorphism 
+\begin_inset Formula $f:U\rightarrow V$
+\end_inset
+
+ between two domains 
+\begin_inset Formula $U,V\subset\mathbb{R}^{2n}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $Df$
+\end_inset
+
+ be the Jacobi matrix of the map 
+\begin_inset Formula $U$
+\end_inset
+
+.
+ Then the map
+\begin_inset Formula 
+\[
+(p,q)\mapsto\left(\left(\left(Df\right)^{-1}\right)^{T}p,f(q)\right)
+\]
+
+\end_inset
+
+is a symplectomorphism 
+\begin_inset Formula $\widehat{f}$
+\end_inset
+
+ of the domain 
+\begin_inset Formula $\widehat{U}=\left\{ p\in\mathbb{R}^{n},q\in U\right\} $
+\end_inset
+
+ to the domain 
+\begin_inset Formula $\widehat{V}=\left\{ p\in\mathbb{R}^{n},q\in V\right\} $
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $\left(\left(Df\right)^{-1}\right)^{T}$
+\end_inset
+
+ is the matrix transpose to inverse of the Jacobi matrix 
+\begin_inset Formula $Df$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In other words, 
+\shape italic
+any change of 
+\begin_inset Formula $q$
+\end_inset
+
+-coordinates extends to a canonical change of the 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-coordinates
+\shape default
+.
+\end_layout
+
+\begin_layout Proof
+Let us denote the elements of the matrix 
+\begin_inset Formula $(Df)^{-1}$
+\end_inset
+
+ by 
+\begin_inset Formula $g_{ij},i,j=1,\ldots,n$
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $\sum_{i}^{n}g_{ji}\frac{\partial f_{i}}{\partial q_{k}}=\delta_{jk},\delta_{jk}=1$
+\end_inset
+
+ if 
+\begin_inset Formula $j=k$
+\end_inset
+
+ and 
+\begin_inset Formula $\delta_{jk}=0$
+\end_inset
+
+ if 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Let us compute 
+\begin_inset Formula $\widehat{f^{*}}(pdq)=\widehat{f^{*}}\left(\sum_{1}^{n}p_{i}dq_{i}\right)$
+\end_inset
+
+.
+ We have
+\begin_inset Formula 
+\[
+\widehat{f}\left(p_{1},\ldots,p_{n},q_{1},\ldots,q_{n}\right)=\left(\sum_{1}^{n}g_{j1}p_{j},\ldots,\sum_{1}^{n}g_{jn}p_{j},f_{1}(q),\ldots,f_{n}(q)\right).
+\]
+
+\end_inset
+
+Hence,
+\begin_inset Formula 
+\[
+\begin{aligned}\widehat{f^{*}}(pdq) & =\widehat{f^{*}}\left(\sum_{1}^{n}p_{i}dq_{i}\right)=\sum_{i=1}^{n}\sum_{j=1}^{n}g_{ji}p_{j}df_{i}\\
+ & =\sum_{i,j,k=1}^{n}g_{ji}\frac{\partial f_{i}}{\partial q_{k}}p_{j}dq_{k}=\sum_{j,k=1}^{n}\delta_{jk}p_{j}dq_{k}\\
+ & =\sum_{1}^{n}p_{k}dq_{k}=pdq.
+\end{aligned}
+\]
+
+\end_inset
+
+Hence,
+\begin_inset Formula 
+\[
+\widehat{f^{*}}\omega=\widehat{f^{*}}dp\wedge dq=d\left(\widehat{f^{*}}(pdq)\right)=d(pdq)=dp\wedge dq=\omega.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Corollary
+\begin_inset CommandInset label
+LatexCommand label
+name "cor:Corollary-6.2"
+
+\end_inset
+
+Suppose that there exists a change of coordinates 
+\begin_inset Formula $\widetilde{q}=f(q)$
+\end_inset
+
+ such that in new coordinates the Hamiltonian function 
+\begin_inset Formula $H$
+\end_inset
+
+ is independent of the coordinate 
+\begin_inset Formula $\widetilde{q}_{1}$
+\end_inset
+
+.
+ Then 
+\begin_inset Formula $\widetilde{p}_{1}=\sum_{1}^{n}g_{j1}p_{j}$
+\end_inset
+
+ is a first integral of the system (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Here the notation 
+\begin_inset Formula $g_{ij}$
+\end_inset
+
+ stands for the elements of the matrix 
+\begin_inset Formula $(Df)^{-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proof
+Let us extend the coordinate change 
+\begin_inset Formula $q\mapsto\widetilde{q}=f(q)$
+\end_inset
+
+ to a canonical change of coordinates 
+\begin_inset Formula $(p,q)\mapsto(\widetilde{p},\widetilde{q})=\widetilde{f}(p,q)$
+\end_inset
+
+ as in Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Then the equation in the new coordinates 
+\begin_inset Formula $(\widetilde{p},\widetilde{q})$
+\end_inset
+
+ also has the canonical Hamiltonian form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ Then 
+\begin_inset Formula $\dot{\widetilde{p}}_{1}=\frac{\partial H}{\partial\widetilde{q}_{1}}=0$
+\end_inset
+
+ because by assumption the Hamiltonian is independent of the coordinate
+ 
+\begin_inset Formula $\widetilde{q}_{1}$
+\end_inset
+
+.
+ Hence 
+\begin_inset Formula $\widetilde{p}_{1}=\sum_{1}^{n}g_{j1}p_{j}$
+\end_inset
+
+ is constant along trajectories, i.e.
+ it is a first integral.
+\end_layout
+
+\begin_layout Section
+Example: angular momentum
+\end_layout
+
+\begin_layout Standard
+Consider a Newton equation
+\begin_inset Formula 
+\begin{equation}
+\ddot{q}=-\nabla U(q),\quad q\in\mathbb{R}^{3},\label{eq:7.1}
+\end{equation}
+
+\end_inset
+
+which describes the motion of a particle of mass 
+\begin_inset Formula $1$
+\end_inset
+
+ in a field with a potential energy function 
+\begin_inset Formula $U(q)$
+\end_inset
+
+.
+ Suppose there exists an axis 
+\begin_inset Formula $l$
+\end_inset
+
+ in 
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+ such that the function 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ remains invariant with respect to rotations around 
+\begin_inset Formula $l$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The system (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) can be rewritten in the Hamiltonian form (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) with the Hamiltonian function 
+\begin_inset Formula $H=\frac{p^{2}}{2}+U(q)=\frac{p_{1}^{2}}{2}+\frac{p_{2}^{2}}{2}+\frac{p_{3}^{2}}{2}+U\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+.
+ Let us assume for simplicity that the 
+\begin_inset Formula $q_{3}$
+\end_inset
+
+-axis coincides with the axis 
+\begin_inset Formula $l$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let us change coordinates 
+\begin_inset Formula $\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+ to cylindrical coordinates 
+\begin_inset Formula $(\phi,r,z)$
+\end_inset
+
+ :
+\begin_inset Formula 
+\[
+q_{1}=r\cos\phi,q_{2}=r\sin\phi,q_{3}=z.
+\]
+
+\end_inset
+
+Equivalently,
+\begin_inset Formula 
+\[
+\phi=\arctan\frac{q_{2}}{q_{1}},r=\sqrt{q_{1}^{2}+q_{2}^{2}},z=q_{3}.
+\]
+
+\end_inset
+
+Computing the Jacobi matrix 
+\begin_inset Formula $\frac{D(\phi,r,z)}{D\left(q_{1},q_{2},q_{3}\right)}$
+\end_inset
+
+ we get
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccc}
+\frac{\partial\phi}{\partial q_{1}} & \frac{\partial\phi}{\partial q_{2}} & \frac{\partial\phi}{\partial q_{3}}\\
+\frac{\partial r}{\partial q_{1}} & \frac{\partial r}{\partial q_{2}} & \frac{\partial r}{\partial q_{3}}\\
+\frac{\partial z}{\partial q_{1}} & \frac{\partial z}{\partial q_{2}} & \frac{\partial z}{\partial q_{3}}
+\end{array}\right)=\left(\begin{array}{ccc}
+-\frac{q_{2}}{q_{1}^{2}+q_{2}^{2}} & \frac{q_{1}}{q_{1}^{2}+q_{2}^{2}} & 0\\
+\frac{q_{1}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & \frac{q_{2}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+0 & 0 & 1
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then the inverse matrix is equal to
+\begin_inset Formula 
+\[
+\left(\begin{array}{ccc}
+-q_{2} & \frac{q_{1}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+q_{1} & \frac{q_{2}}{\sqrt{q_{1}^{2}+q_{2}^{2}}} & 0\\
+0 & 0 & 1
+\end{array}\right).
+\]
+
+\end_inset
+
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Of course, in this case it would be easier to compute the Jacobi matrix
+ of the map 
+\begin_inset Formula $(\phi,r,z)\rightarrow\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+ and then change the coordinates in the result.
+ However, we are following here precisely the scheme provided by Proposition
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:Proposition-6.1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ Let us extend the coordinate change 
+\begin_inset Formula $(r,\phi,z)\mapsto\left(q_{1},q_{2},q_{3}\right)$
+\end_inset
+
+ to a canonical coordinate change
+\begin_inset Formula 
+\[
+\left(q_{1},q_{2},q_{3},p_{1},p_{2},p_{3}\right)\mapsto\left(\phi,r,q_{3},p_{\phi},p_{r},p_{z}\right)
+\]
+
+\end_inset
+
+where we denoted by 
+\begin_inset Formula $p_{r},p_{\phi},p_{z}$
+\end_inset
+
+ momenta variables corresponding to new coordinates 
+\begin_inset Formula $(r,\phi,z)$
+\end_inset
+
+.
+ In fact, we need only the coordinate 
+\begin_inset Formula $p_{\phi}$
+\end_inset
+
+ which is given by 
+\begin_inset Formula $p_{\phi}=-p_{1}q_{2}+q_{1}p_{2}$
+\end_inset
+
+.
+ Thus, the function 
+\begin_inset Formula $-p_{1}q_{2}+p_{2}q_{1}$
+\end_inset
+
+ is the first integral.
+ It is called 
+\shape italic
+the angular momentum around the 
+\begin_inset Formula $q_{3}$
+\end_inset
+
+-axis
+\shape default
+.
+\end_layout
+
+\end_body
+\end_document

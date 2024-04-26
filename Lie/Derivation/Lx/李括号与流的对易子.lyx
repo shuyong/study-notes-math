@@ -1,0 +1,2690 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+李括号与流的对易子
+\end_layout
+
+\begin_layout Author
+timothy e.
+ goldberg
+\end_layout
+
+\begin_layout Date
+October 23, 2005
+\end_layout
+
+\begin_layout Abstract
+有一个著名且基本的结果表明，两个向量场的流的交换的充要条件是这两个向量场的李括号是零向量场。一个自然的下一步是尝试准确地将李括号偏离零的程度与流无法交换的程度联
+系起来。我们能否完全按照流的交换失败来描述李括号？
+\end_layout
+
+\begin_layout Abstract
+在本次演讲中，我将以一个著名的(并有点奇异的)等式的形式给出这个问题的一个答案。为此，我将对向量场、流和李括号做一个简要且一般的介绍。如果时间允许，我将讨论这个
+公式最自然的上下文，即李群。
+\end_layout
+
+\begin_layout Abstract
+一些流形的基本知识会有所帮助，但不是真正必要的。在演讲结束时，我将对任意有关漫画书的问题持开放态度。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+流形
+\end_layout
+
+\begin_layout Standard
+你好，哺乳动物的同胞们。谢谢你的光临。今天故事的主角将是M，一个光滑的流形。光滑流形是一类拓扑空间，局部看起来像某种
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+，这样我们就可以对它进行微积分。形容词“光滑”的意思是我们可以随心所欲地取任意多的导数。
+\end_layout
+
+\begin_layout Standard
+对于不熟悉流形的人，可以想象在
+\begin_inset Formula $\mathbb{R}^{3}$
+\end_inset
+
+中的光滑曲面，如球面。如果不熟悉曲面，可以想象
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的一个开放子集。如果你不熟悉，我很同情你。
+\end_layout
+
+\begin_layout Section
+切丛
+\end_layout
+
+\begin_layout Subsection
+切向量与切丛
+\end_layout
+
+\begin_layout Standard
+在一个流形中的每一个点
+\begin_inset Formula $p$
+\end_inset
+
+都有它自己的小向量空间，称为在
+\begin_inset Formula $p$
+\end_inset
+
+处
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的切空间(tangent space)，标志为
+\begin_inset Formula $T_{p}\mathcal{M}$
+\end_inset
+
+。如果
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+是连通的，则所有的切空间具有相同的维度。如果你想象把所有这些向量空间聚集在一起，我们得到一个叫做切丛(tangent bundle)的东西，用下式标志和定义为
+\begin_inset Formula 
+\[
+T\mathcal{M}:=\bigsqcup_{p\in\mathcal{M}}T_{p}\mathcal{M}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+切丛实际上也是一个光滑流形，其维数是原始流形的两倍。你可以把切丛看成是由原始流形钉在一起的一束向量空间，尽管它还有更多的内容。
+\end_layout
+
+\begin_layout Subsection
+映射的微分
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $f:\mathcal{M}\rightarrow\mathcal{N}$
+\end_inset
+
+是光滑流形之间的一个光滑映射，则我们有一个诱导映射
+\begin_inset Formula $df:T\mathcal{M}\rightarrow T\mathcal{N}$
+\end_inset
+
+，并且
+\begin_inset Formula 
+\[
+\left.df\right|_{T_{p}\mathcal{M}}:T_{p}\mathcal{M}\rightarrow T_{f(p)}\mathcal{N}
+\]
+
+\end_inset
+
+对于每一个
+\begin_inset Formula $p\in M$
+\end_inset
+
+它是一个线性映射。
+\end_layout
+
+\begin_layout Section
+向量场
+\end_layout
+
+\begin_layout Subsection
+作为切向量
+\end_layout
+
+\begin_layout Standard
+在我们剧本中的其他主要角色是向量场(vector fields)。一个向量场是一个光滑映射
+\begin_inset Formula $X:\mathcal{M}\rightarrow T\mathcal{M}$
+\end_inset
+
+，使得
+\begin_inset Formula $X(p)\in T_{p}\mathcal{M}$
+\end_inset
+
+对于所有
+\begin_inset Formula $p\in\mathcal{M}$
+\end_inset
+
+成立。将一个向量场视为在每个切空间中放置的一个向量，以使得向量随着切空间的变化而光滑变化。
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $C^{\infty}(\mathcal{M})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+另一种表征向量空间的方法是利用在
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+上的光滑实值函数的集合
+\begin_inset Formula $C^{\infty}(\mathcal{M})$
+\end_inset
+
+，它在这里起着极其重要的辅助作用。(对我来说，这些函数似乎从来都不是主要的表征，但它们总是为理解和解释其他事物提供重要的上下文。)这是一个在
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+之上的向量场，无限维，并且它是一个在
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+之上的代数。你可以将它们相加，相乘，以及用标量相乘。
+\end_layout
+
+\begin_layout Subsection
+作为导子
+\end_layout
+
+\begin_layout Standard
+在
+\begin_inset Formula $C^{\infty}(\mathcal{M})$
+\end_inset
+
+上的一个导子(derivation)是一个线性映射
+\begin_inset Formula $D:C^{\infty}(M)\rightarrow C^{\infty}(M)$
+\end_inset
+
+，它服从Leibniz规则或乘积规则：
+\begin_inset Formula 
+\[
+D(f\cdot g)=f\cdot D(g)+D(f)\cdot g.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一个导子就像一个方向导数，在它的口袋里有一个向量。如果你给我一个函数和一个点，我可以取得它在向量的方向上的方向导数。每一个向量场
+\begin_inset Formula $X$
+\end_inset
+
+诱导出一个类似于这样的导子
+\begin_inset Formula $D_{X}$
+\end_inset
+
+。如果你给我一个函数和一个点，在该点处由
+\begin_inset Formula $X$
+\end_inset
+
+给出的方向上，我可以取得它在该点处的方向导数。每一个导子都会诱导出一个光滑的向量场，这是一个重要的、非平凡的事实。
+\end_layout
+
+\begin_layout Section
+流(Flows)
+\end_layout
+
+\begin_layout Subsection
+单个卵石
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+被积曲线
+\end_layout
+
+\begin_layout Standard
+就像我前面提到的，向量场在流形的每一点上都给出一个方向。现在，让我们想象一下，把一个卵石丢进流形中，让它沿着向量场给出的方向游动。想象一条有水流的小溪，一颗鹅卵
+石掉进了小溪里。(你也要想象卵石不下沉，也许一根小树枝更好，无论如何，这个类比是不完美的。)注意卵石流动时的时间，想象卵石也向后流动，我们得到了一条曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+，它在时间零点穿过一个点，并且每次的导数总是与向量场相匹配。这叫做向量场通过该点的被积曲线。被积曲线可能无法永远连续。在流变得太混乱之前，它可能只能在有限的时间
+内移动。记住，这是一个非常聪明的卵石。它不只是朝一个方向起飞并一直向前。在每一点上，它都会重新评估它应该前进的方向。因此，被积曲线只能定义在零点的小邻域上。
+\end_layout
+
+\begin_layout Subsection
+很多卵石
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+完整的流
+\end_layout
+
+\begin_layout Standard
+现在想象一下我们做了一些激烈的事情。我们取一整束卵石，然后在同一时间在每一个点上放一个卵石，让卵石都跟随向量场的流动。对于每一个足够小的
+\begin_inset Formula $t$
+\end_inset
+
+，所有的卵石都在流动，直到时间
+\begin_inset Formula $t$
+\end_inset
+
+，我们得到一个光滑的映射
+\begin_inset Formula 
+\[
+\Phi_{X}^{t}:\mathcal{M}\rightarrow\mathcal{M},
+\]
+
+\end_inset
+
+称为向量场
+\begin_inset Formula $X$
+\end_inset
+
+的时间
+\begin_inset Formula $t$
+\end_inset
+
+的流。
+\begin_inset Formula $X$
+\end_inset
+
+的时间
+\begin_inset Formula $t$
+\end_inset
+
+的流的象给出了在时间
+\begin_inset Formula $t$
+\end_inset
+
+时在
+\begin_inset Formula $X$
+\end_inset
+
+方向上
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的所有点的大规模迁离。注意
+\begin_inset Formula $\Phi_{X}^{0}$
+\end_inset
+
+是恒等式。
+\end_layout
+
+\begin_layout Subsection
+半群性质
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+流是微分同胚
+\end_layout
+
+\begin_layout Standard
+流有一个非常重要的特性。我们可以问，如果让一颗卵石在时间
+\begin_inset Formula $s$
+\end_inset
+
+内流动，然后在时间
+\begin_inset Formula $t$
+\end_inset
+
+内流动多一点，会发生什么情况。结果与卵石在
+\begin_inset Formula $s+t$
+\end_inset
+
+时间内流动的结果相同。因此
+\begin_inset Formula $\Phi_{X}^{t}\circ\Phi_{X}^{s}=\Phi_{X}^{s+t}$
+\end_inset
+
+，只要两侧都被定义。这意味着
+\begin_inset Formula 
+\[
+\Phi_{X}^{-t}\circ\Phi_{X}^{t}=\Phi_{X}^{0}=\Phi_{X}^{t}\circ\Phi_{X}^{-t},
+\]
+
+\end_inset
+
+所以
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+有一个光滑的逆，这就是我们所说的微分同胚，在光滑流形中的一个同构。这是非常酷，非常有用。
+\end_layout
+
+\begin_layout Section
+两个向量场
+\end_layout
+
+\begin_layout Subsection
+流能否交换？
+\end_layout
+
+\begin_layout Standard
+现在我们加大赌注，并看看两个向量场，
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+。这给了卵石两个不同的方向。我们可以问以下非常有趣的问题。假设我们把卵石扔下去，让它在时间
+\begin_inset Formula $t$
+\end_inset
+
+内随着
+\begin_inset Formula $X$
+\end_inset
+
+流动，然后在时间
+\begin_inset Formula $t$
+\end_inset
+
+内随着
+\begin_inset Formula $Y$
+\end_inset
+
+流动。另一方面，如果卵石先与
+\begin_inset Formula $Y$
+\end_inset
+
+一起流动，然后与
+\begin_inset Formula $X$
+\end_inset
+
+一起流动，会怎么样？这颗卵石两次都会出现在同一个地方吗？对于映射，我们要问如果
+\begin_inset Formula 
+\[
+\Phi_{Y}^{t}\circ\Phi_{X}^{t}=\Phi_{X}^{t}\circ\Phi_{Y}^{t}.
+\]
+
+\end_inset
+
+流能否交换？
+\end_layout
+
+\begin_layout Subsection
+回答是的一个例子
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+常数向量场
+\end_layout
+
+\begin_layout Standard
+一般来说，答案是 ...
+ 否！让我们举一个简单的例子。假设我们的流形是
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+，两个向量场是恒定的。然后这些向量场通过一个给定点的流在空间中是直线，我们的情况在空间中用一个平行四边形来表示。因为这个平行四边形是闭合的，所以流是交换的。这与
+更一般的向量场有何不同？
+\end_layout
+
+\begin_layout Subsection
+为什么一般的答案是否定的：我们的卵石聪明的
+\end_layout
+
+\begin_layout Standard
+恒定向量场的情况是，如果我们的卵石很笨，选择了一个方向，然后就一直朝那个方向移动，会发生什么情况。对于不同的向量场，使用我们的智能卵石，方向每时每刻都在重新评估
+。没有理由认为事情最终会弯曲和扭转在一起。
+\end_layout
+
+\begin_layout Section
+李括号给出答案
+\end_layout
+
+\begin_layout Standard
+这是一个好问题。有没有一种简单的方法来判断两个向量场的流是否交换？答案是不，我只是开玩笑。答案是肯定的。
+\end_layout
+
+\begin_layout Subsection
+导子的定义
+\end_layout
+
+\begin_layout Standard
+我们取两个向量场，并构建一个新的向量场。如果这个新的向量场始终为零，则流交换。如果不为零，就不可交换。回想一下，
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+会诱导导子
+\begin_inset Formula $D_{X}$
+\end_inset
+
+和
+\begin_inset Formula $D_{Y}$
+\end_inset
+
+。我们定义一个映射
+\begin_inset Formula $D_{[X,Y]}:C^{\infty}(M)\rightarrow C^{\infty}(M)$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+D_{[X,Y]}=D_{X}\circ D_{Y}-D_{Y}\circ D_{X}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+很明显，这是一个线性映射，但是没有理由假设它满足乘积规则。绝对没有理由认为这是一个导子，除非，也许，它实际上就是！由于导子对应于向量场，这因此定义了一个新的向量
+场
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+，称为
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李括号。
+\end_layout
+
+\begin_layout Subsection
+李导数的定义
+\end_layout
+
+\begin_layout Standard
+还有另一种方法可以得到两个向量场并产生一个新的向量场，称为李微分。幸运的是，我们最终得到了同样的结果。
+\begin_inset Formula $Y$
+\end_inset
+
+在
+\begin_inset Formula $X$
+\end_inset
+
+方向上的李导数等于
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李括号，
+\begin_inset Formula 
+\[
+\mathscr{L}_{X}Y=[X,Y].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+基本定理
+\end_layout
+
+\begin_layout Standard
+所以，我们有
+\begin_inset Formula 
+\[
+\Phi_{Y}^{t}\circ\Phi_{X}^{t}=\Phi_{X}^{t}\circ\Phi_{Y}^{t}\quad\text{ if and only if }\quad[X,Y]=0.
+\]
+
+\end_inset
+
+(李括号的导子定义使得它与交换性有关的原因变得特别明显。来自李导数的定义则不太明显。)
+\end_layout
+
+\begin_layout Standard
+回想一下，
+\begin_inset Formula $X$
+\end_inset
+
+的流与自身交换，因
+\begin_inset Formula $[X,X]=0$
+\end_inset
+
+。这很酷。实际上，
+\begin_inset Formula $[X,Y]=-[Y,X]$
+\end_inset
+
+也是正确的。
+\end_layout
+
+\begin_layout Standard
+但
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+是一个全新的向量场，并且它不总是为零。然后呢？ 如果我们知道流有多少无法交换，我们能算出李括号是什么吗？
+\end_layout
+
+\begin_layout Section
+对易子
+\end_layout
+
+\begin_layout Subsection
+群的对易子映射
+\end_layout
+
+\begin_layout Standard
+为了回答这个问题，我们稍微改变一下配置，设
+\begin_inset Formula $G$
+\end_inset
+
+是一个群。则我们有映射
+\begin_inset Formula $K:G\times G\rightarrow G$
+\end_inset
+
+，由
+\begin_inset Formula $(g,h)\mapsto h^{-1}g^{-1}hg$
+\end_inset
+
+给出，即
+\begin_inset Formula $G$
+\end_inset
+
+的对易子映射。如果两个元素交换，则在此映射下的象为零。因此，这个映射采用两个元素，并以某种方式衡量它们交换的失败。回到流形，我们注意到微分同胚
+\begin_inset Formula $\mathcal{M}\rightarrow\mathcal{M}$
+\end_inset
+
+的集合
+\begin_inset Formula $\mathrm{Diff}(\mathcal{M})$
+\end_inset
+
+在组合之下形成一个群。因此我们可以讨论两个微分同胚的对易子。记住，流是微分同胚。
+\end_layout
+
+\begin_layout Subsection
+流的对易子映射
+\end_layout
+
+\begin_layout Standard
+如果我们简化方程
+\begin_inset Formula $\Phi_{Y}^{t}\circ\Phi_{X}^{t}=\Phi_{X}^{t}\circ\Phi_{Y}^{t}$
+\end_inset
+
+，我们获得了
+\begin_inset Formula $\Phi_{Y}^{-t}\circ\Phi_{X}^{-t}\circ\Phi_{Y}^{t}\circ\Phi_{X}^{t}=\mathrm{Id}$
+\end_inset
+
+。 这个方程的左边是在
+\begin_inset Formula $t$
+\end_inset
+
+时刻
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流的对易子，因此
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+当且仅当
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流的对易子是恒等式。这是很合理的，那么也许有一个等式把这两件事联系起来。
+\end_layout
+
+\begin_layout Subsection
+固定一个点
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+关键曲线
+\end_layout
+
+\begin_layout Subsubsection
+一阶导数
+\end_layout
+
+\begin_layout Standard
+让我们固定一个点
+\begin_inset Formula $p\in\mathcal{M}$
+\end_inset
+
+。则我们可以定义通过
+\begin_inset Formula $p$
+\end_inset
+
+的一条曲线
+\begin_inset Formula $c_{p}$
+\end_inset
+
+为
+\begin_inset Formula 
+\[
+c_{p}(t)=\Phi_{Y}^{-t}\circ\Phi_{X}^{-t}\circ\Phi_{Y}^{t}\circ\Phi_{X}^{t}(p)=K\left(\Phi_{X}^{t}\circ\Phi_{Y}^{t}\right)(p).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+我们有通过
+\begin_inset Formula $p$
+\end_inset
+
+的一条曲线，并在
+\begin_inset Formula $p$
+\end_inset
+
+处有一个向量
+\begin_inset Formula $[X,Y](p)$
+\end_inset
+
+。如果这条曲线的速度与向量相同，这将是世界上最自然的事情。
+\end_layout
+
+\begin_layout Standard
+好得难以置信。这是一个非常重要且非常令人困惑的事实，
+\begin_inset Formula $c_{p}^{\prime}(0)=0$
+\end_inset
+
+。 曲线
+\begin_inset Formula $c_{p}$
+\end_inset
+
+等价于在
+\begin_inset Formula $p$
+\end_inset
+
+处的常数曲线，直至一阶。
+\end_layout
+
+\begin_layout Subsubsection
+二阶导数
+\end_layout
+
+\begin_layout Standard
+实际情况是
+\begin_inset Formula 
+\[
+[X,Y](p)=\frac{1}{2}c_{p}^{\prime\prime}(0).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+你们中间细心的人可能会注意到这里有点可疑。左侧是
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+的切向量，但
+\begin_inset Formula $c_{p}^{\prime}(t)$
+\end_inset
+
+是在切丛
+\begin_inset Formula $T\mathcal{M}$
+\end_inset
+
+中的曲线，因此
+\begin_inset Formula $c_{p}^{\prime\prime}(0)$
+\end_inset
+
+是
+\begin_inset Formula $T\mathcal{M}$
+\end_inset
+
+的切向量(tangent vector)。左侧属于
+\begin_inset Formula $T\mathcal{M}$
+\end_inset
+
+，但右侧属于
+\begin_inset Formula $T(T\mathcal{M})$
+\end_inset
+
+ ！这个方程怎么解释？！？！？
+\end_layout
+
+\begin_layout Section
+解释
+\begin_inset Formula $\,$
+\end_inset
+
+—
+\begin_inset Formula $\,$
+\end_inset
+
+切向量的其他思考方式
+\end_layout
+
+\begin_layout Subsection
+点导子
+\end_layout
+
+\begin_layout Standard
+我们必须后退一点，记住向量场可以由导子给出。同样地，可以通过点导子(point derivation)给出单个向量。在
+\begin_inset Formula $p$
+\end_inset
+
+处的一个点导子是一个线性映射
+\begin_inset Formula $D_{p}:C^{\infty}(\mathcal{M})\rightarrow\mathbb{R}$
+\end_inset
+
+，使得
+\begin_inset Formula 
+\[
+D_{p}(f\cdot g)=D_{p}(f)\cdot g(p)+f(p)\cdot D_{p}(g).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+你可以将一个点导子视为一个方向导数，其中包含一个点和一个从该点开始的切向量。切空间
+\begin_inset Formula $T_{p}\mathcal{M}$
+\end_inset
+
+可以用在
+\begin_inset Formula $p$
+\end_inset
+
+处所有的点导子的空间来识别。
+\end_layout
+
+\begin_layout Subsection
+作为点导子的无穷小曲线
+\end_layout
+
+\begin_layout Standard
+但它会变得更好。每一条通过
+\begin_inset Formula $p$
+\end_inset
+
+的微小曲线都以其速度定义在
+\begin_inset Formula $p$
+\end_inset
+
+处的切向量。由于在
+\begin_inset Formula $p$
+\end_inset
+
+处的切向量是在
+\begin_inset Formula $p$
+\end_inset
+
+处的点导子，因此每一个微小曲线也必须定义一个点导子。实际上很容易看出这是如何工作的。设
+\begin_inset Formula $c$
+\end_inset
+
+是一条曲线，其中
+\begin_inset Formula $c(0)=p$
+\end_inset
+
+，则
+\begin_inset Formula $c$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+处通过下式作用于函数
+\begin_inset Formula $f$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+f\mapsto(f\circ c)^{\prime}(0).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意这是一个实数，因为
+\begin_inset Formula $f\circ c$
+\end_inset
+
+只是一个单变量微积分函数。你可以很快地检查它是否遵循乘积规则。
+\end_layout
+
+\begin_layout Section
+奇异的点导子，由二阶导数给出
+\end_layout
+
+\begin_layout Standard
+现在，我们可以使用
+\begin_inset Formula $c_{p}$
+\end_inset
+
+在
+\begin_inset Formula $0$
+\end_inset
+
+处的二阶导数来定义在
+\begin_inset Formula $p$
+\end_inset
+
+处的点导子，但这实际上取决于一个重要但奇异的事实，即
+\begin_inset Formula $c_{p}^{\prime}(0)=0$
+\end_inset
+
+。通过
+\begin_inset Formula $D_{p}(f):=\left(f\circ c_{p}\right)^{\prime\prime}(0)$
+\end_inset
+
+定义在
+\begin_inset Formula $p$
+\end_inset
+
+处的一个点导子
+\begin_inset Formula $D_{p}$
+\end_inset
+
+。这当然是一个线性函数
+\begin_inset Formula $C^{\infty}(\mathcal{M})\rightarrow\mathbb{R}$
+\end_inset
+
+，但是证明它服从乘积规则取决于我们奇异的事实。我们计算
+\begin_inset Formula 
+\[
+\begin{gathered}\left(f\circ g\circ c_{p}\right)^{\prime\prime}(t)=\frac{d}{dt}\left(f\cdot g\circ c_{p}\right)^{\prime}(t)\\
+=\frac{d}{dt}\left(f\circ c_{p}\right)^{\prime}(t)\left(g\circ c_{p}\right)(t)+\left(f\circ c_{p}\right)(t)\left(g\circ c_{p}\right)^{\prime}(t)\\
+=\left(f\circ c_{p}\right)^{\prime\prime}(t)\left(g\circ c_{p}\right)(t)+\left(f\circ c_{p}\right)^{\prime}(t)\left(g\circ c_{p}\right)^{\prime}(t)+\left(f\circ c_{p}\right)^{\prime}(t)\left(g\circ c_{p}\right)^{\prime}(t)+\left(f\circ c_{p}\right)(t)\left(g\circ c_{p}\right)^{\prime\prime}(t)\\
+=\left(f\circ c_{p}\right)^{\prime\prime}(t)\left(g\circ c_{p}\right)(t)+2\left(f\circ c_{p}\right)^{\prime}(t)\left(g\circ c_{p}\right)^{\prime}(t)+\left(f\circ c_{p}\right)(t)\left(g\circ c_{p}\right)^{\prime\prime}(t).
+\end{gathered}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了使它符合乘积法则，我们想去掉那个讨厌的中间项。但由于
+\begin_inset Formula $c_{p}^{\prime}(0)=0$
+\end_inset
+
+，使用链式规则我们有
+\begin_inset Formula 
+\[
+(f\circ c)^{\prime}(0)=df_{c(0)}c^{\prime}(0)=df_{c(0)}\overrightarrow{0}=0,
+\]
+
+\end_inset
+
+其中最后一个事实来自导数是一个线性映射的事实。因此在
+\begin_inset Formula $t=0$
+\end_inset
+
+处，那个可怕的计算中的中间项去掉了，并且我们获得
+\begin_inset Formula 
+\[
+\begin{aligned}D(f\cdot g) & =\left(f\cdot g\circ c_{p}\right)^{\prime\prime}(0)=\left(f\circ c_{p}\right)^{\prime\prime}(0)\left(g\circ c_{p}\right)(0)+\left(f\circ c_{p}\right)(0)\left(g\circ c_{p}\right)^{\prime\prime}(0)\\
+ & =D(f)\cdot g(p)+f(p)\cdot D(g).
+\end{aligned}
+\]
+
+\end_inset
+
+Yay!!!
+\end_layout
+
+\begin_layout Standard
+当然，这一点也不明显，为什么我们会期望
+\begin_inset Formula $c_{p}^{\prime\prime}(0)$
+\end_inset
+
+给出的切向量随着点
+\begin_inset Formula $p$
+\end_inset
+
+的变化而光滑变化。我相信这为真的最直接的原因是，这些向量等于李括号给出的向量的两倍，这绝对是光滑的。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+读书笔记
+\end_layout
+
+\begin_layout Subsection*
+对 6.3 节注释内容的理解。
+\end_layout
+
+\begin_layout Standard
+在现代数学中，李括号是研究微分几何中向量场的交换性的重要工具。给定两个光滑向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+，它们的李括号
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+本身也是一个向量场，并具有以下性质：如果
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+，那么这两个向量场在流形上产生的流是可交换的。
+\end_layout
+
+\begin_layout Paragraph*
+导子定义(Derivation Definition)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量场的李括号可以通过导子定义来理解。在这个定义中，向量场被视为作用在光滑函数上的导数算子，即对于任意光滑函数
+\begin_inset Formula $f$
+\end_inset
+
+，向量场
+\begin_inset Formula $X$
+\end_inset
+
+定义了一个导数
+\begin_inset Formula $X(f)$
+\end_inset
+
+。当我们说导子时，我们指的是满足莱布尼茨法则(Leibniz rule)的线性算子
+\begin_inset Formula $D$
+\end_inset
+
+，即对于任意的光滑函数
+\begin_inset Formula $f$
+\end_inset
+
+和
+\begin_inset Formula $g$
+\end_inset
+
+，有：
+\begin_inset Formula 
+\[
+D(fg)=fD(g)+D(f)g.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于两个向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+，它们的李括号
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+定义为另一个导数算子，作用在函数上的效果是：
+\begin_inset Formula 
+\[
+[X,Y](f)=X(Y(f))-Y(X(f)).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+这个导子定义直接反映了
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的交换性，因为如果
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+，则
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+在任意函数
+\begin_inset Formula $f$
+\end_inset
+
+上的作用是可交换的。这就揭示了向量场流不可交换的程度。
+\end_layout
+
+\begin_layout Paragraph*
+李导数定义(Lie Derivative Definition)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+李导数是另一种表述向量场变化的方式，它描述了一个向量场沿着另一个向量场流动时的变化。对于两个向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+，
+\begin_inset Formula $Y$
+\end_inset
+
+沿着
+\begin_inset Formula $X$
+\end_inset
+
+的李导数定义为：
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}Y=\lim_{t\to0}\frac{\Phi_{t}^{*}Y-Y}{t},
+\]
+
+\end_inset
+
+其中，
+\begin_inset Formula $\Phi_{t}^{*}$
+\end_inset
+
+表示
+\begin_inset Formula $X$
+\end_inset
+
+产生的流在时间
+\begin_inset Formula $t$
+\end_inset
+
+的拉回(pullback)。李导数的定义涉及到流和推前映射，它们没有那么直接地反映出向量场的交换性。
+\end_layout
+
+\begin_layout Paragraph*
+为什么导子定义更加直观？
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+导子定义直接涉及向量场作为导数算子的性质，它们的作用在函数上面是可以直接计算的。因此，当我们考虑
+\begin_inset Formula $[X,Y](f)$
+\end_inset
+
+时，我们实际上是在考虑
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+在每个点上的作用是否交换，这是一种局部性质，容易直观理解。
+\end_layout
+
+\begin_layout Standard
+相反，李导数定义涉及到流的全局性质和向量场的整体变化，这需要更深层次的理解。它是在整个流形上的全局动态下考虑的，这不如导子定义那样直接表现向量场在每个点上的交换
+性。
+\end_layout
+
+\begin_layout Standard
+综上所述，当我们想要直观地理解两个向量场之间的交换性时，导子定义提供了一种更简洁、直接的方式来看待这个问题。而李导数定义则在理解向量场沿着另一个向量场的流动时提
+供了动态的视角。两者各有优势，但在直观上理解交换性时，导子定义往往更为明显。
+\end_layout
+
+\begin_layout Paragraph*
+简要总结
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+李括号
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+的导子定义是:
+\begin_inset Formula 
+\[
+D_{[X,Y]}=D_{X}\circ D_{Y}-D_{Y}\circ D_{X}
+\]
+
+\end_inset
+
+这里
+\begin_inset Formula $D_{X}$
+\end_inset
+
+和
+\begin_inset Formula $D_{Y}$
+\end_inset
+
+分别是向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+所对应的导子。这个定义直接捕捉了
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的非交换性(non-commutativity)。如果
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+是可交换的(即它们的流量可交换)，那么
+\begin_inset Formula $D_{X}$
+\end_inset
+
+和
+\begin_inset Formula $D_{Y}$
+\end_inset
+
+也是可交换的，于是
+\begin_inset Formula $D_{[X,Y]}=0$
+\end_inset
+
+。这说明
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+，即
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李括号为
+\begin_inset Formula $0$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Enumerate
+而李导数的定义则不那么直观地反映交换性。李导数
+\begin_inset Formula $L_{X}Y$
+\end_inset
+
+试图衡量
+\begin_inset Formula $Y$
+\end_inset
+
+沿着
+\begin_inset Formula $X$
+\end_inset
+
+的方向的变化率。这个定义本身并不显然与
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流是否可交换有关。 
+\end_layout
+
+\begin_layout Enumerate
+因此，李括号的导子定义更直接地把握了交换性这个概念，这一点在定理“
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+当且仅当
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流可交换”中得到体现。而李导数的定义这一点则不那么明显。
+\end_layout
+
+\begin_layout Standard
+总的来说，李括号导子定义中的
+\begin_inset Formula $D_{X}$
+\end_inset
+
+和
+\begin_inset Formula $D_{Y}$
+\end_inset
+
+的组合抓住了交换性的本质，这是它与李导数定义的一个重要区别。这也解释了为什么文档中会说李括号的导子定义使得它与交换性的关联“特别明显”。
+\end_layout
+
+\begin_layout Subsection*
+对初始问题的理解
+\end_layout
+
+\begin_layout Standard
+在现代微分几何中，两个向量场 
+\begin_inset Formula $\ensuremath{X}和\ensuremath{Y}$
+\end_inset
+
+ 的李括号标志为 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ ，它可以描述两个向量场生成的流之间的交换性质。具体来说，对于两个光滑向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+，它们的李括号 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 是另一个向量场，它在直观上给出了 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的局部流之间的差分。如果两个向量场的李括号为零，即 
+\begin_inset Formula $[X,Y]=0$
+\end_inset
+
+，则这两个向量场生成的流是可交换的，这意味着沿着这两个向量场的流形成的路径是不依赖于路径顺序的；反之，如果李括号非零，则它给出的流的交换失败的度量。
+\end_layout
+
+\begin_layout Paragraph*
+向量场 (Vector Fields)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量场是在流形上的一个切向量赋值函数，它为每一个点分配一个切向量的光滑映射。向量场不仅定义方向，还定义幅值。在物理学中，向量场可以表示速度场或力场，指导如何在流
+形上导引物体的运动。数学上，我们通常表达为 
+\begin_inset Formula $X:M\rightarrow TM$
+\end_inset
+
+，其中 
+\begin_inset Formula $X(p)\in T_{p}M$
+\end_inset
+
+ ，
+\begin_inset Formula $M$
+\end_inset
+
+ 是流形，
+\begin_inset Formula $TM$
+\end_inset
+
+ 是其切空间，它对于所有 
+\begin_inset Formula $p\in M$
+\end_inset
+
+成立。
+\end_layout
+
+\begin_layout Paragraph*
+李括号(Lie Bracket)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+李括号 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 定义为两个向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的导数操作的差分，具体表示为：
+\begin_inset Formula 
+\[
+[X,Y](f)=X(Y(f))-Y(X(f))
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $f\in C^{\infty}(M)$
+\end_inset
+
+ 是定义在流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的光滑函数。这个操作本身就是一个向量场，因为它满足向量场作为导子的性质，即线性和莱布尼茨法则。
+\end_layout
+
+\begin_layout Standard
+从直观上来说，李括号 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 描述了在 
+\begin_inset Formula $X$
+\end_inset
+
+ 的作用下 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的变化，反之亦然。这可以通过考虑 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 在一个小邻域内生成的流的行为来理解。李括号是可交换性失败的一阶近似，可以通过关键曲线 
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 的二阶导数在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 时来计算：
+\begin_inset Formula 
+\[
+\left[X,Y\right]_{p}=\left.\frac{d^{2}}{dt^{2}}\right|_{t=0}c(t)(p).
+\]
+
+\end_inset
+
+这表明李括号 
+\begin_inset Formula $[X,Y]$
+\end_inset
+
+ 实际上是曲线 
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 时的加速度(二阶导数)，给出流不对易的确切测量。这个加速度是沿着流 
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\Phi_{Y}^{t}$
+\end_inset
+
+ 形成的路径的偏离率。
+\end_layout
+
+\begin_layout Paragraph*
+李导数 (Lie Derivatives)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量场上的李导数是度量一个向量场沿着另一个向量场流动时的变化率。它由李括号 
+\begin_inset Formula $L_{X}Y=[X,Y]$
+\end_inset
+
+ 定义，其中 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 是两个向量场。李导数是研究流形上向量场如何相互作用的有力工具，它展现了向量场的局部对称性和守恒定律。
+\end_layout
+
+\begin_layout Paragraph*
+积分曲线(Integral Curves)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+积分曲线是在流形上的曲线，它们由向量场的局部特性来定义。对于流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的光滑向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和流形上的一个点 
+\begin_inset Formula $p\in M$
+\end_inset
+
+，积分曲线是从点 
+\begin_inset Formula $p$
+\end_inset
+
+ 出发的曲线 
+\begin_inset Formula $c:I\to M$
+\end_inset
+
+(其中 
+\begin_inset Formula $I$
+\end_inset
+
+ 是实数的一个区间，通常包括 
+\begin_inset Formula $0$
+\end_inset
+
+)，满足初始条件 
+\begin_inset Formula $c(0)=p$
+\end_inset
+
+ 和微分方程：
+\begin_inset Formula 
+\[
+\frac{dc(t)}{dt}=X_{c(t)},
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $X_{c(t)}$
+\end_inset
+
+ 是向量场在曲线 
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 处的值。积分曲线可以看作是流形上的点在向量场指示的方向上随时间的移动路径。
+\end_layout
+
+\begin_layout Paragraph*
+流 (Flow)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+流是积分曲线概念的全局化。它描述了流形上所有点在向量场中随时间的演进。正式的定义是，对于在流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的向量场 
+\begin_inset Formula $X$
+\end_inset
+
+，流是一族微分同胚 
+\begin_inset Formula $\Phi^{t}:M\to M$
+\end_inset
+
+，满足：
+\begin_inset Formula 
+\[
+\frac{d}{dt}\Phi^{t}(p)=X_{\Phi^{t}(p)},
+\]
+
+\end_inset
+
+这个方程表示点 
+\begin_inset Formula $p$
+\end_inset
+
+ 在时间 
+\begin_inset Formula $t$
+\end_inset
+
+ 经过流 
+\begin_inset Formula $\Phi^{t}$
+\end_inset
+
+ 后的位置。对于每个点 
+\begin_inset Formula $p\in M$
+\end_inset
+
+，流的轨迹 
+\begin_inset Formula $t\mapsto\Phi^{t}(p)$
+\end_inset
+
+ 就是通过点 
+\begin_inset Formula $p$
+\end_inset
+
+ 的积分曲线。
+\end_layout
+
+\begin_layout Standard
+流是动力学系统中的一个关键概念，它不仅描述了单个点的运动，还描述了整个流形随时间的演化。在物理学中，流通常对应于物理系统状态的时间演变。
+\end_layout
+
+\begin_layout Paragraph*
+积分曲线与流 (Integral Curves and Flows)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+积分曲线是向量场中沿着给定方向的曲线，其在每一个点的切向量都与向量场对应。对于向量场
+\begin_inset Formula $X$
+\end_inset
+
+，通过点
+\begin_inset Formula $p$
+\end_inset
+
+的积分曲线是一个曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+，使得
+\begin_inset Formula $\frac{dc(t)}{dt}=X_{c(t)}$
+\end_inset
+
+。流是积分曲线的一般化，它描述了随着时间的流逝，点在向量场中的移动。对于向量场 
+\begin_inset Formula $X$
+\end_inset
+
+，它的流 
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+ 是一个描述流形如何随时间演变的一族微分同胚。也就是说，流是将积分曲线概念扩展到整个流形，代表了随时间演进的整个流形的状态。
+\end_layout
+
+\begin_layout Standard
+总之，积分曲线提供了向量场在流形上每一点局部作用的具体实例，而流则展示了整个流形上向量场的全局动力学行为。流可以视为通过每一点的积分曲线的集合，从而形成了一个更
+完整的动力学系统的描述。
+\end_layout
+
+\begin_layout Paragraph*
+向量场作为导子 (Vector Fields As Derivations)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+向量场可以作为导子，可以作用于光滑函数空间 
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+。它对光滑函数
+\begin_inset Formula $f$
+\end_inset
+
+进行操作，得到一个新的函数
+\begin_inset Formula $X[f]$
+\end_inset
+
+。这在代数上是一个导子，满足莱布尼兹法则：
+\begin_inset Formula $X[f\cdot g]=f\cdot X[g]+X[f]\cdot g$
+\end_inset
+
+。这种描述强调了向量场不仅影响流形上的点，也通过其导数作用影响函数。
+\end_layout
+
+\begin_layout Paragraph*
+曲线及其一阶和二阶导数 (The Curve, The First Derivative, and The Second Derivative)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于两个不可交换的流，我们可以固定一个点
+\begin_inset Formula $p$
+\end_inset
+
+，并构造一条关键曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+来描述两个流的交换失败。该曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 的一阶导数
+\begin_inset Formula $c'(0)$
+\end_inset
+
+在
+\begin_inset Formula $t=0$
+\end_inset
+
+时为零，说明流的交换性与恒等映射的一阶导数相同。但是曲线的二阶导数
+\begin_inset Formula $c''(0)$
+\end_inset
+
+给出了流的交换性失败的度量，这与李括号
+\begin_inset Formula $[X,Y](p)$
+\end_inset
+
+相联系。即该曲线反映了粒子在两个向量场下交换顺序运动的路径。
+\end_layout
+
+\begin_layout Paragraph*
+点导子与无穷小曲线作为点导子 (Point Derivations and Infinitesimal Curves as Point Derivations)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+点导子是在流形的某一点处切空间中的一个线性映射，它将函数
+\begin_inset Formula $f$
+\end_inset
+
+映射到实数并遵循莱布尼兹法则，可视为在该点处的切向量。无穷小曲线通过点
+\begin_inset Formula $p$
+\end_inset
+
+定义在
+\begin_inset Formula $p$
+\end_inset
+
+处的切向量
+\begin_inset Formula $v$
+\end_inset
+
+，因而也定义了一个点导子
+\begin_inset Formula $D$
+\end_inset
+
+，使得对于任意的光滑函数
+\begin_inset Formula $f$
+\end_inset
+
+，
+\begin_inset Formula $D[f]=v[f]$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Paragraph*
+二阶导数给出的点导子 (The Point Derivation, Given by the Second Derivative)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+利用曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 在
+\begin_inset Formula $t=0$
+\end_inset
+
+处的二阶导数定义点导子，这依赖于曲线的一阶导数在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 处为零这一事实。这种点导子 
+\begin_inset Formula $D_{p}$
+\end_inset
+
+ 可以通过 
+\begin_inset Formula $D_{p}(f)=(f\circ c)''(0)$
+\end_inset
+
+ 定义，它满足莱布尼兹法则。这种二阶导数定义的点导子可以捕捉到流的对易子的无穷小行为，因此揭示了流的不可交换性的更深层次的信息。
+\end_layout
+
+\begin_layout Paragraph*
+流与李括号的关系
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定向量场 
+\begin_inset Formula $X$
+\end_inset
+
+，它的流 
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+ 是 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一族微分同胚，描述了每个点在时间 
+\begin_inset Formula $t$
+\end_inset
+
+ 下沿着 
+\begin_inset Formula $X$
+\end_inset
+
+ 方向的演化。对于两个向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+，我们可以考虑先沿着 
+\begin_inset Formula $X$
+\end_inset
+
+ 流动时间 
+\begin_inset Formula $t$
+\end_inset
+
+，然后沿着 
+\begin_inset Formula $Y$
+\end_inset
+
+ 流动时间 
+\begin_inset Formula $t$
+\end_inset
+
+，这可以标志为 
+\begin_inset Formula $\Phi_{Y}^{t}\circ\Phi_{X}^{t}$
+\end_inset
+
+；反之亦然，可以标志为 
+\begin_inset Formula $\Phi_{X}^{t}\circ\Phi_{Y}^{t}$
+\end_inset
+
+。若这两个复合操作相同，对于所有 
+\begin_inset Formula $t$
+\end_inset
+
+，则称 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的流是交换的。
+\end_layout
+
+\begin_layout Paragraph*
+流的交换性与李括号的关系
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定两个光滑向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 以及它们在流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上生成的流 
+\begin_inset Formula $\Phi_{X}^{t}$
+\end_inset
+
+ 和 
+\begin_inset Formula $\Phi_{Y}^{t}$
+\end_inset
+
+，我们可以考虑以下组合映射：
+\begin_inset Formula 
+\[
+\Gamma(t)=\Phi_{Y}^{-t}\circ\Phi_{X}^{-t}\circ\Phi_{Y}^{t}\circ\Phi_{X}^{t}.
+\]
+
+\end_inset
+
+然后，我们考虑 
+\begin_inset Formula $\Gamma(t)$
+\end_inset
+
+ 在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 时的行为。如果 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 生成的流是对易的，那么对于所有的 
+\begin_inset Formula $t$
+\end_inset
+
+，
+\begin_inset Formula $\Gamma(t)$
+\end_inset
+
+ 将是恒等映射。如果流不对易，
+\begin_inset Formula $\Gamma(t)$
+\end_inset
+
+ 的行为会揭示流的对易失败的程度。
+\end_layout
+
+\begin_layout Standard
+流的交换性可以通过考虑在某点 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的行为来刻画。设想一个关键曲线 
+\begin_inset Formula $c(t)$
+\end_inset
+
+，它是由复合流 
+\begin_inset Formula $\Phi_{Y}^{-t}\circ\Phi_{X}^{-t}\circ\Phi_{Y}^{t}\circ\Phi_{X}^{t}(p)$
+\end_inset
+
+ 定义的。这条曲线在 
+\begin_inset Formula $t=0$
+\end_inset
+
+ 时通过点 
+\begin_inset Formula $p$
+\end_inset
+
+，并且其一阶导数 
+\begin_inset Formula $c'(0)$
+\end_inset
+
+ 恰好是零。这表明，至少在无穷小的时间内，流似乎是交换的。然而，曲线 
+\begin_inset Formula $c(t)$
+\end_inset
+
+ 在 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的二阶导数 
+\begin_inset Formula $c''(0)$
+\end_inset
+
+ 给出了流不交换的一阶近似，这与李括号有关：
+\begin_inset Formula 
+\[
+[X,Y](p)=\frac{1}{2}c''(0)
+\]
+
+\end_inset
+
+这个关系实际上描述了如何从流的不交换性中获得李括号的信息。直观上，如果你考虑两个无穷小的流的对易子，它们在一阶导数上可能看起来是交换的，但在二阶导数上就能揭示出
+它们的微妙差异。
+\end_layout
+
+\begin_layout Paragraph*
+将以上关键点综合起来的阐述
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+向量场作为导子
+\begin_inset Newline newline
+\end_inset
+
+向量场
+\begin_inset Formula $X$
+\end_inset
+
+在每一点
+\begin_inset Formula $p$
+\end_inset
+
+给出一个切向量
+\begin_inset Formula $X(p)$
+\end_inset
+
+。我们可以把向量场看作是一个将函数映射到函数的导子
+\begin_inset Formula $D_{X}$
+\end_inset
+
+。对任意函数
+\begin_inset Formula $f$
+\end_inset
+
+，
+\begin_inset Formula $D_{X}(f)$
+\end_inset
+
+给出了
+\begin_inset Formula $f$
+\end_inset
+
+沿着
+\begin_inset Formula $X$
+\end_inset
+
+方向的方向导数。更深入地说，
+\begin_inset Formula $D_{X}$
+\end_inset
+
+满足莱布尼兹律:
+\begin_inset Formula 
+\[
+D_{X}(fg)=fD_{X}(g)+gD_{X}(f)
+\]
+
+\end_inset
+
+这个性质使得
+\begin_inset Formula $D_{X}$
+\end_inset
+
+作为一个导子，能反映
+\begin_inset Formula $X$
+\end_inset
+
+的微分运动特征。
+\end_layout
+
+\begin_layout Enumerate
+向量场的积分曲线和流
+\begin_inset Newline newline
+\end_inset
+
+设
+\begin_inset Formula $X$
+\end_inset
+
+通过点
+\begin_inset Formula $p$
+\end_inset
+
+的积分曲线为
+\begin_inset Formula $c(t)$
+\end_inset
+
+。则我们有:
+\begin_inset Formula 
+\[
+\frac{dc(t)}{dt}=X_{c(t)}
+\]
+
+\end_inset
+
+即
+\begin_inset Formula $c(t)$
+\end_inset
+
+曲线的切线方向随时刻变化，永远与
+\begin_inset Formula $X$
+\end_inset
+
+的方向一致。
+\begin_inset Newline newline
+\end_inset
+
+考虑所有点的积分曲线，在时间
+\begin_inset Formula $t$
+\end_inset
+
+时刻，我们就得到一个从初始流形映射到自身的流映射:
+\begin_inset Formula 
+\[
+\Phi_{X}^{t}:M\rightarrow M
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\Phi_{X}^{t}(p)=c_{p}(t)$
+\end_inset
+
+，
+\begin_inset Formula $c_{p}$
+\end_inset
+
+表示通过
+\begin_inset Formula $p$
+\end_inset
+
+的积分曲线。
+\begin_inset Formula $\Phi$
+\end_inset
+
+反映了从初始位置开始，经过时间
+\begin_inset Formula $t$
+\end_inset
+
+在
+\begin_inset Formula $X$
+\end_inset
+
+方向上流动后的位置。
+\end_layout
+
+\begin_layout Enumerate
+流的对易性和李括号
+\begin_inset Newline newline
+\end_inset
+
+考虑两个向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+。一个关键问题是它们的流是否对易，即:
+\begin_inset Formula 
+\[
+\Phi_{X}^{t}\circ\Phi_{Y}^{t}=\Phi_{Y}^{t}\circ\Phi_{X}^{t}
+\]
+
+\end_inset
+
+另一种表述是：流的对易性与
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李括号是否为零向量场等价:
+\begin_inset Formula 
+\[
+[X,Y]=0\Leftrightarrow\Phi_{X}^{t}\circ\Phi_{Y}^{t}=\Phi_{Y}^{t}\circ\Phi_{X}^{t}
+\]
+
+\end_inset
+
+李括号作为一个向量场，其值完全刻画了两个流的对易情况。
+\end_layout
+
+\begin_layout Enumerate
+利用流的交换映射构造曲线
+\begin_inset Newline newline
+\end_inset
+
+考虑流的交换映射:
+\begin_inset Formula 
+\[
+\Phi_{Y}^{-t}\circ\Phi_{X}^{-t}\circ\Phi_{Y}^{t}\circ\Phi_{X}^{t}
+\]
+
+\end_inset
+
+固定一个点
+\begin_inset Formula $p$
+\end_inset
+
+，令曲线
+\begin_inset Formula $c(t)$
+\end_inset
+
+为该映射作用在
+\begin_inset Formula $p$
+\end_inset
+
+上的结果。则
+\begin_inset Formula $c(t)$
+\end_inset
+
+通过
+\begin_inset Formula $p$
+\end_inset
+
+，并反映了两个流顺序交换作用下的运动轨迹。
+\end_layout
+
+\begin_layout Enumerate
+关键曲线
+\begin_inset Formula $c$
+\end_inset
+
+奇异的一阶和二阶导数
+\begin_inset Newline newline
+\end_inset
+
+可以证明，曲线
+\begin_inset Formula $c$
+\end_inset
+
+满足:
+\begin_inset Formula 
+\begin{align*}
+c'(0) & =0\\
+c''(0) & =2[X,Y](p)
+\end{align*}
+
+\end_inset
+
+即该曲线在
+\begin_inset Formula $t=0$
+\end_inset
+
+时的一阶导数为
+\begin_inset Formula $0$
+\end_inset
+
+，但二阶导数给出了
+\begin_inset Formula $p$
+\end_inset
+
+点处的李括号向量的
+\begin_inset Formula $2$
+\end_inset
+
+倍。
+\end_layout
+
+\begin_layout Enumerate
+导子的观点理解切向量
+\begin_inset Newline newline
+\end_inset
+
+切向量空间可以看作点
+\begin_inset Formula $p$
+\end_inset
+
+的导子空间。每个通过
+\begin_inset Formula $p$
+\end_inset
+
+的曲线
+\begin_inset Formula $c$
+\end_inset
+
+都定义一个导子
+\begin_inset Formula $D_{c}$
+\end_inset
+
+，作用在函数
+\begin_inset Formula $f$
+\end_inset
+
+上时对其方向导数有:
+\begin_inset Formula 
+\[
+D_{c}(f)=(f\circ c)'(0)
+\]
+
+\end_inset
+
+尤其是我们的曲线
+\begin_inset Formula $c$
+\end_inset
+
+，满足:
+\begin_inset Formula 
+\[
+D_{c}(0)=0,D_{c}''(0)=2[X,Y](p)
+\]
+
+\end_inset
+
+这与曲线在
+\begin_inset Formula $t=0$
+\end_inset
+
+时的切向量为
+\begin_inset Formula $0$
+\end_inset
+
+，但二阶导数不为
+\begin_inset Formula $0$
+\end_inset
+
+相关。从导子的观点将其理解为非平凡的导子。
+\end_layout
+
+\begin_layout Enumerate
+李括号的几何意义
+\begin_inset Newline newline
+\end_inset
+
+上述奇异性质揭示了李括号的深刻几何意义:它测量了两个流顺序交换所产生的“第二级影响”。第一级影响(一阶导数)为零，但通过二阶导数描述的第二级效应反映了两个非对易
+流的交换失败的本质。
+\end_layout
+
+\begin_layout Paragraph*
+总结与直觉
+\end_layout
+
+\begin_layout Standard
+\begin_inset Phantom Phantom
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+流的交换性与李括号的关系在直觉上反映了向量场如何在流形上相互作用和纠缠。如果两个向量场的流完全交换，那么这意味着它们在流形上生成的运动可以自由地重排而不影响最终
+结果；这在代数上表现为它们的李括号为零。而如果李括号非零，那么向量场的流在组合时会产生新的效果，这在几何上表现为曲线的二阶变化，或者说是流形的曲率。这不仅仅告诉
+我们两个流在一个点附近如何不交换，更重要的是揭示了整个流形上的结构和对称性破缺。
+\end_layout
+
+\begin_layout Standard
+现代数学视角下，流的交换性与李括号之间的关系可以被看作是对称性和守恒定律在几何层面上的反映。李括号的非零性指出了即使在无穷小尺度上，两个向量场的流也不能完全交换
+，这揭示了在微分几何中，向量场的流和李括号在描述物理系统的对称性和动力学行为时扮演着核心角色。
+\end_layout
+
+\begin_layout Standard
+在物理中，李括号和流的对易性是研究动力系统、对称性和守恒定律的基本工具。例如，在哈密顿力学中，李括号用于描述物理量在不同的哈密顿流下的演化，这与物理系统的对称性
+和守恒定律密切相关。在微分几何中，这意味着如果一个物理系统的拉格朗日量在某个连续对称性下不变，那么相应的守恒量可以通过生成这个对称性的向量场的李括号来找到。例如
+，如果系统在时间平移下是不变的，则能量守恒；如果系统在空间平移下不变，则动量守恒。这些对称性可以通过考察相应的李括号是否为零来理解。
+\end_layout
+
+\begin_layout Standard
+在李群理论中，李代数是对李群结构的线性化描述。对于李群 
+\begin_inset Formula $G$
+\end_inset
+
+ 的李代数 
+\begin_inset Formula $\mathfrak{g}$
+\end_inset
+
+，李括号 
+\begin_inset Formula $[\cdot,\cdot]:\mathfrak{g}\times\mathfrak{g}\rightarrow\mathfrak{g}$
+\end_inset
+
+ 描述了基本生成元之间的相互作用。如果我们选择一个基 
+\begin_inset Formula $\{T_{a}\}$
+\end_inset
+
+，李代数的结构常数 
+\begin_inset Formula ${f_{ab}}^{c}$
+\end_inset
+
+ 由下式给出：
+\begin_inset Formula 
+\[
+[T_{a},T_{b}]={f_{ab}}^{c}\,T_{c}
+\]
+
+\end_inset
+
+结构常数度量了基向量场的非交换性，这对应于它们生成的流在局部的非交换性。因此李括号和流的对易性可以用来研究李群结构及其代数性质。
+\end_layout
+
+\begin_layout Standard
+特别地，对于李群，我们可以考虑左不变向量场，这些向量场在李群的左乘作用下保持不变。左不变向量场的流提供了李群的一组局部坐标系的平移，而李括号描述了这些坐标系变换
+的非交换性质。
+\end_layout
+
+\begin_layout Standard
+因此，流的交换性和李括号之间的关系不只是一个几何问题，也是一个深刻的动力学和对称性问题，这在现代物理学的许多领域中都有非常重要的应用。通过研究这种关系，我们可以
+更深入地理解流形的几何结构，以及定义在其上的物理定律和对称性。
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,2477 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage[all]{xy}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children false
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "理解李导数"
+\pdf_author "Charles Daly"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+理解李导数
+\end_layout
+
+\begin_layout Author
+Charles Daly
+\end_layout
+
+\begin_layout Date
+2021.09.16
+\end_layout
+
+\begin_layout Abstract
+这些笔记是我对李导数的一些思考。不久前，当我第一次看到李导数的定义，并且几乎不了解它时，William Goldman告诉我一个让我印象深刻的事实。具体来说，向
+量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李导数可以被视为它们各自流的对易子的二阶导数。这似乎是微分几何中众所周知的事实之一，但我尚未找到完整的证明资源，所以我想我会将它写下来，以防有人像我第一次看到
+李导数时一样，感到无助和迷茫。 
+\end_layout
+
+\begin_layout Section
+动机
+\end_layout
+
+\begin_layout Standard
+首先，除非另有说明，否则所有后续内容均假设为光滑的。设
+\begin_inset Formula $M$
+\end_inset
+
+和
+\begin_inset Formula $N$
+\end_inset
+
+分别为维度为
+\begin_inset Formula $m$
+\end_inset
+
+和
+\begin_inset Formula $n$
+\end_inset
+
+的光滑流形。给定一个光滑映射
+\begin_inset Formula $F:M\longrightarrow N$
+\end_inset
+
+，我们可以将一个丛同态
+\begin_inset Formula $dF:TM\longrightarrow TN$
+\end_inset
+
+与
+\begin_inset Formula $F$
+\end_inset
+
+关联起来。这个映射有时被称为
+\begin_inset Formula $F$
+\end_inset
+
+的全微分(
+\shape italic
+global differential
+\shape default
+)。它是一个光滑映射
+\begin_inset Formula $G:\mathbb{R}^{m}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+的标准微分的流形类比，并因此可以被视为
+\begin_inset Formula $F$
+\end_inset
+
+的导数。全微分几乎在任何介绍性微分几何课程中都会出现。
+\end_layout
+
+\begin_layout Standard
+当我第一次看到全微分时，感觉就像在视频游戏中获得了力量。突然间，我可以开始对任何我想要的映射进行导数运算，并对其有很好的理解。虽然这在某种程度上是正确的，但我记
+得我花了好几个小时试图解决以下问题。
+\series bold
+一个向量场的导数是什么？
+\series default
+这个看似无害的问题引出了大量非常有趣的数学概念，包括在流形上的连通(
+\shape italic
+connections on manifolds
+\shape default
+)和Ehresmann连通(
+\shape italic
+Ehresmann connections
+\shape default
+)。
+\end_layout
+
+\begin_layout Standard
+当然，给定一个在
+\begin_inset Formula $M$
+\end_inset
+
+上的光滑向量场
+\begin_inset Formula $Y$
+\end_inset
+
+，它具有作为一个光滑映射
+\begin_inset Formula $Y:M\longrightarrow TM$
+\end_inset
+
+的性质，使得
+\begin_inset Formula $\pi\circ Y=\mathrm{id}$
+\end_inset
+
+，其中
+\begin_inset Formula $\pi:TM\longrightarrow M$
+\end_inset
+
+是标准的切丛投影。因此，向量场的导数具有完美的意义，其全微分由
+\begin_inset Formula $dY:TM\longrightarrow T(TM)$
+\end_inset
+
+给出。并且现在你也许可以看到这里存在一些技术困难。特别是，如果我们设
+\begin_inset Formula $p\in M$
+\end_inset
+
+，则
+\begin_inset Formula $dY_{p}:T_{p}M\longrightarrow T_{Y_{p}}(TM)$
+\end_inset
+
+是从流形(
+\shape italic
+manifold
+\shape default
+) 
+\begin_inset Formula $M$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+处的切空间到
+\begin_inset Formula $M$
+\end_inset
+
+的切丛(
+\shape italic
+tangent bundle
+\shape default
+)在
+\begin_inset Formula $Y_{p}$
+\end_inset
+
+处的切空间的一个线性映射。虽然这在理论上都是正确的，但对于每个
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+，我们希望
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+是
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+的一个元素。这样，我们就可以在
+\begin_inset Formula $v$
+\end_inset
+
+和
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+之间进行一些比较。
+\end_layout
+
+\begin_layout Standard
+我认为，在简单地放弃和收工之前，探索几种潜在的‘解决方法’是很有价值的。例如，也许有人可以取向量
+\begin_inset Formula $dY_{p}(v)\in T_{Y_{p}}(TM)$
+\end_inset
+
+，并将其与
+\begin_inset Formula $d\pi_{Y_{p}}:T_{Y_{p}}(TM)\longrightarrow T_{p}M$
+\end_inset
+
+下的象进行标识。毕竟，这是我们希望
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+无论如何都在其中的空间。但请注意，根据链式法则，
+\begin_inset Formula 
+\begin{equation}
+d\pi_{Y_{p}}\left(dY_{p}(v)\right)=d(\pi\circ Y)_{p}(v)=d(\mathrm{id})_{p}(v)=v.\label{eq:1}
+\end{equation}
+
+\end_inset
+
+我们可以看到，在试图通过投影映射将
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+标识为切空间中的向量时，我们实际上忽略了关于
+\begin_inset Formula $Y$
+\end_inset
+
+本身的全部数据。不过，这不应该让人感到惊讶。如果你认为导数是在方向和曲线方面，例如，我们可能会取一个光滑路径
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+以表示
+\begin_inset Formula $v$
+\end_inset
+
+，其中
+\begin_inset Formula $\gamma(0)=p$
+\end_inset
+
+且
+\begin_inset Formula $\gamma^{\prime}(0)=v$
+\end_inset
+
+。这样做时，
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+由
+\begin_inset Formula $(Y\circ\gamma)^{\prime}(0)$
+\end_inset
+
+表示。注意，这可以被视为取沿着
+\begin_inset Formula $\gamma$
+\end_inset
+
+的向量场的时变导数，由
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+给出。我认为这种观点为我们提供了这里困难的一些洞察。具体来说，
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+可以被视为
+\begin_inset Formula $\gamma$
+\end_inset
+
+到切丛的一个提升。根据交换图，
+\begin_inset Formula 
+\begin{equation}
+\xymatrix{ & TM\ar[d]^{\pi}\\
+I\ar[ur]^{Y_{\gamma}}\ar[r]_{\gamma} & M
+}
+\label{eq:2}
+\end{equation}
+
+\end_inset
+
+现在请注意，随着
+\begin_inset Formula $t$
+\end_inset
+
+的变化，对于每个
+\begin_inset Formula $t\in I$
+\end_inset
+
+， 
+\begin_inset Formula $Y_{\gamma(t)}\in T_{\gamma(t)}M$
+\end_inset
+
+。也就是，如果我们把
+\begin_inset Formula $TM$
+\end_inset
+
+看做是在
+\begin_inset Formula $M$
+\end_inset
+
+之上的一个丛，我们可以看到在微分上的困难。曲线
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+随着
+\begin_inset Formula $t$
+\end_inset
+
+的变化而改变 
+\begin_inset Formula $\pi:TM\longrightarrow M$
+\end_inset
+
+ 的纤维，这使得对于不同的 
+\begin_inset Formula $t$
+\end_inset
+
+，它被传输位于
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+的不同的切空间中。理想情况下，人们会试图定义
+\begin_inset Formula 
+\begin{equation}
+dY_{p}(v):=\lim_{t\rightarrow0}\frac{1}{t}\left(Y_{\gamma(t)}-Y_{p}\right).\label{eq:3}
+\end{equation}
+
+\end_inset
+
+但请注意，
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+和
+\begin_inset Formula $Y_{p}$
+\end_inset
+
+位于不同的切空间，并因此将它们相减是没有意义的。下面的图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 说明了这种困难。此外，当我们将
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+与投影映射组合时，我们只是得到
+\begin_inset Formula $\pi\left(Y_{\gamma(t)}\right)=\gamma(t)$
+\end_inset
+
+，从而消除了所有关于向量场的有关信息。向量场
+\begin_inset Formula $Y$
+\end_inset
+
+告诉我们为
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $t$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+的每个值，
+\begin_inset Formula $Y_{\gamma(t)}$
+\end_inset
+
+，分配什么向量，而对应于
+\begin_inset Formula $v$
+\end_inset
+
+的曲线
+\begin_inset Formula $\gamma$
+\end_inset
+
+告诉我们沿着流形对
+\begin_inset Formula $Y$
+\end_inset
+
+评估的方向。这种思维方式有助于我们得出一个概念，即一个Ehresmann连通(
+\shape italic
+Ehresmann connection
+\shape default
+)，它本质上是将
+\begin_inset Formula $T(TM)$
+\end_inset
+
+分解为两个丛的一种方法，一个垂直丛对应于映射
+\begin_inset Formula $d\pi:T(TM)\longrightarrow TM$
+\end_inset
+
+的核，另一个水平丛与垂直丛互补。垂直丛的良定义与连通无关，而水平丛是一个选择，它本质上使我们能够将
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+分解为垂直和水平分量。更多细节可以在Timothy Goldberg的一些优秀笔记中找到，
+\shape italic
+What is a Connection, and What is is Good For?
+\shape default
+ [1]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure1.jpg
+	scale 30
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-1"
+
+\end_inset
+
+注意这里，在球面
+\begin_inset Formula $M=S^{2}$
+\end_inset
+
+上有两个点
+\begin_inset Formula $p,q\in M$
+\end_inset
+
+，它们的切空间
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+和
+\begin_inset Formula $T_{q}M$
+\end_inset
+
+用浅红色表示。向量
+\begin_inset Formula $v$
+\end_inset
+
+和
+\begin_inset Formula $w$
+\end_inset
+
+不能自然相减，因为它们位于不同的切空间。这个困难的出现是因为在
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+和
+\begin_inset Formula $T_{q}M$
+\end_inset
+
+之间没有自然的同构。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在结束本节之前，我想指出，在某些情况下，这些困难不会出现。具体来说，在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的情况下，我们有切丛自然地与
+\begin_inset Formula $\mathbb{R}^{n}\times\mathbb{R}^{n}$
+\end_inset
+
+相标识。第一个因子可以被看作是流形分量，而第二个因子可以被看作是切空间分量。在这种情况下，在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的向量场
+\begin_inset Formula $Y$
+\end_inset
+
+是一个映射
+\begin_inset Formula $Y:\mathbb{R}^{n}\longrightarrow T\left(\mathbb{R}^{n}\right)\simeq\mathbb{R}^{n}\times\mathbb{R}^{n}$
+\end_inset
+
+，使得
+\begin_inset Formula $\pi_{1}\circ Y=\mathrm{id}$
+\end_inset
+
+，其中
+\begin_inset Formula $\pi_{1}:\mathbb{R}^{n}\times\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+是盖射到第一个因子的投影。因此，
+\begin_inset Formula $Y$
+\end_inset
+
+ 的第一个因子是标识，也就是，我们可以把 
+\begin_inset Formula $Y$
+\end_inset
+
+ 标识为映射 
+\begin_inset Formula $Y:\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+，对应于第二个因子。
+\end_layout
+
+\begin_layout Standard
+现在，对于每个切向量 
+\begin_inset Formula $v\in T_{p}\mathbb{R}^{n}\simeq\mathbb{R}^{n}$
+\end_inset
+
+，我们可以取 
+\begin_inset Formula $Y$
+\end_inset
+
+ 在 
+\begin_inset Formula $v$
+\end_inset
+
+ 方向上的导数。受方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 的启发，让我们通过曲线 
+\begin_inset Formula $\gamma(t)=\left(\gamma^{1}(t),\ldots,\gamma^{n}(t)\right)$
+\end_inset
+
+ 表示 
+\begin_inset Formula $v$
+\end_inset
+
+，使得 
+\begin_inset Formula $\gamma(0)=p$
+\end_inset
+
+ 和 
+\begin_inset Formula $\gamma^{\prime}(0)=v$
+\end_inset
+
+。同样，让我们通过 
+\begin_inset Formula $Y(q)=$
+\end_inset
+
+ 
+\begin_inset Formula $\left(Y^{1}(q),\ldots,Y^{n}(q)\right)$
+\end_inset
+
+在坐标中表达 
+\begin_inset Formula $Y$
+\end_inset
+
+。回到方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们有 
+\begin_inset Formula 
+\begin{align}
+dY_{p}(v) & =\lim_{t\rightarrow0}\frac{1}{t}\left(Y_{\gamma(t)}-Y_{p}\right)=\lim_{t\rightarrow0}\frac{1}{t}\left(Y^{i}(\gamma(t))-Y^{i}(p)\right)e_{i}=\frac{\partial Y^{i}}{\partial x^{j}}(\gamma(0))\frac{d\gamma^{j}}{dt}(0)e_{i}\nonumber \\
+ & =\left(\frac{\partial Y^{1}}{\partial x^{j}}(p)\frac{d\gamma^{j}}{dt}(0),\ldots,\frac{\partial Y^{n}}{\partial x^{j}}(p)\frac{d\gamma^{j}}{dt}(0)\right),\label{eq:4}
+\end{align}
+
+\end_inset
+
+其中，第一行的第三个方程是通过应用链式法则以组合 
+\begin_inset Formula $Y\circ\gamma$
+\end_inset
+
+ 得到的。注意，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 为我们提供了向量场在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 中导数的一个概念，而且，这正是任何人都能猜到的，即只是对分量进行微分。从表面上看，这真的只是坐标扩展的练习。事实上，值得尝试看看这在流形的通用情况下如何转换。
+\end_layout
+
+\begin_layout Standard
+对于一个任意流形，我们不再享有切丛的全局平凡化能力，即
+\begin_inset Formula $TM$
+\end_inset
+
+不一定用
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+标识。尽管如此，我们仍然享有切丛的局部平凡化。因此，对于一个点
+\begin_inset Formula $p\in M$
+\end_inset
+
+，选取一个关于它的坐标图表
+\begin_inset Formula $(U,\phi)$
+\end_inset
+
+，其中
+\begin_inset Formula $\phi:U\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+是一个微分同胚，盖射到
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的某些开子集上。这会诱导出切丛的一个局部帧，由
+\begin_inset Formula $\left\{ \partial/\partial x^{i}\right\} $
+\end_inset
+
+给出，因此我们可以表达一个向量场，对于所有的
+\begin_inset Formula $q\in U$
+\end_inset
+
+，至少在
+\begin_inset Formula $p$
+\end_inset
+
+的局部，为
+\begin_inset Formula $\left.Y\right|_{q}=Y^{i}(q)\left.\partial/\partial x^{i}\right|_{q}$
+\end_inset
+
+。此外，如果我们选取一个
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+，我们可以根据该帧将其表达为
+\begin_inset Formula $v=v^{j}\left.\partial/\partial x^{j}\right|_{p}$
+\end_inset
+
+。也就是说，我们可以尝试定义
+\begin_inset Formula 
+\begin{equation}
+dY_{p}(v):=\left.v^{j}\frac{\partial Y^{i}}{\partial x^{j}}(p)\frac{\partial}{\partial x^{i}}\right|_{p},\label{eq:5}
+\end{equation}
+
+\end_inset
+
+正如我们在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:4"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中所做的那样，其中每个
+\begin_inset Formula $v^{j}$
+\end_inset
+
+对应于
+\begin_inset Formula $d\gamma^{j}/dt(0)$
+\end_inset
+
+。与在流形上的大多数构造一样，我们最好确保这个量独立于坐标贴片是良好定义的。为此，如果
+\begin_inset Formula $(V,\psi)$
+\end_inset
+
+是另一个坐标贴片，具有坐标
+\begin_inset Formula $\tilde{x}^{k}$
+\end_inset
+
+，我们注意到有方程
+\begin_inset Formula $\left.Y\right|_{q}=Y^{i}(q)\left.\partial/\partial x^{i}\right|_{q}=\tilde{Y}^{k}(q)\left.\partial/\partial\tilde{x}^{k}\right|_{q}$
+\end_inset
+
+和
+\begin_inset Formula $v=v^{j}\left.\partial/\partial x^{j}\right|_{p}=\tilde{v}^{l}\left.\partial/\partial\tilde{x}^{l}\right|_{p}$
+\end_inset
+
+。他们的坐标关联为 
+\begin_inset Formula 
+\begin{equation}
+Y^{i}(q)=\tilde{Y}^{k}(q)\frac{\partial x^{i}}{\partial\tilde{x}^{k}}(q)\text{ and }v^{j}=\tilde{v}^{l}\frac{\partial x^{j}}{\partial\tilde{x}^{l}}(p).\label{eq:6}
+\end{equation}
+
+\end_inset
+
+对第一个方程为
+\begin_inset Formula $Y^{i}(q)$
+\end_inset
+
+求微分，并抑制在
+\begin_inset Formula $p$
+\end_inset
+
+处的求值，产生 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial Y^{i}}{\partial x^{j}}=\frac{\partial}{\partial x^{j}}\left(\tilde{Y}^{k}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\right)=\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial}{\partial\tilde{x}^{m}}\left(\tilde{Y}^{k}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\right)=\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}+\tilde{Y}^{k}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}.\label{eq:7}
+\end{equation}
+
+\end_inset
+
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:7"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)代回方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，并在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中改变
+\begin_inset Formula $v^{j}$
+\end_inset
+
+的坐标，产生 
+\begin_inset Formula 
+\begin{align}
+dY_{p}(v) & =\tilde{v}^{l}\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\left(\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial x^{i}}{\partial\tilde{x}^{k}}+\tilde{Y}^{k}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\right)\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\left(\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\right)\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\left(\frac{\partial x^{i}}{\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\right)+\tilde{v}^{l}\tilde{Y}^{k}\left(\frac{\partial x^{j}}{\partial\tilde{x}^{l}}\frac{\partial\tilde{x}^{m}}{\partial x^{j}}\right)\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\delta_{l}^{m}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{m}}\frac{\partial}{\partial\tilde{x}^{k}}+\tilde{v}^{l}\widetilde{Y}^{k}\delta_{l}^{m}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{m}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}\nonumber \\
+ & =\tilde{v}^{l}\frac{\partial\tilde{Y}^{k}}{\partial\tilde{x}^{l}}\frac{\partial}{\partial\tilde{x}^{k}}+\tilde{v}^{l}\tilde{Y}^{k}\frac{\partial^{2}x^{i}}{\partial\tilde{x}^{l}\partial\tilde{x}^{k}}\frac{\partial}{\partial x^{i}}.\label{eq:8}
+\end{align}
+
+\end_inset
+
+虽然这些计算非常冗长，但它们确实提供了一些在我们的定义中出了什么问题的洞察。如果我们将方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 与方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 进行比较，我们可以清楚地看到出了什么问题。特别是，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中出现的第二项阻碍了该量独立于坐标图表的良好定义。
+\end_layout
+
+\begin_layout Standard
+也就是说，我们应该花时间考虑为什么这在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+的情况下有效，而不是在一般流形中。注意在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中，如果我们假设我们的流形
+\begin_inset Formula $M$
+\end_inset
+
+被一个坐标图集
+\begin_inset Formula $\left\{ \left(U_{\alpha},\phi_{\alpha}\right)\right\} $
+\end_inset
+
+覆盖，使得坐标的变化具有消失(为零)的Hessian矩阵，则方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是良好定义的，并且这个导数依赖于坐标图集。事实上，一个非常自然的流形类是仿射流形(
+\shape italic
+affine manifolds
+\shape default
+)。仿射流形是一类其坐标变化是局部仿射映射的流形，即来自
+\begin_inset Formula $\mathbb{R}^{n}\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+的映射形式为
+\begin_inset Formula $F(x)=Ax+b$
+\end_inset
+
+，其中
+\begin_inset Formula $A\in\mathrm{GL}(n,\mathbb{R})$
+\end_inset
+
+和
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+。对于那些熟悉连通的人来说，值得验证这个导数对应于在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的标准连通的拉回连通。
+\end_layout
+
+\begin_layout Standard
+在另一种情况下，我们可以在不必借助连通机制的情况下定义一个向量场的导数，这种情况发生在
+\begin_inset Formula $M$
+\end_inset
+
+是可平行的时候，也就是，在
+\begin_inset Formula $TM$
+\end_inset
+
+和
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+之间存在一个丛同构。因此，在
+\begin_inset Formula $M$
+\end_inset
+
+上的一个向量场作为一个光滑映射
+\begin_inset Formula $Y:M\longrightarrow TM$
+\end_inset
+
+与具有一个光滑映射
+\begin_inset Formula $Y:M\longrightarrow M\times\mathbb{R}^{n}$
+\end_inset
+
+的情况相同，其中
+\begin_inset Formula $Y$
+\end_inset
+
+在第一个分量上是标识。因此，一个向量场的数据实际上只是一个映射
+\begin_inset Formula $Y:M\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+。我们现在可以按照方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)定义
+\begin_inset Formula $dY_{p}(v)$
+\end_inset
+
+，其中由于切丛的全局平凡化，现在
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+的差分是有意义的。当然，我们总是可以局部地平凡化，就像我们在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:8"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中尝试的那样。但是，让这个差商依赖于局部标识似乎是不合理的，而让它依赖于一个单一固定的标识则更为合理。话虽如此，可能值得再次强调的是，这样的定义实际上仍然依赖
+于选择，特别是在这里我们依赖于
+\begin_inset Formula $TM$
+\end_inset
+
+和
+\begin_inset Formula $M\times\mathbb{R}^{n}$
+\end_inset
+
+之间的标识，而这个标识通常是非正规的。
+\end_layout
+
+\begin_layout Section
+李导数
+\end_layout
+
+\begin_layout Standard
+考虑到上述讨论，定义流形上向量场的有意义导数似乎没有希望。主要问题之一是无法比较切空间。这是微分几何的一个基本困难，并且已经被广泛研究。实际上，人们经常会发现关
+于滚动而不滑动(
+\shape italic
+rolling without slipping
+\shape default
+)的微积分问题，这与通过称为平行传输(
+\shape italic
+parallel transport
+\shape default
+)的构造来标识在不同点处的切空间的概念密切相关。这个想法是，平行传输为我们提供了一种通过在流形上的曲线来标识在不同点处的切空间的方法。当然，人们沿着流形行进的方
+式，通常会影响这些标识。例如，球面上的两条曲线和下面的图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure2.jpg
+	scale 30
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-2"
+
+\end_inset
+
+图中，位于北极点
+\begin_inset Formula $p\in M$
+\end_inset
+
+的红色向量
+\begin_inset Formula $v$
+\end_inset
+
+沿着两条曲线平行传输。第一条是垂直于圆或本初子午线。注意，当返回点
+\begin_inset Formula $p$
+\end_inset
+
+时，向量
+\begin_inset Formula $v$
+\end_inset
+
+会回到其原始位置。与此相反，当曲线到达第一个紫色点时，向量
+\begin_inset Formula $v$
+\end_inset
+
+在途中返回其原始位置。与这种情况相反，当曲线到达第一个紫色点时，向量
+\begin_inset Formula $v$
+\end_inset
+
+在途中返回其原始位置。在绕过半个赤道后，到达第二个紫色点，然后沿着本初子午线返回。结果向量以绿色返回原始切空间，但实际上等于
+\begin_inset Formula $-v$
+\end_inset
+
+.这表明球体不是平的。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+受这种看待切空间之间标识的想法的启发，人们可能会考虑流形上的微分同胚群。如果我们想理解量
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+，我们需要一些方法来标识切空间。微分同胚当然提供了这种方法。特别是，如果
+\begin_inset Formula $F$
+\end_inset
+
+是流形
+\begin_inset Formula $M$
+\end_inset
+
+的一个微分同胚，将一个点
+\begin_inset Formula $p$
+\end_inset
+
+映射到另一个点
+\begin_inset Formula $q$
+\end_inset
+
+，则微分
+\begin_inset Formula $dF_{p}:T_{p}M\longrightarrow T_{q}M$
+\end_inset
+
+是向量空间之间的一个同构。现在，假设我们有微分同胚的一条路径
+\begin_inset Formula $F_{t}$
+\end_inset
+
+,使得
+\begin_inset Formula $F_{t}(p)=\gamma(t)$
+\end_inset
+
+。这为我们提供了通过 
+\begin_inset Formula $d\left(F_{t}\right)_{p}$
+\end_inset
+
+ 对
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+和
+\begin_inset Formula $T_{\gamma(t)}M$
+\end_inset
+
+进行标识的方法。在这种情况下，我们不一定能理解
+\begin_inset Formula $Y_{\gamma(t)}-Y_{p}$
+\end_inset
+
+，但似乎很自然地考虑了量 
+\begin_inset Formula 
+\begin{equation}
+\left(d\left(F_{t}\right)_{p}\right)^{-1}\left(Y_{\gamma(t)}\right)-Y_{p}.\label{eq:9}
+\end{equation}
+
+\end_inset
+
+在继续之前，让我们确定这是一个合理的量。当然，
+\begin_inset Formula $Y_{\gamma(t)}\in T_{\gamma(t)}M$
+\end_inset
+
+。另一方面，由于
+\begin_inset Formula $d\left(F_{t}\right)_{p}:T_{p}M\longrightarrow T_{\gamma(t)}M$
+\end_inset
+
+，我们知道其逆映射，由于
+\begin_inset Formula $F_{t}$
+\end_inset
+
+是一个微分同胚，将
+\begin_inset Formula $T_{\gamma(t)}M$
+\end_inset
+
+映射到
+\begin_inset Formula $T_{p}M$
+\end_inset
+
+，因此定义良好。因此，在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:9"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的量确实有意义。此外，我们还可以考虑极限 
+\begin_inset Formula 
+\begin{equation}
+\lim_{t\rightarrow0}\frac{1}{t}\left(\left(d\left(F_{t}\right)_{p}\right)^{-1}\left(Y_{\gamma(t)}\right)-Y_{p}\right).\label{eq:10}
+\end{equation}
+
+\end_inset
+
+对于微分同胚的一条通用路径，人们不应该期望上述结果收敛，因为我们无法控制例如
+\begin_inset Formula $d\left(F_{t}\right)_{p}$
+\end_inset
+
+在
+\begin_inset Formula $t=0$
+\end_inset
+
+时的行为，它只是一个在当前规定之下固定
+\begin_inset Formula $p$
+\end_inset
+
+的一个映射。此外，如何获得微分同胚的一条路径
+\begin_inset Formula $\left(F_{t}\right)_{p}=\gamma(t)$
+\end_inset
+
+，其中
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+表示一个向量
+\begin_inset Formula $v\in T_{p}M$
+\end_inset
+
+？
+\end_layout
+
+\begin_layout Standard
+一个非常自然的考虑因素是在一个流形上的流。给定一个单参数微分同胚子群
+\begin_inset Formula $F_{t}:\mathbb{R}\longrightarrow\mathrm{Diff}(M)$
+\end_inset
+
+，我们知道
+\begin_inset Formula $F_{0}=\mathrm{id}$
+\end_inset
+
+，因此，在
+\begin_inset Formula $t=0$
+\end_inset
+
+时的行为，以及理想情况下在
+\begin_inset Formula $t=0$
+\end_inset
+
+附近的局部行为，必须得到合理的控制。
+\end_layout
+
+\begin_layout Standard
+根据上述观察，那么尝试将一个向量场相对于另一个向量场进行微分，因为向量场定义了局部流。 也就是说，假设 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 是在一个流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的向量场。为了简单起见，我将假设它们对应的流确实是完整的，尽管以下构造和论证可能适用于纯局部论证。
+\end_layout
+
+\begin_layout Standard
+由于我们希望微分的向量场是 
+\begin_inset Formula $Y$
+\end_inset
+
+，我们打算沿着向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 进行微分，设 
+\begin_inset Formula $\theta:\mathbb{R}\times M\longrightarrow M$
+\end_inset
+
+ 是 
+\begin_inset Formula $X$
+\end_inset
+
+ 的对应流映射。设 
+\begin_inset Formula $p\in M$
+\end_inset
+
+，我们希望以与方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:10"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 类似的方式定义 
+\begin_inset Formula $Y$
+\end_inset
+
+ 在 
+\begin_inset Formula $p$
+\end_inset
+
+ 处的相对于 
+\begin_inset Formula $X$
+\end_inset
+
+ 的导数。将这个导数标志为 
+\begin_inset Formula $\left.\mathcal{L}_{X}Y\right|_{p}$
+\end_inset
+
+，我们定义 
+\begin_inset Formula 
+\begin{align}
+\left.\mathcal{L}_{X}Y\right|_{p} & :=\lim_{t\rightarrow0}\frac{1}{t}\left(\left(d\left(\theta_{t}\right)_{p}\right)^{-1}\left(Y_{\theta_{t}(p)}\right)-Y_{p}\right)\nonumber \\
+ & =\lim_{t\rightarrow0}\frac{1}{t}\left(d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(Y_{\theta_{t}(p)}\right)-Y_{p}\right),\label{eq:11}
+\end{align}
+
+\end_inset
+
+其中，第二个方程来自事实：
+\begin_inset Formula $\theta_{t}^{-1}=\theta_{-t}$
+\end_inset
+
+。有几个事实需要验证，但不会在这些笔记中提供，最紧迫的是这个向量场确实是有定义的。 对于那些对进一步细节感兴趣的人，以及这些笔记的大部分符号和灵感来源，我推荐你
+阅读Jack Lee的杰出微分几何著作 
+\shape italic
+Introduction to Smooth Manifolds
+\shape default
+ [2]。 这本书是相对于这些材料的真正坚实的参考书，他的对话式写作风格、详细论证和插图使这本书成为我向大家推荐的一本书。
+\end_layout
+
+\begin_layout Standard
+在继续之前，值得指出的是，方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的定义与方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) 中的定义有很大不同。回想一下，通过将
+\begin_inset Formula $p$
+\end_inset
+
+转换为
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+平移所诱导出的标识，是关联
+\begin_inset Formula $T_{\gamma(t)}\mathbb{R}^{n}$
+\end_inset
+
+和
+\begin_inset Formula $T_{p}\mathbb{R}^{n}$
+\end_inset
+
+标识的方法。然而，
+\begin_inset Formula $T_{\gamma(t)}\mathbb{R}^{n}$
+\end_inset
+
+和
+\begin_inset Formula $T_{p}\mathbb{R}^{n}$
+\end_inset
+
+之间的标识是由向量场的流诱导的。以下例子说明了这种差异。 
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-1"
+
+\end_inset
+
+设
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+并定义 
+\begin_inset Formula 
+\begin{equation}
+X=-y\frac{\partial}{\partial x}+x\frac{\partial}{\partial y}\text{ and }Y=\frac{\partial}{\partial x}.\label{eq:12}
+\end{equation}
+
+\end_inset
+
+设
+\begin_inset Formula $p=(x,y)$
+\end_inset
+
+，并让我们计算
+\begin_inset Formula $\mathcal{L}_{X}Y$
+\end_inset
+
+。根据方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，我们首先计算
+\begin_inset Formula $X$
+\end_inset
+
+的流。事实上，人们可以相对容易地证明，相应的微分方程组给出为：
+\begin_inset Formula 
+\[
+x^{\prime}=-y\text{ and }y^{\prime}=x\text{ where }(x(0),y(0))=(x,y)\Longrightarrow\theta_{t}(x,y)=\left(\begin{array}{cc}
+\cos(t) & -\sin(t)\\
+\sin(t) & \cos(t)
+\end{array}\right)\left(\begin{array}{c}
+x\\
+y
+\end{array}\right).
+\]
+
+\end_inset
+
+也就是说，
+\begin_inset Formula $Y_{\theta_{t}(p)}=\left.\partial/\partial x\right|_{\theta_{t}(p)}$
+\end_inset
+
+，并因此
+\begin_inset Formula 
+\[
+d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(Y_{\theta_{t}(p)}\right)=d\left(\theta_{-t}\right)_{\theta_{t}(p)}\left(\left.\frac{\partial}{\partial x}\right|_{\theta_{t}(p)}\right)=\left.\cos(t)\frac{\partial}{\partial x}\right|_{p}-\left.\sin(t)\frac{\partial}{\partial y}\right|_{p}.
+\]
+
+\end_inset
+
+其中的负号是因为我们使用逆流，即 
+\begin_inset Formula $\theta_{-t}$
+\end_inset
+
+，而不是 
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+。将这个结果代入方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:11"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，产生 
+\begin_inset Formula 
+\[
+\mathcal{L}_{X}Y=\lim_{t\rightarrow0}\frac{1}{t}\left(\left.\cos(t)\frac{\partial}{\partial x}\right|_{p}-\left.\sin(t)\frac{\partial}{\partial y}\right|_{p}-\left.\frac{\partial}{\partial x}\right|_{p}\right)=\left.\lim_{t\rightarrow0}\frac{\cos(t)-1}{t}\frac{\partial}{\partial x}\right|_{p}-\left.\frac{\sin(t)}{t}\frac{\partial}{\partial y}\right|_{p}=-\left.\frac{\partial}{\partial y}\right|_{p}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+我们很容易在抽象的计算中再一次迷失。这个例子之所以引人入胜，是因为通常我们认为向量场
+\begin_inset Formula $\partial/\partial x$
+\end_inset
+
+是“常数”。在
+\begin_inset Formula $T_{p}\mathbb{R}^{2}$
+\end_inset
+
+和
+\begin_inset Formula $T_{q}\mathbb{R}^{2}$
+\end_inset
+
+的标准标识之下它是不变的，这是由从
+\begin_inset Formula $p$
+\end_inset
+
+到
+\begin_inset Formula $q$
+\end_inset
+
+的平移所诱导的。然而，我们并不是这样标识切空间的。在这里，我们通过流出映射，即
+\begin_inset Formula $\theta_{t}$
+\end_inset
+
+，在
+\begin_inset Formula $X$
+\end_inset
+
+流的同一轨道上局部标识切空间。在我们的情况下，这些是圆。现在，当一个向量沿着一个圆移动时，它似乎有理由改变其方向，这正是正在发生的事情，也是我们得到非平凡李导数
+的原因。图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 展示了这一过程。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure3.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-3"
+
+\end_inset
+
+这里向量场
+\begin_inset Formula $Y=\partial/\partial x$
+\end_inset
+
+以黑色表示。在某一点的
+\begin_inset Formula $X$
+\end_inset
+
+的流由浅蓝色圆表示。向量场
+\begin_inset Formula $Y_{\theta_{t}(p)}$
+\end_inset
+
+以浅红色表示。它在
+\begin_inset Formula $X$
+\end_inset
+
+流之下的拉回由蓝色表示，注意，这与
+\begin_inset Formula $Y$
+\end_inset
+
+不同。差商以橙色表示。左图为
+\begin_inset Formula $t=0.2$
+\end_inset
+
+，右图为
+\begin_inset Formula $t=0.1$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-2"
+
+\end_inset
+
+ 设
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+，并定义 
+\begin_inset Formula 
+\begin{equation}
+X=-y\frac{\partial}{\partial x}+x\frac{\partial}{\partial y}\text{ and }Y=x\frac{\partial}{\partial x}+y\frac{\partial}{\partial y}.\label{eq:13}
+\end{equation}
+
+\end_inset
+
+以与上述示例类似的方式，可以进行计算以得出
+\begin_inset Formula $Y$
+\end_inset
+
+在
+\begin_inset Formula $X$
+\end_inset
+
+的流之下是不变的，因此这种情况下的李导数实际上为
+\begin_inset Formula $0$
+\end_inset
+
+。值得验证这些计算，但下面提供了一个图片来演示这一点。 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure4.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-4"
+
+\end_inset
+
+这里向量场
+\begin_inset Formula $Y_{\theta_{t}(p)}$
+\end_inset
+
+以红色表示，其在
+\begin_inset Formula $X$
+\end_inset
+
+的流之下的拉回以蓝色表示。原始向量场
+\begin_inset Formula $Y$
+\end_inset
+
+以黑色表示，但由于被蓝色的拉回所遮挡，它们是相等的。差商由橙色的零向量表示。左图为
+\begin_inset Formula $t=0.2$
+\end_inset
+
+，右图为
+\begin_inset Formula $t=0.1$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+\begin_inset CommandInset label
+LatexCommand label
+name "exa:Example-3"
+
+\end_inset
+
+设
+\begin_inset Formula $M=\mathbb{R}^{2}$
+\end_inset
+
+，并定义 
+\begin_inset Formula 
+\begin{equation}
+X=(x+y)\frac{\partial}{\partial x}+y\frac{\partial}{\partial y}\text{ and }Y=x\frac{\partial}{\partial y}.\label{eq:14}
+\end{equation}
+
+\end_inset
+
+这里是一个例子，其中向量场
+\begin_inset Formula $Y$
+\end_inset
+
+沿着直线
+\begin_inset Formula $x=0$
+\end_inset
+
+消失(为零)，但其沿着
+\begin_inset Formula $Y$
+\end_inset
+
+轴的导数通常是非零的。同样，没有太大的困难，人们可以验证，
+\begin_inset Formula $X$
+\end_inset
+
+的流由下式给出为：
+\begin_inset Formula 
+\[
+\theta_{t}(x,y)=\left(\begin{array}{cc}
+e^{t} & te^{t}\\
+0 & e^{t}
+\end{array}\right)\left(\begin{array}{c}
+x\\
+y
+\end{array}\right)\Longrightarrow Y_{\theta_{t}(p)}=\left.\left(e^{t}x+te^{t}y\right)\frac{\partial}{\partial y}\right|_{\theta_{t}(p)}.
+\]
+
+\end_inset
+
+计算差商的极限，产生 
+\begin_inset Formula 
+\[
+\begin{aligned}\mathcal{L}_{X}Y & =\lim_{t\rightarrow0}\frac{1}{t}\left(\left(e^{t}x+te^{t}y\right)\left(-\left.te^{-t}\frac{\partial}{\partial x}\right|_{p}+\left.e^{-t}\frac{\partial}{\partial y}\right|_{p}\right)-\left.x\frac{\partial}{\partial y}\right|_{p}\right)\\
+ & =\lim_{t\rightarrow0}-\left.(x+ty)\frac{\partial}{\partial x}\right|_{p}+\left.ye^{-t}\frac{\partial}{\partial y}\right|_{p}=-\left.x\frac{\partial}{\partial x}\right|_{p}+\left.y\frac{\partial}{\partial y}\right|_{p},
+\end{aligned}
+\]
+
+\end_inset
+
+注意，除了在原点处之外，在直线 
+\begin_inset Formula $x=0$
+\end_inset
+
+ 上确实不消失(为零)。下面的图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-5"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 展示了沿着 
+\begin_inset Formula $X$
+\end_inset
+
+ 的两条不同积分曲线的计算过程。 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure5.jpg
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-5"
+
+\end_inset
+
+向量场 
+\begin_inset Formula $Y=x\partial/\partial y$
+\end_inset
+
+ 沿着向量场 
+\begin_inset Formula $X=(x+y)\partial/\partial x+y\partial/\partial y$
+\end_inset
+
+ 的两条积分曲线分别用黑色和浅红色表示。浅红色的向量场是在 
+\begin_inset Formula $\theta_{t}(p)$
+\end_inset
+
+ 处求值的 
+\begin_inset Formula $Y$
+\end_inset
+
+，其在 
+\begin_inset Formula $X$
+\end_inset
+
+ 流之下的拉回用蓝色表示。差商用橙色表示。注意，有一处橙色和蓝色向量互为标量倍数。这一点对应于 
+\begin_inset Formula $Y$
+\end_inset
+
+ 消失(为零)的点，但其李导数不为零。左图为 
+\begin_inset Formula $t=0.2$
+\end_inset
+
+，右图为 
+\begin_inset Formula $t=0.1$
+\end_inset
+
+。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+应该提到的是，还有另一种表述，即向量场在一个流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上作用在光滑实值函数代数上的李导数。具体来说，给定在一个流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的两个向量 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+，可以将 
+\begin_inset Formula $X$
+\end_inset
+
+ 和 
+\begin_inset Formula $Y$
+\end_inset
+
+ 的李括号定义为向量场，它在
+\begin_inset Formula $M$
+\end_inset
+
+上作用于光滑实值函数的代数，即对于所有的 
+\begin_inset Formula $f\in\mathrm{C}^{\infty}(M)$
+\end_inset
+
+，有
+\begin_inset Formula $(XY-YX)f=X(Yf)-Y(Xf)$
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Example
+虽然以下对李导数的表述在计算上更为便捷，且在理论上更易于处理，但它有一个严重的缺点，那就是没有任何‘明显’的几何解释，至少据我所知是这样。实际上，在我看来，上述
+表述甚至定义一个向量场都远非显而易见。然而，它使得人们能够相对容易地计算李导数，并且有一个直接的坐标表示。如果
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+在坐标中局部地由
+\begin_inset Formula $X=X^{i}\partial/\partial x^{i}$
+\end_inset
+
+和
+\begin_inset Formula $Y=Y^{j}\partial/\partial x^{j}$
+\end_inset
+
+给出，则这两个向量场的李括号为
+\begin_inset Formula 
+\begin{equation}
+\mathcal{L}_{X}Y=[X,Y]=\left(X^{i}\frac{\partial Y^{j}}{\partial x^{i}}-Y^{i}\frac{\partial X^{j}}{\partial x^{i}}\right)\frac{\partial}{\partial x^{j}}.\label{eq:15}
+\end{equation}
+
+\end_inset
+
+这一定义和关于流的导数公式的一致性尚不清楚，但你仍然可以在Jack Lee的文章[2]中找到证明。
+\end_layout
+
+\begin_deeper
+\begin_layout Section
+对易子的导数
+\end_layout
+
+\end_deeper
+\begin_layout Example
+正如摘要中承诺的那样，我们最后提供一个证明，在
+\begin_inset Formula $M$
+\end_inset
+
+上的向量场
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的李导数由它们的流的对易子的二阶导数给出。设
+\begin_inset Formula $X$
+\end_inset
+
+和
+\begin_inset Formula $Y$
+\end_inset
+
+的流由
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\phi$
+\end_inset
+
+给出。选取一个点
+\begin_inset Formula $p\in M$
+\end_inset
+
+，和一个以
+\begin_inset Formula $p$
+\end_inset
+
+为中心的坐标贴片，
+\begin_inset Formula $(V,\psi):V\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+。假设这个坐标贴片足够小，以至于有一个盒子，盒子的大小为
+\begin_inset Formula $(-\epsilon,\epsilon)^{2}$
+\end_inset
+
+，其中
+\begin_inset Formula $\theta$
+\end_inset
+
+和
+\begin_inset Formula $\phi$
+\end_inset
+
+在围绕
+\begin_inset Formula $p$
+\end_inset
+
+的
+\begin_inset Formula $V$
+\end_inset
+
+中的每个地方都有定义。这个规定是为了保证流在有限时间内不会爆炸，并且在它们离开开集
+\begin_inset Formula $V$
+\end_inset
+
+的范围内才会变得没有定义。由于这个讨论是纯局部的，我们可以假定事实上将 
+\begin_inset Formula $V$
+\end_inset
+
+ 标识为以原点为中心的 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 的一个开子集。
+\end_layout
+
+\begin_layout Example
+考虑映射
+\begin_inset Formula $\left(\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}\right)(0):(-\epsilon,\epsilon)\longrightarrow\mathbb{R}^{n}$
+\end_inset
+
+。如果我们围绕原点对
+\begin_inset Formula $\theta:(-\epsilon,\epsilon)\times V\longrightarrow V$
+\end_inset
+
+和
+\begin_inset Formula $\phi_{t}:(-\epsilon,\epsilon)\times V\longrightarrow V$
+\end_inset
+
+都进行泰勒展开，我们有如下结果 
+\begin_inset Formula 
+\begin{align}
+\theta(t,x)= & \theta(0,0)+\frac{\partial\theta}{\partial t}(0,0)t+\frac{\partial\theta}{\partial x}(0,0)x+\frac{1}{2}\left(\frac{\partial^{2}\theta}{\partial t^{2}}(0,0)t^{2}\right.\nonumber \\
+ & \left.+\frac{\partial^{2}\theta}{\partial t\partial x}(0,0)tx+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0)tx+x^{T}\frac{\partial^{2}\theta}{\partial x^{2}}(0,0)x\right)+\ldots\nonumber \\
+= & 0+\frac{\partial\theta}{\partial t}(0,0)t+\frac{\partial\theta}{\partial x}(0,0)x+\frac{1}{2}\frac{\partial^{2}\theta}{\partial t^{2}}(0,0)t^{2}+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0)tx+\frac{1}{2}x^{T}\frac{\partial^{2}\theta}{\partial x^{2}}(0,0)x+\ldots\label{eq:16}
+\end{align}
+
+\end_inset
+
+这里我使用了非常不精确的符号表示法。特别地，表达式
+\begin_inset Formula $\left(\partial^{2}\theta/\partial x^{2}\right)(0,0)$
+\end_inset
+
+应该标志一个向量-值函数在点
+\begin_inset Formula $(0,0)$
+\end_inset
+
+处的二阶导数。如果 
+\begin_inset Formula $\theta$
+\end_inset
+
+ 在 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+ 中取值，你会得到从 
+\begin_inset Formula $\mathbb{R}^{m}\longrightarrow\mathbb{R}$
+\end_inset
+
+ 的一个映射的标准泰勒展开，并且这个量表示 Hessian 矩阵。但在我们的例子中，这是一个张量量，尽管如此，通过在 
+\begin_inset Formula $\theta=\left(\theta^{1},\theta^{2},\ldots,\theta^{n}\right)$
+\end_inset
+
+ 的坐标展开中对每个 
+\begin_inset Formula $\theta^{i}$
+\end_inset
+
+ 进行泰勒展开，可以恢复它。不幸的是，我不知道对此是否有一个标准的记号，所以我只是自己编造的，但如果你需要任何令人信服的东西，只要考虑从 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+ 到 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+ 的两两情况，并写出细节，看看它到底是什么。
+\end_layout
+
+\begin_layout Example
+我们可以在方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:16"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中计算导数，因为它们简化了很多。回想一下，
+\begin_inset Formula $\theta$
+\end_inset
+
+的第一个输入是时间坐标，而第二个输入是空间坐标。
+\end_layout
+
+\begin_layout Example
+我们有以下方程：
+\begin_inset Formula 
+\begin{align}
+\frac{\partial\theta}{\partial t}(0,0) & =\left.\frac{\partial}{\partial t}\right|_{t=0}\theta(t,0)=X(0),\label{eq:17}\\
+\frac{\partial\theta}{\partial x}(0,0) & =\left.\frac{\partial}{\partial x}\right|_{x=0}\theta(0,x)=\mathrm{id},\label{eq:18}\\
+\frac{\partial^{2}\theta}{\partial t^{2}}(0,0) & =\left.\frac{\partial^{2}}{\partial t^{2}}\right|_{t=0}\theta(t,0)=\left.\frac{\partial}{\partial t}\right|_{t=0}X_{\theta_{t}(0)}=\frac{\partial X}{\partial x}(0)X(0),\label{eq:19}\\
+\frac{\partial^{2}\theta}{\partial x\partial t}(0,0) & =\left.\frac{\partial}{\partial x}\right|_{x=0}\left.\frac{\partial}{\partial t}\right|_{t=0}\theta(t,x)=\left.\frac{\partial}{\partial x}\right|_{x=0}X(x)=\frac{\partial X}{\partial x}(0),\label{eq:20}\\
+\frac{\partial^{2}\theta}{\partial x^{2}}(0,0) & =\left.\frac{\partial^{2}}{\partial x^{2}}\right|_{x=0}\theta(0,x)=\left.\frac{\partial^{2}}{\partial x^{2}}\right|_{x=0}x=0.\label{eq:21}
+\end{align}
+
+\end_inset
+
+方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)立即从向量场与诱导流的关系得出，即向量场随时间变化。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:18"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)是因为
+\begin_inset Formula $\theta(0,x)$
+\end_inset
+
+是在空间上的恒等映射，所以它的导数是在切空间上的恒等映射。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:19"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)也是流的性质的推导结果，其中最后一个方程通过将链式法则应用于
+\begin_inset Formula $(X\circ\theta)(t,0)$
+\end_inset
+
+得到。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:20"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)直接得到，或多或少是通过定义得到的。方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)再次通过以下事实的推导而得到，即
+\begin_inset Formula $\theta(0,x)$
+\end_inset
+
+是在空间上的恒等映射，因此它的二阶导数为零。为了确信方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)，考虑函数
+\begin_inset Formula $\left(x_{1},\ldots,x_{n}\right)\mapsto\left(x_{1},\ldots,x_{n}\right)$
+\end_inset
+
+的二阶导数数组会有所帮助。一阶导数可以被视为恒等矩阵，对具有常数值的矩阵的分量进行微分应得出零。将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:17"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:21"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的结果结合起来，提供了
+\begin_inset Formula $\theta$
+\end_inset
+
+在
+\begin_inset Formula $(0,0)$
+\end_inset
+
+处的二阶泰勒展开式。
+\begin_inset Formula 
+\begin{equation}
+\theta(t,x)=x+t\left(X(0)+\frac{\partial X}{\partial x}(0)x\right)+\frac{t^{2}}{2}\frac{\partial X}{\partial x}(0)X(0)+\ldots\label{eq:22}
+\end{equation}
+
+\end_inset
+
+同样的结果适用于
+\begin_inset Formula $\phi$
+\end_inset
+
+，
+\begin_inset Formula 
+\begin{equation}
+\phi(t,y)=y+t\left(Y(0)+\frac{\partial Y}{\partial x}(0)y\right)+\frac{t^{2}}{2}\frac{\partial Y}{\partial x}(0)X(0)+\ldots\label{eq:23}
+\end{equation}
+
+\end_inset
+
+将方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:22"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)和(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:23"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)组合起来，我们可以计算出在
+\begin_inset Formula $0\in V$
+\end_inset
+
+处的流的对易子。由于这些计算相当复杂，我使用了Mathematica，关于确切的代码，请参见下面的图 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Figure-6"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+。特别地，这产生 
+\begin_inset Formula 
+\begin{equation}
+\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}(0)=t^{2}\left(\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)\right)+\ldots\label{eq:24}
+\end{equation}
+
+\end_inset
+
+其中剩余的项都是关于
+\begin_inset Formula $t$
+\end_inset
+
+的高阶项，因此在二阶导数在零处评估时消失(为零)。对公式(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)进行微分并在
+\begin_inset Formula $t=0$
+\end_inset
+
+处评估，产生
+\begin_inset Formula 
+\begin{equation}
+\left.\frac{d^{2}}{dt^{2}}\right|_{t=0}\left(\phi_{-t}\theta_{-t}\phi_{t}\theta_{t}\right)(0)=2\left(\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)\right).\label{eq:25}
+\end{equation}
+
+\end_inset
+
+在系数为 
+\begin_inset Formula $2$
+\end_inset
+
+ 的情况下，方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:25"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)中的右手侧在坐标中为 
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial Y}{\partial x}(0)X(0)-\frac{\partial X}{\partial x}(0)Y(0)=\left(\frac{\partial Y^{j}}{\partial x^{i}}(0)X^{i}(0)-\frac{\partial X^{j}}{\partial x^{i}}(0)Y^{i}(0)\right)e_{j},\label{eq:26}
+\end{equation}
+
+\end_inset
+
+这是方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)的形式。证明到此结束。
+\end_layout
+
+\begin_layout Example
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/Lie_Derivative-Figure6.jpg
+	scale 32
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Figure-6"
+
+\end_inset
+
+用于计算对易子二阶导数的Mathematica代码。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Example
+可能值得注意的是，只要我们考虑二阶导数，你可能会对此提出反对意见。当然，一条曲线
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+的一阶导数位于切向量空间
+\begin_inset Formula $T_{\gamma(0)}M$
+\end_inset
+
+中，但二阶导数却不在其中。我们之所以将二阶导数视为切向量空间的一个元素，原因非常微妙。假设你有一条曲线
+\begin_inset Formula $\gamma:I\longrightarrow M$
+\end_inset
+
+，使得
+\begin_inset Formula $\gamma^{\prime}(0)=0$
+\end_inset
+
+。一般来说，曲线的切向量通过
+\begin_inset Formula $\gamma^{\prime}(0)f=(f\circ\gamma)^{\prime}(0)$
+\end_inset
+
+作用于光滑函数
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+的代数上，其中
+\begin_inset Formula $f\circ\gamma:I\longrightarrow\mathbb{R}$
+\end_inset
+
+是一个光滑函数。因为一阶导数为零，我们实际上可以通过
+\begin_inset Formula $\gamma^{\prime\prime}(0)f=(f\circ\gamma)^{\prime\prime}(0)$
+\end_inset
+
+定义
+\begin_inset Formula $\gamma^{\prime\prime}(0)$
+\end_inset
+
+在
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+上的一个作用。一般来说，这并不满足一个导子的标准，但是因为
+\begin_inset Formula $\gamma^{\prime}(0)=0$
+\end_inset
+
+，所以它满足了。值得写出技术细节以确保这一点，但是一旦这得到验证，我们实际上就可以确定标识
+\begin_inset Formula $\gamma^{\prime\prime}(0)\in T_{p}M$
+\end_inset
+
+。在我们的案例中，通过方程(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:24"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+)可以看出，这个条件得到了满足，因为对易子没有一阶项。
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+[1] Timothy Goldberg.
+ What is a connection and what is it good for? 2008.
+ URL 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://pi.math.cornell.edu/~goldberg/Notes/AboutConnections.pdf
+\end_layout
+
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_layout Itemize
+[2] John Lee.
+ Smooth Manifolds Second Edition.
+ pages 227-233, 2000.
+ 
+\end_layout
+
+\end_body
+\end_document
