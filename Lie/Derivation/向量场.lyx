@@ -1,0 +1,2426 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% zhlineskip 将数学公式的行距“恢复”成西文较为紧凑的行距(通常为西文字号的 1.2 倍)，使得全文的视觉密度较为均匀。
+%\usepackage{zhlineskip}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage{multicol}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children no
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "向量场"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+向量场
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+14 July 2024
+\end_layout
+
+\begin_layout Standard
+在向量微积分和物理学中，
+
+\series bold
+向量场(vector field)
+\series default
+是将一个向量赋给空间中每个点的一种指派，
+最常见的空间是欧几里得空间 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+。
+[1] 平面上的向量场可以被可视化为一系列带有特定大小和方向的箭头，
+每个箭头都附着在平面上的一个点上。
+向量场经常用来模拟例如三维空间中流动流体的速度和方向，
+比如风，
+或者某个力的强度和方向，
+如磁场或重力场，
+这些力随着从一点到另一点的变化而变化。
+
+\end_layout
+
+\begin_layout Standard
+微分和积分微积分中的概念自然地扩展到向量场上。
+当向量场代表力时，
+向量场的曲线积分代表了力沿着路径移动所做的功，
+在这种解释下能量守恒作为微积分基本定理的一个特例出现。
+向量场可以被恰当地认为代表了空间中一个移动流的速度，
+并且这种物理直觉导致了诸如散度(表示一个流的体积变化率)和旋度(表示一个流的旋转)这样的概念。
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename VectorField.svg
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+一个向量场 
+\begin_inset Formula $(\sin y,\sin x)$
+\end_inset
+
+ 的一部分
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+向量场是
+\shape italic
+向量-值函数
+\shape default
+(
+\shape italic
+vector-valued function
+\shape default
+)的一种特殊情况，
+其定义域的维数与其值域的维数无关；
+例如，
+空间曲线的位置向量只在环境空间的一个较小子集中定义。
+同样地，
+对于 
+\begin_inset Formula $n$
+\end_inset
+
+ 坐标，
+定义在一个 
+\begin_inset Formula $n$
+\end_inset
+
+ 维欧几里得空间 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 的子集上的向量场可以表示为一个向量值函数，
+该函数将一个 
+\begin_inset Formula $n$
+\end_inset
+
+ 元组的实数与定义域中的每一个点联系起来。
+这种向量场的表示取决于坐标系统，
+并且在从一个坐标系变换到另一个坐标系时有一个良好的定义的变换定律(
+\shape italic
+向量的协变性和逆变性(covariance and contravariance of vectors)
+\shape default
+)。
+
+\end_layout
+
+\begin_layout Standard
+向量场经常在欧几里得空间的开子集中讨论，
+但也适用于其他子集，
+如曲面，
+其中它们在曲面上的每个点处赋予一个与曲面切向的箭头(切向量)。
+更一般地讲，
+向量场定义在微分流形上，
+这些流形在小尺度上看起来像欧几里得空间，
+但在较大尺度上可能有更复杂的结构。
+在这种设置下，
+向量场在流形的每一点给出一个切向量(即流形切丛的一个截面)。
+向量场是一种类型的张量场。
+
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Subsection
+欧几里得空间子集上的向量场
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Radial_vector_field_sparse.svg
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Radial_vector_field_dense.svg
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+同一向量场的两种表示：
+
+\begin_inset Formula $\mathbf{v}(x,y)=-\mathbf{r}$
+\end_inset
+
+。
+箭头描绘了离散点上的场，
+不管怎样，
+场是处处存在的。
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定 
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+ 的一个子集 
+\begin_inset Formula $S$
+\end_inset
+
+，
+一个
+\series bold
+向量场(vector field)
+\series default
+可以通过一个向量值函数 
+\begin_inset Formula $V:S\rightarrow\mathbf{R}^{n}$
+\end_inset
+
+ 在标准笛卡尔坐标(
+\begin_inset Formula $x_{1},\ldots,x_{n}$
+\end_inset
+
+)中表示。
+如果 
+\begin_inset Formula $V$
+\end_inset
+
+ 的每一分量都是连续的，
+则称 
+\begin_inset Formula $V$
+\end_inset
+
+ 为连续向量场。
+通常关注
+\series bold
+光滑的(smooth)
+\series default
+向量场，
+这意味着每一分量都是一个光滑函数(可任意次数求导)。
+一个向量场可以被可视化为将一个向量赋给 
+\begin_inset Formula $n$
+\end_inset
+
+ 维空间中的每一个点。
+[1]
+\end_layout
+
+\begin_layout Standard
+一个标准的记法是用 
+\begin_inset Formula $\frac{\partial}{\partial x_{1}},\ldots,\frac{\partial}{\partial x_{n}}$
+\end_inset
+
+ 表示坐标方向上的单位向量。
+根据这些项，
+每一个定义在 
+\begin_inset Formula $\mathbf{R}^{n}$
+\end_inset
+
+ 的开子集 
+\begin_inset Formula $S$
+\end_inset
+
+ 上的光滑向量场 
+\begin_inset Formula $V$
+\end_inset
+
+ 都可以写为 
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}V_{i}\left(x_{1},\ldots,x_{n}\right)\frac{\partial}{\partial x_{i}}
+\]
+
+\end_inset
+
+对于某些在 
+\begin_inset Formula $S$
+\end_inset
+
+ 上的光滑函数 
+\begin_inset Formula $V_{1},\ldots,V_{n}$
+\end_inset
+
+成立。
+[2] 这种记法的原因在于一个向量场确定了一个从光滑函数空间到自身的线性映射，
+
+\begin_inset Formula $V:C^{\infty}(S)\rightarrow C^{\infty}(S)$
+\end_inset
+
+，
+即沿着向量场的方向进行微分。
+
+\end_layout
+
+\begin_layout Example*
+向量场 
+\begin_inset Formula $-x_{2}\frac{\partial}{\partial x_{1}}+x_{1}\frac{\partial}{\partial x_{2}}$
+\end_inset
+
+ 描述了 
+\begin_inset Formula $\mathbf{R}^{2}$
+\end_inset
+
+ 中绕原点的逆时针旋转。
+为了说明函数 
+\begin_inset Formula $x_{1}^{2}+x_{2}^{2}$
+\end_inset
+
+ 是旋转不变的，
+我们计算：
+ 
+\begin_inset Formula 
+\[
+\left(-x_{2}\frac{\partial}{\partial x_{1}}+x_{1}\frac{\partial}{\partial x_{2}}\right)\left(x_{1}^{2}+x_{2}^{2}\right)=-x_{2}\left(2x_{1}\right)+x_{1}\left(2x_{2}\right)=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+给定在 
+\begin_inset Formula $S$
+\end_inset
+
+ 上定义的向量场 
+\begin_inset Formula $V,W$
+\end_inset
+
+，
+以及一个在 
+\begin_inset Formula $S$
+\end_inset
+
+ 上定义的光滑函数 
+\begin_inset Formula $f$
+\end_inset
+
+，
+标量乘法和向量加法的操作为，
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}(fV)(p) & :=f(p)V(p)\\
+(V+W)(p) & :=V(p)+W(p),
+\end{aligned}
+\]
+
+\end_inset
+
+使得光滑向量场成为光滑函数环上的一个模，
+其中函数的乘法是逐点(pointwise)定义的。
+
+\end_layout
+
+\begin_layout Subsection
+坐标变换定律
+\end_layout
+
+\begin_layout Standard
+在物理学中，
+向量还通过其坐标在不同背景坐标系统中测量同一向量时的变化方式进一步区分。
+向量的变换性质将向量作为一个几何上不同的实体与简单标量列表或与余向量区分开来。
+
+\end_layout
+
+\begin_layout Standard
+因此，
+假设 
+\begin_inset Formula $\left(x_{1},\ldots,x_{n}\right)$
+\end_inset
+
+ 是一组笛卡尔坐标，
+按照这些坐标，
+向量 
+\begin_inset Formula $V$
+\end_inset
+
+ 的各分量为
+\begin_inset Formula 
+\[
+V_{x}=\left(V_{1,x},\ldots,V_{n,x}\right)
+\]
+
+\end_inset
+
+并且假设 
+\begin_inset Formula $\left(y_{1},\ldots,y_{n}\right)$
+\end_inset
+
+ 是 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ 的 
+\begin_inset Formula $n$
+\end_inset
+
+ 个函数，
+它定义一组不同的坐标系统。
+则向量 
+\begin_inset Formula $V$
+\end_inset
+
+ 在新坐标中的分量要求满足变换定律
+\begin_inset Formula 
+\begin{equation}
+V_{i,y}=\sum_{j=1}^{n}\frac{\partial y_{i}}{\partial x_{j}}V_{j,x}\,.\label{eq:1}
+\end{equation}
+
+\end_inset
+
+这样的变换定律被称为逆变(contravariant)。
+类似的变换定律刻画了物理学中的向量场：
+具体而言，
+向量场是对每组坐标系统指定 
+\begin_inset Formula $n$
+\end_inset
+
+ 个函数的规范，
+这些函数满足方程 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:1"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) 中的变换定律，
+用于联系不同的坐标系统。
+
+\end_layout
+
+\begin_layout Standard
+向量场因此与标量场形成对比，
+标量场为每个空间中的点关联一个数值或标量，
+并且也与简单的标量列表形成对比，
+后者不会随坐标变化而变化。
+
+\end_layout
+
+\begin_layout Subsection
+流形上的向量场
+\end_layout
+
+\begin_layout Standard
+给定一个可微流形 
+\begin_inset Formula $M$
+\end_inset
+
+，
+在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一个向量场是指给在 
+\begin_inset Formula $M$
+\end_inset
+
+ 中的每一个点分配一个切向量。
+[2] 更精确地说，
+一个向量场 
+\begin_inset Formula $F$
+\end_inset
+
+ 是一个从 
+\begin_inset Formula $M$
+\end_inset
+
+ 到切丛 
+\begin_inset Formula $TM$
+\end_inset
+
+ 的映射，
+使得投影 
+\begin_inset Formula $p\circ F$
+\end_inset
+
+ 是恒等映射，
+其中 
+\begin_inset Formula $p$
+\end_inset
+
+ 标记从 
+\begin_inset Formula $TM$
+\end_inset
+
+ 到 
+\begin_inset Formula $M$
+\end_inset
+
+ 的投影。
+换句话说，
+一个向量场是切丛的一个截面。
+
+\end_layout
+
+\begin_layout Standard
+另一种定义：
+在一个光滑流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一个光滑向量场 
+\begin_inset Formula $X$
+\end_inset
+
+ 是一个线性映射 
+\begin_inset Formula $X:C^{\infty}(M)\rightarrow C^{\infty}(M)$
+\end_inset
+
+，
+以使得 
+\begin_inset Formula $X$
+\end_inset
+
+ 是一个导子：
+
+\begin_inset Formula $X(fg)=fX(g)+X(f)g$
+\end_inset
+
+ 对所有的 
+\begin_inset Formula $f,g\in C^{\infty}(M)$
+\end_inset
+
+ 成立。
+[3]
+\end_layout
+
+\begin_layout Standard
+如果流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 是光滑或解析的 —
+—
+ 也就是说，
+坐标变换是光滑的(解析的) —
+—
+ 则就可以理解光滑的(解析的)向量场的概念。
+在一个光滑流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的所有光滑向量场的集合常常用 
+\begin_inset Formula $\Gamma(TM)$
+\end_inset
+
+ 或 
+\begin_inset Formula $C^{\infty}(M,TM)$
+\end_inset
+
+ 标记(特别是当考虑向量场作为截面时)；
+所有光滑向量场的集合也用 
+\begin_inset Formula $\mathfrak{X}(M)$
+\end_inset
+
+ (德文尖角体的 “X”)标记。
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Vector_field_E.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+球面上的向量场
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+示例
+\end_layout
+
+\begin_layout Itemize
+地球上空气运动的向量场将为地球表面的每一点分配一个向量，
+其中包含该点的风速和方向。
+这可以通过箭头来表示风；
+箭头的长度(大小)将是风速的指示。
+在通常的大气压力图上的“高压”会表现为源(箭头向外)，
+而“低压”会是汇(箭头向内)，
+因为空气倾向于从高压区域流向低压区域。
+ 
+\end_layout
+
+\begin_layout Itemize
+移动流体的速度场。
+在这种情况下，
+与流体中的每一点关联一个速度向量。
+ 
+\end_layout
+
+\begin_layout Itemize
+流线、迹线和路径线是从(时间依赖的)向量场中可以得到的三种类型的线。
+它们分别是：
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+迹线：
+通过在某一特定固定点通过的不同时间粒子产生的线。
+ 
+\end_layout
+
+\begin_layout Itemize
+路径线：
+显示一个给定粒子(质量为零)的路径。
+ 
+\end_layout
+
+\begin_layout Itemize
+流线(或场线)：
+受瞬时场影响的粒子的路径(即，
+如果场保持不变时粒子的路径)。
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+磁场。
+可以用小铁粉揭示场线。
+ 
+\end_layout
+
+\begin_layout Itemize
+麦克斯韦方程允许我们使用一组初始和边界条件来推断出欧几里得空间中每一点处电荷试验粒子所经历的力的大小和方向；
+由此产生的向量场就是电场。
+ 
+\end_layout
+
+\begin_layout Itemize
+任意质量物体产生的引力场也是一个向量场。
+例如，
+球对称体产生的引力场向量都会指向球心，
+向量的大小随着远离物体的径向距离增加而减小。
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Cessna_182_model-wingtip-vortex.jpg
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+飞机周围的流场是一个在 
+\begin_inset Formula $\mathbf{R}^{3}$
+\end_inset
+
+ 中的向量场，
+这里通过跟随流线的气泡来可视化展示翼尖涡流。
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Bezier_curves_composition_ray-traced_in_3D.png
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+向量场常用于计算机图形学中创建图案。
+这里：
+抽象组合曲线遵循由 OpenSimplex 噪声生成的向量场。
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧几里得空间中的梯度场
+\end_layout
+
+\begin_layout Standard
+向量场可以通过梯度算子(用倒三角标记：
+
+\begin_inset Formula $\nabla$
+\end_inset
+
+)从标量场构造出来。
+[4]
+\end_layout
+
+\begin_layout Standard
+定义在开集 
+\begin_inset Formula $S$
+\end_inset
+
+ 上的一个向量场 
+\begin_inset Formula $V$
+\end_inset
+
+ 如果存在一个实值函数(一个标量场) 
+\begin_inset Formula $f$
+\end_inset
+
+ 使得 
+\begin_inset Formula 
+\[
+V=\nabla f=\left(\frac{\partial f}{\partial x_{1}},\frac{\partial f}{\partial x_{2}},\frac{\partial f}{\partial x_{3}},\ldots,\frac{\partial f}{\partial x_{n}}\right).
+\]
+
+\end_inset
+
+则称 
+\begin_inset Formula $V$
+\end_inset
+
+ 为
+\series bold
+梯度场(gradient field)
+\series default
+或
+\series bold
+保守场(conservative field)
+\series default
+。
+与之相关的流称为
+\series bold
+梯度流(conservative field)
+\series default
+，
+并被用于梯度下降方法中。
+
+\end_layout
+
+\begin_layout Standard
+沿着任意闭合曲线 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ 
+\begin_inset Formula $(\gamma(0)=\gamma(1))$
+\end_inset
+
+在保守场中的路径积分等于零：
+ 
+\begin_inset Formula 
+\[
+\oint_{\gamma}V(\mathbf{x})\cdot\mathrm{d}\mathbf{x}=\oint_{\gamma}\nabla f(\mathbf{x})\cdot\mathrm{d}\mathbf{x}=f(\gamma(1))-f(\gamma(0)).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Irrotationalfield.svg
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+具有围绕某点循环的向量场不能被写作一个函数的梯度。
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+欧几里得空间中的中心场
+\end_layout
+
+\begin_layout Standard
+一个在 
+\begin_inset Formula $\mathbf{R}^{n}\backslash\{0\}$
+\end_inset
+
+ 上的 
+\begin_inset Formula $C^{\infty}$
+\end_inset
+
+-向量场如果满足 
+\begin_inset Formula 
+\[
+V(T(p))=T(V(p))\quad(T\in\mathrm{O}(n,\mathbb{R}))
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\mathrm{O}(n,\mathbf{R})$
+\end_inset
+
+ 是正交群，
+则称此向量场为
+\series bold
+中心场(central field)
+\series default
+。
+我们说中心场是在 
+\begin_inset Formula $0$
+\end_inset
+
+ 点周围的正交变换下的不变量。
+
+\end_layout
+
+\begin_layout Standard
+点 
+\begin_inset Formula $0$
+\end_inset
+
+ 被称为场的
+\series bold
+中心(center)
+\series default
+。
+
+\end_layout
+
+\begin_layout Standard
+由于正交变换实际上是旋转和反射，
+不变性条件意味着中心场的向量总是指向或远离 
+\begin_inset Formula $0$
+\end_inset
+
+；
+这是一个替代的(且更为简单的)定义。
+中心场总是一个梯度场，
+因为只要定义它在一个半轴上并进行积分就可以得到一个反梯度。
+
+\end_layout
+
+\begin_layout Section
+向量场上的运算
+\end_layout
+
+\begin_layout Subsection
+曲线积分
+\end_layout
+
+\begin_layout Standard
+在物理学中一个常见的技巧是在一条曲线上对向量场进行积分，
+这也称为确定其曲线积分。
+直观地，
+这是沿着曲线将所有与曲线切线方向一致的向量分量相加，
+表达为它们的标量积。
+例如，
+给定一个处于力场(如重力)中的粒子，
+其中在空间中每一点处的向量表示作用于粒子上的力，
+沿着一定路径的曲线积分就是粒子沿着这条路径移动时所做的功。
+直观上，
+它是沿着曲线各点的力向量与小的切向量的标量积之和。
+
+\end_layout
+
+\begin_layout Standard
+曲线积分的构造类似于黎曼积分，
+并且如果曲线是有界长的(长度有限)且向量场是连续的，
+则曲线积分存在。
+
+\end_layout
+
+\begin_layout Standard
+给定向量场 
+\begin_inset Formula $V$
+\end_inset
+
+ 和一条曲线 
+\begin_inset Formula $\gamma$
+\end_inset
+
+，
+其参数化为 
+\begin_inset Formula $t$
+\end_inset
+
+ 在区间 
+\begin_inset Formula $[a,b]$
+\end_inset
+
+ (其中 
+\begin_inset Formula $a$
+\end_inset
+
+ 和 
+\begin_inset Formula $b$
+\end_inset
+
+ 是实数)，
+曲线积分定义为 
+\begin_inset Formula 
+\[
+\int_{\gamma}V(\mathbf{x})\cdot\mathrm{d}\mathbf{x}=\int_{a}^{b}V(\gamma(t))\cdot\dot{\gamma}(t)\mathrm{d}t.
+\]
+
+\end_inset
+
+为了展示向量场的拓扑结构，
+可以使用曲线积分卷积。
+
+\end_layout
+
+\begin_layout Subsection
+散度
+\end_layout
+
+\begin_layout Standard
+向量场在欧几里得空间上的散度(divergence)是一个函数(或标量场)。
+在三维空间中，
+散度定义为 
+\begin_inset Formula 
+\[
+\mathrm{div}\mathbf{F}=\nabla\cdot\mathbf{F}=\frac{\partial F_{1}}{\partial x}+\frac{\partial F_{2}}{\partial y}+\frac{\partial F_{3}}{\partial z},
+\]
+
+\end_inset
+
+这个定义显然可以推广到任意维度。
+散度在某一点上的值代表了该点周围一小体积内的向量流是源还是汇的程度，
+这一点由散度定理精确化。
+
+\end_layout
+
+\begin_layout Standard
+散度也可以定义在黎曼流形上，
+即带有一个测量向量长度的黎曼度量的空间。
+
+\end_layout
+
+\begin_layout Subsection
+三维空间中的旋度
+\end_layout
+
+\begin_layout Standard
+旋度(curl)是一个从向量场产生另一个向量场的操作。
+旋度仅在三维空间中有定义，
+但三维空间旋度的一些性质可以通过外导数在更高维空间中捕获。
+在三维空间中，
+它定义为 
+\begin_inset Formula 
+\[
+\mathrm{curl}\,\mathbf{F}=\nabla\times\mathbf{F}=\left(\frac{\partial F_{3}}{\partial y}-\frac{\partial F_{2}}{\partial z}\right)\mathbf{e}_{1}-\left(\frac{\partial F_{3}}{\partial x}-\frac{\partial F_{1}}{\partial z}\right)\mathbf{e}_{2}+\left(\frac{\partial F_{2}}{\partial x}-\frac{\partial F_{1}}{\partial y}\right)\mathbf{e}_{3}\,.
+\]
+
+\end_inset
+
+旋度 
+\begin_inset Formula $\mathrm{curl}$
+\end_inset
+
+ 测量的是向量流在某点处围绕固定轴旋转的角动量密度，
+即向量流围绕固定轴的旋转程度。
+这一直观描述由斯托克斯定理精确化。
+
+\end_layout
+
+\begin_layout Subsection
+向量场的指标
+\end_layout
+
+\begin_layout Standard
+向量场的指标是一个整数，
+它有助于描述向量场在其孤立零点(即场的孤立奇点)附近的性质。
+在平面上，
+指标在鞍点奇点取值 
+\begin_inset Formula $-1$
+\end_inset
+
+，
+而在源点或汇点奇点取值 
+\begin_inset Formula $+1$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $n$
+\end_inset
+
+ 是向量场定义在其中的流形的维数。
+取一个封闭曲面(同胚于 
+\begin_inset Formula $(n-1)$
+\end_inset
+
+-维球面) 
+\begin_inset Formula $S$
+\end_inset
+
+ 包围该零点，
+使得没有其他零点位于 
+\begin_inset Formula $S$
+\end_inset
+
+ 的内部。
+可以通过将这个球面上的每一个向量除以其长度来构造一个指向单位长度向量的映射，
+从而形成一个单位长度向量，
+这是单位球面 
+\begin_inset Formula $S^{n-1}$
+\end_inset
+
+ 上的一点。
+这定义了一个从 
+\begin_inset Formula $S$
+\end_inset
+
+ 到 
+\begin_inset Formula $S^{n-1}$
+\end_inset
+
+ 的连续映射。
+该点的向量场的指标是这个映射的阶数。
+可以证明这个整数不依赖于 
+\begin_inset Formula $S$
+\end_inset
+
+ 的选择，
+因此仅依赖于向量场本身。
+
+\end_layout
+
+\begin_layout Standard
+向量场在非奇异点(即向量非零的点)处的指标是没有定义的。
+它在源点处等于 
+\begin_inset Formula $+1$
+\end_inset
+
+，
+更一般地，
+在具有 
+\begin_inset Formula $k$
+\end_inset
+
+ 个收缩维度和 
+\begin_inset Formula $n-k$
+\end_inset
+
+ 个扩张维度的鞍点处等于 
+\begin_inset Formula $(-1)^{k}$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+向量场的整体指标(The index of the vector field)
+\series default
+在当向量场只有有限个零点时有定义。
+在这种情况下，
+所有零点都是孤立的，
+并且向量场的指标定义为所有零点处的指标之和。
+
+\end_layout
+
+\begin_layout Standard
+在三维空间中对于一个普通的(
+\begin_inset Formula $2$
+\end_inset
+
+-维)球面，
+可以证明任意向量场在球面上的指标必须是 
+\begin_inset Formula $2$
+\end_inset
+
+。
+这表明每一个这样的向量场必须有一个零点。
+这蕴含了毛球定理。
+
+\end_layout
+
+\begin_layout Standard
+对于一个在紧致流形上有有限个零点的向量场，
+Poincaré-Hopf定理表明向量场的指标是流形的欧拉特征。
+
+\end_layout
+
+\begin_layout Section
+物理直觉
+\end_layout
+
+\begin_layout Standard
+Michael Faraday在他的
+\shape italic
+力线(lines of force)
+\shape default
+概念中强调，
+
+\shape italic
+场本身
+\shape default
+应该是研究的对象，
+这一观点已经贯穿整个物理学领域，
+形成了场论。
+
+\end_layout
+
+\begin_layout Standard
+除了磁场之外，
+法拉第还用类似的模型描述了电场和光场。
+
+\end_layout
+
+\begin_layout Standard
+近年来，
+许多关于不可逆动力学和物理学中演化方程的现象学表述，
+从复杂流体和固体的力学，
+到化学动力学和量子热力学，
+都趋向于“最速熵增长”或“梯度流”这一几何思想作为一致的通用建模框架。
+这种框架保证了与热力学第二定律的兼容性，
+并将众所周知的近平衡结果，
+如Onsager互易律，
+扩展到了远非平衡状态。
+[5]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Magnet0873.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+铁棒(磁偶极)的磁场线
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+流线
+\end_layout
+
+\begin_layout Standard
+考虑流体通过空间区域的情况。
+在任意给定的时间，
+流体中的每个点都有一个与其相关的特定速度；
+因此，
+任何流动都与一个向量场相关联。
+
+\end_layout
+
+\begin_layout Standard
+反之亦然：
+可以将一个向量场与一个流关联起来，
+使该向量场成为流的速度。
+
+\end_layout
+
+\begin_layout Standard
+给定一个定义在 
+\begin_inset Formula $S$
+\end_inset
+
+ 上的向量场 
+\begin_inset Formula $V$
+\end_inset
+
+，
+定义 
+\begin_inset Formula $S$
+\end_inset
+
+ 上的曲线 
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+ 使得对于每个区间 
+\begin_inset Formula $I$
+\end_inset
+
+ 中的 
+\begin_inset Formula $t$
+\end_inset
+
+，
+ 
+\begin_inset Formula 
+\[
+\gamma^{\prime}(t)=V(\gamma(t)).
+\]
+
+\end_inset
+
+根据Picard-Lindelöf定理，
+如果 
+\begin_inset Formula $V$
+\end_inset
+
+ 是Lipschitz连续的，
+则对于 
+\begin_inset Formula $S$
+\end_inset
+
+ 中的每个点 
+\begin_inset Formula $x$
+\end_inset
+
+ 都存在唯一的 
+\begin_inset Formula $C^{1}$
+\end_inset
+
+ 曲线 
+\begin_inset Formula $\gamma_{x}$
+\end_inset
+
+ 使得对于某个 
+\begin_inset Formula $\varepsilon>0$
+\end_inset
+
+，
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}\gamma_{x}(0) & =x\\
+\gamma_{x}^{\prime}(t) & =V\left(\gamma_{x}(t)\right)\quad\forall t\in(-\varepsilon,+\varepsilon)\subset\mathbb{R}.
+\end{aligned}
+\]
+
+\end_inset
+
+曲线 
+\begin_inset Formula $\gamma_{x}$
+\end_inset
+
+ 称为 
+\begin_inset Formula $V$
+\end_inset
+
+ 的
+\series bold
+积分曲线(integral curves)
+\series default
+或
+\series bold
+轨迹(trajectories)
+\series default
+ (或较少见的，
+流线(flow line))，
+这些曲线将 
+\begin_inset Formula $S$
+\end_inset
+
+ 分成等价类。
+并不总是能够将区间 
+\begin_inset Formula $(-\varepsilon,+\varepsilon)$
+\end_inset
+
+ 扩展到整个实数轴。
+流可能会在有限时间内达到 
+\begin_inset Formula $S$
+\end_inset
+
+ 的边缘。
+在二维或三维空间中，
+我们可以将向量场可视化为在 
+\begin_inset Formula $S$
+\end_inset
+
+ 上产生的流。
+如果我们在这个流中放置一个粒子在点 
+\begin_inset Formula $p$
+\end_inset
+
+ 处，
+它将沿着流中的曲线 
+\begin_inset Formula $\gamma_{p}$
+\end_inset
+
+ 运动，
+这取决于初始点 
+\begin_inset Formula $p$
+\end_inset
+
+。
+如果 
+\begin_inset Formula $p$
+\end_inset
+
+ 是 
+\begin_inset Formula $V$
+\end_inset
+
+ 的一个静止点(即向量场在点 
+\begin_inset Formula $p$
+\end_inset
+
+ 处等于零向量)，
+那么粒子将留在 
+\begin_inset Formula $p$
+\end_inset
+
+ 处。
+
+\end_layout
+
+\begin_layout Standard
+典型的例子包括流体力学中的迹线、测地流、以及李群中的单参数子群和指数映射。
+
+\end_layout
+
+\begin_layout Subsection
+完备向量场
+\end_layout
+
+\begin_layout Standard
+根据定义，
+一个在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的向量场被称为
+\series bold
+完备的(complete)
+\series default
+，
+如果它的每条流曲线对于所有时间都存在。
+[6] 特别地，
+紧支集向量场在流形上是完备的。
+如果 
+\begin_inset Formula $X$
+\end_inset
+
+ 是在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一个完备向量场，
+则沿着 
+\begin_inset Formula $X$
+\end_inset
+
+ 的流产生的单参数群对于所有时间都存在；
+它由一个光滑映射描述 
+\begin_inset Formula 
+\[
+\mathbf{R}\times M\rightarrow M.
+\]
+
+\end_inset
+
+在没有边界的紧致流形上，
+每个光滑向量场都是完备的。
+一个
+\series bold
+不完备的(incomplete)
+\series default
+向量场 
+\begin_inset Formula $V$
+\end_inset
+
+ 在实直线 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+ 上的例子是由 
+\begin_inset Formula $V(x)=x^{2}$
+\end_inset
+
+ 给出的。
+因为微分方程 
+\begin_inset Formula $x^{\prime}(t)=x^{2}$
+\end_inset
+
+，
+带有初始条件 
+\begin_inset Formula $x(0)=x_{0}$
+\end_inset
+
+，
+当 
+\begin_inset Formula $x_{0}\neq0$
+\end_inset
+
+ 时其唯一解为 
+\begin_inset Formula $x(t)=\frac{x_{0}}{1-tx_{0}}$
+\end_inset
+
+ (如果 
+\begin_inset Formula $x_{0}=0$
+\end_inset
+
+，
+则对所有的 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+，
+
+\begin_inset Formula $x(t)=0$
+\end_inset
+
+)。
+因此，
+当 
+\begin_inset Formula $x_{0}\neq0$
+\end_inset
+
+ 时，
+
+\begin_inset Formula $x(t)$
+\end_inset
+
+ 在 
+\begin_inset Formula $t=\frac{1}{x_{0}}$
+\end_inset
+
+ 时未定义，
+因此不能对所有 
+\begin_inset Formula $t$
+\end_inset
+
+ 的值定义。
+
+\end_layout
+
+\begin_layout Subsection
+李括号
+\end_layout
+
+\begin_layout Standard
+与两个向量场相关的流不一定可交换。
+它们的交换失败由两个向量场的李括号描述，
+李括号本身也是一个向量场。
+李括号有一个简单定义，
+涉及向量场在光滑函数 
+\begin_inset Formula $f$
+\end_inset
+
+ 上的作用：
+ 
+\begin_inset Formula 
+\[
+[X,Y](f):=X(Y(f))-Y(X(f)).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset Formula $f$
+\end_inset
+
+-相关性
+\end_layout
+
+\begin_layout Standard
+给定一个流形之间的光滑函数 
+\begin_inset Formula $f:M\rightarrow N$
+\end_inset
+
+，
+它的导数是在切丛上的一个诱导映射 
+\begin_inset Formula $f_{*}:TM\rightarrow TN$
+\end_inset
+
+。
+给定向量场 
+\begin_inset Formula $V:M\rightarrow TM$
+\end_inset
+
+ 和 
+\begin_inset Formula $W:N\rightarrow TN$
+\end_inset
+
+，
+我们说 
+\begin_inset Formula $W$
+\end_inset
+
+ 与 
+\begin_inset Formula $V$
+\end_inset
+
+ 以 
+\begin_inset Formula $f$
+\end_inset
+
+ 相关，
+如果方程 
+\begin_inset Formula $W\circ f=f_{*}\circ V$
+\end_inset
+
+ 成立。
+
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $V_{i}$
+\end_inset
+
+ 与 
+\begin_inset Formula $W_{i},i=1,2$
+\end_inset
+
+ 以 
+\begin_inset Formula $f$
+\end_inset
+
+ 相关，
+则李括号 
+\begin_inset Formula $\left[V_{1},V_{2}\right]$
+\end_inset
+
+ 也与 
+\begin_inset Formula $\left[W_{1},W_{2}\right]$
+\end_inset
+
+ 以 
+\begin_inset Formula $f$
+\end_inset
+
+ 相关。
+
+\end_layout
+
+\begin_layout Section
+泛化
+\end_layout
+
+\begin_layout Standard
+用 
+\begin_inset Formula $p$
+\end_inset
+
+-向量(向量的 
+\begin_inset Formula $p$
+\end_inset
+
+ 次外幂)代替向量，
+得到 
+\begin_inset Formula $p$
+\end_inset
+
+-向量场；
+取对偶空间和外幂得到微分 
+\begin_inset Formula $k$
+\end_inset
+
+-形式，
+结合这些得到一般的张量场。
+
+\end_layout
+
+\begin_layout Standard
+代数上，
+向量场可以被刻画为在流形上的光滑函数代数的导数，
+这导致在交换代数上定义向量场为代数的导数，
+这一理论在交换代数上的微分微积分理论中得到了发展。
+
+\end_layout
+
+\begin_layout Section*
+See also
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{multicols}{2}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Eisenbud-Levine-Khimshiashvili signature formula"
+target "https://en.wikipedia.org/wiki/Eisenbud%E2%80%93Levine%E2%80%93Khimshiashvili_signature_formula"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Field line"
+target "https://en.wikipedia.org/wiki/Field_line"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Field strength"
+target "https://en.wikipedia.org/wiki/Field_strength"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "\\textit{Gradient flow and balanced flow}"
+target "https://en.wikipedia.org/wiki/Balanced_flow#Gradient_flow"
+literal "true"
+
+\end_inset
+
+ in 
+\begin_inset CommandInset href
+LatexCommand href
+name "\\textit{atmospheric dynamics}"
+target "https://en.wikipedia.org/wiki/Atmospheric_dynamics"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie derivative"
+target "https://en.wikipedia.org/wiki/Lie_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Scalar field"
+target "https://en.wikipedia.org/wiki/Scalar_field"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Time-dependent vector field"
+target "https://en.wikipedia.org/wiki/Time-dependent_vector_field"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Vector fields in cylindrical and spherical coordinates"
+target "https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Tensor fields"
+target "https://en.wikipedia.org/wiki/Tensor_fields"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{multicols}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Enumerate
+Galbis,
+ Antonio;
+ Maestre,
+ Manuel (2012).
+ Vector Analysis Versus Vector Calculus (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://books.google.com/books?id=tdF8uTn2cnMC&pg=PA12
+\end_layout
+
+\end_inset
+
+).
+ Springer.
+ p.
+ 12.
+ ISBN 978-1-46142199-3.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Tu,
+ Loring W.
+ (2010).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+``
+\end_layout
+
+\end_inset
+
+Vector fields
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+''
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://books.google.com/books?id=PZ8Pvk7b6bUC&pg=PA149
+\end_layout
+
+\end_inset
+
+).
+ An Introduction to Manifolds.
+ Springer.
+ p.
+ 149.
+ ISBN 978-1-4419-7399-3.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Lerman,
+ Eugene (August 19,
+ 2011).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+``
+\end_layout
+
+\end_inset
+
+An Introduction to Differential Geometry
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+''
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://faculty.math.illinois.edu/lerman/518/f11/8-19-11.pdf#page=18
+\end_layout
+
+\end_inset
+
+) (PDF).
+ Definition 3.23.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Dawber,
+ P.G.
+ (1987).
+ Vectors and Vector Operators (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://books.google.com/books?id=luB%7CL7oGgUIC&pg=PA29
+\end_layout
+
+\end_inset
+
+).
+ CRC Press.
+ p.
+ 29.
+ ISBN 978-0-85274-585-4.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Beretta,
+ Gian Paolo (2020-05-01).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+``
+\end_layout
+
+\end_inset
+
+The fourth law of thermodynamics:
+ steepest entropy ascent
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+''
+\end_layout
+
+\end_inset
+
+.
+ Philosophical Transactions of the Royal Society A.
+ 378 (2170):
+ 20190168.
+ arXiv:1908.05768 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://arxiv.org/abs/1908.05768
+\end_layout
+
+\end_inset
+
+).
+ Bibcode:2020RSPTA.37890168B (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://ui.adsabs.harvard.edu/abs/2020RSPTA.37890168B
+\end_layout
+
+\end_inset
+
+).
+ doi:10.1098/rsta.2019.0168 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://doi.org/10.1098%2Frsta.2019.0168
+\end_layout
+
+\end_inset
+
+).
+ ISSN 1471-2962 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://search.worldcat.org/issn/1471-2962
+\end_layout
+
+\end_inset
+
+).
+ S2CID 201058607 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://api.semanticscholar.org/CorpusID:201058607
+\end_layout
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Sharpe,
+ R.
+ (1997).
+ Differential geometry.
+ Springer-Verlag.
+ ISBN 0-387-94732-9.
+ 
+\end_layout
+
+\begin_layout Section*
+Bibliography
+\end_layout
+
+\begin_layout Itemize
+Hubbard,
+ J.
+ H.;
+ Hubbard,
+ B.
+ B.
+ (1999).
+ Vector calculus,
+ linear algebra,
+ and differential forms.
+ A unified approach.
+ Upper Saddle River,
+ NJ:
+ Prentice Hall.
+ ISBN 0-13-657446-7.
+ 
+\end_layout
+
+\begin_layout Itemize
+Warner,
+ Frank (1983) [1971].
+ Foundations of differentiable manifolds and Lie groups.
+ New York-Berlin:
+ Springer-Verlag.
+ ISBN 0-387-90894-3.
+ 
+\end_layout
+
+\begin_layout Itemize
+Boothby,
+ William (1986).
+ An introduction to differentiable manifolds and Riemannian geometry (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://archive.org/details/introductiontodi0000boot
+\end_layout
+
+\end_inset
+
+).
+ Pure and Applied Mathematics,
+ volume 120 (second ed.).
+ Orlando,
+ FL:
+ Academic Press.
+ ISBN 0-12-116053-X.
+ 
+\end_layout
+
+\begin_layout Section*
+External links
+\end_layout
+
+\begin_layout Itemize
+Online Vector Field Editor (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://anvaka.github.io/fieldplay
+\end_layout
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Vector field
+\begin_inset Quotes erd
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Vector_field
+\end_layout
+
+\end_inset
+
+),
+ Encyclopedia of Mathematics,
+ EMS Press,
+ 2001 [1994] 
+\end_layout
+
+\begin_layout Itemize
+Vector field (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://mathworld.wolfram.com/NectorField.html
+\end_layout
+
+\end_inset
+
+) —
+ Mathworld 
+\end_layout
+
+\begin_layout Itemize
+Vector field (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://planetmath.org/encyclopedia/VectorField.html
+\end_layout
+
+\end_inset
+
+) —
+ PlanetMath 
+\end_layout
+
+\begin_layout Itemize
+3D Magnetic field viewer (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.amasci.com/electrom/statbotl.html
+\end_layout
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+Vector fields and field lines (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www-solar.mcs.st-and.ac.uk/alan/MT3601/Fundamentals/node2.html
+\end_layout
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+Vector field simulation (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.vias.org/simulations/simusoft_vectorfields.html
+\end_layout
+
+\end_inset
+
+) An interactive application to show the effects of vector fields 
+\end_layout
+
+\end_body
+\end_document

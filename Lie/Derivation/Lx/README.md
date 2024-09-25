@@ -3,4 +3,6 @@
 1. [Math 53H: The Lie derivative](https://math.stanford.edu/~eliash/Public/53h-2011/53htext-Lie.pdf)
 1. [Lie Derivative](http://www.theory.physics.ubc.ca/530-21/lie.pdf)
 1. [THE DEFINITION OF LIE DERIVATIVE](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/S0013091500025013)
+1. [Exterior derivative](https://en.wikipedia.org/wiki/Exterior_derivative)
+1. [Covariant derivative](https://en.wikipedia.org/wiki/Covariant_derivative)
 

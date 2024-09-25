@@ -1,0 +1,1873 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% zhlineskip 将数学公式的行距“恢复”成西文较为紧凑的行距(通常为西文字号的 1.2 倍)，使得全文的视觉密度较为均匀。
+%\usepackage{zhlineskip}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage{amscd}
+\usepackage{multicol}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children no
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "外导数"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+外导数
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+13 June 2024
+\end_layout
+
+\begin_layout Standard
+在可微流形上，
+
+\series bold
+外导数(exterior derivative)
+\series default
+将函数微分的概念扩展到更高阶的微分形式。
+外导数最早由Élie Cartan在1899年以现代的形式描述。
+由此产生的微积分，
+称为外微积分，
+允许自然地、无需度量地推广矢量微分学中的斯托克斯定理、高斯定理和格林定理。
+
+\end_layout
+
+\begin_layout Standard
+如果把一个微分 
+\begin_inset Formula $k$
+\end_inset
+
+-形式想象成在流形的每一点上通过一个无穷小的 
+\begin_inset Formula $k$
+\end_inset
+
+-平行多面体的通量，
+则它的外导数可以理解为测量在每一点上 
+\begin_inset Formula $(k+1)$
+\end_inset
+
+-平行多面体边界上的净通量。
+
+\end_layout
+
+\begin_layout Section
+定义
+\end_layout
+
+\begin_layout Standard
+外导数是一个将 
+\begin_inset Formula $k$
+\end_inset
+
+-形式映射为 
+\begin_inset Formula $(k+1)$
+\end_inset
+
+-形式的微分形式。
+
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $f$
+\end_inset
+
+ 是一个光滑函数(一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式)，
+则外导数 
+\begin_inset Formula $df$
+\end_inset
+
+ 就是 
+\begin_inset Formula $f$
+\end_inset
+
+ 的微分。
+也就是说，
+
+\begin_inset Formula $df$
+\end_inset
+
+ 是唯一的 
+\begin_inset Formula $1$
+\end_inset
+
+-形式，
+使得对于每一个光滑的向量场 
+\begin_inset Formula $X$
+\end_inset
+
+，
+有 
+\begin_inset Formula $df(X)=d_{X}f$
+\end_inset
+
+，
+其中 
+\begin_inset Formula $d_{X}f$
+\end_inset
+
+ 是 
+\begin_inset Formula $f$
+\end_inset
+
+ 在 
+\begin_inset Formula $X$
+\end_inset
+
+ 方向的方向导数。
+
+\end_layout
+
+\begin_layout Standard
+外积(标记为同一个符号 
+\begin_inset Formula $\wedge$
+\end_inset
+
+)被定义为微分形式在每一点上的外积。
+
+\end_layout
+
+\begin_layout Standard
+对于一般的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式，
+外导数有多种等价的定义。
+
+\end_layout
+
+\begin_layout Subsection
+基于公理定义
+\end_layout
+
+\begin_layout Standard
+外导数被定义为唯一的 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+-线性映射，
+它将 
+\begin_inset Formula $k$
+\end_inset
+
+-形式映射为 
+\begin_inset Formula $(k+1)$
+\end_inset
+
+-形式，
+并满足以下性质：
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $df$
+\end_inset
+
+ 是 
+\begin_inset Formula $f$
+\end_inset
+
+ 的微分，
+其中 
+\begin_inset Formula $f$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式。
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $d(df)=0$
+\end_inset
+
+ 对于 
+\begin_inset Formula $0$
+\end_inset
+
+-形式 
+\begin_inset Formula $f$
+\end_inset
+
+。
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $d(\alpha\wedge\beta)=d\alpha\wedge\beta+(-1)^{p}(\alpha\wedge d\beta)$
+\end_inset
+
+，
+其中 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $p$
+\end_inset
+
+-形式。
+换句话说，
+
+\begin_inset Formula $d$
+\end_inset
+
+ 是一个在外代数(
+\begin_inset CommandInset href
+LatexCommand href
+name "exterior algebra"
+target "https://en.wikipedia.org/wiki/Exterior_algebra"
+literal "false"
+
+\end_inset
+
+)上度数为 
+\begin_inset Formula $1$
+\end_inset
+
+ 的反导数(参见分级乘法规则(
+\begin_inset CommandInset href
+LatexCommand href
+name "graded product rule"
+target "https://en.wikipedia.org/wiki/Product_rule\\#Derivations_in_abstract_algebra_and_differential_geometry"
+literal "false"
+
+\end_inset
+
+))。
+ 
+\end_layout
+
+\begin_layout Standard
+第二个定义性质在更一般的情况下也成立：
+
+\begin_inset Formula $d(d\alpha)=0$
+\end_inset
+
+ 对于任意 
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula $\alpha$
+\end_inset
+
+；
+更简洁地说，
+
+\begin_inset Formula $d^{2}=0$
+\end_inset
+
+。
+第三个定义性质意味着如果 
+\begin_inset Formula $f$
+\end_inset
+
+ 是一个函数，
+
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $k$
+\end_inset
+
+-形式，
+则 
+\begin_inset Formula $d(f\alpha)=d(f\wedge\alpha)=df\wedge\alpha+f\wedge d\alpha$
+\end_inset
+
+，
+因为一个函数是一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式，
+标量乘法和外积在外代数中等价，
+当其中一个参数是标量时。
+
+\end_layout
+
+\begin_layout Subsection
+基于局部坐标定义
+\end_layout
+
+\begin_layout Standard
+另外，
+我们也可以完全在一个局部坐标系统 
+\begin_inset Formula $x^{1},\ldots,x^{n}$
+\end_inset
+
+ 中工作。
+坐标微分 
+\begin_inset Formula $dx^{1},\ldots,dx^{n}$
+\end_inset
+
+ 形成了 
+\begin_inset Formula $1$
+\end_inset
+
+-形式空间的一组基，
+每个坐标微分与一个坐标关联。
+给定一个多指标 
+\begin_inset Formula $I=(i_{1},\ldots,i_{k})$
+\end_inset
+
+ 其中 
+\begin_inset Formula $1\leq i_{p}\leq n$
+\end_inset
+
+ 对于 
+\begin_inset Formula $1\leq p\leq k$
+\end_inset
+
+ (并且标记 
+\begin_inset Formula $dx^{i_{1}}\wedge\ldots\wedge dx^{i_{k}}$
+\end_inset
+
+ 为 
+\begin_inset Formula $dx^{I}$
+\end_inset
+
+)，
+一个简单的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula 
+\[
+\varphi=gdx^{I}=gdx^{i_{1}}\wedge dx^{i_{2}}\wedge\cdots\wedge dx^{i_{k}}
+\]
+
+\end_inset
+
+在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 之上的外导数定义为 
+\begin_inset Formula 
+\[
+d\varphi=\frac{\partial g}{\partial x^{i}}dx^{i}\wedge dx^{I}
+\]
+
+\end_inset
+
+(使用爱因斯坦求和约定)。
+外导数的定义被线性地扩展到一般的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式为 
+\begin_inset Formula 
+\[
+\omega=f_{I}dx^{I},
+\]
+
+\end_inset
+
+其中多指标 
+\begin_inset Formula $I$
+\end_inset
+
+ 的每一个分量在 
+\begin_inset Formula $\{1,\ldots,n\}$
+\end_inset
+
+ 上取值。
+注意，
+每当 
+\begin_inset Formula $i$
+\end_inset
+
+ 等于多指标 
+\begin_inset Formula $I$
+\end_inset
+
+ 的一个分量时，
+则 
+\begin_inset Formula $dx^{i}\wedge dx^{I}=0$
+\end_inset
+
+ (参见外积(
+\begin_inset CommandInset href
+LatexCommand href
+name "Exterior product"
+target "https://en.wikipedia.org/wiki/Exterior_product"
+literal "false"
+
+\end_inset
+
+))。
+
+\end_layout
+
+\begin_layout Standard
+基于局部坐标的外导数定义遵循上述基于公理的定义。
+实际上，
+对于上面定义的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula $\varphi$
+\end_inset
+
+，
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}d\varphi & =d\left(gdx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\right)\\
+ & =dg\wedge\left(dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\right)+gd\left(dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\right)\\
+ & =dg\wedge dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}+g\sum_{p=1}^{k}(-1)^{p-1}dx^{i_{1}}\wedge\cdots\wedge dx^{i_{p-1}}\wedge d^{2}x^{i_{p}}\wedge dx^{i_{p+1}}\wedge\cdots\wedge dx^{i_{k}}\\
+ & =dg\wedge dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\\
+ & =\frac{\partial g}{\partial x^{i}}dx^{i}\wedge dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}
+\end{aligned}
+\]
+
+\end_inset
+
+在这里，
+我们将 
+\begin_inset Formula $g$
+\end_inset
+
+ 解释为一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式，
+然后应用了外导数的性质。
+
+\end_layout
+
+\begin_layout Standard
+这个结果直接推广到一般的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 为 
+\begin_inset Formula 
+\[
+d\omega=\frac{\partial f_{I}}{\partial x^{i}}dx^{i}\wedge dx^{I}.
+\]
+
+\end_inset
+
+特别是对于 
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega$
+\end_inset
+
+，
+在局部坐标中 
+\begin_inset Formula $d\omega$
+\end_inset
+
+ 的分量为 
+\begin_inset Formula 
+\[
+(d\omega)_{ij}=\partial_{i}\omega_{j}-\partial_{j}\omega_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意：
+关于 
+\begin_inset Formula $dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}$
+\end_inset
+
+ 的意义有两种不同的约定。
+大多数当前的作者采用的约定，
+为 
+\begin_inset Formula 
+\[
+\left(dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\right)\left(\frac{\partial}{\partial x^{i_{1}}},\ldots,\frac{\partial}{\partial x^{i_{k}}}\right)=1.
+\]
+
+\end_inset
+
+而在较早的文献如 Kobayashi 和 Nomizu 或 Helgason 中的约定，
+为 
+\begin_inset Formula 
+\[
+\left(dx^{i_{1}}\wedge\cdots\wedge dx^{i_{k}}\right)\left(\frac{\partial}{\partial x^{i_{1}}},\ldots,\frac{\partial}{\partial x^{i_{k}}}\right)=\frac{1}{k!}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+基于不变性公式定义
+\end_layout
+
+\begin_layout Standard
+另外，
+对于一个
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 的外导数可以给出
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Spivak(1970),
+ p 7-18,
+ Th.
+ 13
+\end_layout
+
+\end_inset
+
+一个明确的公式，
+当与 
+\begin_inset Formula $k+1$
+\end_inset
+
+ 个任意的光滑向量场 
+\begin_inset Formula $V_{0},V_{1},\ldots,V_{k}$
+\end_inset
+
+ 配对时，
+为：
+ 
+\begin_inset Formula 
+\[
+d\omega\left(V_{0},\ldots,V_{k}\right)=\sum_{i}(-1)^{i}V_{i}\left(\omega\left(V_{0},\ldots,\widehat{V}_{i},\ldots,V_{k}\right)\right)+\sum_{i<j}(-1)^{i+j}\omega\left(\left[V_{i},V_{j}\right],V_{0},\ldots,\widehat{V}_{i},\ldots,\widehat{V}_{j},\ldots,V_{k}\right)
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\left[V_{i},V_{j}\right]$
+\end_inset
+
+ 标记李括号，
+并且帽子符号标记所省略的那些元素：
+ 
+\begin_inset Formula 
+\[
+\omega\left(V_{0},\ldots,\widehat{V}_{i},\ldots,V_{k}\right)=\omega\left(V_{0},\ldots,V_{i-1},V_{i+1},\ldots,V_{k}\right).
+\]
+
+\end_inset
+
+特别地，
+当 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是一个 
+\begin_inset Formula $1$
+\end_inset
+
+-形式时，
+我们有 
+\begin_inset Formula $d\omega(X,Y)=d_{X}(\omega(Y))-d_{Y}(\omega(X))-\omega([X,Y])$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+注意：
+根据 Kobayashi-Nomizu 和 Helgason 的约定，
+公式会有一个 
+\begin_inset Formula $\frac{1}{k+1}$
+\end_inset
+
+ 的因子差：
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}d\omega\left(V_{0},\ldots,V_{k}\right)= & \frac{1}{k+1}\sum_{i}(-1)^{i}V_{i}\left(\omega\left(V_{0},\ldots,\widehat{V}_{i},\ldots,V_{k}\right)\right)\\
+ & +\frac{1}{k+1}\sum_{i<j}(-1)^{i+j}\omega\left(\left[V_{i},V_{j}\right],V_{0},\ldots,\widehat{V}_{i},\ldots,\widehat{V}_{j},\ldots,V_{k}\right)
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+示例
+\end_layout
+
+\begin_layout Paragraph
+示例 1.
+\end_layout
+
+\begin_layout Standard
+对于一个标量场 
+\begin_inset Formula $u$
+\end_inset
+
+，
+考虑在一个 
+\begin_inset Formula $1$
+\end_inset
+
+-形式的基 
+\begin_inset Formula $dx^{1},\ldots,dx^{n}$
+\end_inset
+
+ 之上的 
+\begin_inset Formula $\sigma=udx^{1}\wedge dx^{2}$
+\end_inset
+
+。
+其外导数为：
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}d\sigma & =du\wedge dx^{1}\wedge dx^{2}\\
+ & =\left(\sum_{i=1}^{n}\frac{\partial u}{\partial x^{i}}dx^{i}\right)\wedge dx^{1}\wedge dx^{2}\\
+ & =\sum_{i=3}^{n}\left(\frac{\partial u}{\partial x^{i}}dx^{i}\wedge dx^{1}\wedge dx^{2}\right)
+\end{aligned}
+\]
+
+\end_inset
+
+最后一个公式，
+其中求和从 
+\begin_inset Formula $i=3$
+\end_inset
+
+ 开始，
+很容易从外积的性质得出。
+具体来说，
+
+\begin_inset Formula $dx^{i}\wedge dx^{i}=0$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Paragraph
+示例 2.
+\end_layout
+
+\begin_layout Standard
+设 
+\begin_inset Formula $\sigma=udx+vdy$
+\end_inset
+
+ 是定义在 
+\begin_inset Formula $\mathbb{R}^{2}$
+\end_inset
+
+ 之上的一个 
+\begin_inset Formula $1$
+\end_inset
+
+-形式。
+通过将上述公式应用于每一项(考虑 
+\begin_inset Formula $x^{1}=x$
+\end_inset
+
+ 和 
+\begin_inset Formula $x^{2}=y$
+\end_inset
+
+)，
+我们有加和 
+\begin_inset Formula 
+\[
+\begin{aligned}d\sigma & =\left(\sum_{i=1}^{2}\frac{\partial u}{\partial x^{i}}dx^{i}\wedge dx\right)+\left(\sum_{i=1}^{2}\frac{\partial v}{\partial x^{i}}dx^{i}\wedge dy\right)\\
+ & =\left(\frac{\partial u}{\partial x}dx\wedge dx+\frac{\partial u}{\partial y}dy\wedge dx\right)+\left(\frac{\partial v}{\partial x}dx\wedge dy+\frac{\partial v}{\partial y}dy\wedge dy\right)\\
+ & =0-\frac{\partial u}{\partial y}dx\wedge dy+\frac{\partial v}{\partial x}dx\wedge dy+0\\
+ & =\left(\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\right)dx\wedge dy
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+流形上的斯托克斯定理
+\end_layout
+
+\begin_layout Standard
+如果 
+\begin_inset Formula $M$
+\end_inset
+
+ 是一个紧致的光滑可定向的 
+\begin_inset Formula $n$
+\end_inset
+
+-维流形，
+边界为 
+\begin_inset Formula $\partial M$
+\end_inset
+
+，
+并且 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是在 
+\begin_inset Formula $M$
+\end_inset
+
+ 上的一个 
+\begin_inset Formula $(n-1)$
+\end_inset
+
+-形式，
+则广义的斯托克斯定理表明 
+\begin_inset Formula 
+\[
+\int_{M}d\omega=\int_{\partial M}\omega
+\]
+
+\end_inset
+
+直观上讲，
+如果认为 
+\begin_inset Formula $M$
+\end_inset
+
+ 被划分成无穷小的区域，
+并且加上所有这些区域边界的通量，
+内部边界都会相互抵消，
+只留下通过 
+\begin_inset Formula $M$
+\end_inset
+
+ 边界的总通量。
+
+\end_layout
+
+\begin_layout Section
+更多性质
+\end_layout
+
+\begin_layout Subsection
+闭合与恰当形式
+\end_layout
+
+\begin_layout Standard
+一个 
+\begin_inset Formula $k$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 被称为闭合的(closed)，
+如果 
+\begin_inset Formula $d\omega=0$
+\end_inset
+
+；
+闭合形式是 
+\begin_inset Formula $d$
+\end_inset
+
+ 的核。
+若 
+\begin_inset Formula $\omega=d\alpha$
+\end_inset
+
+ 对于某个 
+\begin_inset Formula $(k-1)$
+\end_inset
+
+-形式 
+\begin_inset Formula $\alpha$
+\end_inset
+
+，
+则称 
+\begin_inset Formula $\omega$
+\end_inset
+
+ 是恰当的(exact)；
+恰当形式是 
+\begin_inset Formula $d$
+\end_inset
+
+ 的像(image)。
+由于 
+\begin_inset Formula $d^{2}=0$
+\end_inset
+
+，
+每一个恰当形式都是闭合的。
+庞加莱引理指出，
+在一个可缩区域内，
+反之亦然也是正确的。
+
+\end_layout
+
+\begin_layout Subsection
+德拉姆上同调
+\end_layout
+
+\begin_layout Standard
+由于外导数 
+\begin_inset Formula $d$
+\end_inset
+
+ 满足 
+\begin_inset Formula $d^{2}=0$
+\end_inset
+
+ 的性质，
+它可以作为微分(上链)来定义流形上的德拉姆上同调。
+第 
+\begin_inset Formula $k$
+\end_inset
+
+ 阶德拉姆上同调(群)是由闭合 
+\begin_inset Formula $k$
+\end_inset
+
+-形式模恰当 
+\begin_inset Formula $k$
+\end_inset
+
+-形式构成的向量空间；
+如前一节所述，
+庞加莱引理表明对于一个可缩区域，
+当 
+\begin_inset Formula $k>0$
+\end_inset
+
+ 时这些向量空间是平凡的。
+对于光滑流形，
+形式的积分给出了从德拉姆上同调到实数域 
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+ 上的奇异上同调的一个自然同态。
+德拉姆定理说明了这个映射实际上是一个同构，
+这是庞加莱引理的一个深远的推广。
+正如广义斯托克斯定理所暗示的那样，
+外导数是奇异单纯形的边界算子的“对偶”。
+
+\end_layout
+
+\begin_layout Subsection
+自然性
+\end_layout
+
+\begin_layout Standard
+外导数在技术意义上是自然的：
+如果 
+\begin_inset Formula $f:M\rightarrow N$
+\end_inset
+
+ 是一个光滑映射，
+而 
+\begin_inset Formula $\Omega^{k}$
+\end_inset
+
+ 是一个逆变光滑函子，
+它将每个流形映射到该流形上的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式的空间，
+则下面的图是交换的
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+[
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{CD}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Omega^k(N) @>f^*>> 
+\backslash
+Omega^k(M) 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@VdVV @VVdV 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Omega^{k+1}(N) @>f^*>> 
+\backslash
+Omega^{k+1}(M)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{CD}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align left
+所以 
+\begin_inset Formula $d\left(f^{*}\omega\right)=f^{*}d\omega$
+\end_inset
+
+，
+其中 
+\begin_inset Formula $f^{*}$
+\end_inset
+
+ 标记 
+\begin_inset Formula $f$
+\end_inset
+
+ 的拉回(pullback)。
+这源于 
+\begin_inset Formula $f^{*}\omega(\cdot)$
+\end_inset
+
+，
+按定义，
+是 
+\begin_inset Formula $\omega\left(f_{*}(\cdot)\right)$
+\end_inset
+
+，
+
+\begin_inset Formula $f_{*}$
+\end_inset
+
+ 是 
+\begin_inset Formula $f$
+\end_inset
+
+ 的推前(pushforward)。
+因此，
+
+\begin_inset Formula $d$
+\end_inset
+
+ 是一个从 
+\begin_inset Formula $\Omega^{k}$
+\end_inset
+
+ 到 
+\begin_inset Formula $\Omega^{k+1}$
+\end_inset
+
+ 的自然变换。
+
+\end_layout
+
+\begin_layout Section
+外导数在矢量微分学中的应用
+\end_layout
+
+\begin_layout Standard
+大多数矢量微分算子都是外导数概念的特殊情况或与其有密切关系。
+
+\end_layout
+
+\begin_layout Subsection
+梯度(Gradient)
+\end_layout
+
+\begin_layout Standard
+一个光滑函数 
+\begin_inset Formula $f:M\rightarrow\mathbb{R}$
+\end_inset
+
+ 在实可微流形 
+\begin_inset Formula $M$
+\end_inset
+
+ 上是一个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式。
+这个 
+\begin_inset Formula $0$
+\end_inset
+
+-形式的外导数是 
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula $df$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+当内积 
+\begin_inset Formula $\langle\cdot,\cdot\rangle$
+\end_inset
+
+ 被定义时，
+函数 
+\begin_inset Formula $f$
+\end_inset
+
+ 的梯度 
+\begin_inset Formula $\nabla f$
+\end_inset
+
+ 被定义为在 
+\begin_inset Formula $V$
+\end_inset
+
+ 中唯一的一个向量，
+使得它与 
+\begin_inset Formula $V$
+\end_inset
+
+ 的任意向量的内积等于沿着该向量的方向导数，
+即 
+\begin_inset Formula 
+\[
+\langle\nabla f,\cdot\rangle=df=\sum_{i=1}^{n}\frac{\partial f}{\partial x^{i}}dx^{i}.
+\]
+
+\end_inset
+
+也就是说，
+ 
+\begin_inset Formula 
+\[
+\nabla f=(df)^{\sharp}=\sum_{i=1}^{n}\frac{\partial f}{\partial x^{i}}\left(dx^{i}\right)^{\sharp},
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\sharp$
+\end_inset
+
+ 标记由内积诱导的音乐同构 
+\begin_inset Formula $\sharp:V^{*}\rightarrow V$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+这个 
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula $df$
+\end_inset
+
+ 是余切丛的一个截面，
+它给出了 
+\begin_inset Formula $f$
+\end_inset
+
+ 在每一点余切空间中的局部线性近似。
+
+\end_layout
+
+\begin_layout Subsection
+散度(Divergence)
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 上的一个向量场 
+\begin_inset Formula $V=\left(v_{1},v_{2},\ldots,v_{n}\right)$
+\end_inset
+
+ 有一个相应的 
+\begin_inset Formula $(n-1)$
+\end_inset
+
+-形式 
+\begin_inset Formula 
+\[
+\begin{aligned}\omega_{V} & =v_{1}\left(dx^{2}\wedge\cdots\wedge dx^{n}\right)-v_{2}\left(dx^{1}\wedge dx^{3}\wedge\cdots\wedge dx^{n}\right)+\cdots+(-1)^{n-1}v_{n}\left(dx^{1}\wedge\cdots\wedge dx^{n-1}\right)\\
+ & =\sum_{i=1}^{n}(-1)^{(i-1)}v_{i}\left(dx^{1}\wedge\cdots\wedge dx^{i-1}\wedge\widehat{dx^{i}}\wedge dx^{i+1}\wedge\cdots\wedge dx^{n}\right)
+\end{aligned}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\widehat{dx^{i}}$
+\end_inset
+
+ 标记所省略的那些项。
+
+\end_layout
+
+\begin_layout Standard
+(例如，
+当 
+\begin_inset Formula $n=3$
+\end_inset
+
+，
+即在三维空间中，
+
+\begin_inset Formula $2$
+\end_inset
+
+-形式 
+\begin_inset Formula $\omega_{V}$
+\end_inset
+
+ 局部上是与 
+\begin_inset Formula $V$
+\end_inset
+
+ 的标量三重积。
+) 
+\begin_inset Formula $\omega_{V}$
+\end_inset
+
+ 在超曲面上的积分是 
+\begin_inset Formula $V$
+\end_inset
+
+ 在该超曲面上的通量。
+
+\end_layout
+
+\begin_layout Standard
+这个 
+\begin_inset Formula $(n-1)$
+\end_inset
+
+-形式的外导数是 
+\begin_inset Formula $n$
+\end_inset
+
+-形式 
+\begin_inset Formula 
+\[
+d\omega_{V}=\mathrm{div}V\left(dx^{1}\wedge dx^{2}\wedge\cdots\wedge dx^{n}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+旋度(Curl)
+\end_layout
+
+\begin_layout Standard
+在 
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+ 上的一个向量场 
+\begin_inset Formula $V$
+\end_inset
+
+ 也有一个相应的 
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula 
+\[
+\eta_{V}=v_{1}dx^{1}+v_{2}dx^{2}+\cdots+v_{n}dx^{n}.
+\]
+
+\end_inset
+
+局部上，
+
+\begin_inset Formula $\eta_{V}$
+\end_inset
+
+ 是与 
+\begin_inset Formula $V$
+\end_inset
+
+ 的点积。
+沿着路径积分 
+\begin_inset Formula $\eta_{V}$
+\end_inset
+
+ 是沿着该路径对抗 
+\begin_inset Formula $-V$
+\end_inset
+
+ 所做的功。
+
+\end_layout
+
+\begin_layout Standard
+当 
+\begin_inset Formula $n=3$
+\end_inset
+
+，
+即在三维空间中，
+
+\begin_inset Formula $1$
+\end_inset
+
+-形式 
+\begin_inset Formula $\eta_{V}$
+\end_inset
+
+ 的外导数是 
+\begin_inset Formula $2$
+\end_inset
+
+-形式 
+\begin_inset Formula 
+\[
+d\eta_{V}=\omega_{\text{curl }V}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+不变性形式中的矢量微分算子
+\end_layout
+
+\begin_layout Standard
+标准的矢量微分算子可以推广到任意伪黎曼流形，
+并用坐标无关的表示如下：
+ 
+\begin_inset Formula 
+\[
+\begin{array}{rccl}
+\mathrm{grad}f & \equiv & \nabla f & =(df)^{\sharp}\\
+\mathrm{div}F & \equiv & \nabla\cdot F & =\star d\star\left(F^{\flat}\right)\\
+\mathrm{curl}F & \equiv & \nabla\times F & =\left(\star d\left(F^{\flat}\right)\right)^{\sharp}\\
+\Delta f & \equiv & \nabla^{2}f & =\star d\star df\\
+ &  & \nabla^{2}F & =\left(d\star d\star\left(F^{\flat}\right)-\star d\star d\left(F^{\flat}\right)\right)^{\sharp},
+\end{array}
+\]
+
+\end_inset
+
+其中 
+\begin_inset Formula $\star$
+\end_inset
+
+ 是霍奇星算子，
+
+\begin_inset Formula $\flat$
+\end_inset
+
+ 与 
+\begin_inset Formula $\sharp$
+\end_inset
+
+ 是音乐同构，
+
+\begin_inset Formula $f$
+\end_inset
+
+ 是一个标量场，
+而 
+\begin_inset Formula $F$
+\end_inset
+
+ 是一个向量场。
+
+\end_layout
+
+\begin_layout Standard
+注意：
+旋度表达式要求 
+\begin_inset Formula $\sharp$
+\end_inset
+
+ 作用于 
+\begin_inset Formula $\star d\left(F^{\flat}\right)$
+\end_inset
+
+，
+这是一个 
+\begin_inset Formula $n-2$
+\end_inset
+
+ 级的形式。
+对任意度数的 
+\begin_inset Formula $k$
+\end_inset
+
+-形式的 
+\begin_inset Formula $\sharp$
+\end_inset
+
+ 的自然推广使得这个表达式对于任意 
+\begin_inset Formula $n$
+\end_inset
+
+ 都有意义。
+
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+See also
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{multicols}{2}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Exterior covariant derivative"
+target "https://en.wikipedia.org/wiki/Exterior_covariant_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Green's theorem"
+target "https://en.wikipedia.org/wiki/Green%27s_theorem"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "de Rham complex"
+target "https://en.wikipedia.org/wiki/De_Rham_complex"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie derivative"
+target "https://en.wikipedia.org/wiki/Lie_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Finite element exterior calculus"
+target "https://en.wikipedia.org/wiki/Finite_element_exterior_calculus"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Stokes' theorem"
+target "https://en.wikipedia.org/wiki/Stokes%27_theorem"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Discrete exterior calculus"
+target "https://en.wikipedia.org/wiki/Discrete_exterior_calculus"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Fractal derivative"
+target "https://en.wikipedia.org/wiki/Fractal_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{multicols}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+Cartan,
+ Élie (1899).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "``Sur certaines expressions différentielles et le problème de Pfaff''"
+target "http://www.numdam.org/item?id=ASENS_1899_3_16_239_0"
+literal "false"
+
+\end_inset
+
+.
+ Annales Scientifiques de l'École Normale Supérieure.
+ Série 3 (in French).
+ 16.
+ Paris:
+ Gauthier-Villars:
+ 239-332.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "doi:10.24033/asens.467"
+target "https://doi.org/10.24033%2Fasens.467"
+literal "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "ISSN 0012-9593"
+target "https://www.worldcat.org/issn/0012-9593"
+literal "false"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "JFM 30.0313.04"
+target "https://zbmath.org/?format=complete&q=an:30.0313.04"
+literal "false"
+
+\end_inset
+
+.
+ Retrieved 2 Feb 2016 
+\end_layout
+
+\begin_layout Itemize
+Conlon,
+ Lawrence (2001).
+ Differentiable manifolds.
+ Basel,
+ Switzerland:
+ Birkhäuser.
+ p.
+ 239.
+ ISBN 0-81764134-3.
+ 
+\end_layout
+
+\begin_layout Itemize
+Darling,
+ R.
+ W.
+ R.
+ (1994).
+ Differential forms and connections.
+ Cambridge,
+ UK:
+ Cambridge University Press.
+ p.
+ 35.
+ ISBN 0-521-46800-0.
+ 
+\end_layout
+
+\begin_layout Itemize
+Flanders,
+ Harley (1989).
+ Differential forms with applications to the physical sciences.
+ New York:
+ Dover Publications.
+ p.
+ 20.
+ ISBN 0-486-66169-5.
+ 
+\end_layout
+
+\begin_layout Itemize
+Loomis,
+ Lynn H.;
+ Sternberg,
+ Shlomo (1989).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Advanced Calculus"
+target "https://archive.org/details/LoomisL.H.SternbergS.AdvancedCalculusRevisedEditionJonesAndBartlett"
+literal "false"
+
+\end_inset
+
+.
+ Boston:
+ Jones and Bartlett.
+ pp.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "304"
+target "https://archive.org/details/LoomisL.H.SternbergS.AdvancedCalculusRevisedEditionJonesAndBartlett/page/n313"
+literal "false"
+
+\end_inset
+
+-473 (ch.
+ 7-11).
+ ISBN 0-486-66169-5.
+ 
+\end_layout
+
+\begin_layout Itemize
+Ramanan,
+ S.
+ (2005).
+ Global calculus.
+ Providence,
+ Rhode Island:
+ American Mathematical Society.
+ p.
+ 54.
+ ISBN 0-8218-3702-8.
+ 
+\end_layout
+
+\begin_layout Itemize
+Spivak,
+ Michael (1971).
+ Calculus on Manifolds.
+ Boulder,
+ Colorado:
+ Westview Press.
+ ISBN 9780805390216.
+ 
+\end_layout
+
+\begin_layout Itemize
+Spivak,
+ Mlchael (1970),
+ A Comprehensive Introduction to Differential Geometry,
+ vol.
+ 1,
+ Boston,
+ MA:
+ Publish or Perish,
+ Inc,
+ ISBN 0-914098-00-4 
+\end_layout
+
+\begin_layout Itemize
+Warner,
+ Frank W.
+ (1983),
+ Foundations of differentiable manifolds and Lie groups,
+ Graduate Texts in Mathematics,
+ vol.
+ 94,
+ Springer,
+ ISBN 0-387-90894-3 
+\end_layout
+
+\begin_layout Section*
+External links
+\end_layout
+
+\begin_layout Itemize
+Archived at 
+\begin_inset CommandInset href
+LatexCommand href
+name "Ghostarchive"
+target "https://ghostarchive.org/varchive/youtube/20211211/2ptFnlj71SM"
+literal "false"
+
+\end_inset
+
+ and the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Wayback Machine"
+target "https://web.archive.org/web/20201104033452/https://www.youtube.com/watch?v=2ptFnlj71SM&feature=youtu.be"
+literal "false"
+
+\end_inset
+
+:
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "``The derivative isn't what you think it is''"
+target "https://www.youtube.com/watch?v=2ptFnlj71SM"
+literal "false"
+
+\end_inset
+
+.
+ Aleph Zero.
+ November 3,
+ 2020 - via YouTube.
+ 
+\end_layout
+
+\end_body
+\end_document

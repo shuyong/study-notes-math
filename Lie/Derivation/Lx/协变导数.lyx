@@ -1,0 +1,2573 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass ctex-article
+\begin_preamble
+% 如果没有这一句命令，XeTeX会出错，原因参见
+% http://bbs.ctex.org/viewthread.php?tid=60547
+\DeclareRobustCommand\nobreakspace{\leavevmode\nobreak\ }
+
+%\XeTeXlinebreaklocale "zh"
+%\XeTeXlinebreakskip = 0pt plus 1pt
+%\usepackage{setspace}
+%\onehalfspacing
+%\XeTeXinterchartokenstate=1
+
+% Don't load inputenc or fontenc manually; use UTF-8 input and the fontspec package instead
+%\usepackage[utf8]{inputenc}
+
+% Use babel
+\usepackage{babel}
+\PassOptionsToPackage{main=chinese}{babel}
+
+% zhlineskip 将数学公式的行距“恢复”成西文较为紧凑的行距(通常为西文字号的 1.2 倍)，使得全文的视觉密度较为均匀。
+%\usepackage{zhlineskip}
+
+% For OpenType math support, use unicode-math instead of amsfonts/amssymb etc. (but amsmath can/should still be used).
+%\usepackage{unicode-math}
+
+\usepackage{multicol}
+\end_preamble
+\options UTF8,fontset=founder
+\use_default_options true
+\begin_modules
+subequations
+theorems-ams-bytype
+\end_modules
+\maintain_unincluded_children no
+\language chinese-simplified
+\language_package \usepackage[main=chinese]{babel}
+\inputencoding utf8-plain
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "协变导数"
+\pdf_author "Wikipedia"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+协变导数
+\end_layout
+
+\begin_layout Author
+Wikipedia
+\end_layout
+
+\begin_layout Date
+2 May 2024
+\end_layout
+
+\begin_layout Standard
+在数学中，
+
+\series bold
+协变导数(covariant derivative)
+\series default
+ 是一种沿着流形上的切向量指定导数的方式。
+或者可以说，
+协变导数是一种通过微分算子引入和处理流形上的联络的方法，
+这与通过框架丛上的主联络方法形成对比 —
+—
+ 参见仿射联络。
+在特殊情况下，
+即流形等距嵌入到更高维的欧几里得空间中时，
+协变导数可以看作是欧几里得方向导数在流形切空间上的正交投影。
+在这种情况下，
+欧几里得导数被分解为两部分，
+外在法向分量(依赖于嵌入)和内在协变导数分量。
+
+\end_layout
+
+\begin_layout Standard
+这个名字来源于坐标变换在物理中的重要性：
+协变导数在一般的坐标变换下协变变换，
+也就是说，
+通过雅可比矩阵线性变换。
+[1]
+\end_layout
+
+\begin_layout Standard
+本文介绍了关于一个向量场相对于另一个向量场的协变导数，
+既采用坐标无关的语言，
+也使用局部坐标系和传统的指标记号。
+协变导数作为张量场的一种推广概念而被提出。
+协变导数可以很自然地推广为与向量丛上的联络相关联的微分概念，
+这种联络也被称为 
+\series bold
+Koszul 联络(Koszul connection)
+\series default
+。
+
+\end_layout
+
+\begin_layout Section
+历史
+\end_layout
+
+\begin_layout Standard
+历史上，
+在20世纪初，
+Gregorio Ricci-Curbastro 和 Tullio Levi-Civita 在黎曼几何和伪黎曼几何理论中引入了协变导数。
+[2] Ricci 和 Levi-Civita(遵循 Elwin Bruno Christoffel 的思想)注意到用来定义曲率的Christoffel 符号也可以提供一种推广了流形上向量场经典方向导数的概念。
+[3][4] 这种新的导数 —
+—
+ 即Levi-Civita 联络 —
+—
+ 是
+\shape italic
+协变的(covariant)
+\shape default
+，
+这意味着它满足了黎曼关于几何对象应该独立于特定坐标系描述的要求。
+
+\end_layout
+
+\begin_layout Standard
+很快其他数学家，
+包括 Hermann Weyl、Jan Arnoldus Schouten 和 Élie Cartan，
+[5] 注意到可以在没有度规的情况下定义协变导数。
+最关键的特点并不是对度规的特定依赖，
+而是 Christoffel 符号满足了一个精确的二阶变换律。
+这个变换律可以作为以协变方式定义导数的起点。
+因此，
+协变微分的理论从严格的黎曼背景下分离出来，
+涵盖了更广泛的可能几何情况。
+
+\end_layout
+
+\begin_layout Standard
+在20世纪40年代，
+微分几何的研究者开始在一般的向量丛中引入其他形式的协变微分，
+这些向量丛与几何学家感兴趣的古典丛不同，
+并不属于流形的张量分析范畴。
+总体来说，
+这些广义的协变导数不得不通过某种版本的联络概念特别地 (
+\shape italic
+ad hoc
+\shape default
+) 指定。
+1950年，
+Jean-Louis Koszul 通过所谓的Koszul 联络或向量丛上的联络统一了这些新的协变微分的想法。
+利用Lie代数上同调的思想，
+Koszul 成功地将协变微分的许多解析特征转化为代数特征。
+特别是，
+Koszul 联络消除了在微分几何中对 Christoffel 符号(以及其他类似的非张量对象)繁琐操作的需要。
+因此，
+在1950年以后的许多处理主题的文章中，
+它们迅速取代了经典的协变导数概念。
+
+\end_layout
+
+\begin_layout Section
+动机
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+协变导数(covariant derivative)
+\series default
+ 是向量微积分中方向导数的一种推广。
+与方向导数一样，
+协变导数是一种规则，
+
+\begin_inset Formula $\nabla_{\mathbf{u}}\mathbf{v}$
+\end_inset
+
+，
+它接受如下输入：
+(1) 定义在一点
+\begin_inset Formula $P$
+\end_inset
+
+处的向量
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+，
+和 (2) 在
+\begin_inset Formula $P$
+\end_inset
+
+点邻域中定义的向量场
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+ [7]。
+输出是在点
+\begin_inset Formula $P$
+\end_inset
+
+处的向量
+\begin_inset Formula $\nabla_{\mathbf{u}}\mathbf{v}(P)$
+\end_inset
+
+。
+与通常的方向导数的主要区别在于
+\begin_inset Formula $\nabla_{\mathbf{u}}\mathbf{v}$
+\end_inset
+
+必须在某种精确的意义上是
+\shape italic
+独立于(independent)
+\shape default
+它在坐标系统中的表达方式的。
+
+\end_layout
+
+\begin_layout Standard
+一个向量可以用一组数字基于某个基底来
+\shape italic
+描述
+\shape default
+，
+但作为一种几何对象，
+无论如何描述，
+向量都保持着它的标识。
+对于用一组基底表示的几何向量，
+当基底改变时，
+分量按照基底变化公式变化，
+坐标经历协变变换。
+协变导数要求在坐标变化时，
+按照基底变化的协变方式变换(由此得名)。
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename images/Ковариантная_производная_c.jpg
+	scale 80
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+在欧几里得空间中，
+通常定义向量场的方向导数是基于两个在邻近点处的向量之间的差分。
+在这样的体系中，
+其中一个向量被平移到另一个向量的原点，
+同时保持平行，
+然后在同一向量空间中取它们的差分。
+对于笛卡尔(固定正交归一化)坐标系，
+“保持平行”意味着保持分量不变。
+这种普通的方向导数在欧几里得空间中是协变导数的第一个例子。
+
+\end_layout
+
+\begin_layout Standard
+接下来，
+必须考虑到坐标系统的改变。
+例如，
+如果欧几里得平面是由极坐标描述的，
+“保持平行”并不意味着在平移时保持极坐标分量不变，
+因为坐标网格本身也在“旋转”。
+因此，
+同样的协变导数写成极坐标形式时包含了额外的项，
+这些项描述了坐标网格本身的旋转，
+或者更一般地说，
+坐标网格如何扩张、收缩、扭曲、交织等。
+
+\end_layout
+
+\begin_layout Standard
+考虑一个粒子沿曲线
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+在欧几里得平面上运动的例子。
+在极坐标中，
+
+\begin_inset Formula $\gamma$
+\end_inset
+
+可以通过其径向和角坐标表示为
+\begin_inset Formula $\gamma(t)=(r(t),\theta(t))$
+\end_inset
+
+[8]。
+在某一特定时刻
+\begin_inset Formula $t$
+\end_inset
+
+ (例如，
+粒子的恒定加速度)的向量可以用
+\begin_inset Formula $\left(\mathbf{e}_{r},\mathbf{e}_{\theta}\right)$
+\end_inset
+
+表示，
+其中
+\begin_inset Formula $\mathbf{e}_{r}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{e}_{\theta}$
+\end_inset
+
+是用于极坐标的单位切向量，
+用作基底来分解向量的径向和切向分量。
+稍后的时间点，
+极坐标下的新基底相对于第一组基底似乎稍微旋转了一些。
+协变导数(Christoffel符号)用于表达这种变化。
+
+\end_layout
+
+\begin_layout Standard
+在弯曲的空间中，
+比如地球表面(视作球面)，
+在不同点之间平移切向量是未明确定义的，
+其类似物 —
+—
+ 平行传输，
+依赖于向量平移的路径。
+在一个球面上，
+比如地球上赤道上的一点
+\begin_inset Formula $Q$
+\end_inset
+
+处的向量指向北方。
+假设我们首先沿着赤道将该向量(保持平行)移动到点
+\begin_inset Formula $P$
+\end_inset
+
+，
+然后沿一条经线将其拖到
+\begin_inset Formula $N$
+\end_inset
+
+极点，
+最后再沿着另一条经线回到
+\begin_inset Formula $Q$
+\end_inset
+
+。
+这时我们会注意到，
+沿着封闭电路平行传输的向量并没有以原来的向量返回；
+相反，
+它有了另一个方向。
+这种情况在欧几里得空间中是不会发生的，
+是由
+\shape italic
+曲率(curvature)
+\shape default
+导致的，
+即球面的曲率。
+如果我们将向量沿着一个无穷小的封闭表面，
+先后沿两个方向，
+然后再返回，
+这种无穷小的变化就是曲率的度量，
+可以用协变导数来定义。
+
+\end_layout
+
+\begin_layout Subsection
+备注
+\end_layout
+
+\begin_layout Itemize
+协变导数的定义不使用空间中的度规。
+但是，
+对于每个度规，
+都存在一个唯一的无挠率协变导数，
+称为Levi-Civita联络，
+使得协变导数的度规为零。
+ 
+\end_layout
+
+\begin_layout Itemize
+导数的性质意味着
+\begin_inset Formula $\nabla_{\mathbf{v}}\mathbf{u}$
+\end_inset
+
+取决于向量
+\begin_inset Formula $u$
+\end_inset
+
+在一个点
+\begin_inset Formula $p$
+\end_inset
+
+的任意小邻域中的值，
+就像标量函数
+\begin_inset Formula $f$
+\end_inset
+
+沿曲线在给定点
+\begin_inset Formula $p$
+\end_inset
+
+的导数取决于
+\begin_inset Formula $f$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+的任意小邻域中的值一样。
+ 
+\end_layout
+
+\begin_layout Itemize
+协变导数中的邻域信息可用于定义向量的平行传输。
+此外，
+曲率、挠率和测地线都可以仅用协变导数或与此想法相关的其他线性联络变体来定义。
+ 
+\end_layout
+
+\begin_layout Section
+利用嵌入到欧几里得空间中的非正式定义
+\end_layout
+
+\begin_layout Standard
+假设一个
+\begin_inset Formula $d$
+\end_inset
+
+维黎曼流形
+\begin_inset Formula $M$
+\end_inset
+
+的开子集
+\begin_inset Formula $U$
+\end_inset
+
+通过一个二次连续可微
+\begin_inset Formula $(\mathrm{C}^{2})$
+\end_inset
+
+映射
+\begin_inset Formula $\vec{\Psi}:\mathbb{R}^{d}\supset U\rightarrow\mathbb{R}^{n}$
+\end_inset
+
+嵌入到欧几里得空间
+\begin_inset Formula $\left(\mathbb{R}^{n},\langle\cdot,\cdot\rangle\right)$
+\end_inset
+
+中，
+使得在
+\begin_inset Formula $\vec{\Psi}(p)$
+\end_inset
+
+处的切空间由向量 
+\begin_inset Formula 
+\[
+\left\{ \left.\frac{\partial\vec{\Psi}}{\partial x^{i}}\right|_{p}:i\in\{1,\ldots,d\}\right\} 
+\]
+
+\end_inset
+
+张成，
+并且在
+\begin_inset Formula $\mathbb{R}^{n}$
+\end_inset
+
+上的标量积
+\begin_inset Formula $\langle\cdot,\cdot\rangle$
+\end_inset
+
+与在
+\begin_inset Formula $M$
+\end_inset
+
+上的度规相容：
+ 
+\begin_inset Formula 
+\[
+g_{ij}=\left\langle \frac{\partial\vec{\Psi}}{\partial x^{i}},\frac{\partial\vec{\Psi}}{\partial x^{j}}\right\rangle .
+\]
+
+\end_inset
+
+(由于流形度规总是假设为正则的，
+因此相容条件意味着偏导数切向量的线性独立性。
+)
+\end_layout
+
+\begin_layout Standard
+对于一个切向量场
+\begin_inset Formula $\vec{V}=v^{j}\frac{\partial\vec{\Psi}}{\partial x^{j}}$
+\end_inset
+
+，
+有 
+\begin_inset Formula 
+\[
+\frac{\partial\vec{V}}{\partial x^{i}}=\frac{\partial}{\partial x^{i}}\left(v^{j}\frac{\partial\vec{\Psi}}{\partial x^{j}}\right)=\frac{\partial v^{j}}{\partial x^{i}}\frac{\partial\vec{\Psi}}{\partial x^{j}}+v^{j}\frac{\partial^{2}\vec{\Psi}}{\partial x^{i}\partial x^{j}}.
+\]
+
+\end_inset
+
+最后一项不是
+\begin_inset Formula $M$
+\end_inset
+
+的切向量，
+但可以表示为切空间基向量的线性组合加上一个垂直于切空间的向量，
+利用Christoffel符号作为线性因子：
+ 
+\begin_inset Formula 
+\[
+v^{j}\frac{\partial^{2}\vec{\Psi}}{\partial x^{i}\partial x^{j}}=v^{j}\Gamma_{ij}^{k}\frac{\partial\vec{\Psi}}{\partial x^{k}}+\vec{n}.
+\]
+
+\end_inset
+
+在Levi-Civita联络的情况下，
+协变导数
+\begin_inset Formula $\nabla_{\mathbf{e}_{i}}\vec{V}$
+\end_inset
+
+，
+也可以写作
+\begin_inset Formula $\nabla_{i}\vec{V}$
+\end_inset
+
+，
+定义为通常导数在切空间上的正交投影：
+ 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{e}_{i}}\vec{V}:=\frac{\partial\vec{V}}{\partial x^{i}}-\vec{n}=\left(\frac{\partial v^{k}}{\partial x^{i}}+v^{j}\Gamma_{ij}^{k}\right)\frac{\partial\vec{\Psi}}{\partial x^{k}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了得到Levi-Civita联络中Christoffel符号与度规的关系，
+首先我们注意到，
+由于前文中的
+\begin_inset Formula $\vec{n}$
+\end_inset
+
+垂直于切空间：
+ 
+\begin_inset Formula 
+\[
+\left\langle \frac{\partial^{2}\vec{\Psi}}{\partial x^{i}\partial x^{j}},\frac{\partial\vec{\Psi}}{\partial x^{l}}\right\rangle =\left\langle \Gamma_{ij}^{k}\frac{\partial\vec{\Psi}}{\partial x^{k}}+\vec{n},\frac{\partial\vec{\Psi}}{\partial x^{l}}\right\rangle =\Gamma_{ij}^{k}\left\langle \frac{\partial\vec{\Psi}}{\partial x^{k}},\frac{\partial\vec{\Psi}}{\partial x^{l}}\right\rangle =\Gamma_{ij}^{k}g_{kl}.
+\]
+
+\end_inset
+
+其次，
+度规分量的偏导数是：
+ 
+\begin_inset Formula 
+\[
+\frac{\partial g_{ab}}{\partial x^{c}}=\frac{\partial}{\partial x^{c}}\left\langle \frac{\partial\vec{\Psi}}{\partial x^{a}},\frac{\partial\vec{\Psi}}{\partial x^{b}}\right\rangle =\left\langle \frac{\partial^{2}\vec{\Psi}}{\partial x^{c}\partial x^{a}},\frac{\partial\vec{\Psi}}{\partial x^{b}}\right\rangle +\left\langle \frac{\partial\vec{\Psi}}{\partial x^{a}},\frac{\partial^{2}\vec{\Psi}}{\partial x^{c}\partial x^{b}}\right\rangle 
+\]
+
+\end_inset
+
+这表明对于基
+\begin_inset Formula $x^{i},x^{j},x^{k}$
+\end_inset
+
+，
+利用标量积的对称性和交换偏导数的顺序：
+ 
+\begin_inset Formula 
+\[
+\left(\begin{array}{l}
+\frac{\partial g_{jk}}{\partial x^{i}}\\
+\frac{\partial g_{ki}}{\partial x^{j}}\\
+\frac{\partial g_{ij}}{\partial x^{k}}
+\end{array}\right)=\left(\begin{array}{lll}
+0 & 1 & 1\\
+1 & 0 & 1\\
+1 & 1 & 0
+\end{array}\right)\left(\begin{array}{l}
+\left\langle \frac{\partial\vec{\Psi}}{\partial x^{i}},\frac{\partial^{2}\vec{\Psi}}{\partial x^{j}\partial x^{k}}\right\rangle \\
+\left\langle \frac{\partial\vec{\Psi}}{\partial x^{j}},\frac{\partial^{2}\vec{\Psi}}{\partial x^{k}\partial x^{i}}\right\rangle \\
+\left\langle \frac{\partial\vec{\Psi}}{\partial x^{k}},\frac{\partial^{2}\vec{\Psi}}{\partial x^{i}\partial x^{j}}\right\rangle 
+\end{array}\right)
+\]
+
+\end_inset
+
+将第一行加到第二行并减去第三行：
+ 
+\begin_inset Formula 
+\[
+\frac{\partial g_{jk}}{\partial x^{i}}+\frac{\partial g_{ki}}{\partial x^{j}}-\frac{\partial g_{ij}}{\partial x^{k}}=2\left\langle \frac{\partial\vec{\Psi}}{\partial x^{k}},\frac{\partial^{2}\vec{\Psi}}{\partial x^{i}\partial x^{j}}\right\rangle 
+\]
+
+\end_inset
+
+这给出了Levi-Civita联络中Christoffel符号关于度规的表达式：
+ 
+\begin_inset Formula 
+\[
+g_{kl}\Gamma^{k}{}_{ij}=\frac{1}{2}\left(\frac{\partial g_{jl}}{\partial x^{i}}+\frac{\partial g_{li}}{\partial x^{j}}-\frac{\partial g_{ij}}{\partial x^{l}}\right).
+\]
+
+\end_inset
+
+如果
+\begin_inset Formula $g$
+\end_inset
+
+是非退化的，
+则可以写作：
+ 
+\begin_inset Formula 
+\[
+\Gamma^{k}{}_{ij}=\frac{1}{2}g^{kl}\left(\frac{\partial g_{jl}}{\partial x^{i}}+\frac{\partial g_{li}}{\partial x^{j}}-\frac{\partial g_{ij}}{\partial x^{l}}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+为了给出一个非常简单的例子，
+抓住上述描述的本质，
+我们在一张平坦的纸上画一个圆。
+沿着这个圆以恒定的速度运动。
+你的速度的导数，
+即你的加速度向量，
+始终指向圆心。
+将这张纸卷成一个圆柱体。
+现在你的速度的(欧几里得)导数有一个分量有时指向圆柱轴心，
+这取决于你是否接近至点或春分点。
+(当你沿着圆运动时与圆柱的轴平行，
+没有指向圆心的加速度。
+相反，
+在一个圆周的
+\begin_inset Formula $1/4$
+\end_inset
+
+之后，
+当速度沿着圆柱的弯曲方向时，
+指向圆心的加速度最大。
+)这是(欧几里得)法向分量。
+协变导数分量是平行于圆柱表面的分量，
+这与你在将纸卷成圆柱之前的情况相同。
+
+\end_layout
+
+\begin_layout Section
+形式化定义
+\end_layout
+
+\begin_layout Standard
+协变导数是切丛和其他张量丛上的(Koszul)联络：
+它以类似于函数通常导数的方式来微分向量场。
+该定义扩展到了向量场的对偶(即余向量场)上的微分，
+以及任意张量场上的微分，
+这样确保了与张量乘积和迹运算(张量收缩)的兼容性。
+
+\end_layout
+
+\begin_layout Subsection
+函数
+\end_layout
+
+\begin_layout Standard
+给定在流形
+\begin_inset Formula $M$
+\end_inset
+
+上的一个点
+\begin_inset Formula $p\in M$
+\end_inset
+
+，
+在流形上的一个实值函数
+\begin_inset Formula $f:M\rightarrow\mathbb{R}$
+\end_inset
+
+，
+以及一个切向量
+\begin_inset Formula $\mathbf{v}\in T_{p}M$
+\end_inset
+
+，
+在
+\begin_inset Formula $p$
+\end_inset
+
+处沿着
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的
+\begin_inset Formula $f$
+\end_inset
+
+的协变导数是在
+\begin_inset Formula $p$
+\end_inset
+
+处的标量，
+记作
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}f\right)_{p}$
+\end_inset
+
+，
+表示当
+\begin_inset Formula $f$
+\end_inset
+
+的自变量由无穷小位移向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+改变时，
+在
+\begin_inset Formula $f$
+\end_inset
+
+的值中变化的主要部分。
+(这是
+\begin_inset Formula $f$
+\end_inset
+
+对向量
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的微分。
+)形式上地，
+存在一个可微曲线
+\begin_inset Formula $\phi:[-1,1]\rightarrow M$
+\end_inset
+
+使得
+\begin_inset Formula $\phi(0)=p$
+\end_inset
+
+且
+\begin_inset Formula $\phi^{\prime}(0)=\mathbf{v}$
+\end_inset
+
+，
+并且在
+\begin_inset Formula $p$
+\end_inset
+
+处
+\begin_inset Formula $f$
+\end_inset
+
+的协变导数定义为 
+\begin_inset Formula 
+\[
+\left(\nabla_{\mathbf{v}}f\right)_{p}=(f\circ\phi)^{\prime}(0)=\lim_{t\rightarrow0}\frac{f(\phi(t))-f(p)}{t}.
+\]
+
+\end_inset
+
+当
+\begin_inset Formula $\mathbf{v}:M\rightarrow T_{p}M$
+\end_inset
+
+是在
+\begin_inset Formula $M$
+\end_inset
+
+上的向量场时，
+协变导数
+\begin_inset Formula $\nabla_{\mathbf{v}}f:M\rightarrow\mathbb{R}$
+\end_inset
+
+是从每个点
+\begin_inset Formula $p$
+\end_inset
+
+关联到标量
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}f\right)_{p}$
+\end_inset
+
+的函数，
+这里
+\begin_inset Formula $p$
+\end_inset
+
+位于
+\begin_inset Formula $f$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+公共定义域内。
+
+\end_layout
+
+\begin_layout Standard
+对于标量函数
+\begin_inset Formula $f$
+\end_inset
+
+和向量场
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+，
+协变导数
+\begin_inset Formula $\nabla_{\mathbf{v}}f$
+\end_inset
+
+与Lie导数
+\begin_inset Formula $L_{v}(f)$
+\end_inset
+
+一致，
+并且与外导数
+\begin_inset Formula $df(v)$
+\end_inset
+
+一致。
+
+\end_layout
+
+\begin_layout Subsection
+向量场
+\end_layout
+
+\begin_layout Standard
+给定在流形
+\begin_inset Formula $M$
+\end_inset
+
+上的一个点
+\begin_inset Formula $p$
+\end_inset
+
+，
+定义在
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中的一个向量场
+\begin_inset Formula $\mathbf{u}:M\rightarrow T_{p}M$
+\end_inset
+
+，
+以及一个切向量
+\begin_inset Formula $\mathbf{v}\in T_{p}M$
+\end_inset
+
+，
+在
+\begin_inset Formula $p$
+\end_inset
+
+处沿着
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的协变导数是在
+\begin_inset Formula $p$
+\end_inset
+
+处的切向量，
+记作
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+，
+使得以下性质成立(对于在
+\begin_inset Formula $p$
+\end_inset
+
+处的任意切向量
+\begin_inset Formula $\mathbf{v},\mathbf{x}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+，
+在
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中定义的向量场
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{w}$
+\end_inset
+
+，
+在
+\begin_inset Formula $p$
+\end_inset
+
+处的标量值
+\begin_inset Formula $g$
+\end_inset
+
+和
+\begin_inset Formula $h$
+\end_inset
+
+，
+以及在
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中定义的标量函数
+\begin_inset Formula $f$
+\end_inset
+
+)：
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的线性函数，
+即 
+\begin_inset Formula 
+\[
+\left(\nabla_{g\mathbf{x}+h\mathbf{y}}\mathbf{u}\right)_{p}=g(p)\left(\nabla_{\mathbf{x}}\mathbf{u}\right)_{p}+h(p)\left(\nabla_{\mathbf{y}}\mathbf{u}\right)_{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+是
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+的加性函数，
+即 
+\begin_inset Formula 
+\[
+\left(\nabla_{\mathbf{v}}[\mathbf{u}+\mathbf{w}]\right)_{p}=\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}+\left(\nabla_{\mathbf{v}}\mathbf{w}\right)_{p}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+遵守乘积法则；
+即，
+其中
+\begin_inset Formula $\nabla_{\mathbf{v}}f$
+\end_inset
+
+如上定义，
+ 
+\begin_inset Formula 
+\[
+\left(\nabla_{\mathbf{v}}[f\mathbf{u}]\right)_{p}=f(p)\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}+\left(\nabla_{\mathbf{v}}f\right)_{p}\mathbf{u}_{p}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+注意
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+不仅依赖于
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+处的值，
+还依赖于
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+的一个无穷小邻域中的值，
+因为最后一个性质，
+即乘积法则。
+
+\end_layout
+
+\begin_layout Standard
+如果
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+都是定义在一个共同定义域之上的向量场，
+则
+\begin_inset Formula $\nabla_{\mathbf{v}}\mathbf{u}$
+\end_inset
+
+标记其值在定义域每个点
+\begin_inset Formula $p$
+\end_inset
+
+处为切向量
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}$
+\end_inset
+
+的向量场。
+
+\end_layout
+
+\begin_layout Subsection
+余向量场
+\end_layout
+
+\begin_layout Standard
+给定一个在
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中定义的余向量场(或
+\begin_inset Formula $1$
+\end_inset
+
+-形式) 
+\begin_inset Formula $\alpha$
+\end_inset
+
+，
+它的协变导数
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\alpha\right)_{p}$
+\end_inset
+
+被定义为一种方式，
+以使得到的操作与张量收缩和乘积法则相兼容。
+也就是说，
+
+\begin_inset Formula $\left(\nabla_{\mathbf{v}}\alpha\right)_{p}$
+\end_inset
+
+被定义为在
+\begin_inset Formula $p$
+\end_inset
+
+处的唯一的
+\begin_inset Formula $1$
+\end_inset
+
+-形式，
+使得以下恒等式对于
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中的所有向量场
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+成立 
+\begin_inset Formula 
+\[
+\left(\nabla_{\mathbf{v}}\alpha\right)_{p}\left(\mathbf{u}_{p}\right)=\nabla_{\mathbf{v}}[\alpha(\mathbf{u})]_{p}-\alpha_{p}\left[\left(\nabla_{\mathbf{v}}\mathbf{u}\right)_{p}\right].
+\]
+
+\end_inset
+
+沿着向量场
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的余向量场的协变导数再次是余向量场。
+
+\end_layout
+
+\begin_layout Subsection
+张量场
+\end_layout
+
+\begin_layout Standard
+一旦定义了向量场和余向量场的协变导数，
+就可以通过对每一对在
+\begin_inset Formula $p$
+\end_inset
+
+的一个邻域中定义的张量场
+\begin_inset Formula $\varphi$
+\end_inset
+
+和
+\begin_inset Formula $\psi$
+\end_inset
+
+施加下列恒等式来定义任意张量场的协变导数：
+ 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{v}}(\varphi\otimes\psi)_{p}=\left(\nabla_{\mathbf{v}}\varphi\right)_{p}\otimes\psi(p)+\varphi(p)\otimes\left(\nabla_{\mathbf{v}}\psi\right)_{p},
+\]
+
+\end_inset
+
+以及对于
+\begin_inset Formula $\varphi$
+\end_inset
+
+和
+\begin_inset Formula $\psi$
+\end_inset
+
+具有相同价数的情形 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{v}}(\varphi+\psi)_{p}=\left(\nabla_{\mathbf{v}}\varphi\right)_{p}+\left(\nabla_{\mathbf{v}}\psi\right)_{p}.
+\]
+
+\end_inset
+
+沿着向量场
+\begin_inset Formula $\mathbf{v}$
+\end_inset
+
+的张量场的协变导数再次是相同类型的张量场。
+
+\end_layout
+
+\begin_layout Standard
+具体而言，
+设
+\begin_inset Formula $T$
+\end_inset
+
+是一个
+\begin_inset Formula $(p,q)$
+\end_inset
+
+型的张量场。
+考虑
+\begin_inset Formula $T$
+\end_inset
+
+作为一个光滑截面
+\begin_inset Formula $\alpha^{1},\alpha^{2},\ldots,\alpha^{q}$
+\end_inset
+
+的切丛
+\begin_inset Formula $T^{*}M$
+\end_inset
+
+和截面
+\begin_inset Formula $X_{1},X_{2},\ldots,X_{p}$
+\end_inset
+
+的切丛
+\begin_inset Formula $TM$
+\end_inset
+
+的可微多线性映射，
+写为
+\begin_inset Formula $T\left(\alpha^{1},\alpha^{2},\ldots,X_{1},X_{2},\ldots\right)$
+\end_inset
+
+映射到
+\begin_inset Formula $\mathbb{R}$
+\end_inset
+
+。
+
+\begin_inset Formula $T$
+\end_inset
+
+沿着
+\begin_inset Formula $Y$
+\end_inset
+
+的协变导数由下式给出 
+\begin_inset Formula 
+\[
+\begin{aligned}\left(\nabla_{Y}T\right)\left(\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)= & \nabla_{Y}\left(T\left(\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)\right)\\
+ & -T\left(\nabla_{Y}\alpha_{1},\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)-T\left(\alpha_{1},\nabla_{Y}\alpha_{2},\ldots,X_{1},X_{2},\ldots\right)-\cdots\\
+ & -T\left(\alpha_{1},\alpha_{2},\ldots,\nabla_{Y}X_{1},X_{2},\ldots\right)-T\left(\alpha_{1},\alpha_{2},\ldots,X_{1},\nabla_{Y}X_{2},\ldots\right)-\cdots
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+坐标描述
+\end_layout
+
+\begin_layout Standard
+给定坐标函数 
+\begin_inset Formula 
+\[
+x^{i},i=0,1,2,\ldots,
+\]
+
+\end_inset
+
+任意切向量都可以用在其基底下的分量来描述 
+\begin_inset Formula 
+\[
+\mathbf{e}_{i}=\frac{\partial}{\partial x^{i}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一个基底向量沿着另一个基底向量的协变导数仍然是一个向量，
+所以它可以表示为线性组合
+\begin_inset Formula $\Gamma^{k}\mathbf{e}_{k}$
+\end_inset
+
+。
+为了指定协变导数，
+只需要指定每个基底向量场
+\begin_inset Formula $\mathbf{e}_{i}$
+\end_inset
+
+沿着
+\begin_inset Formula $\mathbf{e}_{j}$
+\end_inset
+
+的协变导数。
+ 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{e}_{j}}\mathbf{e}_{i}=\Gamma^{k}{}_{ij}\mathbf{e}_{k},
+\]
+
+\end_inset
+
+系数
+\begin_inset Formula $\Gamma_{ij}^{k}$
+\end_inset
+
+是连接相对于局部坐标系统的分量。
+在黎曼流形和伪黎曼流形理论中，
+相对于局部坐标系统的Levi-Civita连接的分量被称为Christoffel符号。
+
+\end_layout
+
+\begin_layout Standard
+然后根据定义中的规则，
+我们发现对于一般的向量场
+\begin_inset Formula $\mathbf{v}=v^{j}\mathbf{e}_{j}$
+\end_inset
+
+和
+\begin_inset Formula $\mathbf{u}=u^{i}\mathbf{e}_{i}$
+\end_inset
+
+我们得到 
+\begin_inset Formula 
+\[
+\begin{aligned}\nabla_{\mathbf{v}}\mathbf{u} & =\nabla_{v^{j}}\mathbf{e}_{j}u^{i}\mathbf{e}_{i}\\
+ & =v^{j}\nabla_{\mathbf{e}_{j}}u^{i}\mathbf{e}_{i}\\
+ & =v^{j}u^{i}\nabla_{\mathbf{e}_{j}}\mathbf{e}_{i}+v^{j}\mathbf{e}_{i}\nabla_{\mathbf{e}_{j}}u^{i}\\
+ & =v^{j}u^{i}\Gamma^{k}{}_{ij}\mathbf{e}_{k}+v^{j}\frac{\partial u^{i}}{\partial x^{j}}\mathbf{e}_{i}
+\end{aligned}
+\]
+
+\end_inset
+
+所以 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{v}}\mathbf{u}=\left(v^{j}u^{i}\Gamma^{k}{}_{ij}+v^{j}\frac{\partial u^{k}}{\partial x^{j}}\right)\mathbf{e}_{k}.
+\]
+
+\end_inset
+
+公式中的第一项负责“扭曲”坐标系统相对于协变导数的变化，
+而第二项负责向量场
+\begin_inset Formula $u$
+\end_inset
+
+分量的变化。
+特别是 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{e}_{j}}\mathbf{u}=\nabla_{j}\mathbf{u}=\left(\frac{\partial u^{i}}{\partial x^{j}}+u^{k}\Gamma^{i}{}_{kj}\right)\mathbf{e}_{i}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+用文字来说：
+协变导数是沿着坐标的方向上的通常导数加上一些修正项，
+这些修正项告诉坐标如何改变。
+
+\end_layout
+
+\begin_layout Standard
+对于余向量(余切向量)，
+同样地我们有 
+\begin_inset Formula 
+\[
+\nabla_{\mathbf{e}_{j}}\theta=\left(\frac{\partial\theta_{i}}{\partial x^{j}}-\theta_{k}\Gamma^{^{k}}{}_{ij}\right)\mathbf{e}^{*i}
+\]
+
+\end_inset
+
+其中
+\begin_inset Formula $\mathbf{e}^{*i}\left(\mathbf{e}_{j}\right)=\delta^{i}{}_{j}$
+\end_inset
+
+。
+
+\end_layout
+
+\begin_layout Standard
+沿着
+\begin_inset Formula $e_{c}$
+\end_inset
+
+的类型
+\begin_inset Formula $(r,s)$
+\end_inset
+
+张量场的协变导数由下面的表达式给出：
+ 
+\begin_inset Formula 
+\[
+\begin{aligned}\left(\nabla_{e_{c}}T\right)^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}= & \frac{\partial}{\partial x^{c}}T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}\\
+ & +\Gamma^{a_{1}}{}_{dc}T^{da_{2}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}+\cdots+\Gamma^{a_{r}}{}_{dc}T^{a_{1}\ldots a_{r-1}{}^{d}}{}_{b_{1}\ldots b_{s}}\\
+ & -\Gamma^{d}{}_{b_{1}c}T^{a_{1}\ldots a_{r}}{}_{db_{2}\ldots b_{s}}-\cdots-\Gamma^{d}{}_{b_{s}c}T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s-1}d}\,.
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+或者，
+用文字来说：
+取张量的偏导数，
+加上：
+
+\begin_inset Formula $+\Gamma^{a_{i}}{}_{dc}$
+\end_inset
+
+对于每一个上标
+\begin_inset Formula $a_{i}$
+\end_inset
+
+成立，
+以及
+\begin_inset Formula $-\Gamma^{d}{}_{b_{i}c}$
+\end_inset
+
+对于每一个下标
+\begin_inset Formula $b_{i}$
+\end_inset
+
+成立。
+
+\end_layout
+
+\begin_layout Standard
+如果尝试微分一个
+\shape italic
+张量密度(tensor density)
+\shape default
+ (权重为
+\begin_inset Formula $+1$
+\end_inset
+
+)，
+则还需要加上一项 
+\begin_inset Formula 
+\[
+-\Gamma^{d}{}_{dc}T^{a_{1}\ldots a_{r}}{}_{b_{1}\ldots b_{s}}.
+\]
+
+\end_inset
+
+如果它是权重为
+\begin_inset Formula $W$
+\end_inset
+
+的张量密度，
+则将该项乘以
+\begin_inset Formula $W$
+\end_inset
+
+。
+例如，
+
+\begin_inset Formula $\sqrt{-g}$
+\end_inset
+
+是一个标量密度(权重为
+\begin_inset Formula $+1$
+\end_inset
+
+)，
+所以我们得到 
+\begin_inset Formula 
+\[
+(\sqrt{-g})_{;c}=(\sqrt{-g})_{,c}-\sqrt{-g}\,\Gamma_{dc}^{d}
+\]
+
+\end_inset
+
+其中分号
+\begin_inset Quotes eld
+\end_inset
+
+;
+\begin_inset Quotes erd
+\end_inset
+
+表示协变微分，
+逗号
+\begin_inset Quotes eld
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+表示偏微分。
+顺便说一下，
+这个特殊的表达式等于零，
+因为仅依赖于度量的函数的协变导数总是零。
+
+\end_layout
+
+\begin_layout Section
+记号
+\end_layout
+
+\begin_layout Standard
+在物理学的教科书中，
+协变导数有时简单地用其分量的形式给出。
+
+\end_layout
+
+\begin_layout Standard
+常常使用一种记号，
+在这种记号中协变导数用分号表示，
+而普通的偏导数用逗号表示。
+在这种记号中我们写同样的表达式为 
+\begin_inset Formula 
+\[
+\nabla_{e_{j}}\mathbf{v}\stackrel{\text{ def }}{=}v_{;j}^{s}\mathbf{e}_{s}\quad v_{;j}^{i}=v_{,j}^{i}+v^{k}\Gamma_{kj}^{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+如果分号后出现了两个或更多的指标，
+那么它们都必须理解为协变导数 
+\begin_inset Formula 
+\[
+\nabla_{e_{k}}\left(\nabla_{e_{j}}\mathbf{v}\right)\stackrel{\text{ def }}{=}v_{;jk}^{s}\mathbf{e}_{s}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+在一些较老的文章中(特别是Adler,
+ Bazin & Schiffer，
+
+\shape italic
+Introduction to General Relativity
+\shape default
+)，
+协变导数用双竖线表示，
+而偏导数用单竖线表示 
+\begin_inset Formula 
+\[
+\nabla_{e_{j}}\mathbf{v}\stackrel{\text{ def }}{=}v^{i}{}_{\|j}=v^{i}{}_{\mid j}+v^{k}\Gamma_{kj}^{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+按场类型分类的协变导数
+\end_layout
+
+\begin_layout Standard
+对于标量场
+\begin_inset Formula $\phi$
+\end_inset
+
+，
+协变微分仅仅是偏微分 
+\begin_inset Formula 
+\[
+\phi_{;a}\equiv\partial_{a}\phi
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于逆变向量场
+\begin_inset Formula $\lambda^{a}$
+\end_inset
+
+，
+我们有 
+\begin_inset Formula 
+\[
+\lambda^{a};b\equiv\partial_{b}\lambda^{a}+\Gamma_{bc}^{a}\lambda^{c}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于余变向量场
+\begin_inset Formula $\lambda_{a}$
+\end_inset
+
+，
+我们有 
+\begin_inset Formula 
+\[
+\lambda_{a;c}\equiv\partial_{c}\lambda_{a}-\Gamma_{ca}^{b}\lambda_{b}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于类型
+\begin_inset Formula $(2,0)$
+\end_inset
+
+的张量场
+\begin_inset Formula $\tau^{ab}$
+\end_inset
+
+，
+我们有 
+\begin_inset Formula 
+\[
+\tau^{ab}{}_{;c}\equiv\partial_{c}\tau^{ab}+\Gamma^{a}{}_{cd}\tau^{db}+\Gamma^{b}{}_{cd}\tau^{ad}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于类型
+\begin_inset Formula $(0,2)$
+\end_inset
+
+的张量场
+\begin_inset Formula $\tau_{ab}$
+\end_inset
+
+，
+我们有 
+\begin_inset Formula 
+\[
+\tau_{ab;c}\equiv\partial_{c}\tau_{ab}-\Gamma_{ca}^{d}\tau_{db}-\Gamma_{cb}^{d}\tau_{ad}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+对于类型
+\begin_inset Formula $(1,1)$
+\end_inset
+
+的张量场
+\begin_inset Formula $\tau^{a}{}_{b}$
+\end_inset
+
+，
+我们有 
+\begin_inset Formula 
+\[
+\tau^{a}{}_{b;c}\equiv\partial_{c}\tau^{a}{}_{b}+\Gamma^{a}{}_{cd}\tau^{d}{}_{b}-\Gamma^{d}{}_{cb}\tau^{a}{}_{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+上面的记号意指 
+\begin_inset Formula 
+\[
+\tau^{ab}{}_{;c}\equiv\left(\nabla_{\mathbf{e}_{c}}\tau\right)^{ab}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+性质
+\end_layout
+
+\begin_layout Standard
+一般来说，
+协变导数并不交换。
+例如，
+向量场的协变导数
+\begin_inset Formula $\lambda_{a;bc}\neq\lambda_{a;cb}$
+\end_inset
+
+ 。
+黎曼张量
+\begin_inset Formula $R_{abc}^{d}$
+\end_inset
+
+被定义为满足 
+\begin_inset Formula 
+\[
+\lambda_{a;bc}-\lambda_{a;cb}=R_{abc}^{d}\lambda_{d}
+\]
+
+\end_inset
+
+或者说等价地，
+ 
+\begin_inset Formula 
+\[
+\lambda^{a}{}_{;bc}-\lambda^{a}{}_{;cb}=-R^{a}{}_{dbc}\lambda^{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+类型
+\begin_inset Formula $(2,0)$
+\end_inset
+
+的张量场的协变导数满足 
+\begin_inset Formula 
+\[
+\tau_{;cd}^{ab}-\tau_{;dc}^{ab}=-R_{ecd}^{a}\tau^{eb}-R_{ecd}^{b}\tau^{ae}
+\]
+
+\end_inset
+
+后者可以通过假设(不失一般性) 
+\begin_inset Formula $\tau^{ab}=\lambda^{a}\mu^{b}$
+\end_inset
+
+来证明。
+
+\end_layout
+
+\begin_layout Section
+沿着曲线的导数
+\end_layout
+
+\begin_layout Standard
+由于在某一点
+\begin_inset Formula $p$
+\end_inset
+
+处张量场
+\begin_inset Formula $T$
+\end_inset
+
+的协变导数
+\begin_inset Formula $\nabla_{X}T$
+\end_inset
+
+只依赖于向量场
+\begin_inset Formula $X$
+\end_inset
+
+在
+\begin_inset Formula $p$
+\end_inset
+
+处的值，
+因此可以定义沿着在流形中的光滑曲线
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+的协变导数 
+\begin_inset Formula 
+\[
+D_{t}T=\nabla_{\dot{\gamma}(t)}T
+\]
+
+\end_inset
+
+注意到，
+为了使这一定义有意义，
+张量场
+\begin_inset Formula $T$
+\end_inset
+
+只需要在曲线
+\begin_inset Formula $\gamma(t)$
+\end_inset
+
+上定义即可。
+
+\end_layout
+
+\begin_layout Standard
+特别地，
+
+\begin_inset Formula $\dot{\gamma}(t)$
+\end_inset
+
+是沿着曲线
+\begin_inset Formula $\gamma$
+\end_inset
+
+本身的向量场。
+如果
+\begin_inset Formula $\nabla_{\dot{\gamma}(t)}\dot{\gamma}(t)$
+\end_inset
+
+消失(为零)，
+则称此曲线为协变导数的测地线。
+如果协变导数是正定度量的Levi-Civita联络，
+则该联络的测地线恰好是按弧长参数化的度量测地线。
+
+\end_layout
+
+\begin_layout Standard
+沿着曲线的导数也被用来定义沿着曲线的平行传输。
+
+\end_layout
+
+\begin_layout Standard
+有时，
+沿着曲线的协变导数被称为
+\series bold
+绝对导数(absolute derivative)
+\series default
+或
+\series bold
+内在导数(intrinsic derivative)
+\series default
+。
+
+\end_layout
+
+\begin_layout Section
+与Lie导数的关系
+\end_layout
+
+\begin_layout Standard
+协变导数引入了一个额外的几何结构，
+使得能够比较相邻切空间中的向量：
+因为没有标准的坐标系统，
+所以就没有标准的方式去比较来自不同切空间的向量。
+
+\end_layout
+
+\begin_layout Standard
+然而，
+有一个推广的方向导数
+\shape italic
+却是
+\shape default
+规范的：
+即Lie导数，
+它评估一个向量场沿着另一个向量场的流(flow)的变化。
+因此，
+必须在一个开邻域中知道这两个向量场，
+而不仅仅是在一个单独的点上。
+另一方面，
+协变导数引入了在给定方向上向量的自身变化，
+并且它只依赖于一个单独点上的向量方向，
+而不是在一个点的一个开邻域中的向量场。
+换句话说，
+协变导数在方向参数上是线性的(在
+\begin_inset Formula $C^{\infty}(M)$
+\end_inset
+
+之上)，
+而Lie导数在两个参数上都不是线性的。
+
+\end_layout
+
+\begin_layout Standard
+注意，
+协变导数的反对称化
+\begin_inset Formula $\nabla_{u}v-\nabla_{v}u$
+\end_inset
+
+与Lie导数
+\begin_inset Formula $L_{u}v$
+\end_inset
+
+之间的差异由联络的挠率给出，
+因此如果一个联络是无挠的(torsion free)，
+则其反对称化
+\shape italic
+就是
+\shape default
+ Lie导数。
+
+\end_layout
+
+\begin_layout Section*
+See also
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{multicols}{2}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Affine connection"
+target "https://en.wikipedia.org/wiki/Affine_connection"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Christoffel symbols"
+target "https://en.wikipedia.org/wiki/Christoffel_symbols"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Connection (algebraic framework)"
+target "https://en.wikipedia.org/wiki/Connection_(algebraic_framework)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Connection (mathematics)"
+target "https://en.wikipedia.org/wiki/Connection_(mathematics)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Connection (vector bundle)"
+target "https://en.wikipedia.org/wiki/Connection_(vector_bundle)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Connection form"
+target "https://en.wikipedia.org/wiki/Connection_form"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Exterior covariant derivative"
+target "https://en.wikipedia.org/wiki/Exterior_covariant_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Gauge covariant derivative"
+target "https://en.wikipedia.org/wiki/Gauge_covariant_derivative"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Introduction to the mathematics of general relativity"
+target "https://en.wikipedia.org/wiki/Introduction_to_the_mathematics_of_general_relativity"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Levi-Civita connection"
+target "https://en.wikipedia.org/wiki/Levi-Civita_connection"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Parallel transport"
+target "https://en.wikipedia.org/wiki/Parallel_transport"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Ricci calculus"
+target "https://en.wikipedia.org/wiki/Ricci_calculus"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Tensor derivative (continuum mechanics)"
+target "https://en.wikipedia.org/wiki/Tensor_derivative_(continuum_mechanics)"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "List of formulas in Riemannian geometry"
+target "https://en.wikipedia.org/wiki/List_of_formulas_in_Riemannian_geometry"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{multicols}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Notes
+\end_layout
+
+\begin_layout Enumerate
+Einstein,
+ Albert (1922).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+The General Theory of Relativity
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ The Meaning of Relativity (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://archive.org/details/meaningofrelativ00eins_0
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Ricci,
+ G.;
+ Levi-Civita,
+ T.
+ (1901).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Méthodes de calcul différential absolu et leurs applications
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://gdz.sub.uni-goettingen.de/dms/load/img/?PID=GDZPPN002258102
+\end_layout
+
+\end_inset
+
+).
+ Mathematische Annalen.
+ 54 (1-2):
+ 125-201.
+ doi:10.1007/bf01454201 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://doi.org/10.1007%2Fbf01454201
+\end_layout
+
+\end_inset
+
+).
+ S2CID 120009332 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://api.semanticscholar.org/CorpusID:120009332
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Riemann,
+ G.
+ F.
+ B.
+ (1866).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Über die Hypothesen,
+ welche der Geometrie zu Grunde liegen
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+.
+ Gesammelte Mathematische Werke.;
+ reprint,
+ ed.
+ Weber,
+ H.
+ (1953),
+ New York:
+ Dover.
+\end_layout
+
+\begin_layout Enumerate
+Christoffel,
+ E.
+ B.
+ (1869).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Über die Transformation der homogenen Differentialausdrücke zweiten Grades
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://eudml.org/doc/148073
+\end_layout
+
+\end_inset
+
+).
+ Journal für die reine und angewandte Mathematik.
+ 70:
+ 46-70.
+\end_layout
+
+\begin_layout Enumerate
+cf.
+ with Cartan,
+ É (1923).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Sur les variétés à connexion affine et la theorie de la relativité généralisée
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.numdam.org/item?id=ASENS_1923_3_40_325_0
+\end_layout
+
+\end_inset
+
+).
+ Annales,
+ École Normale.
+ 40:
+ 325-412.
+ doi:10.24033/asens.751 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://doi.org/10.24033%2Fasens.751
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Koszul,
+ J.
+ L.
+ (1950).
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Homologie et cohomologie des algebres de Lie
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://doi.org/10.24033%2Fbsmf.1410
+\end_layout
+
+\end_inset
+
+).
+ Bulletin de la Société Mathématique.
+ 78:
+ 65-127.
+ doi:10.24033/bsmf.
+ 1410 (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://doi.org/10.24033%2Fbsmf.1410
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+The covariant derivative is also denoted variously by 
+\begin_inset Formula $\partial_{\mathbf{v}}\mathbf{u},\mathbf{D}_{\mathbf{v}}\mathbf{u}$
+\end_inset
+
+,
+ or other notations.
+\end_layout
+
+\begin_layout Enumerate
+In many applications,
+ it may be better not to think of 
+\begin_inset Formula $t$
+\end_inset
+
+ as corresponding to time,
+ at least for applications in general relativity.
+ It is simply regarded as an abstract parameter varying smoothly and monotonically along the path.
+\end_layout
+
+\begin_layout Section*
+References
+\end_layout
+
+\begin_layout Itemize
+Kobayashi,
+ Shoshichi;
+ Nomizu,
+ Katsumi (1996).
+ Foundations of Differential Geometry,
+ Vol.
+ 1 (New ed.).
+ Wiley Interscience.
+ ISBN 0-471-15733-3.
+ 
+\end_layout
+
+\begin_layout Itemize
+I.Kh.
+ Sabitov (2001) [1994],
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+Covariant differentiation
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://www.encyclopediaofmath.org/index.php?title=Covariant_differentiation
+\end_layout
+
+\end_inset
+
+),
+ Encyclopedia of Mathematics,
+ EMS Press 
+\end_layout
+
+\begin_layout Itemize
+Sternberg,
+ Shlomo (1964).
+ Lectures on Differential Geometry.
+ Prentice-Hall.
+ 
+\end_layout
+
+\begin_layout Itemize
+Spivak,
+ Michael (1999).
+ A Comprehensive Introduction to Differential Geometry (Volume Two).
+ Publish or Perish,
+ Inc.
+ 
+\end_layout
+
+\end_body
+\end_document
