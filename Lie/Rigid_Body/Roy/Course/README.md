@@ -15,5 +15,6 @@
 01. [Introduction to Spatial (6D) Vectors - 2022](http://royfeatherstone.org/teaching/IntroSpVec2022.zip)
     + 空间 (6D) 向量简介
 01. [Computational Robot Dynamics - 2022](http://royfeatherstone.org/teaching/CompuRobDyn2022.zip)
+01. [Roy's slides for Summer Screws 2024](http://royfeatherstone.org/teaching/SS24_RF_slides.pdf)
 
 

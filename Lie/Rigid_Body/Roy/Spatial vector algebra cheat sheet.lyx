@@ -1,0 +1,1888 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams-chap-bytype
+theorems-ams-extended-chap-bytype
+theorems-named
+enumitem
+\end_modules
+\maintain_unincluded_children no
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype true
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 25.4mm
+\topmargin 30mm
+\rightmargin 25.4mm
+\bottommargin 30mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle empty
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset href
+LatexCommand href
+name "Spatial vector algebra cheat sheet"
+target "https://scaron.info/robotics/spatial-vector-algebra-cheat-sheet.html"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Stéphane Caron
+\end_layout
+
+\begin_layout Date
+2022-01-25
+\end_layout
+
+\begin_layout Standard
+Spatial vector algebra is a subset of 
+\begin_inset CommandInset href
+LatexCommand href
+name "Lie algebra"
+target "https://scaron.info/robotics/screw-theory.html"
+literal "false"
+
+\end_inset
+
+ where we follow two conventions that simplify calculations:
+ we use spatial vectors rather than body vectors whenever possible,
+ and Plücker transforms rather than affine transforms to represent members of the Lie group.
+ Like with any other algebra,
+ the more identities we swing,
+ the more proficient we get at it.
+ This cheat sheet lists the ones I have found useful so far.
+ It references both spatial and body vectors.
+ Because when a spatial vector formula resists intuition (not the rareliest occurrence),
+ it can help to explicit all the frames involved.
+\end_layout
+
+\begin_layout Section*
+Notations
+\end_layout
+
+\begin_layout Standard
+We adopt the subscript right-to-left convention for transforms,
+ and superscript notation to indicate the frame of a motion or force vector:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Notation
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Body angular velocity of frame 
+\begin_inset Formula $A$
+\end_inset
+
+ in frame 
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plücker transform from frame 
+\begin_inset Formula $A$
+\end_inset
+
+ to frame 
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{X}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Position of (the origin of) frame 
+\begin_inset Formula $B$
+\end_inset
+
+ in frame 
+\begin_inset Formula $A$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{A}\boldsymbol{p}_{B}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation matrix from frame 
+\begin_inset Formula $A$
+\end_inset
+
+ to frame 
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spatial angular velocity of frame 
+\begin_inset Formula $A$
+\end_inset
+
+ in frame 
+\begin_inset Formula $B$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{B}\boldsymbol{\omega}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spatial velocity of frame 
+\begin_inset Formula $A$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{v}_{A}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+World frame (inertial)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $W$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With these notations frame transforms can be read left to right,
+ for example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{X}_{CA}=\boldsymbol{X}_{CB}\boldsymbol{X}_{BA}\qquad{}^{B}\boldsymbol{\omega}=\boldsymbol{R}_{BA}\,{}^{A}\boldsymbol{\omega}\qquad{}^{B}\boldsymbol{p}_{C}=\boldsymbol{R}_{BA}\,{}^{A}\boldsymbol{p}_{C}+\,{}^{B}\boldsymbol{p}_{A}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We part from Featherstone's notation ( 
+\begin_inset Formula $^{B}\boldsymbol{X}_{A}$
+\end_inset
+
+ ) to be able to keep track of the original transforms in time derivatives.
+ For example,
+ the angular velocity 
+\begin_inset Formula $\boldsymbol{\omega}_{BA}$
+\end_inset
+
+ that derivates from the rotation 
+\begin_inset Formula $\boldsymbol{R}_{BA}$
+\end_inset
+
+ satisfies:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dot{\boldsymbol{R}}_{BA}=\left(^{B}\boldsymbol{\omega}_{BA}\times\right)\boldsymbol{R}_{BA}=\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{\omega}_{BA}\times\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Skew-symmetric operator
+\end_layout
+
+\begin_layout Standard
+The operator 
+\begin_inset Formula $\times:\mathbb{R}^{3}\rightarrow\mathbb{R}^{3\times3},\boldsymbol{a}\mapsto\boldsymbol{a}\times$
+\end_inset
+
+ turns a 3D vector 
+\begin_inset Formula $\boldsymbol{a}$
+\end_inset
+
+ into its 
+\begin_inset Formula $3\times3\,$
+\end_inset
+
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "cross-product skew-symmetric matrix"
+target "https://en.wikipedia.org/wiki/Skew-symmetric_matrix#Cross_product"
+literal "false"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{a}\times=\left[\begin{array}{l}
+a_{x}\\
+a_{y}\\
+a_{z}
+\end{array}\right]\times=\left[\begin{array}{ccc}
+0 & -a_{z} & a_{y}\\
+a_{z} & 0 & -a_{x}\\
+-a_{y} & a_{x} & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We use the same notation for the operator 
+\begin_inset Formula $\times:\mathbb{R}^{6}\rightarrow\mathbb{R}^{6\times6},\boldsymbol{\xi}\mapsto\boldsymbol{\xi}\times$
+\end_inset
+
+ on twists:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}\times=\left[\begin{array}{c}
+\boldsymbol{v}\\
+\boldsymbol{\omega}
+\end{array}\right]\times=\left[\begin{array}{cc}
+\boldsymbol{\omega}\times & \boldsymbol{v}\times\\
+\mathbf{0}_{3\times3} & \boldsymbol{\omega}\times
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the matrix structure is tied to our choice of writing linear coordinates 
+\begin_inset Formula $\boldsymbol{v}$
+\end_inset
+
+ before angular coordinates 
+\begin_inset Formula $\boldsymbol{\omega}$
+\end_inset
+
+ in twists 
+\begin_inset Formula $\boldsymbol{\xi}$
+\end_inset
+
+.
+ (In Featherstone's reference book angular coordinates come first,
+ in which case the linear cross-product block 
+\begin_inset Formula $\boldsymbol{v}\times$
+\end_inset
+
+ moves to the opposite corner.)
+\end_layout
+
+\begin_layout Section*
+Cross and dot products
+\end_layout
+
+\begin_layout Subsection*
+Euclidean cross products
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Formula
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XP1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+name "Vector triple product"
+target "https://en.wikipedia.org/wiki/Triple_product#Vector_triple_product"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{a}\times(\boldsymbol{b}\times\boldsymbol{c})=(\boldsymbol{a}\cdot\boldsymbol{c})\boldsymbol{b}-(\boldsymbol{a}\cdot\boldsymbol{b})\boldsymbol{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XP2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation of cross product
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}(\boldsymbol{a}\times\boldsymbol{b})=(\boldsymbol{R}\boldsymbol{a})\times(\boldsymbol{R}\boldsymbol{b})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XP3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cross product by rotated vector
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(\boldsymbol{R}\boldsymbol{v})\times=\boldsymbol{R}(\boldsymbol{v}\times)\boldsymbol{R}^{\top}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XP4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation of cross product matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}(\boldsymbol{v}\times)=(\boldsymbol{R}\boldsymbol{v})\times\boldsymbol{R}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+XP5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation of cross product matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{v}\times\right)={}^{B}\boldsymbol{v}\times\boldsymbol{R}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Spatial cross products
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Formula
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SC1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cross product by transformed vector
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(\boldsymbol{X}\boldsymbol{v})\times=\boldsymbol{X}(\boldsymbol{v}\times)\boldsymbol{X}^{-1}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SC2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Transform of cross product matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{X}(\boldsymbol{v}\times)=(\boldsymbol{X}\boldsymbol{v})\times\boldsymbol{X}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SC3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Transform of cross product matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{X}_{BA}\left(^{A}\boldsymbol{v}\times\right)={}^{B}\boldsymbol{v}\times\boldsymbol{X}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Dot products
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Property
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Formula
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IVR1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Invariance by rotation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(\boldsymbol{R}\boldsymbol{a})\cdot(\boldsymbol{R}\boldsymbol{b})=\boldsymbol{a}\cdot\boldsymbol{b}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IVR2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Invariance by dual transforms
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $(\boldsymbol{X}\boldsymbol{m})\cdot(\boldsymbol{X}^{*}\boldsymbol{f})=\boldsymbol{m}\cdot\boldsymbol{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Kinematics
+\end_layout
+
+\begin_layout Subsection*
+Transform matrices
+\end_layout
+
+\begin_layout Standard
+Note that the structure of Plücker transform matrices depends on the order in which angular and linear coordinates are serialized.
+ In this cheat sheet,
+ we serialize linear coordinates first:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{\xi}=\left[\begin{array}{c}
+\boldsymbol{v}\\
+\boldsymbol{\omega}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This results in the following matrices:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="4">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coordinates
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Transform
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inverse
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TMV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Motion vectors
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{gathered}\boldsymbol{X}_{BA}=\left[\begin{array}{cc}
+\boldsymbol{R}_{BA} & \left(^{B}\boldsymbol{p}_{A}\times\right)\boldsymbol{R}_{BA}\\
+\mathbf{0}_{3\times3} & \boldsymbol{R}_{BA}
+\end{array}\right]\end{gathered}
+$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{X}_{BA}^{-1}=\left[\begin{array}{cc}
+\boldsymbol{R}_{BA}^{T} & -\boldsymbol{R}_{BA}^{T}\left(^{B}\boldsymbol{p}_{A}\times\right)\\
+\mathbf{0}_{3\times3} & \boldsymbol{R}_{BA}^{T}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TFV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Force vectors
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{gathered}\boldsymbol{X}_{BA}^{*}=\left[\begin{array}{cc}
+\boldsymbol{R}_{BA} & \mathbf{0}_{3\times3}\\
+\left(^{B}\boldsymbol{p}_{A}\times\right)\boldsymbol{R}_{BA} & \boldsymbol{R}_{BA}
+\end{array}\right]\end{gathered}
+$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\begin{gathered}\boldsymbol{X}_{BA}^{-*}=\left[\begin{array}{cc}
+\boldsymbol{R}_{BA}^{T} & \mathbf{0}_{3\times3}\\
+-\boldsymbol{R}_{BA}^{T}\left(^{B}\boldsymbol{p}_{A}\times\right) & \boldsymbol{R}_{BA}^{T}
+\end{array}\right]\end{gathered}
+$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Inversions
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inverse of
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Formula
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+INV1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\boldsymbol{R}_{AB}=\boldsymbol{R}_{BA}^{-1}=\boldsymbol{R}_{BA}^{\top}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+INV2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Angular velocity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{AB}=-\,{}^{A}\boldsymbol{\omega}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Time derivatives
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="4">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spatial derivative
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Body derivative
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TD1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{R}}_{BA}={}^{B}\boldsymbol{\omega}_{BA}\times\boldsymbol{R}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{R}}_{BA}=\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{\omega}_{BA}\times\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ID
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spatial vector algebra
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Screw algebra
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TD2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rotation matrix
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{R}}_{BA}={}^{B}\left(\boldsymbol{\omega}_{A}-\boldsymbol{\omega}_{B}\right)\times\boldsymbol{R}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{R}}_{BA}={}^{B}\left(\boldsymbol{\omega}_{WA}-\boldsymbol{\omega}_{WB}\right)\times\boldsymbol{R}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TD3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plücker transform
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{X}}_{BA}={}^{B}\left(\boldsymbol{v}_{A}-\boldsymbol{v}_{B}\right)\times\boldsymbol{X}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{X}}_{BA}={}^{B}\left(\boldsymbol{v}_{WA}-\boldsymbol{v}_{WB}\right)\times\boldsymbol{X}_{BA}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TD4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plücker to world
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{X}}_{WB}=\left(\boldsymbol{v}_{B}\times\right)\boldsymbol{X}_{WB}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{X}}_{WB}={}^{W}\boldsymbol{v}_{WB}\times\boldsymbol{X}_{WB}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TD5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plücker to world
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(not a spatial identity)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\dot{\boldsymbol{X}}_{WB}=\boldsymbol{X}_{WB}\left(^{B}\boldsymbol{v}_{WB}\times\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Proof of some identities
+\end_layout
+
+\begin_layout Subsection*
+INV2
+\end_layout
+
+\begin_layout Standard
+We start from the time derivative of the identity:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{R}_{AB}\boldsymbol{R}_{BA}=\boldsymbol{I}_{3}
+\]
+
+\end_inset
+
+Using the identities 
+\begin_inset Formula $\dot{\boldsymbol{R}}_{AB}=\left(^{A}\boldsymbol{\omega}_{AB}\times\right)\boldsymbol{R}_{AB}$
+\end_inset
+
+ and 
+\begin_inset Formula $\dot{\boldsymbol{R}}_{BA}=\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{\omega}_{BA}\times\right)$
+\end_inset
+
+,
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(^{A}\boldsymbol{\omega}_{AB}\times\right)\boldsymbol{R}_{AB}\boldsymbol{R}_{BA}+\boldsymbol{R}_{AB}\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{\omega}_{BA}\times\right)=\mathbf{0}_{3\times3}
+\]
+
+\end_inset
+
+And thus 
+\begin_inset Formula $^{A}\boldsymbol{\omega}_{AB}=-\,{}^{A}\boldsymbol{\omega}_{BA}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+TD1 
+\begin_inset Formula $\Leftrightarrow$
+\end_inset
+
+ TD2
+\end_layout
+
+\begin_layout Standard
+We can check that TD1 and TD2 are equivalent,
+ that is,
+ 
+\begin_inset Formula $^{B}\left(\boldsymbol{\omega}_{WA}-\boldsymbol{\omega}_{WB}\right)={}^{B}\boldsymbol{\omega}_{BA}$
+\end_inset
+
+.
+ For that,
+ let's go back to the time derivative of the rotation matrix:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\begin{aligned}\dot{\boldsymbol{R}}_{BA}=\,{}^{B}\boldsymbol{\omega}_{BA}\times\boldsymbol{R}_{BA} & =\frac{\mathrm{d}}{\mathrm{d}t}\left(\boldsymbol{R}_{BW}\boldsymbol{R}_{WA}\right)\\
+ & =\dot{\boldsymbol{R}}_{BW}\boldsymbol{R}_{WA}+\boldsymbol{R}_{BW}\dot{\boldsymbol{R}}_{WA}\\
+ & =\,{}^{B}\boldsymbol{\omega}_{BW}\times\boldsymbol{R}_{BW}\boldsymbol{R}_{WA}+\boldsymbol{R}_{BW}\boldsymbol{R}_{WA}\left(^{A}\boldsymbol{\omega}_{WA}\times\right)\\
+ & =\,{}^{B}\boldsymbol{\omega}_{BW}\times\boldsymbol{R}_{BA}+\boldsymbol{R}_{BA}\left(^{A}\boldsymbol{\omega}_{WA}\times\right)\\
+ & =\left(-\,{}^{B}\boldsymbol{\omega}_{WB}\right)\times\boldsymbol{R}_{BA}+\,{}^{B}\boldsymbol{\omega}_{WA}\times\boldsymbol{R}_{BA}\\
+ & =\left(^{B}\boldsymbol{\omega}_{WA}-\,{}^{B}\boldsymbol{\omega}_{WB}\right)\times\boldsymbol{R}_{BA}
+\end{aligned}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+To go further
+\end_layout
+
+\begin_layout Subsection*
+Textbooks
+\end_layout
+
+\begin_layout Standard
+A reference book on spatial vector algebra is Roy Featherstone's 
+\begin_inset CommandInset href
+LatexCommand href
+name "Rigid Body Dynamics Algorithms"
+target "https://doi.org/10.1007/978-1-4899-7560-7"
+literal "false"
+
+\end_inset
+
+.
+ Its tables are cheat sheets of their own.
+ The book itself is better as an implementation reference than for learning things,
+ as it often assumes the reader is already familiar with screw theory.
+ For first-time learners,
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Modern Robotics"
+target "http://hades.mech.northwestern.edu/images/2/25/MR-v2.pdf"
+literal "false"
+
+\end_inset
+
+ might be a better place to start,
+ or 
+\begin_inset CommandInset href
+LatexCommand href
+name "A Mathematical Introduction to Robotic Manipulation"
+target "https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.671.7040&rep=rep1&type=pdf"
+literal "false"
+
+\end_inset
+
+ for those who like their math fresh.
+\end_layout
+
+\begin_layout Subsection*
+Other cheat sheets
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Kinematics and dynamics cheat sheet"
+target "https://github.com/ANYbotics/kindr/blob/master/doc/cheatsheet/cheatsheet_latest.pdf"
+literal "false"
+
+\end_inset
+
+ of the Kindr library 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Representing attitude: Euler angles, unit quaternions, and rotation vectors"
+target "https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.110.5134"
+literal "false"
+
+\end_inset
+
+ for rotations only 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "SE(3) algebra cheat sheet"
+target "https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/master/doxygen-html/md_doc_c-maths_se3.html"
+literal "false"
+
+\end_inset
+
+ of the Pinocchio library 
+\end_layout
+
+\begin_layout Subsection*
+See also
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "From spatial to body acceleration"
+target "https://scaron.info/robotics/from-spatial-to-body-acceleration.html"
+literal "false"
+
+\end_inset
+
+ for a practical use case 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Research Notes on Spatial Velocities"
+target "https://jan.carius.io/research/2018/03/29/spatial-velocities.html"
+literal "false"
+
+\end_inset
+
+ by Jan Carius 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Screw axes"
+target "https://scaron.info/robotics/screw-axes.html"
+literal "false"
+
+\end_inset
+
+ with more details on central and noncentral axes 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset href
+LatexCommand href
+name "Some notes on Lie groups"
+target "https://manifoldfr.github.io/posts/liegroup/"
+literal "false"
+
+\end_inset
+
+ by Wilson Jallet
+\end_layout
+
+\end_body
+\end_document
